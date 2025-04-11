@@ -1,0 +1,129 @@
+@startuml MetaMapa_Entrega1
+
+
+class Coleccion {
+   - titulo: String
+   - descripcion: String
+   - fuente: FuenteEstatica
+   - hechos: List<Hecho>
+   - criterioPertenencia: CriterioPertenencia
+   + obtenerHechos(fuente): List<Hecho>
+ }
+
+ class CriterioPertenencia {
+   - nombre: String
+   -   lugar: Lugar
+   - fechaInicnio: LocalDateTime
+   - fechaFin: LocalDateTime
+   + cumpleConCriterio(Hecho): boolean
+ }
+
+ class Lugar {
+   - nombre: String
+   - latitud: Double
+   - longitud: Double
+ }
+
+ class Ubicacion {
+   -latitud: String
+   -longitud: String
+ }
+
+  class SolicitudEliminacion{
+    -solicitante: Contribuyente
+    - justificacion: String
+    - estado: EstadoSolicitudEliminacion
+    - hecho: Hecho
+    + cambiarEstadoHecho(): void
+  }
+
+  class Solicitudes{
+  - solicitudes: List<SolicitudEliminacion>
+    + cargarSolicitud(solicitudEliminacion): void
+  }
+
+   enum EstadoSolicitudEliminacion {
+       PENDIENTE
+       ACEPTADA
+       RECHAZADA
+     }
+
+ abstract class Hecho {
+   - titulo: String
+   - descripcion: String
+   - categoria: String
+   -ubicacion: Ubicacion
+   - fechaHecho: LocalDate
+   - fechaCarga: LocalDate
+   - origen: OrigenHecho
+   - estado: boolean
+
+   + solicitarEliminacion(justificacion): void
+    }
+
+
+
+  class HechoDeTexto extends Hecho {
+    - textoHecho: String
+    - cargarTexto(): void
+  }
+
+  class HechoDeMultimedia extends Hecho{
+      - multimedia: String
+        - cargarMultimedia(): void
+    }
+
+  enum OrigenHecho {
+    CARGA_MANUAL
+    DATASET
+    CONTRIBUYENTE
+  }
+
+
+
+
+
+  class FuenteEstatica{
+    - datasets: List<String>
+    + obtenerHechos(): Set<Hecho>
+  }
+
+
+
+class Contribuyente{
+    - nombre: String
+    - apellido: String
+    - edad: Integer
+   + visualizarHechos(): List<Hecho>
+   + visualizarColecciones(filtro): List<Coleccion>
+   + puedeSolicitarEliminacion(): boolean
+}
+
+
+  class Administrador{
+    + crearColeccion(): void
+    + importarHechos(fuente): void
+    + gestionarSolicitudEliminacion(solicitudEliminacion): void
+  }
+
+  Coleccion --> FuenteEstatica
+  Coleccion -->"*" Hecho
+  OrigenHecho *--> Hecho
+  Ubicacion *--> Hecho
+  Administrador --> Coleccion
+  Administrador --> SolicitudEliminacion
+  SolicitudEliminacion --> Hecho
+    SolicitudEliminacion --> Contribuyente
+    Solicitudes -->"*" SolicitudEliminacion
+    SolicitudEliminacion --> EstadoSolicitudEliminacion
+    Coleccion *--> CriterioPertenencia
+    Lugar *--> Hecho
+
+
+
+
+
+
+
+
+@enduml
