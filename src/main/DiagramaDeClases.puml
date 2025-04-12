@@ -18,15 +18,11 @@ class Coleccion {
    + cumpleConCriterio(Hecho): boolean
  }
 
- class Lugar {
-   - nombre: String
-   - latitud: Double
-   - longitud: Double
- }
+
 
  class Ubicacion {
-   -latitud: String
-   -longitud: String
+   -latitud: Double
+   -longitud: Double
  }
 
   class SolicitudEliminacion{
