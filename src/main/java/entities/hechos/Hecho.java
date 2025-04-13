@@ -1,27 +1,32 @@
 package entities.hechos;
 
 import entities.eliminacion.SolicitudEliminacion;
+import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Optional;
 
-public abstract class Hecho {
-    protected String titulo;
-    protected String descripcion;
-    protected String categoria;
-    protected Ubicacion ubicacion;
-    protected LocalDateTime fechaHecho;
-    protected LocalDateTime fechaCarga;
-    protected Origen origen;
-    protected Boolean estado;
+@Getter
+public class Hecho {
+    private String titulo;
+    private String descripcion;
+    private String categoria;
+    private Ubicacion ubicacion;
+    private LocalDate fechaHecho;
+    private LocalDate fechaCarga;
+    private Origen origen;
+    private Optional<Multimedia> multimedia;
+    private Boolean estado;
 
-    public Hecho(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDateTime fechaHecho, Origen origen) {
+    public Hecho(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho, Origen origen, Optional<Multimedia> multimedia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.ubicacion = ubicacion;
         this.fechaHecho = fechaHecho;
-        this.fechaCarga = LocalDateTime.now();
+        this.fechaCarga = LocalDate.now();
         this.origen = origen;
+        this.multimedia = multimedia;
         this.estado = true; //
     }
 

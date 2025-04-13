@@ -5,14 +5,14 @@ class Coleccion {
    - titulo: String
    - descripcion: String
    - fuente: FuenteEstatica
-   - hechos: List<Hecho>
+   - hechos: map<String,Hecho>
    - criterioPertenencia: CriterioPertenencia
-   + obtenerHechos(fuente): List<Hecho>
+   - cargarHechos(): void
  }
 
  class CriterioPertenencia {
    - nombre: String
-   -   lugar: Lugar
+   - lugar: Lugar
    - fechaInicnio: LocalDateTime
    - fechaFin: LocalDateTime
    + cumpleConCriterio(Hecho): boolean
@@ -44,7 +44,7 @@ class Coleccion {
        RECHAZADA
      }
 
- abstract class Hecho {
+ class Hecho {
    - titulo: String
    - descripcion: String
    - categoria: String
@@ -52,22 +52,21 @@ class Coleccion {
    - fechaHecho: LocalDate
    - fechaCarga: LocalDate
    - origen: OrigenHecho
-   - estado: boolean
+   - multimedia: Multimedia
+   - esValido: boolean
 
    + solicitarEliminacion(justificacion): void
     }
 
-
-
-  class HechoDeTexto extends Hecho {
-    - textoHecho: String
-    - cargarTexto(): void
+  class Multimedia{
+    -urlImagen: string
   }
 
-  class HechoDeMultimedia extends Hecho{
-      - multimedia: String
-        - cargarMultimedia(): void
-    }
+  interface Usuario{
+     + subirHecho(nombre): void
+     + visualizarHechos(): List<Hecho>
+     + visualizarColecciones(filtro): List<Coleccion>
+  }
 
   enum OrigenHecho {
     CARGA_MANUAL
@@ -76,29 +75,26 @@ class Coleccion {
   }
 
 
-
-
-
   class FuenteEstatica{
-    - datasets: List<String>
-    + obtenerHechos(): Set<Hecho>
+    - archivosCSV: List<String>
+    - normalizarTexto(texto): String
+    + obtenerHechos(): map<String,Hecho>
   }
 
 
 
-class Contribuyente{
+class Contribuyente implements Usuario{
     - nombre: String
     - apellido: String
     - edad: Integer
-   + visualizarHechos(): List<Hecho>
-   + visualizarColecciones(filtro): List<Coleccion>
-   + puedeSolicitarEliminacion(): boolean
+   + solicitarEliminacion(solicitud): void
 }
 
 
-  class Administrador{
-    + crearColeccion(): void
-    + importarHechos(fuente): void
+  class Administrador implements Usuario{
+    - idAdmin: Integer
+    + crearColeccion(fuente, criterioPertenencia): void
+    + importarHechos(fuente): map<String,Hechos>
     + gestionarSolicitudEliminacion(solicitudEliminacion): void
   }
 
@@ -109,12 +105,11 @@ class Contribuyente{
   Administrador --> Coleccion
   Administrador --> SolicitudEliminacion
   SolicitudEliminacion --> Hecho
-    SolicitudEliminacion --> Contribuyente
-    Solicitudes -->"*" SolicitudEliminacion
-    SolicitudEliminacion --> EstadoSolicitudEliminacion
-    Coleccion *--> CriterioPertenencia
-    Lugar *--> Hecho
-
+  SolicitudEliminacion --> Contribuyente
+  Solicitudes -->"*" SolicitudEliminacion
+  SolicitudEliminacion --> EstadoSolicitudEliminacion
+  Coleccion *--> CriterioPertenencia
+  Multimedia *--> Hecho
 
 
 

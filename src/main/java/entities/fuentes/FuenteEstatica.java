@@ -2,7 +2,8 @@ package entities.fuentes;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import entities.hechos.Hecho1;
+import entities.hechos.Hecho;
+import entities.hechos.Origen;
 import entities.hechos.Ubicacion;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,8 +23,8 @@ public class FuenteEstatica {
         return textoSinTildes.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
     }
 
-    public Map<String, Hecho1> obtenerHechos(String pathCSV){
-        Map<String, Hecho1> hechosPorTitulo = new LinkedHashMap<>();
+    public Map<String, Hecho> obtenerHechos(String pathCSV){
+        Map<String, Hecho> hechosPorTitulo = new LinkedHashMap<>();
 
         try(CSVReader reader = new CSVReader(new FileReader(pathCSV))){
             String[] encabezado = reader.readNext();
@@ -68,7 +69,7 @@ public class FuenteEstatica {
                 LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
                 Ubicacion nuevaUbi = new Ubicacion(latitud,longitud);
 
-                Hecho1 nuevoHecho = new Hecho1(titulo,descripcion,categoria,nuevaUbi,fechaHecho);
+                Hecho nuevoHecho = new Hecho(titulo,descripcion,categoria,nuevaUbi,fechaHecho, Origen.DATASET,Optional.empty());
                 hechosPorTitulo.put(titulo, nuevoHecho);
             }
         }
