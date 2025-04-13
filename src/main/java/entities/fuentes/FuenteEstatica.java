@@ -37,12 +37,14 @@ public class FuenteEstatica {
             for(int i = 0; i < encabezado.length; i++){
                 String columna = this.normalizarTexto(encabezado[i].trim());
 
-                if(columna.equals("titulo")) idxTitulo = i;
-                else if (columna.equals("descripcion")) idxDescripcion = i;
-                else if (columna.equals("categoria")) idxCategoria = i;
-                else if (columna.equals("latitud")) idxLatitud = i;
-                else if (columna.equals("longitud")) idxLongitud = i;
-                else if (columna.equals("fecha del hecho")) idxFecha = i;
+                switch (columna) {
+                    case "titulo" -> idxTitulo = i;
+                    case "descripcion" -> idxDescripcion = i;
+                    case "categoria" -> idxCategoria = i;
+                    case "latitud" -> idxLatitud = i;
+                    case "longitud" -> idxLongitud = i;
+                    case "fecha del hecho" -> idxFecha = i;
+                }
             }
             if (idxTitulo == -1 || idxDescripcion == -1 || idxCategoria == -1 ||
                     idxLatitud == -1 || idxLongitud == -1 || idxFecha == -1) {
