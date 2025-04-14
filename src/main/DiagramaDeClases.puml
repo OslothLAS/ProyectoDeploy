@@ -13,7 +13,7 @@ class Coleccion {
  class CriterioPertenencia {
    - nombre: String
    - lugar: Lugar
-   - fechaInicnio: LocalDateTime
+   - fechaInicio: LocalDateTime
    - fechaFin: LocalDateTime
    + cumpleConCriterio(Hecho): boolean
  }
