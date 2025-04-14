@@ -96,7 +96,7 @@ class Contribuyente implements Usuario{
     - idAdmin: Integer
     + crearColeccion(fuente, criterioPertenencia): void
     + importarHechos(fuente): map<String,Hechos>
-    + gestionarSolicitudEliminacion(solicitudEliminacion): void
+    +aceptarSolicitudEliminacion(solicitudEliminacion): void
   }
 
   Coleccion --> FuenteEstatica
