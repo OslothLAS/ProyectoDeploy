@@ -28,49 +28,19 @@ public class FuenteEstatica {
 
         try(CSVReader reader = new CSVReader(new FileReader(pathCSV))){
             String[] encabezado = reader.readNext();
-            int idxTitulo = -1;
-            int idxDescripcion = -1;
-            int idxCategoria = -1;
-            int idxLatitud = -1;
-            int idxLongitud = -1;
-            int idxFecha = -1;
+            Map<String,Integer> indices = this.obtenerIndicesColumnas(encabezado);
+            this.validarColumnasObligatorias(indices);
 
-            for(int i = 0; i < encabezado.length; i++){
-                String columna = this.normalizarTexto(encabezado[i].trim());
-
-                switch (columna) {
-                    case "titulo" -> idxTitulo = i;
-                    case "descripcion" -> idxDescripcion = i;
-                    case "categoria" -> idxCategoria = i;
-                    case "latitud" -> idxLatitud = i;
-                    case "longitud" -> idxLongitud = i;
-                    case "fecha del hecho" -> idxFecha = i;
-                }
-            }
-            if (idxTitulo == -1 || idxDescripcion == -1 || idxCategoria == -1 ||
-                    idxLatitud == -1 || idxLongitud == -1 || idxFecha == -1) {
-                throw new RuntimeException("Faltan columnas obligatorias en el CSV: 'titulo', 'descripcion', 'categoria', 'latitud', 'longitud', 'fechadelhecho'");
-            }
 
             //estas lineas son solo para el debug
             System.out.println("Encabezado detectado:");
             System.out.println(Arrays.toString(Arrays.stream(encabezado).map(this::normalizarTexto).toArray()));
             //-------------------------------------------------
 
+
             String[] fila;
             while(((fila = reader.readNext()) != null)){
-                String titulo = fila[idxTitulo].trim();
-                String descripcion = fila[idxDescripcion].trim();
-                String categoria = fila[idxCategoria].trim();
-                String latitud = fila[idxLatitud].trim();
-                String longitud = fila[idxLongitud].trim();
-                String fecha = fila[idxFecha].trim();
-
-                LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
-                Ubicacion nuevaUbi = new Ubicacion(latitud,longitud);
-
-                Hecho nuevoHecho = new Hecho(titulo,descripcion,categoria,nuevaUbi,fechaHecho, Origen.DATASET,Optional.empty());
-                hechosPorTitulo.put(titulo, nuevoHecho);
+                hechosPorTitulo.put(fila[indices.get("titulo")].trim(), this.instanciarHechoDesdeFila(fila,indices));
             }
         }
         catch (IOException | CsvValidationException e){
@@ -80,4 +50,45 @@ public class FuenteEstatica {
         return hechosPorTitulo;
     }
 
+    private Map<String, Integer> obtenerIndicesColumnas(String[] encabezado) {
+        Map<String, Integer> indices = new HashMap<>();
+        for (int i = 0; i < encabezado.length; i++) {
+            String columna = this.normalizarTexto(encabezado[i].trim());
+            switch (columna) {
+                case "titulo":
+                case "descripcion":
+                case "categoria":
+                case "latitud":
+                case "longitud":
+                case "fecha del hecho":
+                    indices.put(columna, i);
+                    break;
+            }
+        }
+        return indices;
+    }
+
+    private void validarColumnasObligatorias(Map<String, Integer> indices) {
+        String[] columnasObligatorias = {"titulo", "descripcion", "categoria", "latitud", "longitud", "fecha del hecho"};
+        for (String columna : columnasObligatorias) {
+            if (!indices.containsKey(columna)) {
+                throw new RuntimeException("Faltan columnas obligatorias en el CSV: " +
+                        String.join(", ", columnasObligatorias));
+            }
+        }
+    }
+
+    private Hecho instanciarHechoDesdeFila(String[] fila, Map<String,Integer> indices){
+        String titulo = fila[indices.get("titulo")].trim();
+        String descripcion = fila[indices.get("descripcion")].trim();
+        String categoria = fila[indices.get("categoria")].trim();
+        String latitud = fila[indices.get("latitud")].trim();
+        String longitud = fila[indices.get("longitud")].trim();
+        String fecha = fila[indices.get("fecha del hecho")].trim();
+
+        LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
+        Ubicacion nuevaUbi = new Ubicacion(latitud, longitud);
+
+        return new Hecho(titulo, descripcion, categoria, nuevaUbi, fechaHecho,Origen.DATASET);
+    }
 }

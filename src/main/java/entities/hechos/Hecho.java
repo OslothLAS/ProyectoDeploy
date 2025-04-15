@@ -15,10 +15,9 @@ public class Hecho {
     private LocalDate fechaHecho;
     private LocalDate fechaCarga;
     private Origen origen;
-    private Optional<Multimedia> multimedia;
     private Boolean estado;
 
-    public Hecho(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho, Origen origen, Optional<Multimedia> multimedia) {
+    public Hecho(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho, Origen origen) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -26,7 +25,6 @@ public class Hecho {
         this.fechaHecho = fechaHecho;
         this.fechaCarga = LocalDate.now();
         this.origen = origen;
-        this.multimedia = multimedia;
         this.estado = true; //
     }
 
