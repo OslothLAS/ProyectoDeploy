@@ -58,7 +58,6 @@ class Coleccion {
 
   class Multimedia{
     -urlImagen: string
-
   }
 
   interface Usuario{
@@ -94,7 +93,7 @@ class Contribuyente implements Usuario{
     - idAdmin: Integer
     + crearColeccion(fuente, criterioPertenencia): void
     + importarHechos(fuente): map<String,Hechos>
-    +aceptarSolicitudEliminacion(solicitudEliminacion): void
+    + gestionarSolicitudEliminacion(solicitudEliminacion): void
   }
 
   class RepositorioDeHechos{
