@@ -28,6 +28,11 @@ public class Hecho {
         this.estado = true; //
     }
 
+    public String toString() {
+        return titulo + " " + descripcion + " " + categoria + " " + ubicacion.getLatitud() + " "
+                + ubicacion.getLongitud() + " " + fechaHecho + " " + fechaCarga + " " + origen;
+    }
+
     public void solicitarElimnacion(String justificacion){
         if(justificacion.length() > 500){
             SolicitudEliminacion solicitud = new SolicitudEliminacion(justificacion, this);
