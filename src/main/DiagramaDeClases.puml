@@ -1,6 +1,4 @@
-@startuml MetaMapa_Entrega1
-
-
+@startuml
 class Coleccion {
    - titulo: String
    - descripcion: String
@@ -13,7 +11,7 @@ class Coleccion {
  class CriterioPertenencia {
    - nombre: String
    - lugar: Lugar
-   - fechaInicnio: LocalDateTime
+   - fechaInicio: LocalDateTime
    - fechaFin: LocalDateTime
    + cumpleConCriterio(Hecho): boolean
  }
@@ -98,10 +96,16 @@ class Contribuyente implements Usuario{
     + gestionarSolicitudEliminacion(solicitudEliminacion): void
   }
 
+  class RepositorioDeHechos{
+    - hechos: map<String,Hecho>
+    + agregarHecho(Hecho): void
+    + filtrarPorCategoria(categoria): map<String,Hecho>
+  }
+
   Coleccion --> FuenteEstatica
   Coleccion -->"*" Hecho
-  OrigenHecho *--> Hecho
-  Ubicacion *--> Hecho
+  OrigenHecho <--* Hecho
+  Ubicacion <--* Hecho
   Administrador --> Coleccion
   Administrador --> SolicitudEliminacion
   SolicitudEliminacion --> Hecho
@@ -109,12 +113,7 @@ class Contribuyente implements Usuario{
   Solicitudes -->"*" SolicitudEliminacion
   SolicitudEliminacion --> EstadoSolicitudEliminacion
   Coleccion *--> CriterioPertenencia
-  Multimedia *--> Hecho
-
-
-
-
-
-
+  Multimedia <--* Hecho
+  Hecho <-- RepositorioDeHechos
 
 @enduml
