@@ -13,8 +13,11 @@ import java.io.IOException;
 import java.util.*;
 
 public class FuenteEstatica {
+    private String[] pathArchivosCSV;
 
-
+    public FuenteEstatica(String[] pathArchivosCSV_) {
+        pathArchivosCSV = pathArchivosCSV_;
+    }
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private String normalizarTexto(String texto) {
@@ -23,30 +26,24 @@ public class FuenteEstatica {
         return textoSinTildes.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
     }
 
-    public Map<String, Hecho> obtenerHechos(String pathCSV){
+    public Map<String, Hecho> obtenerHechos() {
         Map<String, Hecho> hechosPorTitulo = new LinkedHashMap<>();
 
-        try(CSVReader reader = new CSVReader(new FileReader(pathCSV))){
-            String[] encabezado = reader.readNext();
-            Map<String,Integer> indices = this.obtenerIndicesColumnas(encabezado);
-            this.validarColumnasObligatorias(indices);
+        for(String pathArchivo : this.pathArchivosCSV) {
+            try (CSVReader reader = new CSVReader(new FileReader(pathArchivo))) {
+                String[] encabezado = reader.readNext();
+                Map<String, Integer> indices = this.obtenerIndicesColumnas(encabezado);
+                this.validarColumnasObligatorias(indices);
 
-
-            //estas lineas son solo para el debug
-            System.out.println("Encabezado detectado:");
-            System.out.println(Arrays.toString(Arrays.stream(encabezado).map(this::normalizarTexto).toArray()));
-            //-------------------------------------------------
-
-
-            String[] fila;
-            while(((fila = reader.readNext()) != null)){
-                hechosPorTitulo.put(fila[indices.get("titulo")].trim(), this.instanciarHechoDesdeFila(fila,indices));
+                String[] fila;
+                while ((fila = reader.readNext()) != null) {
+                    String titulo = fila[indices.get("titulo")].trim();
+                    hechosPorTitulo.put(titulo, this.instanciarHechoDesdeFila(fila, indices));
+                }
+            } catch (IOException | CsvValidationException e) {
+                System.out.println("Error al leer el archivo: " + pathArchivo);
             }
         }
-        catch (IOException | CsvValidationException e){
-            System.out.println("Error al leer el archivo");
-        }
-
         return hechosPorTitulo;
     }
 
