@@ -4,7 +4,6 @@ import entities.eliminacion.SolicitudEliminacion;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Getter
 public class Hecho {
