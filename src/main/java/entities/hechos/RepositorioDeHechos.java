@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RepositorioDeHechos {
-    public RepositorioDeHechos() {}
-
     //por ahora creo el atributo hechos porque no se donde se guardan los hechos subidos
     Map<String, Hecho> hechos;
 
