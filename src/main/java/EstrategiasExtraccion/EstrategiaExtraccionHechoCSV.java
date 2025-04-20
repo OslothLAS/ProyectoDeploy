@@ -1,4 +1,4 @@
-package fileTypes;
+package EstrategiasExtraccion;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
@@ -15,9 +15,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class FileTypeCSV implements FileType{
+public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 
-    public Map<String, Hecho> obtenerHechosDesde(String pathArchivo) throws IOException, CsvValidationException {
+    @Override
+    public Map<String, Hecho> obtenerHechosDesde(String pathArchivo){
         Map<String, Hecho> hechos = new LinkedHashMap<>();
 
         try (CSVReader reader = new CSVReader(new FileReader(pathArchivo))) {
@@ -30,6 +31,10 @@ public class FileTypeCSV implements FileType{
                 String titulo = fila[indices.get("titulo")].trim();
                 hechos.put(titulo, this.instanciarHechoDesdeFila(fila, indices));
             }
+        }
+        catch (IOException | CsvValidationException e) {
+            e.printStackTrace();
+            //TODO
         }
 
         return hechos;

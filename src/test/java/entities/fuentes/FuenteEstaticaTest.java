@@ -14,8 +14,7 @@ class FuenteEstaticaTest {
     @Test
     @DisplayName("puede leer correctamente el CSV y muestra los atributos del primer hecho")
     public void obtenerHechos(){
-        String[] paths = {"/home/fran/diseño/datasets/pruebaHechos.csv"};
-        FuenteEstatica fuente = new FuenteEstatica(paths);
+        FuenteEstatica fuente = new FuenteEstatica("/home/fran/2025-tpa-mi-no-grupo-23/src/main/resources/config.properties");
         var hechos = fuente.obtenerHechos();
 
         //la clave del map es el titulo para que no haya repetidos
@@ -33,8 +32,8 @@ class FuenteEstaticaTest {
     @Test
     @DisplayName("fuenteEstatica tiene 2 archivos CSV y es capaz de mostrar todos los hechos")
     public void obtenerHechos2(){
-        String[] paths = {"/home/fran/diseño/datasets/pruebaHechos.csv","/home/fran/diseño/datasets/desastres_tecnologicos_argentina.csv"};
-        FuenteEstatica fuente = new FuenteEstatica(paths);
+        FuenteEstatica fuente = new FuenteEstatica("/home/fran/2025-tpa-mi-no-grupo-23/src/main/resources/config.properties");
+
         var hechos = fuente.obtenerHechos();
 
         System.out.println(hechos.values());

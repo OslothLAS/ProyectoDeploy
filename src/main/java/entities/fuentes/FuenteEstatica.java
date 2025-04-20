@@ -1,28 +1,34 @@
 package entities.fuentes;
 
 import entities.hechos.Hecho;
-import fileTypes.FileType;
-import fileTypes.FileTypeCSV;
+import EstrategiasExtraccion.EstrategiaExtraccionHecho;
+import EstrategiasExtraccion.EstrategiaExtraccionHechoCSV;
+import lombok.Getter;
+import utils.*;
 
 
+import java.io.ObjectInputFilter;
 import java.util.*;
 
 //necesito dar soporte para todos los tipos de archivos posibles
+@Getter
 public class FuenteEstatica {
-    private String[] pathArchivos;
-    
+    private ConfigReader config;
+    String[] pathArchivos;
+
+    private EstrategiaExtraccionHecho estrategiaExtraccionHecho;
+
     //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
     public Map<String, Hecho> obtenerHechos() {
         Map<String, Hecho> hechosPorTitulo = new LinkedHashMap<>();
 
         for (String pathArchivo : this.pathArchivos) {
             try {
-                String extension = obtenerExtensionArchivo(pathArchivo);
+                String extension = utils.ExtensionReader.getFileExtension(pathArchivo);
 
                 switch (extension.toLowerCase()) {
                     case "csv":
-                        FileType fileTypeCSV = new FileTypeCSV();
-                        hechosPorTitulo.putAll(fileTypeCSV.obtenerHechosDesde(pathArchivo));
+                        this.createCSVextractor(hechosPorTitulo,pathArchivo);
                         break;
                     default:
                         System.err.println("Formato no soportado: " + extension);
@@ -35,15 +41,14 @@ public class FuenteEstatica {
         return hechosPorTitulo;
     }
 
-    private String obtenerExtensionArchivo(String nombreArchivo) {
-        int lastDot = nombreArchivo.lastIndexOf('.');
-        if (lastDot == -1) {
-            return ""; // Sin extensión
-        }
-        return nombreArchivo.substring(lastDot + 1);
+
+    public void createCSVextractor(Map<String, Hecho> hechos,String archivo){
+        EstrategiaExtraccionHechoCSV estrategiaExtraccionHechoCSV = new EstrategiaExtraccionHechoCSV();
+        hechos.putAll(estrategiaExtraccionHechoCSV.obtenerHechosDesde(archivo));
     }
 
-    public FuenteEstatica(String[] pathArchivos_) {
-        pathArchivos = pathArchivos_;
+    public FuenteEstatica(String name) {
+        config = new ConfigReader(name);
+        pathArchivos = config.getPathsAsArray("filePaths", ",");
     }
 }

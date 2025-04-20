@@ -9,8 +9,7 @@ class RepositorioDeHechosTest {
 
     @Test
     void visualizarHechosConFiltro() {
-        String[] paths = {"/home/fran/diseño/datasets/desastres_tecnologicos_argentina.csv"};
-        FuenteEstatica fuente = new FuenteEstatica(paths);
+        FuenteEstatica fuente = new FuenteEstatica("config.properties");
 
         Coleccion coleccion = new Coleccion("nuevaColeccionJEJE","no se que poner aca",fuente);
 
