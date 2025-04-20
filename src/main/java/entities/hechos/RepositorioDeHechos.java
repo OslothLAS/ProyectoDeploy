@@ -18,8 +18,10 @@ public class RepositorioDeHechos {
 
     public void subirHecho(String titulo, String descripcion, String categoria, String latitud, String longitud, LocalDate fechaHecho){
         Ubicacion ubi = new Ubicacion(latitud,longitud);
-        Hecho hecho = new Hecho(titulo,descripcion,categoria,ubi,fechaHecho,Origen.CARGA_MANUAL);
-        hechos.put(titulo,hecho);
+        DatosHechos data = new DatosHechos(titulo,descripcion, categoria, ubi, fechaHecho,LocalDate.now(), Origen.CARGA_MANUAL);
+        Hecho hecho1 = Hecho.create(data,"MiNombre");
+        //TODO (que hacer con el nombre del visualizador aca?
+        hechos.put(titulo,hecho1);
     }
 
     /*  Los hechos son de tipo "Map" pero los paso a "List" para que sea mas fácil recorrerlos

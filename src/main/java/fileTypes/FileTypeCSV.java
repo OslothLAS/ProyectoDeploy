@@ -2,6 +2,7 @@ package fileTypes;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Origen;
 import entities.hechos.Ubicacion;
@@ -73,7 +74,8 @@ public class FileTypeCSV implements FileType{
         LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
         Ubicacion nuevaUbi = new Ubicacion(latitud, longitud);
 
-        return new Hecho(titulo, descripcion, categoria, nuevaUbi, fechaHecho, Origen.DATASET);
+        DatosHechos data = new DatosHechos(titulo,descripcion, categoria, nuevaUbi, fechaHecho,LocalDate.now(), Origen.DATASET);
+        return Hecho.create(data);
     }
 
     private String normalizarTexto(String texto) {

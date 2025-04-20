@@ -10,7 +10,7 @@ import java.util.*;
 //necesito dar soporte para todos los tipos de archivos posibles
 public class FuenteEstatica {
     private String[] pathArchivos;
-
+    
     //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
     public Map<String, Hecho> obtenerHechos() {
         Map<String, Hecho> hechosPorTitulo = new LinkedHashMap<>();

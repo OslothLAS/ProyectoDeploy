@@ -24,11 +24,16 @@ public class Hecho {
                 .build();
     }
 
-
-    public String toString() {
-        return titulo + " " + descripcion + " " + categoria + " " + ubicacion.getLatitud() + " "
-                + ubicacion.getLongitud() + " " + fechaHecho + " " + fechaCarga + " " + origen;
+    public static Hecho create(DatosHechos datosHechos){
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .build();
     }
+//    public String toString() {
+//        return titulo + " " + descripcion + " " + categoria + " " + ubicacion.getLatitud() + " "
+//                + ubicacion.getLongitud() + " " + fechaHecho + " " + fechaCarga + " " + origen;
+//    }
 
 
     public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {

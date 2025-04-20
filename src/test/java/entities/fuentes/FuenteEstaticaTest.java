@@ -21,10 +21,10 @@ class FuenteEstaticaTest {
         //la clave del map es el titulo para que no haya repetidos
         Hecho hecho1 = hechos.get("Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones");
 
-        System.out.println("titulo: " + hecho1.getTitulo() + "\n" );
-        System.out.println("descripcion: " + hecho1.getDescripcion() + "\n");
-        System.out.println("categoria: " + hecho1.getCategoria() + "\n");
-        System.out.println("fecha: " + hecho1.getFechaHecho() + "\n");
+        System.out.println("titulo: " + hecho1.getDatosHechos().getTitulo() + "\n" );
+        System.out.println("descripcion: " + hecho1.getDatosHechos().getDescripcion() + "\n");
+        System.out.println("categoria: " + hecho1.getDatosHechos().getCategoria() + "\n");
+        System.out.println("fecha: " + hecho1.getDatosHechos().getFechaHecho() + "\n");
         //no muestro la Ubicacion porque da paja poner getters en la clase Ubicacion
 
         Assertions.assertNotNull(hechos);
