@@ -30,6 +30,7 @@ public class Hecho {
                 .esValido(true)
                 .build();
     }
+
 //    public String toString() {
 //        return titulo + " " + descripcion + " " + categoria + " " + ubicacion.getLatitud() + " "
 //                + ubicacion.getLongitud() + " " + fechaHecho + " " + fechaCarga + " " + origen;

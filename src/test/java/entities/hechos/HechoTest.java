@@ -9,8 +9,7 @@ class HechoTest {
 
     @Test
     void testToString() {
-        String[] paths = {"/home/fran/diseño/datasets/pruebaHechos.csv"};
-        FuenteEstatica fuente = new FuenteEstatica(paths);
+        FuenteEstatica fuente = new FuenteEstatica("config.properties");
         var hechos = fuente.obtenerHechos();
         Hecho hecho1 = hechos.get("Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones");
 
