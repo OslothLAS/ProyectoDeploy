@@ -1,38 +1,36 @@
 package entities.hechos;
 
 import entities.eliminacion.SolicitudEliminacion;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 @Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Hecho {
-    private String titulo;
-    private String descripcion;
-    private String categoria;
-    private Ubicacion ubicacion;
-    private LocalDate fechaHecho;
-    private LocalDate fechaCarga;
-    private Origen origen;
-    private Boolean estado;
+    private String autor;
+    private Boolean esValido;
+    private DatosHechos datosHechos;
+    private Multimedia multimedia;
 
-    public Hecho(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho, Origen origen) {
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.categoria = categoria;
-        this.ubicacion = ubicacion;
-        this.fechaHecho = fechaHecho;
-        this.fechaCarga = LocalDate.now();
-        this.origen = origen;
-        this.estado = true; //
+    public static Hecho create(DatosHechos datosHechos, String autor) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(autor)
+                .build();
     }
 
-    public void solicitarElimnacion(String justificacion){
-        if(justificacion.length() > 500){
-            SolicitudEliminacion solicitud = new SolicitudEliminacion(justificacion, this);
-            // Aqui se deberia agregar la solicitud a una lista de solicitudes
-            // Solicitudes.cargarSolicitud(solicitud);
-        }
+    public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(autor)
+                .multimedia(multimedia)
+                .build();
     }
 }

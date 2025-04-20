@@ -4,17 +4,14 @@ class Coleccion {
    - descripcion: String
    - fuente: FuenteEstatica
    - hechos: map<String,Hecho>
-   - criterioPertenencia: CriterioPertenencia
+   - categoria: String
+   - fechaInicio: LocalDate
+    - fechaFin: LocalDate
    - cargarHechos(): void
+   + filtrarHechos(filtro): List<Hecho>
  }
 
- class CriterioPertenencia {
-   - nombre: String
-   - lugar: Lugar
-   - fechaInicio: LocalDateTime
-   - fechaFin: LocalDateTime
-   + cumpleConCriterio(Hecho): boolean
- }
+
 
 
 
@@ -31,10 +28,7 @@ class Coleccion {
     + cambiarEstadoHecho(): void
   }
 
-  class Solicitudes{
-  - solicitudes: List<SolicitudEliminacion>
-    + cargarSolicitud(solicitudEliminacion): void
-  }
+
 
    enum EstadoSolicitudEliminacion {
        PENDIENTE
@@ -45,6 +39,7 @@ class Coleccion {
  class Hecho {
    - titulo: String
    - descripcion: String
+   - autor: String
    - categoria: String
    -ubicacion: Ubicacion
    - fechaHecho: LocalDate
@@ -60,11 +55,7 @@ class Coleccion {
     -urlImagen: string
   }
 
-  interface Usuario{
-     + subirHecho(nombre): void
-     + visualizarHechos(): List<Hecho>
-     + visualizarColecciones(filtro): List<Coleccion>
-  }
+
 
   enum OrigenHecho {
     CARGA_MANUAL
@@ -74,10 +65,19 @@ class Coleccion {
 
 
   class FuenteEstatica{
-    - archivosCSV: List<String>
+    - pathArchivos: List<String>;
+    - EstrategiaExtraccionHechos: EstrategiaExtraccionHechos
     - normalizarTexto(texto): String
     + obtenerHechos(): map<String,Hecho>
   }
+
+  interface EstrategiaExtraccionHechos{
+    + extraerHechos(fuente): map<String,Hecho>
+  }
+
+    class EstrategiaExtraccionHechosCSV implements EstrategiaExtraccionHechos{
+        + extraerHechos(fuente): map<String,Hecho>
+    }
 
 
 
@@ -96,11 +96,7 @@ class Contribuyente implements Usuario{
     + gestionarSolicitudEliminacion(solicitudEliminacion): void
   }
 
-  class RepositorioDeHechos{
-    - hechos: map<String,Hecho>
-    + agregarHecho(Hecho): void
-    + filtrarPorCategoria(categoria): map<String,Hecho>
-  }
+
 
   Coleccion --> FuenteEstatica
   Coleccion -->"*" Hecho
@@ -110,10 +106,10 @@ class Contribuyente implements Usuario{
   Administrador --> SolicitudEliminacion
   SolicitudEliminacion --> Hecho
   SolicitudEliminacion --> Contribuyente
-  Solicitudes -->"*" SolicitudEliminacion
+    FuenteEstatica --> EstrategiaExtraccionHechos
   SolicitudEliminacion --> EstadoSolicitudEliminacion
-  Coleccion *--> CriterioPertenencia
+
   Multimedia <--* Hecho
-  Hecho <-- RepositorioDeHechos
+
 
 @enduml
