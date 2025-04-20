@@ -4,7 +4,6 @@ import entities.eliminacion.SolicitudEliminacion;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -25,6 +24,13 @@ public class Hecho {
                 .build();
     }
 
+
+    public String toString() {
+        return titulo + " " + descripcion + " " + categoria + " " + ubicacion.getLatitud() + " "
+                + ubicacion.getLongitud() + " " + fechaHecho + " " + fechaCarga + " " + origen;
+    }
+
+
     public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
@@ -32,5 +38,6 @@ public class Hecho {
                 .autor(autor)
                 .multimedia(multimedia)
                 .build();
+
     }
 }
