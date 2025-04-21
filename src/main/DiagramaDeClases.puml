@@ -87,7 +87,9 @@ class Contribuyente{
 
 nombre: String
 apellido: String
-edad: Integer
+fechaDeNacimiento: LocalDate
+
++obtenerEdad(): Integer
 }
 
 

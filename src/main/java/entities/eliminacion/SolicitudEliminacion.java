@@ -20,6 +20,5 @@ public class SolicitudEliminacion {
         else{
             this.justificacion = justificacionSolicitud;
         }
-
     }
 }
