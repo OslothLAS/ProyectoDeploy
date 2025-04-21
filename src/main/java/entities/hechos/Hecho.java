@@ -4,6 +4,8 @@ import entities.eliminacion.SolicitudEliminacion;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,12 +17,14 @@ public class Hecho {
     private Boolean esValido;
     private DatosHechos datosHechos;
     private Multimedia multimedia;
+    private List<String> etiquetas;
 
     public static Hecho create(DatosHechos datosHechos, String autor) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
                 .autor(autor)
+                .etiquetas(new ArrayList<>())
                 .build();
     }
 
@@ -28,13 +32,10 @@ public class Hecho {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
+                .etiquetas(new ArrayList<>())
                 .build();
     }
 
-//    public String toString() {
-//        return titulo + " " + descripcion + " " + categoria + " " + ubicacion.getLatitud() + " "
-//                + ubicacion.getLongitud() + " " + fechaHecho + " " + fechaCarga + " " + origen;
-//    }
 
 
     public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
@@ -43,7 +44,13 @@ public class Hecho {
                 .esValido(true)
                 .autor(autor)
                 .multimedia(multimedia)
+                .etiquetas(new ArrayList<>())
                 .build();
 
     }
+
+    public void addEtiqueta(String etiqueta) {
+            this.etiquetas.add(etiqueta);
+    }
+
 }

@@ -25,11 +25,11 @@
       <version>5.9.2</version>
       <scope>test</scope>
     </dependency>
+    <!-- Maven -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.22</version>
-      <scope>provided</scope>
+      <version>1.18.30</version> <!-- or newer -->
     </dependency>
     <dependency>
       <groupId>com.opencsv</groupId>
