@@ -1,16 +1,36 @@
 @startuml
 class Coleccion {
 
-titulo: String
-descripcion: String
-fuente: FuenteEstatica
-hechos: map<String,Hecho>
-categoria: String
-fechaInicio: LocalDate
-fechaFin: LocalDate
-cargarHechos(): void+ filtrarHechos(filtro): List<Hecho>
+-titulo: String
+-descripcion: String
+-fuente: FuenteEstatica
+-hechos: map<String,Hecho>
+-categoria: String
+-fechaInicio: LocalDate
+-fechaFin: LocalDate
+-criteriosDePertenencia: List<CriterioDePertenencia>
+
 }
 
+interface CriterioDePertenencia {
++ cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioPorFecha implements CriterioDePertenencia {
+    -fechaInicio: LocalDate
+    -fechaFin: LocalDate
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioPorCategoria implements CriterioDePertenencia {
+    -categoria: String
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioPorUbicacion implements CriterioDePertenencia {
+    -ubicacion: Ubicacion
+    +cumpleCriterio(hecho: Hecho): boolean
+}
 
 
 
@@ -105,6 +125,7 @@ fechaDeNacimiento: LocalDate
   SolicitudEliminacion --> Contribuyente
    FuenteEstatica --> EstrategiaExtraccionHechos
   SolicitudEliminacion --> EstadoSolicitudEliminacion
+  Coleccion -->"*" CriterioDePertenencia
 
   Multimedia <--* Hecho
 @enduml
