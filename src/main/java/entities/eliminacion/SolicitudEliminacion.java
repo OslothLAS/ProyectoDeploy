@@ -21,7 +21,7 @@ public class SolicitudEliminacion {
 
     public static SolicitudEliminacion create(String justificacion, Hecho hecho, Contribuyente solicitante){
         return SolicitudEliminacion.builder()
-                .justificacion(Justificacion.justificarSolicitud(justificacion))
+                .justificacion(justificarSolicitud(justificacion))
                 .estado(EstadoSolicitudEliminacion.PENDIENTE)
                 .hecho(hecho)
                 .solicitante(solicitante)
@@ -38,7 +38,15 @@ public class SolicitudEliminacion {
         this.fechaDeCreacion = LocalDateTime.now();
     }*/
 
+    public static String justificarSolicitud(String justificacionSolicitud) {
+        if (justificacionSolicitud == null || justificacionSolicitud.length() < 500) {
+            throw new IllegalArgumentException("La justificacion debe tener al menos 500 caracteres");
+        }
+        else{
+            return justificacionSolicitud;
+        }
 
+    }
 
     public void cambiarEstadoHecho(EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
