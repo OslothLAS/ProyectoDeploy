@@ -2,6 +2,8 @@ package entities.criteriosDePertenencia;
 
 import entities.hechos.Hecho;
 
+import static utils.ExtensionReader.normalizarTexto;
+
 public class CriterioPorCategoria implements CriterioDePertenencia{
     private final String categoria;
 
@@ -11,6 +13,5 @@ public class CriterioPorCategoria implements CriterioDePertenencia{
 
     @Override
     public boolean cumpleCriterio(Hecho hecho) {
-        return hecho.getDatosHechos().getCategoria().equalsIgnoreCase(categoria);
-    }
+        return normalizarTexto(hecho.getDatosHechos().getCategoria()).equals(normalizarTexto(categoria));    }
 }

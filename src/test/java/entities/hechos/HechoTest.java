@@ -11,7 +11,7 @@ class HechoTest {
 
     @Test
     void testToString() {
-        FuenteEstatica fuente = new FuenteEstatica("config.properties");
+        FuenteEstatica fuente = new FuenteEstatica();
         var hechos = fuente.obtenerHechos();
         Hecho hecho1 = hechos.get("Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones");
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,12 +24,32 @@ public class Coleccion {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fuente = fuente;
-        this.hechos = fuente.obtenerHechos();
+        this.hechos = this.fuente.obtenerHechos();
     }
 
-    public void filtrarHechosPorCriterio(CriterioDePertenencia criterio) {
-        List<Hecho> hechosFiltrados = new ArrayList<>();
 
+    public void filtrarHechos(Map<String, Hecho> hechos1) {
+        Map<String, Hecho> hechosFiltrados = new HashMap<>();
+        for (Hecho hecho : hechos1.values()) {
+            boolean cumpleTodosCriterios = true;
+
+            for (CriterioDePertenencia criterio : criteriosDePertenencia) {
+                if (!criterio.cumpleCriterio(hecho)) {
+                    cumpleTodosCriterios = false;
+                    break;
+                }
+            }
+
+            if (cumpleTodosCriterios) {
+                hechosFiltrados.put(hecho.getDatosHechos().getTitulo(), hecho);
+            }
+        }
+
+        this.hechos = hechosFiltrados;
     }
 
+    public void setCriteriosDePertenencia(List<CriterioDePertenencia> criterios) {
+        criteriosDePertenencia.addAll(criterios);
+        this.filtrarHechos(fuente.obtenerHechos());
+    }
 }

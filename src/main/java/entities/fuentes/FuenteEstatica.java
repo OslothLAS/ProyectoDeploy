@@ -47,8 +47,8 @@ public class FuenteEstatica {
         hechos.putAll(estrategiaExtraccionHechoCSV.obtenerHechosDesde(archivo));
     }
 
-    public FuenteEstatica(String name) {
-        config = new ConfigReader(name);
-        pathArchivos = config.getPathsAsArray("filePaths", ",");
+    public FuenteEstatica() {
+        this.config = new ConfigReader(); // <-- sin pasar path
+        this.pathArchivos = config.getPathsAsArray("filePaths", ",");
     }
 }
