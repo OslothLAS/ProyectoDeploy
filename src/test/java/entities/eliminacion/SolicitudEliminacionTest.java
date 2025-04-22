@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-import static entities.eliminacion.EstadoSolicitudEliminacion.ACEPTADA;
-import static entities.eliminacion.EstadoSolicitudEliminacion.RECHAZADA;
+import static entities.eliminacion.EstadoSolicitudEliminacion.*
 import static entities.hechos.Origen.CARGA_MANUAL;
 import static org.junit.jupiter.api.Assertions.*;
 
