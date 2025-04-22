@@ -26,4 +26,9 @@ public class Coleccion {
         this.hechos = fuente.obtenerHechos();
     }
 
+    public void filtrarHechosPorCriterio(CriterioDePertenencia criterio) {
+        List<Hecho> hechosFiltrados = new ArrayList<>();
+
+    }
+
 }
