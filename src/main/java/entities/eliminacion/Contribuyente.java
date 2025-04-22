@@ -1,5 +1,7 @@
 package entities.eliminacion;
 
+import entities.hechos.Hecho;
+
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -14,4 +16,5 @@ public class Contribuyente {
         }
         return Period.between(fechaDeNacimiento, LocalDate.now()).getYears();
     }
+
 }
