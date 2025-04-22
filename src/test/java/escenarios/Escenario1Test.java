@@ -53,7 +53,7 @@ public class Escenario1Test {
     }
 
     @Test
-    @DisplayName("Como visualizador deseo poder filtrar la colección")
+    @DisplayName("Como visualizador agrego como filtro unTitulo y me muestra una lista vacía")
     void visualizarHechosConFiltro() {
         FuenteEstatica fuente = new FuenteEstatica();
 
@@ -62,7 +62,12 @@ public class Escenario1Test {
         //esto es como un visualizador puede ver cosas
         RepositorioDeHechos repo = new RepositorioDeHechos();
         Map<String, String> filtros = new HashMap<>();
-        filtros.put("Categoria","Caida");
+        filtros.put("Categoria","Caida de aeronave");
+
+        var listHechos1 = repo.visualizarHechosConFiltro(coleccion, filtros);
+        listHechos1.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
+        System.out.println("\nahora se ingresara el otro filtro\n");
+
         filtros.put("Titulo","UnTitulo");
 
         var listHechos = repo.visualizarHechosConFiltro(coleccion, filtros);
