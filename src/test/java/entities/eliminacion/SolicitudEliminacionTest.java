@@ -2,20 +2,21 @@ package entities.eliminacion;
 
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
-import entities.hechos.Origen;
 import entities.hechos.Ubicacion;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-import static entities.eliminacion.EstadoSolicitudEliminacion.*
+import static entities.eliminacion.EstadoSolicitudEliminacion.*;
 import static entities.hechos.Origen.CARGA_MANUAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SolicitudEliminacionTest {
 
     @Test
+    @DisplayName("Se crea una nueva solicitud de eliminacion, el administrador la rechaza y el hecho sigue visible")
     public void testCrearSolicitudRechazada() {
         Ubicacion ubicacion = new Ubicacion("-32.786098","-60.741543");
 
@@ -41,19 +42,20 @@ class SolicitudEliminacionTest {
                 contribuyente
         );
 
-        assertEquals(solicitud.getEstado(), EstadoSolicitudEliminacion.PENDIENTE);
+        assertEquals(EstadoSolicitudEliminacion.PENDIENTE, solicitud.getEstado());
 
 
         solicitud.cambiarEstadoHecho(RECHAZADA);
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusDays(1));
 
-        assertEquals(ChronoUnit.DAYS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()), 1);
-        assertEquals(solicitud.getEstado(), RECHAZADA);
-        assertEquals(hecho.getEsValido(), true);
+        assertEquals(1, ChronoUnit.DAYS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
+        assertEquals(RECHAZADA, solicitud.getEstado());
+        assertEquals(true, hecho.getEsValido());
 
     }
 
     @Test
+    @DisplayName("Se acepta la solicitud de eliminacion y el hecho cambia de estado a no visible")
     public void testCrearSolicitudAceptada() {
         Ubicacion ubicacion = new Ubicacion("-32.786098","-60.741543");
 
@@ -81,10 +83,9 @@ class SolicitudEliminacionTest {
 
         solicitud.cambiarEstadoHecho(ACEPTADA);
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusHours(2));
-        assertEquals(ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()), 2);
-        assertEquals(solicitud.getEstado(), ACEPTADA);
-        assertEquals(hecho.getEsValido(), false);
+        assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
+        assertEquals(ACEPTADA, solicitud.getEstado());
+        assertEquals(false, hecho.getEsValido());
 
     }
-
 }
