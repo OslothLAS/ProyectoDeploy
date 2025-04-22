@@ -1,39 +1,44 @@
 package entities.eliminacion;
 
 import entities.hechos.Hecho;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDateTime;
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 
 @Getter
 public class SolicitudEliminacion {
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
+
     @Setter
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;
     private EstadoSolicitudEliminacion estado;
     private Hecho hecho;
 
+    public static SolicitudEliminacion create(String justificacion, Hecho hecho, Contribuyente solicitante){
+        return SolicitudEliminacion.builder()
+                .justificacion(Justificacion.justificarSolicitud(justificacion))
+                .estado(EstadoSolicitudEliminacion.PENDIENTE)
+                .hecho(hecho)
+                .solicitante(solicitante)
+                .fechaDeCreacion(LocalDateTime.now())
+                .build();
 
-
-    public String justificarSolicitud(String justificacionSolicitud) {
-        if (justificacionSolicitud == null || justificacionSolicitud.length() < 500) {
-            throw new IllegalArgumentException("La justificacion debe tener al menos 500 caracteres");
-        }
-        else{
-            this.justificacion = justificacionSolicitud;
-        }
-        return justificacionSolicitud;
     }
 
-    public SolicitudEliminacion(String justificacion, Hecho hecho, Contribuyente solicitante) {
+    /*public SolicitudEliminacion(String justificacion, Hecho hecho, Contribuyente solicitante) {
         this.justificacion = this.justificarSolicitud(justificacion);
         this.estado = EstadoSolicitudEliminacion.PENDIENTE;
         this.hecho = hecho;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
-    }
+    }*/
+
+
 
     public void cambiarEstadoHecho(EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
@@ -49,6 +54,5 @@ public class SolicitudEliminacion {
         this.estado = EstadoSolicitudEliminacion.valueOf(estado.name());
         this.fechaDeEvaluacion = LocalDateTime.now();
     }
-
 
 }

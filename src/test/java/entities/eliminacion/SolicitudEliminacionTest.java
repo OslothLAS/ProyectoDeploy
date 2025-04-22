@@ -36,7 +36,7 @@ class SolicitudEliminacionTest {
         String justificacion = "a".repeat(500);
         Contribuyente contribuyente = new Contribuyente();
 
-        SolicitudEliminacion solicitud = new SolicitudEliminacion(
+        SolicitudEliminacion solicitud = SolicitudEliminacion.create(
                 justificacion,
                 hecho,
                 contribuyente
@@ -74,7 +74,7 @@ class SolicitudEliminacionTest {
         String justificacion = "a".repeat(500);
         Contribuyente contribuyente = new Contribuyente();
 
-        SolicitudEliminacion solicitud = new SolicitudEliminacion(
+        SolicitudEliminacion solicitud = SolicitudEliminacion.create(
                 justificacion,
                 hecho,
                 contribuyente
