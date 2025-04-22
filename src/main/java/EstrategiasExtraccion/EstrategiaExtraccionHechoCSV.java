@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static utils.ExtensionReader.normalizarTexto;
+
 public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 
     @Override
@@ -43,7 +45,7 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
     private Map<String, Integer> obtenerIndicesColumnas(String[] encabezado) {
         Map<String, Integer> indices = new HashMap<>();
         for (int i = 0; i < encabezado.length; i++) {
-            String columna = this.normalizarTexto(encabezado[i].trim());
+            String columna = normalizarTexto(encabezado[i].trim());
             switch (columna) {
                 case "titulo":
                 case "descripcion":
@@ -83,9 +85,5 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
         return Hecho.create(data);
     }
 
-    private String normalizarTexto(String texto) {
-        // SACA TILDES Y MAYUSCULAS
-        String textoSinTildes = Normalizer.normalize(texto, Normalizer.Form.NFD);
-        return textoSinTildes.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
-    }
+
 }

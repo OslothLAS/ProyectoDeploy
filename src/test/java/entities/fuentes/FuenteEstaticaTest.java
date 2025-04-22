@@ -14,11 +14,11 @@ class FuenteEstaticaTest {
     @Test
     @DisplayName("puede leer correctamente el CSV y muestra los atributos del primer hecho")
     public void obtenerHechos(){
-        FuenteEstatica fuente = new FuenteEstatica("/home/fran/2025-tpa-mi-no-grupo-23/src/main/resources/config.properties");
+        FuenteEstatica fuente = new FuenteEstatica();
         var hechos = fuente.obtenerHechos();
 
         //la clave del map es el titulo para que no haya repetidos
-        Hecho hecho1 = hechos.get("Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones");
+        Hecho hecho1 = hechos.values().stream().findFirst().get();
 
         System.out.println("titulo: " + hecho1.getDatosHechos().getTitulo() + "\n" );
         System.out.println("descripcion: " + hecho1.getDatosHechos().getDescripcion() + "\n");
@@ -32,12 +32,12 @@ class FuenteEstaticaTest {
     @Test
     @DisplayName("fuenteEstatica tiene 2 archivos CSV y es capaz de mostrar todos los hechos")
     public void obtenerHechos2(){
-        FuenteEstatica fuente = new FuenteEstatica("/home/fran/2025-tpa-mi-no-grupo-23/src/main/resources/config.properties");
+        FuenteEstatica fuente = new FuenteEstatica();
 
         var hechos = fuente.obtenerHechos();
 
-        System.out.println(hechos.values());
-
+        var listHechos = hechos.values();
+        listHechos.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
         Assertions.assertNotNull(hechos);
     }
 }

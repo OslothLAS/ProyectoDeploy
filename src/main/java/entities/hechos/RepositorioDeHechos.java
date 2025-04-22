@@ -5,12 +5,13 @@ package entities.hechos;
 
 import entities.colecciones.Coleccion;
 
-import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static utils.ExtensionReader.normalizarTexto;
 
 public class RepositorioDeHechos {
     //por ahora creo el atributo hechos porque no se donde se guardan los hechos subidos
@@ -32,19 +33,29 @@ public class RepositorioDeHechos {
         return new ArrayList<>(hechos.values());
     }
 
-    public List<Hecho> visualizarHechosConFiltro(Coleccion coleccion, String filtro) {
-        String filtroNormalizado = normalizarTexto(filtro);
 
+    public List<Hecho> visualizarHechosConFiltro(Coleccion coleccion, Map<String, String> filtrosAplicados) {
         return coleccion.getHechos().values().stream()
-                .filter(hecho -> normalizarTexto(hecho.toString()).contains(filtroNormalizado))
+                .filter(hecho -> {
+                    for (Map.Entry<String, String> filtro : filtrosAplicados.entrySet()) {
+                        String campo = normalizarTexto(filtro.getKey());
+                        String valorEsperado = normalizarTexto(filtro.getValue());
+
+                        String valorReal = switch (campo) {
+                            case "titulo" -> hecho.getDatosHechos().getTitulo();
+                            case "descripcion" -> hecho.getDatosHechos().getDescripcion();
+                            case "categoria" -> hecho.getDatosHechos().getCategoria();
+                            case "fecha" -> hecho.getDatosHechos().getFechaHecho().toString();
+                            default -> "";
+                        };
+
+                        if (!normalizarTexto(valorReal).contains(valorEsperado) || !hecho.getEsValido()) {
+                            return false; // Si un filtro no se cumple, chau
+                        }
+                    }
+                    return true; // Se cumplieron todos los filtros
+                })
                 .collect(Collectors.toList());
-    }
-
-
-    private String normalizarTexto(String texto) {
-        // SACA TILDES Y MAYUSCULAS
-        String textoSinTildes = Normalizer.normalize(texto, Normalizer.Form.NFD);
-        return textoSinTildes.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
     }
 
 }

@@ -25,18 +25,24 @@
       <version>5.9.2</version>
       <scope>test</scope>
     </dependency>
+    <!-- Maven -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.22</version>
-      <scope>provided</scope>
+      <version>1.18.30</version> <!-- or newer -->
     </dependency>
     <dependency>
       <groupId>com.opencsv</groupId>
       <artifactId>opencsv</artifactId>
       <version>5.9</version>
     </dependency>
-
+    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.17.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
