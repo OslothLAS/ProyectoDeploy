@@ -45,6 +45,7 @@ class CriterioPorUbicacion implements CriterioDePertenencia {
 
 justificacion: String
 fechaDeCreacion: LocalDateTime
+fechaDeEvaluacion: LocalDateTime
 estado: EstadoSolicitudEliminacion
 hecho: Hecho
 + cambiarEstadoHecho(): void

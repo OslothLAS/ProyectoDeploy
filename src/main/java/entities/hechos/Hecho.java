@@ -37,7 +37,6 @@ public class Hecho {
     }
 
 
-
     public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
