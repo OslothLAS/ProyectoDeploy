@@ -1,6 +1,9 @@
-package entities.eliminacion;
+package escenarios;
 
 import entities.colecciones.Coleccion;
+import entities.eliminacion.Contribuyente;
+import entities.eliminacion.EstadoSolicitudEliminacion;
+import entities.eliminacion.SolicitudEliminacion;
 import entities.fuentes.FuenteEstatica;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
@@ -11,12 +14,13 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-import static entities.eliminacion.EstadoSolicitudEliminacion.*;
+import static entities.eliminacion.EstadoSolicitudEliminacion.ACEPTADA;
+import static entities.eliminacion.EstadoSolicitudEliminacion.RECHAZADA;
 import static entities.hechos.Origen.CARGA_MANUAL;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SolicitudEliminacionTest {
-
+public class Escenario3Test {
     @Test
     @DisplayName("Se crea una nueva solicitud de eliminacion, el administrador la rechaza y el hecho sigue visible")
     public void testCrearSolicitudRechazada() {
@@ -26,7 +30,7 @@ class SolicitudEliminacionTest {
                 "Brote de enfermedad contagiosa causa estragos en San Lorenzo, Santa Fe",
                 "Grave brote de enfermedad contagiosa ocurrió en las inmediaciones de San Lorenzo, Santa Fe. El incidente dejó varios heridos y daños materiales. Se ha declarado estado de emergencia en la región para facilitar la asistencia.",
                 "Evento sanitario",
-                          ubicacion,
+                ubicacion,
                 LocalDate.of(2005, 7, 5),
                 LocalDate.now(),
                 CARGA_MANUAL

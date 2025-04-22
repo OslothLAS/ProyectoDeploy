@@ -52,4 +52,13 @@ public class Coleccion {
         criteriosDePertenencia.addAll(criterios);
         this.filtrarHechos(fuente.obtenerHechos());
     }
+
+    public void addHecho(Hecho hecho) {
+        if(hecho.getEsValido()) {
+            this.hechos.put(hecho.getDatosHechos().getTitulo(), hecho);
+        }else{
+            throw new RuntimeException("Hecho no es valido");
+        }
+    }
+
 }

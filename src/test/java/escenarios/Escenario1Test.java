@@ -4,6 +4,7 @@ import entities.colecciones.Coleccion;
 import entities.criteriosDePertenencia.CriterioPorCategoria;
 import entities.criteriosDePertenencia.CriterioPorFecha;
 import entities.fuentes.FuenteEstatica;
+import entities.hechos.Hecho;
 import entities.hechos.RepositorioDeHechos;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Escenario1Test {
     @Test
-    @DisplayName("Como persona administradora, deseo crear una colección")
+    @DisplayName("Escenario 1:  Creación de colección mediante carga manual" +
+                 "Como persona administradora, deseo crear una colección")
     public void obtenerHechos2(){
         FuenteEstatica fuente = new FuenteEstatica();
 
@@ -29,7 +31,8 @@ public class Escenario1Test {
     }
 
     @Test
-    @DisplayName("Como persona administradora, deseo añadir un criterio a la colección")
+    @DisplayName("Escenario 1.2: Criterios de pertenencia" +
+                 "Como persona administradora, deseo añadir un criterio a la colección")
     public void filtrarHechos(){
         FuenteEstatica fuente = new FuenteEstatica();
 
@@ -53,8 +56,9 @@ public class Escenario1Test {
     }
 
     @Test
-    @DisplayName("Como visualizador agrego como filtro unTitulo y me muestra una lista vacía")
-    void visualizarHechosConFiltro() {
+    @DisplayName("Escenario 1.3: Filtros del visualizador" +
+                 "Como visualizador agrego como filtro unTitulo y me muestra una lista vacía")
+    public void visualizarHechosConFiltro() {
         FuenteEstatica fuente = new FuenteEstatica();
 
         Coleccion coleccion = new Coleccion("Coleccion prueba 1.3","no se que poner aca",fuente);
@@ -66,7 +70,7 @@ public class Escenario1Test {
 
         var listHechos1 = repo.visualizarHechosConFiltro(coleccion, filtros);
         listHechos1.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
-        System.out.println("\nahora se ingresara el otro filtro\n");
+        System.out.println("\nahora se ingresara el filtro 'unTitulo'\n");
 
         filtros.put("Titulo","UnTitulo");
 
@@ -77,6 +81,25 @@ public class Escenario1Test {
         assertTrue(listHechos.isEmpty());
     }
 
+    @Test
+    @DisplayName("Escenario 1.4 Etiquetas")
+    public void addEtiqueta(){
+        FuenteEstatica fuente = new FuenteEstatica();
+        Map<String, Hecho> mapHechos = fuente.obtenerHechos();
+
+        Hecho hecho = mapHechos.get("Caída de aeronave impacta en Olavarría");
+
+        hecho.addEtiqueta("Olavarría");
+        hecho.addEtiqueta("Grave");
+
+        System.out.println("Etiquetas: " + hecho.getEtiquetas());
+        assertAll("el hecho retiene todas las etiquetas",
+                () -> assertEquals(2, hecho.getEtiquetas().size(), "Debería tener 2 etiquetas"),
+                () -> assertTrue(hecho.getEtiquetas().contains("Olavarría"), "Falta etiqueta 'Olavarría'"),
+                () -> assertTrue(hecho.getEtiquetas().contains("Grave"), "Falta etiqueta 'Grave'")
+        );
+    }
 
 }
+
 

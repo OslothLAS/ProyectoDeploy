@@ -5,7 +5,6 @@ package entities.hechos;
 
 import entities.colecciones.Coleccion;
 
-import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,7 @@ public class RepositorioDeHechos {
                             default -> "";
                         };
 
-                        if (!normalizarTexto(valorReal).contains(valorEsperado)) {
+                        if (!normalizarTexto(valorReal).contains(valorEsperado) || !hecho.getEsValido()) {
                             return false; // Si un filtro no se cumple, chau
                         }
                     }
