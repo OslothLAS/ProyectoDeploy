@@ -28,7 +28,7 @@ public class FuenteEstatica {
 
                 switch (extension.toLowerCase()) {
                     case "csv":
-                        this.createCSVextractor(hechosPorTitulo,pathArchivo);
+                        this.csvExtractor(hechosPorTitulo,pathArchivo);
                         break;
                     default:
                         System.err.println("Formato no soportado: " + extension);
@@ -42,7 +42,7 @@ public class FuenteEstatica {
     }
 
 
-    public void createCSVextractor(Map<String, Hecho> hechos,String archivo){
+    public void csvExtractor(Map<String, Hecho> hechos,String archivo){
         EstrategiaExtraccionHechoCSV estrategiaExtraccionHechoCSV = new EstrategiaExtraccionHechoCSV();
         hechos.putAll(estrategiaExtraccionHechoCSV.obtenerHechosDesde(archivo));
     }

@@ -1,20 +1,21 @@
 @startuml
 class Coleccion {
-
--titulo: String
--descripcion: String
--fuente: FuenteEstatica
--hechos: map<String,Hecho>
--categoria: String
--fechaInicio: LocalDate
--fechaFin: LocalDate
--criteriosDePertenencia: List<CriterioDePertenencia>
-
+    -titulo: String
+    -descripcion: String
+    -fuente: FuenteEstatica
+    -hechos: map<String,Hecho>
+    -categoria: String
+    -fechaInicio: LocalDate
+    -fechaFin: LocalDate
+    -criteriosDePertenencia: List<CriterioDePertenencia>
+    +filtrarHechos(): void
 }
+
 
 interface CriterioDePertenencia {
-+ cumpleCriterio(hecho: Hecho): boolean
+    +cumpleCriterio(hecho: Hecho): boolean
 }
+
 
 class CriterioPorFecha implements CriterioDePertenencia {
     -fechaInicio: LocalDate
@@ -22,10 +23,12 @@ class CriterioPorFecha implements CriterioDePertenencia {
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
+
 class CriterioPorCategoria implements CriterioDePertenencia {
     -categoria: String
     +cumpleCriterio(hecho: Hecho): boolean
 }
+
 
 class CriterioPorUbicacion implements CriterioDePertenencia {
     -ubicacion: Ubicacion
@@ -33,89 +36,82 @@ class CriterioPorUbicacion implements CriterioDePertenencia {
 }
 
 
-
-
  class Ubicacion {
    -latitud: Double
    -longitud: Double
  }
 
-  class SolicitudEliminacion{
-    -solicitante: Contribuyente
 
-justificacion: String
-fechaDeCreacion: LocalDateTime
-fechaDeEvaluacion: LocalDateTime
-estado: EstadoSolicitudEliminacion
-hecho: Hecho
-+ cambiarEstadoHecho(): void
+class SolicitudEliminacion{
+    -solicitante: Contribuyente
+    -justificacion: String
+    -fechaDeCreacion: LocalDateTime
+    -fechaDeEvaluacion: LocalDateTime
+    -estado: EstadoSolicitudEliminacion
+    -hecho: Hecho
+    +cambiarEstadoHecho(estado): void
+    +cambiarEstadoSolicitud(estado): void
+    +validarJustificacion(justificacion): string
+}
+
+
+enum EstadoSolicitudEliminacion {
+      PENDIENTE
+      ACEPTADA
+      RECHAZADA
+}
+
+
+class Hecho {
+     -titulo: String
+     -descripcion: String
+     -autor: String
+     -categoria: String-ubicacion: Ubicacion
+     -fechaHecho: LocalDate
+     -fechaCarga: LocalDate
+     -origen: OrigenHecho
+     -multimedia: Multimedia
+     -esValido: boolean
 }
 
 
 
-   enum EstadoSolicitudEliminacion {
-       PENDIENTE
-       ACEPTADA
-       RECHAZADA
-     }
-
- class Hecho {
-
-titulo: String
-descripcion: String
-autor: String
-categoria: String-ubicacion: Ubicacion
-fechaHecho: LocalDate
-fechaCarga: LocalDate
-origen: OrigenHecho
-multimedia: Multimedia
-esValido: boolean
-
-
-    }
-
-  class Multimedia{
+class Multimedia{
     -urlImagen: string
-  }
+}
 
 
-
-  enum OrigenHecho {
+enum OrigenHecho {
     CARGA_MANUAL
     DATASET
     CONTRIBUYENTE
-  }
-
-
-  class FuenteEstatica{
-
-pathArchivos: List<String>;
-    EstrategiaExtraccionHechos: EstrategiaExtraccionHechos
-    +obtenerHechos(): map<String,Hecho>
-    +cambiarEstrategia(estrategiaExtraccionHechos): FuenteEstatica
 }
 
-  interface EstrategiaExtraccionHechos{
-    + extraerHechos(fuente): map<String,Hecho>
-  }
 
-    class EstrategiaExtraccionHechosCSV implements EstrategiaExtraccionHechos{
-        + extraerHechos(fuente): map<String,Hecho>
-    }
+class FuenteEstatica{
+    -pathArchivos: List<String>;
+    -EstrategiaExtraccionHechos: EstrategiaExtraccionHechos
+    +obtenerHechos(): map<String,Hecho>
+    +csvExtractor(hechos, pathArchivos): FuenteEstatica
+}
 
+
+interface EstrategiaExtraccionHechos{
+    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
+}
+
+
+class EstrategiaExtraccionHechosCSV implements EstrategiaExtraccionHechos{
+    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
+}
 
 
 class Contribuyente{
-
-nombre: String
-apellido: String
-fechaDeNacimiento: LocalDate
-
-+obtenerEdad(): Integer
+   -nombre: String
+   -apellido: String
+   -fechaDeNacimiento: LocalDate
+   +obtenerEdad(): Integer
 }
-
-
-
 
 
 
