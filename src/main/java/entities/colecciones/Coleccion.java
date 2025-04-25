@@ -1,7 +1,7 @@
 package entities.colecciones;
 
 import entities.criteriosDePertenencia.CriterioDePertenencia;
-import entities.fuentes.FuenteEstatica;
+import entities.fuentes.Importador;
 import entities.hechos.Hecho;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,16 +15,16 @@ import java.util.Map;
 public class Coleccion {
     private String titulo;
     private String descripcion;
-    private FuenteEstatica fuente;
+    private Importador importador;
     private Map<String, Hecho> hechos;
     @Setter
     private List<CriterioDePertenencia> criteriosDePertenencia = new ArrayList<>();
 
-    public Coleccion(String titulo, String descripcion, FuenteEstatica fuente) {
+    public Coleccion(String titulo, String descripcion, Importador importador) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.fuente = fuente;
-        this.hechos = this.fuente.obtenerHechos();
+        this.importador = importador;
+        this.hechos = this.importador.obtenerHechos();
     }
 
 
@@ -50,7 +50,7 @@ public class Coleccion {
 
     public void setCriteriosDePertenencia(List<CriterioDePertenencia> criterios) {
         criteriosDePertenencia.addAll(criterios);
-        this.filtrarHechos(fuente.obtenerHechos());
+        this.filtrarHechos(importador.obtenerHechos());
     }
 
     public void addHecho(Hecho hecho) {

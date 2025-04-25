@@ -14,8 +14,8 @@ class FuenteEstaticaTest {
     @Test
     @DisplayName("puede leer correctamente el CSV y muestra los atributos del primer hecho")
     public void obtenerHechos(){
-        FuenteEstatica fuente = new FuenteEstatica();
-        var hechos = fuente.obtenerHechos();
+        Importador importador = new Importador();
+        var hechos = importador.obtenerHechos();
 
         //la clave del map es el titulo para que no haya repetidos
         Hecho hecho1 = hechos.values().stream().findFirst().get();
@@ -30,11 +30,11 @@ class FuenteEstaticaTest {
     }
 
     @Test
-    @DisplayName("fuenteEstatica tiene 2 archivos CSV y es capaz de mostrar todos los hechos")
+    @DisplayName("importadorEstatica tiene 2 archivos CSV y es capaz de mostrar todos los hechos")
     public void obtenerHechos2(){
-        FuenteEstatica fuente = new FuenteEstatica();
+        Importador importador = new Importador();
 
-        var hechos = fuente.obtenerHechos();
+        var hechos = importador.obtenerHechos();
 
         var listHechos = hechos.values();
         listHechos.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));

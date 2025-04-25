@@ -7,12 +7,11 @@ import lombok.Getter;
 import utils.*;
 
 
-import java.io.ObjectInputFilter;
 import java.util.*;
 
 //necesito dar soporte para todos los tipos de archivos posibles
 @Getter
-public class FuenteEstatica {
+public class Importador {
     private ConfigReader config;
     String[] pathArchivos;
 
@@ -47,7 +46,7 @@ public class FuenteEstatica {
         hechos.putAll(estrategiaExtraccionHechoCSV.obtenerHechosDesde(archivo));
     }
 
-    public FuenteEstatica() {
+    public Importador() {
         this.config = new ConfigReader(); // <-- sin pasar path
         this.pathArchivos = config.getPathsAsArray("filePaths", ",");
     }

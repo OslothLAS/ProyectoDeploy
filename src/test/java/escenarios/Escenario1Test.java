@@ -3,7 +3,7 @@ package escenarios;
 import entities.colecciones.Coleccion;
 import entities.criteriosDePertenencia.CriterioPorCategoria;
 import entities.criteriosDePertenencia.CriterioPorFecha;
-import entities.fuentes.FuenteEstatica;
+import entities.fuentes.Importador;
 import entities.hechos.Hecho;
 import entities.hechos.RepositorioDeHechos;
 import org.junit.jupiter.api.Assertions;
@@ -22,9 +22,9 @@ public class Escenario1Test {
     @DisplayName("Escenario 1:  Creación de colección mediante carga manual" +
                  "Como persona administradora, deseo crear una colección")
     public void obtenerHechos2(){
-        FuenteEstatica fuente = new FuenteEstatica();
+        Importador importador = new Importador();
 
-        Coleccion coleccion = new Coleccion("Colección prueba", "Esto es una prueba", fuente);
+        Coleccion coleccion = new Coleccion("Colección prueba", "Esto es una prueba", importador);
         var hechos = coleccion.getHechos();
         hechos.values().forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
         Assertions.assertNotNull(hechos);
@@ -34,9 +34,9 @@ public class Escenario1Test {
     @DisplayName("Escenario 1.2: Criterios de pertenencia" +
                  "Como persona administradora, deseo añadir un criterio a la colección")
     public void filtrarHechos(){
-        FuenteEstatica fuente = new FuenteEstatica();
+        Importador importador = new Importador();
 
-        Coleccion coleccion = new Coleccion("Colección prueba 1.2", "Esto es una prueba", fuente);
+        Coleccion coleccion = new Coleccion("Colección prueba 1.2", "Esto es una prueba", importador);
 
         CriterioPorFecha criterio1 = new CriterioPorFecha(LocalDate.of(2000, 1, 1), LocalDate.of(2010, 1, 1));
         CriterioPorCategoria criterio2 = new CriterioPorCategoria("Caída de aeronave");
@@ -59,9 +59,9 @@ public class Escenario1Test {
     @DisplayName("Escenario 1.3: Filtros del visualizador" +
                  "Como visualizador agrego como filtro unTitulo y me muestra una lista vacía")
     public void visualizarHechosConFiltro() {
-        FuenteEstatica fuente = new FuenteEstatica();
+        Importador importador = new Importador();
 
-        Coleccion coleccion = new Coleccion("Coleccion prueba 1.3","no se que poner aca",fuente);
+        Coleccion coleccion = new Coleccion("Coleccion prueba 1.3","no se que poner aca",importador);
 
         //esto es como un visualizador puede ver cosas
         RepositorioDeHechos repo = new RepositorioDeHechos();
@@ -84,8 +84,8 @@ public class Escenario1Test {
     @Test
     @DisplayName("Escenario 1.4 Etiquetas")
     public void addEtiqueta(){
-        FuenteEstatica fuente = new FuenteEstatica();
-        Map<String, Hecho> mapHechos = fuente.obtenerHechos();
+        Importador importador = new Importador();
+        Map<String, Hecho> mapHechos = importador.obtenerHechos();
 
         Hecho hecho = mapHechos.get("Caída de aeronave impacta en Olavarría");
 

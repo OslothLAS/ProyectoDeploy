@@ -1,6 +1,7 @@
 package entities.eliminacion;
 
 import entities.hechos.Hecho;
+import entities.usuarios.Contribuyente;
 import lombok.*;
 
 import java.time.LocalDateTime;

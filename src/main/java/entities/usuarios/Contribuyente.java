@@ -1,6 +1,4 @@
-package entities.eliminacion;
-
-import entities.hechos.Hecho;
+package entities.usuarios;
 
 import java.time.LocalDate;
 import java.time.Period;
