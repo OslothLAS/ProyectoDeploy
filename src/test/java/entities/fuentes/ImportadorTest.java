@@ -1,13 +1,11 @@
 package entities.fuentes;
 
 import entities.hechos.Hecho;
-
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class FuenteEstaticaTest {
+class ImportadorTest {
 /*    GENTE PARA CUANDO VAYAN A PROBAR ESTOS TEST, CAMBIEN EL PATH DE LOS CSV's
       POR LOS QUE TIENEN EN SUS PC's, porque si no, les va a tirar error...      */
 

@@ -5,16 +5,11 @@ import entities.criteriosDePertenencia.CriterioPorCategoria;
 import entities.criteriosDePertenencia.CriterioPorFecha;
 import entities.fuentes.Importador;
 import entities.hechos.Hecho;
-import entities.hechos.RepositorioDeHechos;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class Escenario1Test {

@@ -1,21 +1,17 @@
 package entities.fuentes;
 
 import entities.hechos.Hecho;
-import EstrategiasExtraccion.EstrategiaExtraccionHecho;
 import EstrategiasExtraccion.EstrategiaExtraccionHechoCSV;
 import lombok.Getter;
 import utils.*;
-
-
 import java.util.*;
 
 //necesito dar soporte para todos los tipos de archivos posibles
 @Getter
 public class Importador {
-    private ConfigReader config;
+    private final ConfigReader config;
     String[] pathArchivos;
 
-    private EstrategiaExtraccionHecho estrategiaExtraccionHecho;
 
     //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
     public List<Hecho> obtenerHechos() {
