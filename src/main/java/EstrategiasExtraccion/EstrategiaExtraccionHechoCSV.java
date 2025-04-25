@@ -11,17 +11,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static utils.ExtensionReader.normalizarTexto;
 
 public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 
     @Override
-    public Map<String, Hecho> obtenerHechosDesde(String pathArchivo){
-        Map<String, Hecho> hechos = new LinkedHashMap<>();
+    public List<Hecho> obtenerHechosDesde(String pathArchivo){
+        List<Hecho> hechos = new ArrayList<>();
 
         try (CSVReader reader = new CSVReader(new FileReader(pathArchivo))) {
             String[] encabezado = reader.readNext();
@@ -30,8 +28,7 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 
             String[] fila;
             while ((fila = reader.readNext()) != null) {
-                String titulo = fila[indices.get("titulo")].trim();
-                hechos.put(titulo, this.instanciarHechoDesdeFila(fila, indices));
+                hechos.add(this.instanciarHechoDesdeFila(fila, indices));
             }
         }
         catch (IOException | CsvValidationException e) {

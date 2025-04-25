@@ -18,8 +18,8 @@ public class Importador {
     private EstrategiaExtraccionHecho estrategiaExtraccionHecho;
 
     //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
-    public Map<String, Hecho> obtenerHechos() {
-        Map<String, Hecho> hechosPorTitulo = new LinkedHashMap<>();
+    public List<Hecho> obtenerHechos() {
+        List<Hecho> hechosPorTitulo = new ArrayList<>();
 
         for (String pathArchivo : this.pathArchivos) {
             try {
@@ -27,7 +27,7 @@ public class Importador {
 
                 switch (extension.toLowerCase()) {
                     case "csv":
-                        this.csvExtractor(hechosPorTitulo,pathArchivo);
+                        hechosPorTitulo.addAll(csvExtractor(pathArchivo));
                         break;
                     default:
                         System.err.println("Formato no soportado: " + extension);
@@ -41,9 +41,9 @@ public class Importador {
     }
 
 
-    public void csvExtractor(Map<String, Hecho> hechos,String archivo){
+    public List<Hecho> csvExtractor(String archivo){
         EstrategiaExtraccionHechoCSV estrategiaExtraccionHechoCSV = new EstrategiaExtraccionHechoCSV();
-        hechos.putAll(estrategiaExtraccionHechoCSV.obtenerHechosDesde(archivo));
+        return estrategiaExtraccionHechoCSV.obtenerHechosDesde(archivo);
     }
 
     public Importador() {

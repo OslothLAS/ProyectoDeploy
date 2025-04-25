@@ -16,7 +16,7 @@ public class Coleccion {
     private String titulo;
     private String descripcion;
     private Importador importador;
-    private Map<String, Hecho> hechos;
+    private List<Hecho> hechos;
     @Setter
     private List<CriterioDePertenencia> criteriosDePertenencia = new ArrayList<>();
 
@@ -28,9 +28,9 @@ public class Coleccion {
     }
 
 
-    public void filtrarHechos(Map<String, Hecho> hechos1) {
-        Map<String, Hecho> hechosFiltrados = new HashMap<>();
-        for (Hecho hecho : hechos1.values()) {
+    public void filtrarHechos(List <Hecho> hechos1) {
+        List<Hecho> hechosFiltrados = new ArrayList<>();
+        for (Hecho hecho : hechos1) {
             boolean cumpleTodosCriterios = true;
 
             for (CriterioDePertenencia criterio : criteriosDePertenencia) {
@@ -41,7 +41,7 @@ public class Coleccion {
             }
 
             if (cumpleTodosCriterios) {
-                hechosFiltrados.put(hecho.getDatosHechos().getTitulo(), hecho);
+                hechosFiltrados.add(hecho);
             }
         }
 
@@ -55,7 +55,7 @@ public class Coleccion {
 
     public void addHecho(Hecho hecho) {
         if(hecho.getEsValido()) {
-            this.hechos.put(hecho.getDatosHechos().getTitulo(), hecho);
+            this.hechos.add(hecho);
         }else{
             throw new RuntimeException("Hecho no es valido");
         }

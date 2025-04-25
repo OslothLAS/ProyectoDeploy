@@ -13,8 +13,7 @@ public class Escenario2Test {
 
         var hechos = fuente.obtenerHechos();
 
-        var listHechos = hechos.values();
-        listHechos.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
+        hechos.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
         Assertions.assertNotNull(hechos);
     }
 }

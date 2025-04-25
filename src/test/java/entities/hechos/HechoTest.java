@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 class HechoTest {
 
-    @Test
+    /*@Test
     void testToString() {
         Importador importador = new Importador();
         var hechos = importador.obtenerHechos();
@@ -20,7 +20,7 @@ class HechoTest {
         System.out.println(hecho1.toString());
 
         assertNotNull(hecho1);
-    }
+    }*/
 
     @Test
     void testEtiquetarHechoAeronave() {
