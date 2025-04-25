@@ -1,13 +1,11 @@
 package entities.fuentes;
 
 import entities.hechos.Hecho;
-
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class FuenteEstaticaTest {
+class ImportadorTest {
 /*    GENTE PARA CUANDO VAYAN A PROBAR ESTOS TEST, CAMBIEN EL PATH DE LOS CSV's
       POR LOS QUE TIENEN EN SUS PC's, porque si no, les va a tirar error...      */
 
@@ -18,7 +16,7 @@ class FuenteEstaticaTest {
         var hechos = importador.obtenerHechos();
 
         //la clave del map es el titulo para que no haya repetidos
-        Hecho hecho1 = hechos.values().stream().findFirst().get();
+        Hecho hecho1 = hechos.get(0);
 
         System.out.println("titulo: " + hecho1.getDatosHechos().getTitulo() + "\n" );
         System.out.println("descripcion: " + hecho1.getDatosHechos().getDescripcion() + "\n");
@@ -36,8 +34,7 @@ class FuenteEstaticaTest {
 
         var hechos = importador.obtenerHechos();
 
-        var listHechos = hechos.values();
-        listHechos.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
+        hechos.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
         Assertions.assertNotNull(hechos);
     }
 }

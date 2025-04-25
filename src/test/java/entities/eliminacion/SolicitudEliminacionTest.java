@@ -1,7 +1,6 @@
 package entities.eliminacion;
 
 import entities.colecciones.Coleccion;
-
 import entities.fuentes.Importador;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
@@ -9,10 +8,8 @@ import entities.hechos.Ubicacion;
 import entities.usuarios.Contribuyente;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-
 import static entities.eliminacion.EstadoSolicitudEliminacion.*;
 import static entities.hechos.Origen.CARGA_MANUAL;
 import static org.junit.jupiter.api.Assertions.*;

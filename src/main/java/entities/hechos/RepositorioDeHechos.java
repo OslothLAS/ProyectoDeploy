@@ -1,17 +1,11 @@
 //esta clase va a tomar el rol de un ABM con el sentido de cumplir los
 //requerimientos a cumplir del visualizador
-
 package entities.hechos;
 
 import entities.colecciones.Coleccion;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static utils.ExtensionReader.normalizarTexto;
 
 public class RepositorioDeHechos {
     //por ahora creo el atributo hechos porque no se donde se guardan los hechos subidos
@@ -28,13 +22,11 @@ public class RepositorioDeHechos {
     /*  Los hechos son de tipo "Map" pero los paso a "List" para que sea mas fácil recorrerlos
     a la hora de visualizarlos              */
     public List<Hecho> visualizarHechosDeColeccion(Coleccion coleccion){
-        Map<String, Hecho> hechos = coleccion.getHechos();
-
-        return new ArrayList<>(hechos.values());
+        return coleccion.getHechos();
     }
 
 
-    public List<Hecho> visualizarHechosConFiltro(Coleccion coleccion, Map<String, String> filtrosAplicados) {
+    /*public List<Hecho> visualizarHechosConFiltro(Coleccion coleccion, Map<String, String> filtrosAplicados) {
         return coleccion.getHechos().values().stream()
                 .filter(hecho -> {
                     for (Map.Entry<String, String> filtro : filtrosAplicados.entrySet()) {
@@ -56,6 +48,6 @@ public class RepositorioDeHechos {
                     return true; // Se cumplieron todos los filtros
                 })
                 .collect(Collectors.toList());
-    }
+    }*/
 
 }

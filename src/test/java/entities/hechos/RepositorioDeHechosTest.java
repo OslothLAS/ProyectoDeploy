@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 class RepositorioDeHechosTest {
 
-    @Test
+    /*@Test
     void visualizarHechosConFiltro() {
         Importador importador = new Importador();
 
@@ -28,5 +28,5 @@ class RepositorioDeHechosTest {
         listHechos.forEach(h -> System.out.println(h.getDatosHechos().getTitulo()));
 
         assertTrue(listHechos.isEmpty());
-    }
+    }*/
 }
