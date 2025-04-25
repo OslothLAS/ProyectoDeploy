@@ -1,10 +1,12 @@
 package entities.eliminacion;
 
 import entities.colecciones.Coleccion;
-import entities.fuentes.FuenteEstatica;
+
+import entities.fuentes.Importador;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
+import entities.usuarios.Contribuyente;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -89,8 +91,8 @@ class SolicitudEliminacionTest {
         assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
 
         //no se puede agregar un hecho, no es valido
-        FuenteEstatica fuente = new FuenteEstatica();
-        Coleccion coleccion = new Coleccion("Colección prueba 3", "Esto es una prueba", fuente);
+        Importador importador = new Importador();
+        Coleccion coleccion = new Coleccion("Colección prueba 3", "Esto es una prueba", importador);
         assertThrows(RuntimeException.class, () -> coleccion.addHecho(hecho), "RuntimeException: El hecho no es válido");
 
         //la solicitud queda aceptada

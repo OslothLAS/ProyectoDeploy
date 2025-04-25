@@ -1,6 +1,6 @@
 package escenarios;
 
-import entities.fuentes.FuenteEstatica;
+import entities.fuentes.Importador;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ public class Escenario2Test {
     @Test
     @DisplayName("Obtener hechos de un CSV")
     public void obtenerHechos(){
-        FuenteEstatica fuente = new FuenteEstatica();
+        Importador fuente = new Importador();
 
         var hechos = fuente.obtenerHechos();
 

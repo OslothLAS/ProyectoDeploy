@@ -1,7 +1,9 @@
 package entities.hechos;
 
-import entities.fuentes.FuenteEstatica;
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import entities.fuentes.Importador;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -11,8 +13,8 @@ class HechoTest {
 
     @Test
     void testToString() {
-        FuenteEstatica fuente = new FuenteEstatica();
-        var hechos = fuente.obtenerHechos();
+        Importador importador = new Importador();
+        var hechos = importador.obtenerHechos();
         Hecho hecho1 = hechos.get("Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones");
 
         System.out.println(hecho1.toString());

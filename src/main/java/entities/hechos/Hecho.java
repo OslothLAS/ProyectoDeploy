@@ -1,5 +1,6 @@
 package entities.hechos;
 
+import entities.colecciones.Coleccion;
 import entities.eliminacion.SolicitudEliminacion;
 import lombok.*;
 
@@ -18,6 +19,8 @@ public class Hecho {
     private DatosHechos datosHechos;
     private Multimedia multimedia;
     private List<String> etiquetas;
+    private List<Coleccion> colecciones;
+    private Boolean mostrarDatos;
 
     public static Hecho create(DatosHechos datosHechos, String autor) {
         return Hecho.builder()
