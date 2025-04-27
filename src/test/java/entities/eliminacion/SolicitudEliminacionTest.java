@@ -96,4 +96,40 @@ class SolicitudEliminacionTest {
         assertEquals(ACEPTADA, solicitud.getEstado());
         assertEquals(false, hecho.getEsValido());
     }
+
+    @Test
+    @DisplayName("Se guarda una solicitud")
+    public void testGuardarSolicitud() {
+        Ubicacion ubicacion = new Ubicacion("-32.786098","-60.741543");
+
+        DatosHechos datos =  new DatosHechos(
+                "Brote de enfermedad contagiosa causa estragos en San Lorenzo, Santa Fe",
+                "Grave brote de enfermedad contagiosa ocurrió en las inmediaciones de San Lorenzo, Santa Fe. El incidente dejó varios heridos y daños materiales. Se ha declarado estado de emergencia en la región para facilitar la asistencia.",
+                "Evento sanitario",
+                ubicacion,
+                LocalDate.of(2005, 7, 5),
+                LocalDate.now(),
+                CARGA_MANUAL
+        );
+        //Creacion del hecho con el metodo create y los datos pedidos
+        Hecho hecho = Hecho.create(datos);
+
+        //Creacion de una solicitud
+        String justificacion = "a".repeat(500);
+        Contribuyente contribuyente = new Contribuyente();
+
+        SolicitudEliminacion solicitud = new SolicitudEliminacion(
+                justificacion,
+                hecho,
+                contribuyente
+        );
+
+        Estado
+
+        solicitud.cambiarEstadoHecho(ACEPTADA);
+        solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusHours(2));
+        assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
+
+
+    }
 }
