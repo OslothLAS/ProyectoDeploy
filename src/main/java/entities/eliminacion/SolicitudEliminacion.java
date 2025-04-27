@@ -1,6 +1,7 @@
 package entities.eliminacion;
 
 import entities.hechos.Hecho;
+import entities.usuarios.Administrador;
 import entities.usuarios.Contribuyente;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 public class SolicitudEliminacion {
     private Contribuyente solicitante;
+    private Administrador admin;
     private LocalDateTime fechaDeCreacion;
 
     @Setter
@@ -47,6 +49,10 @@ public class SolicitudEliminacion {
             cambiarEstadoSolicitud(estado);
             hecho.setEsValido(false);
         }
+
+        EstadoSolicitud estadoSolicitud = new EstadoSolicitud();
+        estadoSolicitud.guardarEstado(admin, this);
+
     }
 
     private void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {
