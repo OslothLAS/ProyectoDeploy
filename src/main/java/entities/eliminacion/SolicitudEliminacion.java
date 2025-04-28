@@ -17,7 +17,6 @@ import java.util.List;
 @Getter
 public class SolicitudEliminacion {
     private Contribuyente solicitante;
-    private Administrador admin;
     private LocalDateTime fechaDeCreacion;
 
     @Setter
@@ -28,7 +27,7 @@ public class SolicitudEliminacion {
     private Hecho hecho;
 
 
-    public SolicitudEliminacion(String justificacion, Hecho hecho, Contribuyente solicitante, Administrador admin) {
+    public SolicitudEliminacion(String justificacion, Hecho hecho, Contribuyente solicitante) {
         this.justificacion = this.validarJustificacion(justificacion);
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();

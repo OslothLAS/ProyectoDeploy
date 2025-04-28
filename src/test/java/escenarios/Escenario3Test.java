@@ -46,8 +46,7 @@ public class Escenario3Test {
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente,
-                admin
+                contribuyente
         );
 
         assertEquals(EstadoSolicitudEliminacion.PENDIENTE, solicitud.getEstado());
@@ -87,8 +86,7 @@ public class Escenario3Test {
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente,
-                admin
+                contribuyente
         );
 
 

@@ -44,8 +44,7 @@ class SolicitudEliminacionTest {
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente,
-                admin
+                contribuyente
         );
 
         assertEquals(EstadoSolicitudEliminacion.PENDIENTE, solicitud.getEstado());
@@ -85,8 +84,7 @@ class SolicitudEliminacionTest {
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente,
-                admin
+                contribuyente
         );
 
 
@@ -130,8 +128,7 @@ class SolicitudEliminacionTest {
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente,
-                admin
+                contribuyente
         );
 
         //RECHAZO LA SOLICITUD Y LO GUARDO EN EL INDEX 0 DE LA LISTA DE ESTADOS

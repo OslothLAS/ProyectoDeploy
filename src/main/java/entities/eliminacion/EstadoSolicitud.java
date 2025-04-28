@@ -23,7 +23,7 @@ public class EstadoSolicitud {
     }
 
 
-    public Long calcularTiempoDeRespuesta(LocalDateTime fecha1, LocalDateTime fecha2) {
+    private Long calcularTiempoDeRespuesta(LocalDateTime fecha1, LocalDateTime fecha2) {
         Duration duration = Duration.between(fecha1, fecha2);
         return duration.toHours();
     }
