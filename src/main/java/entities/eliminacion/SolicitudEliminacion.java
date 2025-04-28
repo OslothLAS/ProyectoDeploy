@@ -55,8 +55,7 @@ public class SolicitudEliminacion {
             cambiarEstadoSolicitud(estado);
             hecho.setEsValido(false);
         }
-        this.actualizarHistorialDeOperacion(admin);
-
+        this.actualizarHistorialDeOperacion(estado, admin);
 
     }
 
@@ -65,10 +64,9 @@ public class SolicitudEliminacion {
         this.fechaDeEvaluacion = LocalDateTime.now();
     }
 
-    private void actualizarHistorialDeOperacion(Administrador admin){
-
+    private void actualizarHistorialDeOperacion(EstadoSolicitudEliminacion estado, Administrador admin){
         EstadoSolicitud estadoSolicitud = new EstadoSolicitud();
-        estadoSolicitud.guardarEstado(admin, this);
+        estadoSolicitud.guardarEstado(estado, admin, this);
         this.historialDeSolicitud.add(estadoSolicitud);
     }
 

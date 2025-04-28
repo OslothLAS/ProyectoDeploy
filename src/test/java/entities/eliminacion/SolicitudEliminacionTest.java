@@ -105,7 +105,7 @@ class SolicitudEliminacionTest {
     }
 
     @Test
-    @DisplayName("Se guarda una solicitud")
+    @DisplayName("Se guarda una solicitud en EstadoSolicitud")
     public void testGuardarSolicitud() {
         Ubicacion ubicacion = new Ubicacion("-32.786098","-60.741543");
 
@@ -135,22 +135,42 @@ class SolicitudEliminacionTest {
         );
 
         //RECHAZO LA SOLICITUD Y LO GUARDO EN EL INDEX 0 DE LA LISTA DE ESTADOS
+
         solicitud.cambiarEstadoHecho(admin, RECHAZADA);
         EstadoSolicitud estadoSolicitud = solicitud.getHistorialDeSolicitud().get(0);
 
-        assertEquals(2, estadoSolicitud.getTiempoDeRespuesta() + 2);
+
+
+
+        //Compruebo que la solicitud tenga guardado al estado, que el administrador sea admin y que este rechazada
+
         assertEquals(true, solicitud.getHistorialDeSolicitud().contains(estadoSolicitud));
         assertEquals(admin, estadoSolicitud.getAdministrador());
+        assertEquals(RECHAZADA, estadoSolicitud.getEstado());
 
-        //ACEPTO LA SOLICITUD Y LO GUARDO EN EL INDEX 0 DE LA LISTA DE ESTADOS
-        //Es el mismo contribuyente
+
+
+
+        //ACEPTO LA SOLICITUD Y LO GUARDO EN EL INDEX 1 DE LA LISTA DE ESTADOS DE LA SOLICITUD
 
         solicitud.cambiarEstadoHecho(admin1, ACEPTADA);
         EstadoSolicitud estadoSolicitud1 = solicitud.getHistorialDeSolicitud().get(1);
 
-        assertEquals(0, estadoSolicitud1.getTiempoDeRespuesta());
+
+
+        //Compruebo que cambie el estado a true de la segunda solicitud, que el aministrador
+
+        //sea admin1 y que quede ACEPTADA
         assertEquals(true, solicitud.getHistorialDeSolicitud().contains(estadoSolicitud1));
         assertEquals(admin1, estadoSolicitud1.getAdministrador());
+        assertEquals(ACEPTADA, estadoSolicitud1.getEstado());
+
+
+
+
+        //LA SOLICITUD TIENE 2 ELEMENTOS estadoSolicitud y estadoSolicitud1
+
+        assertEquals(2, solicitud.getHistorialDeSolicitud().size());
 
     }
 }

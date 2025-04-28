@@ -12,12 +12,14 @@ public class EstadoSolicitud {
 
     private Administrador administrador;
     private Long tiempoDeRespuesta;
+    private EstadoSolicitudEliminacion estado;
 
-    public void guardarEstado(Administrador administrador, SolicitudEliminacion solicitud){
+    public void guardarEstado(EstadoSolicitudEliminacion estado, Administrador administrador, SolicitudEliminacion solicitud){
         this.administrador = administrador;
         this.tiempoDeRespuesta = calcularTiempoDeRespuesta(
                 solicitud.getFechaDeCreacion(),
                 solicitud.getFechaDeEvaluacion());
+        this.estado = estado;
     }
 
 
