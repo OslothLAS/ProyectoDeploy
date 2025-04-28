@@ -5,19 +5,19 @@ import entities.usuarios.Contribuyente;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-
+import java.util.ArrayList;
+import lombok.*;
+@Getter
 public class EstadoSolicitud {
 
     private Administrador administrador;
     private Long tiempoDeRespuesta;
-    private List<SolicitudEliminacion> solicitudes;
-
 
     public void guardarEstado(Administrador administrador, SolicitudEliminacion solicitud){
         this.administrador = administrador;
-        this.solicitudes.add(solicitud);
-        this.tiempoDeRespuesta = calcularTiempoDeRespuesta(solicitud.getFechaDeCreacion(), solicitud.getFechaDeEvaluacion());
+        this.tiempoDeRespuesta = calcularTiempoDeRespuesta(
+                solicitud.getFechaDeCreacion(),
+                solicitud.getFechaDeEvaluacion());
     }
 
 

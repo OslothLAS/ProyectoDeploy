@@ -1,6 +1,7 @@
 package escenarios;
 
 import entities.colecciones.Coleccion;
+import entities.usuarios.Administrador;
 import entities.usuarios.Contribuyente;
 import entities.eliminacion.EstadoSolicitudEliminacion;
 import entities.eliminacion.SolicitudEliminacion;
@@ -40,17 +41,19 @@ public class Escenario3Test {
         //Creacion de una solicitud
         String justificacion = "a".repeat(500);
         Contribuyente contribuyente = new Contribuyente();
+        Administrador admin = new Administrador();
 
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente
+                contribuyente,
+                admin
         );
 
         assertEquals(EstadoSolicitudEliminacion.PENDIENTE, solicitud.getEstado());
 
 
-        solicitud.cambiarEstadoHecho(RECHAZADA);
+        solicitud.cambiarEstadoHecho(admin, RECHAZADA);
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusDays(1));
 
         assertEquals(1, ChronoUnit.DAYS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
@@ -79,15 +82,17 @@ public class Escenario3Test {
         //Creacion de una solicitud
         String justificacion = "a".repeat(500);
         Contribuyente contribuyente = new Contribuyente();
+        Administrador admin = new Administrador();
 
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente
+                contribuyente,
+                admin
         );
 
 
-        solicitud.cambiarEstadoHecho(ACEPTADA);
+        solicitud.cambiarEstadoHecho(admin, ACEPTADA);
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusHours(2));
         assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
 

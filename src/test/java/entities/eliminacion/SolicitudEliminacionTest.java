@@ -5,11 +5,14 @@ import entities.fuentes.Importador;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
+import entities.usuarios.Administrador;
 import entities.usuarios.Contribuyente;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 import static entities.eliminacion.EstadoSolicitudEliminacion.*;
 import static entities.hechos.Origen.CARGA_MANUAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,17 +39,19 @@ class SolicitudEliminacionTest {
         //Creacion de una solicitud
         String justificacion = "a".repeat(500);
         Contribuyente contribuyente = new Contribuyente();
+        Administrador admin = new Administrador();
 
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente
+                contribuyente,
+                admin
         );
 
         assertEquals(EstadoSolicitudEliminacion.PENDIENTE, solicitud.getEstado());
 
 
-        solicitud.cambiarEstadoHecho(RECHAZADA);
+        solicitud.cambiarEstadoHecho(admin, RECHAZADA);
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusDays(1));
 
         assertEquals(1, ChronoUnit.DAYS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
@@ -75,15 +80,17 @@ class SolicitudEliminacionTest {
         //Creacion de una solicitud
         String justificacion = "a".repeat(500);
         Contribuyente contribuyente = new Contribuyente();
+        Administrador admin = new Administrador();
 
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente
+                contribuyente,
+                admin
         );
 
 
-        solicitud.cambiarEstadoHecho(ACEPTADA);
+        solicitud.cambiarEstadoHecho(admin, ACEPTADA);
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusHours(2));
         assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
 
@@ -117,19 +124,33 @@ class SolicitudEliminacionTest {
         //Creacion de una solicitud
         String justificacion = "a".repeat(500);
         Contribuyente contribuyente = new Contribuyente();
+        Administrador admin = new Administrador();
+        Administrador admin1 = new Administrador();
 
         SolicitudEliminacion solicitud = new SolicitudEliminacion(
                 justificacion,
                 hecho,
-                contribuyente
+                contribuyente,
+                admin
         );
 
-        Estado
+        //RECHAZO LA SOLICITUD Y LO GUARDO EN EL INDEX 0 DE LA LISTA DE ESTADOS
+        solicitud.cambiarEstadoHecho(admin, RECHAZADA);
+        EstadoSolicitud estadoSolicitud = solicitud.getHistorialDeSolicitud().get(0);
 
-        solicitud.cambiarEstadoHecho(ACEPTADA);
-        solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusHours(2));
-        assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
+        assertEquals(2, estadoSolicitud.getTiempoDeRespuesta() + 2);
+        assertEquals(true, solicitud.getHistorialDeSolicitud().contains(estadoSolicitud));
+        assertEquals(admin, estadoSolicitud.getAdministrador());
 
+        //ACEPTO LA SOLICITUD Y LO GUARDO EN EL INDEX 0 DE LA LISTA DE ESTADOS
+        //Es el mismo contribuyente
+
+        solicitud.cambiarEstadoHecho(admin1, ACEPTADA);
+        EstadoSolicitud estadoSolicitud1 = solicitud.getHistorialDeSolicitud().get(1);
+
+        assertEquals(0, estadoSolicitud1.getTiempoDeRespuesta());
+        assertEquals(true, solicitud.getHistorialDeSolicitud().contains(estadoSolicitud1));
+        assertEquals(admin1, estadoSolicitud1.getAdministrador());
 
     }
 }
