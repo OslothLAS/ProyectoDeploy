@@ -49,8 +49,9 @@ class SolicitudEliminacion{
     -fechaDeEvaluacion: LocalDateTime
     -estado: EstadoSolicitudEliminacion
     -hecho: Hecho
-    +cambiarEstadoHecho(estado): void
+    +cambiarEstadoHecho(administrador, estado): void
     -cambiarEstadoSolicitud(estado): void
+    -actualizarHistorial():void
     +validarJustificacion(justificacion): string
 }
 
@@ -132,7 +133,7 @@ class Contribuyente{
    FuenteEstatica --> EstrategiaExtraccionHechos
   SolicitudEliminacion --> EstadoSolicitudEliminacion
   Coleccion -->"*" CriterioDePertenencia
-  EstadoSolicitud --> SolicitudEliminacion
+  EstadoSolicitud <-- SolicitudEliminacion
 
   Multimedia <--* Hecho
 @enduml
