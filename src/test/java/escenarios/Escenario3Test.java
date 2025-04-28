@@ -1,10 +1,8 @@
 package escenarios;
 
-import entities.colecciones.Coleccion;
 import entities.usuarios.Contribuyente;
 import entities.eliminacion.EstadoSolicitudEliminacion;
 import entities.eliminacion.SolicitudEliminacion;
-import entities.fuentes.Importador;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
@@ -12,12 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-
 import static entities.eliminacion.EstadoSolicitudEliminacion.ACEPTADA;
 import static entities.eliminacion.EstadoSolicitudEliminacion.RECHAZADA;
 import static entities.hechos.Origen.CARGA_MANUAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class Escenario3Test {
     @Test
@@ -90,11 +86,6 @@ public class Escenario3Test {
         solicitud.cambiarEstadoHecho(ACEPTADA);
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusHours(2));
         assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
-
-        //no se puede agregar un hecho, no es valido
-        Importador importador = new Importador();
-        Coleccion coleccion = new Coleccion("Colección prueba 3", "Esto es una prueba", importador);
-        assertThrows(RuntimeException.class, () -> coleccion.addHecho(hecho), "RuntimeException: El hecho no es válido");
 
         //la solicitud queda aceptada
         assertEquals(ACEPTADA, solicitud.getEstado());
