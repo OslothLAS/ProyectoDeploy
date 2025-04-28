@@ -13,5 +13,6 @@ public class CriterioPorCategoria implements CriterioDePertenencia{
 
     @Override
     public boolean cumpleCriterio(Hecho hecho) {
-        return normalizarTexto(hecho.getDatosHechos().getCategoria()).equals(normalizarTexto(categoria));    }
+        return normalizarTexto(hecho.getDatosHechos().getCategoria()).contains(normalizarTexto(categoria));
+    }
 }

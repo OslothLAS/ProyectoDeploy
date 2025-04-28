@@ -1,10 +1,7 @@
 package entities.hechos;
 
 import entities.colecciones.Coleccion;
-import entities.eliminacion.SolicitudEliminacion;
 import lombok.*;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +25,7 @@ public class Hecho {
                 .esValido(true)
                 .autor(autor)
                 .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
                 .build();
     }
 
@@ -36,9 +34,9 @@ public class Hecho {
                 .datosHechos(datosHechos)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
                 .build();
     }
-
 
     public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
         return Hecho.builder()
@@ -47,12 +45,17 @@ public class Hecho {
                 .autor(autor)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
                 .build();
 
     }
 
     public void addEtiqueta(String etiqueta) {
             this.etiquetas.add(etiqueta);
+    }
+
+    public void addColeccion(Coleccion coleccion) {
+        this.colecciones.add(coleccion);
     }
 
 }

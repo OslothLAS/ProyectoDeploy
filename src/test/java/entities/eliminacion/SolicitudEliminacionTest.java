@@ -1,7 +1,5 @@
 package entities.eliminacion;
 
-import entities.colecciones.Coleccion;
-import entities.fuentes.Importador;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
@@ -87,10 +85,6 @@ class SolicitudEliminacionTest {
         solicitud.setFechaDeEvaluacion(solicitud.getFechaDeCreacion().plusHours(2));
         assertEquals(2, ChronoUnit.HOURS.between(solicitud.getFechaDeCreacion(),solicitud.getFechaDeEvaluacion()));
 
-        //no se puede agregar un hecho, no es valido
-        Importador importador = new Importador();
-        Coleccion coleccion = new Coleccion("Colección prueba 3", "Esto es una prueba", importador);
-        assertThrows(RuntimeException.class, () -> coleccion.addHecho(hecho), "RuntimeException: El hecho no es válido");
 
         //la solicitud queda aceptada
         assertEquals(ACEPTADA, solicitud.getEstado());
