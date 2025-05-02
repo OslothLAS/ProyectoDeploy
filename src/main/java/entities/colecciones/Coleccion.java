@@ -4,61 +4,36 @@ import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.fuentes.Importador;
 import entities.hechos.Hecho;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Getter
 public class Coleccion {
-    private String titulo;
-    private String descripcion;
-    private Importador importador;
-    private List<Hecho> hechos;
-    @Setter
-    private List<CriterioDePertenencia> criteriosDePertenencia = new ArrayList<>();
+    private final String titulo;
+    private final String descripcion;
+    private final Importador importador;
+    private List<CriterioDePertenencia> criteriosDePertenencia;
 
-    public Coleccion(String titulo, String descripcion, Importador importador) {
+    public Coleccion(String titulo, String descripcion, Importador importador, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.importador = importador;
-        this.hechos = this.importador.obtenerHechos();
+        this.criteriosDePertenencia = criteriosDePertenencia;
     }
 
+    // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!
+    public void filtrarHechos(List <Hecho> listaHechos) {
+        List<Hecho> hechosFiltrados = listaHechos.stream().filter(this::cumpleCriterios).toList();
+        hechosFiltrados.forEach(hecho -> hecho.addColeccion(this));
+    }
 
-    public void filtrarHechos(List <Hecho> hechos1) {
-        List<Hecho> hechosFiltrados = new ArrayList<>();
-        for (Hecho hecho : hechos1) {
-            boolean cumpleTodosCriterios = true;
-
-            for (CriterioDePertenencia criterio : criteriosDePertenencia) {
-                if (!criterio.cumpleCriterio(hecho)) {
-                    cumpleTodosCriterios = false;
-                    break;
-                }
-            }
-
-            if (cumpleTodosCriterios) {
-                hechosFiltrados.add(hecho);
-            }
-        }
-
-        this.hechos = hechosFiltrados;
+    public Boolean cumpleCriterios(Hecho hecho){
+        return this.criteriosDePertenencia.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho));
     }
 
     public void setCriteriosDePertenencia(List<CriterioDePertenencia> criterios) {
         criteriosDePertenencia.addAll(criterios);
         this.filtrarHechos(importador.obtenerHechos());
-    }
-
-    public void addHecho(Hecho hecho) {
-        if(hecho.getEsValido()) {
-            this.hechos.add(hecho);
-        }else{
-            throw new RuntimeException("Hecho no es valido");
-        }
     }
 
 }

@@ -1,10 +1,8 @@
 package entities.hechos;
 
 import entities.colecciones.Coleccion;
-import entities.eliminacion.SolicitudEliminacion;
+import entities.usuarios.Usuario;
 import lombok.*;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Hecho {
     private String autor;
+    private Usuario usuario;
     private Boolean esValido;
     private DatosHechos datosHechos;
     private Multimedia multimedia;
@@ -22,12 +21,14 @@ public class Hecho {
     private List<Coleccion> colecciones;
     private Boolean mostrarDatos;
 
+
     public static Hecho create(DatosHechos datosHechos, String autor) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
                 .autor(autor)
                 .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
                 .build();
     }
 
@@ -36,9 +37,22 @@ public class Hecho {
                 .datosHechos(datosHechos)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
                 .build();
     }
 
+
+    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Boolean mostrarDatos) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(usuario.getNombre())
+                .usuario(usuario)
+                .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
+                .mostrarDatos(mostrarDatos)
+                .build();
+    }
 
     public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
         return Hecho.builder()
@@ -47,12 +61,30 @@ public class Hecho {
                 .autor(autor)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
                 .build();
-
     }
+
+    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Multimedia multimedia, Boolean mostrarDatos) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(usuario.getNombre())
+                .usuario(usuario)
+                .multimedia(multimedia)
+                .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
+                .mostrarDatos(mostrarDatos)
+                .build();
+    }
+
 
     public void addEtiqueta(String etiqueta) {
             this.etiquetas.add(etiqueta);
+    }
+
+    public void addColeccion(Coleccion coleccion) {
+        this.colecciones.add(coleccion);
     }
 
 }
