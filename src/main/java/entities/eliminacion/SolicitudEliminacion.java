@@ -1,10 +1,15 @@
 package entities.eliminacion;
 
 import entities.hechos.Hecho;
+import entities.usuarios.Administrador;
 import entities.usuarios.Contribuyente;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,6 +23,7 @@ public class SolicitudEliminacion {
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;
     private EstadoSolicitudEliminacion estado;
+    private List<EstadoSolicitud> historialDeSolicitud;
     private Hecho hecho;
 
 
@@ -27,6 +33,7 @@ public class SolicitudEliminacion {
         this.fechaDeCreacion = LocalDateTime.now();
         this.estado = EstadoSolicitudEliminacion.PENDIENTE;
         this.hecho = hecho;
+        this.historialDeSolicitud = new ArrayList<>();
     }
 
     public String validarJustificacion(String justificacionSolicitud) {
@@ -39,7 +46,7 @@ public class SolicitudEliminacion {
 
     }
 
-    public void cambiarEstadoHecho(EstadoSolicitudEliminacion estado) {
+    public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
             cambiarEstadoSolicitud(estado);
         }
@@ -47,11 +54,19 @@ public class SolicitudEliminacion {
             cambiarEstadoSolicitud(estado);
             hecho.setEsValido(false);
         }
+        this.actualizarHistorialDeOperacion(estado, admin);
+
     }
 
     private void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {
         this.estado = EstadoSolicitudEliminacion.valueOf(estado.name());
         this.fechaDeEvaluacion = LocalDateTime.now();
+    }
+
+    private void actualizarHistorialDeOperacion(EstadoSolicitudEliminacion estado, Administrador admin){
+        EstadoSolicitud estadoSolicitud = new EstadoSolicitud();
+        estadoSolicitud.guardarEstado(estado, admin, this);
+        this.historialDeSolicitud.add(estadoSolicitud);
     }
 
 }

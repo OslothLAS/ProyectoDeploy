@@ -49,11 +49,20 @@ class SolicitudEliminacion{
     -fechaDeEvaluacion: LocalDateTime
     -estado: EstadoSolicitudEliminacion
     -hecho: Hecho
-    +cambiarEstadoHecho(estado): void
-    +cambiarEstadoSolicitud(estado): void
+    +cambiarEstadoHecho(administrador, estado): void
+    -cambiarEstadoSolicitud(estado): void
+    -actualizarHistorial():void
     +validarJustificacion(justificacion): string
 }
 
+class EstadoSolicitud{
+    -evaluador: Administrador
+    -tiempoDeRespuesta: Integer
+    -solicitudes: List<SolicitudEliminacion>
+
+    +guardarEstado(Administrador, SolicitudEliminacion)
+
+}
 
 enum EstadoSolicitudEliminacion {
       PENDIENTE
@@ -124,6 +133,7 @@ class Contribuyente{
    FuenteEstatica --> EstrategiaExtraccionHechos
   SolicitudEliminacion --> EstadoSolicitudEliminacion
   Coleccion -->"*" CriterioDePertenencia
+  EstadoSolicitud <-- SolicitudEliminacion
 
   Multimedia <--* Hecho
 @enduml
