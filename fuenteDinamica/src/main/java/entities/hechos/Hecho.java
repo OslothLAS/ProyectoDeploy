@@ -1,0 +1,84 @@
+package entities.hechos;
+
+
+import entities.usuarios.Usuario;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Hecho {
+    private String autor;
+    private Usuario usuario;
+    private Boolean esValido;
+    private DatosHechos datosHechos;
+    private Multimedia multimedia;
+    private List<String> etiquetas;
+    private Boolean mostrarDatos;
+
+    public Boolean estaRegistrado(){
+        return this.usuario.getRegistrado();
+    }
+
+    public static Hecho create(DatosHechos datosHechos, String autor) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(autor)
+                .etiquetas(new ArrayList<>())
+                .build();
+    }
+
+    public static Hecho create(DatosHechos datosHechos){
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .build();
+    }
+
+
+    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Boolean mostrarDatos) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(usuario.getNombre())
+                .usuario(usuario)
+                .etiquetas(new ArrayList<>())
+                .mostrarDatos(mostrarDatos)
+                .build();
+    }
+
+    public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(autor)
+                .multimedia(multimedia)
+                .etiquetas(new ArrayList<>())
+                .build();
+    }
+
+    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Multimedia multimedia, Boolean mostrarDatos) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(usuario.getNombre())
+                .usuario(usuario)
+                .multimedia(multimedia)
+                .etiquetas(new ArrayList<>())
+                .mostrarDatos(mostrarDatos)
+                .build();
+    }
+
+
+    public void addEtiqueta(String etiqueta) {
+            this.etiquetas.add(etiqueta);
+    }
+
+}

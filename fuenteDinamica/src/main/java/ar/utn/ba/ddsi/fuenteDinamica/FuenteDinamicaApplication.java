@@ -11,5 +11,4 @@ public class FuenteDinamicaApplication {
 		SpringApplication.run(FuenteDinamicaApplication.class, args);
 		System.out.println("hola mundo ");
 	}
-
 }
