@@ -1,10 +1,12 @@
-package repositories.impl;
+package models.repositories.impl;
 
-import entities.hechos.Hecho;
-import repositories.IHechoRepository;
+import models.entities.hechos.Hecho;
+import models.repositories.IHechoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class HechoMemoryRepository implements IHechoRepository {
     private List<Hecho> hechos;
     @Override

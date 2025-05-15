@@ -1,4 +1,4 @@
-package entities.hechos;
+package models.entities.hechos;
 
 public enum Origen {
     CARGA_MANUAL,
