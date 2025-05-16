@@ -38,6 +38,12 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>ar.edu.utn.frba.dds</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

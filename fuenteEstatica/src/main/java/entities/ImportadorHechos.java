@@ -1,14 +1,15 @@
-package entities.fuentes;
+package entities;
 
 import entities.hechos.Hecho;
 import EstrategiasExtraccion.EstrategiaExtraccionHechoCSV;
 import lombok.Getter;
-import utils.*;
+import utils.ConfigReader;
+
 import java.util.*;
 
 //necesito dar soporte para todos los tipos de archivos posibles
 @Getter
-public class Importador {
+public class ImportadorHechos implements Importador {
     private final ConfigReader config;
     String[] pathArchivos;
 
@@ -42,7 +43,7 @@ public class Importador {
         return estrategiaExtraccionHechoCSV.obtenerHechosDesde(archivo);
     }
 
-    public Importador() {
+    public ImportadorHechos() {
         this.config = new ConfigReader(); // <-- sin pasar path
         this.pathArchivos = config.getPathsAsArray("filePaths", ",");
     }

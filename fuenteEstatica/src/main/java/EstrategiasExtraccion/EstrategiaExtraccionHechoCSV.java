@@ -9,11 +9,11 @@ import entities.hechos.Ubicacion;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.*;
 
-import static utils.ExtensionReader.normalizarTexto;
+import static utils.NormalizadorTexto.normalizarTexto;
+
 
 public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 

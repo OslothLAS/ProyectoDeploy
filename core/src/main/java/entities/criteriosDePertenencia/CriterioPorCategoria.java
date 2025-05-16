@@ -1,8 +1,7 @@
 package entities.criteriosDePertenencia;
 
 import entities.hechos.Hecho;
-
-import static utils.ExtensionReader.normalizarTexto;
+import static utils.NormalizadorTexto.normalizarTexto;
 
 public class CriterioPorCategoria implements CriterioDePertenencia{
     private final String categoria;
