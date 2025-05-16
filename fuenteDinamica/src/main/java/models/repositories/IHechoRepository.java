@@ -1,6 +1,6 @@
-package repositories;
+package models.repositories;
 
-import entities.hechos.Hecho;
+import models.entities.hechos.Hecho;
 
 public interface IHechoRepository {
     void save(Hecho hecho);

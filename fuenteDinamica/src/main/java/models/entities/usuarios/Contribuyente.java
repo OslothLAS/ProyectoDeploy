@@ -1,4 +1,4 @@
-package entities.usuarios;
+package models.entities.usuarios;
 
 import java.time.LocalDate;
 import java.time.Period;

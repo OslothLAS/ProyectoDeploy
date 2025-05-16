@@ -1,4 +1,4 @@
-package entities.usuarios;
+package models.entities.usuarios;
 
 public interface Usuario {
         String getNombre();

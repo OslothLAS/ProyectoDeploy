@@ -1,4 +1,4 @@
-package entities.usuarios;
+package models.entities.usuarios;
 
 public class Administrador implements Usuario {
     private Integer id;

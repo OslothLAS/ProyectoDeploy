@@ -1,7 +1,7 @@
-package entities.hechos;
+package models.entities.hechos;
 
 
-import entities.usuarios.Usuario;
+import models.entities.usuarios.Usuario;
 import lombok.*;
 
 import java.util.ArrayList;

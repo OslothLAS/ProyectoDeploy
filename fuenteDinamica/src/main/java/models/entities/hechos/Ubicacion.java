@@ -1,4 +1,4 @@
-package entities.hechos;
+package models.entities.hechos;
 
 import lombok.Getter;
 import lombok.Setter;
