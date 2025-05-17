@@ -3,12 +3,14 @@ package entities;
 import entities.hechos.Hecho;
 import EstrategiasExtraccion.EstrategiaExtraccionHechoCSV;
 import lombok.Getter;
+import org.springframework.stereotype.Component;
 import utils.ConfigReader;
 
 import java.util.*;
 
 //necesito dar soporte para todos los tipos de archivos posibles
 @Getter
+@Component
 public class ImportadorHechos implements Importador {
     private final ConfigReader config;
     String[] pathArchivos;
