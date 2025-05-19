@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public class HechoMemoryRepository implements IHechoRepository {
     private List<Hecho> hechos;
+
     @Override
     public void save(Hecho hecho) {
         this.hechos.add(hecho);

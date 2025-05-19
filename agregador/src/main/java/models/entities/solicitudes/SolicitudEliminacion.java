@@ -17,7 +17,6 @@ import java.util.List;
 public class SolicitudEliminacion {
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
-
     @Setter
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;
