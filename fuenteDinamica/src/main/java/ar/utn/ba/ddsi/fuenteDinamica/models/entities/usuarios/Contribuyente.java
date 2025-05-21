@@ -10,7 +10,7 @@ public class Contribuyente implements Usuario {
     private final String nombre;
     private final String apellido;
     private final LocalDate fechaDeNacimiento;
-    private Boolean registrado = true;
+
     @Override
     public String getNombre() {
         return nombre;
@@ -25,7 +25,7 @@ public class Contribuyente implements Usuario {
 
     @Override
     public Boolean getRegistrado() {
-        return registrado;
+        return true;
     }
 
     public Contribuyente(Long id, String nombre, String apellido, LocalDate fechaDeNacimiento) {
@@ -37,9 +37,5 @@ public class Contribuyente implements Usuario {
 
     public Boolean esAdministrador() {return false;}
 
-    @Override
-    public Long getId() {
-        return id;
-    }
 
 }

@@ -1,7 +1,9 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public class Administrador implements Usuario {
     private Long id;
@@ -19,9 +21,4 @@ public class Administrador implements Usuario {
 
     public Boolean esAdministrador() {return true;}
 
-
-    @Override
-    public Long getId() {
-        return id;
-    }
 }

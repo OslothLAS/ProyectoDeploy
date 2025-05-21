@@ -14,14 +14,12 @@ public class DatosHechos {
     private String categoria;
     private Ubicacion ubicacion;
     private LocalDate fechaHecho;
-    private LocalDate fechaCarga;
 
-    public DatosHechos(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho, LocalDate fechaCarga) {
+    public DatosHechos(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.ubicacion = ubicacion;
         this.fechaHecho = fechaHecho;
-        this.fechaCarga = fechaCarga;
     }
 }

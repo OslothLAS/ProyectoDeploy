@@ -7,9 +7,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "hecho")
+@Getter
+@Setter
 public class HechoProperties {
-    @Getter
-    @Setter
     private int plazoEdicionDias;
-
 }
