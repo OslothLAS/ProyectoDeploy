@@ -1,7 +1,7 @@
-package models.entities.hechos;
+package ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos;
 
 
-import models.entities.usuarios.Usuario;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Usuario;
 import lombok.*;
 
 import java.time.Duration;
@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Hecho {
     //autor es usuario.getNombre()
+    private Long id;
     private String autor;
     private Usuario usuario;
     private Boolean esValido;
@@ -27,9 +28,6 @@ public class Hecho {
     private Duration plazoEdicion;
     private Boolean esEditable;
 
-    public Boolean estaRegistrado(){
-        return this.usuario.getRegistrado();
-    }
 //creacion anonima osea no tiene usuario
     public static Hecho create(DatosHechos datosHechos) {
         return Hecho.builder()
@@ -88,4 +86,9 @@ public class Hecho {
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 
+    public Origen getOrigen(){
+        if(this.usuario.esAdministrador()){
+            return Origen.CARGA_MANUAL;
+        }else return Origen.CONTRIBUYENTE;
+    }
 }

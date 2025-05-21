@@ -1,4 +1,4 @@
-package models.entities.hechos;
+package ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos;
 
 import lombok.Getter;
 import lombok.Setter;
