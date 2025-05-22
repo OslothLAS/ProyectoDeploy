@@ -17,6 +17,7 @@ import java.util.List;
 public class SolicitudEliminacion {
     @Setter
     private Long id;
+    private Long idSolicitante;
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
     @Setter
@@ -25,18 +26,20 @@ public class SolicitudEliminacion {
     private EstadoSolicitudEliminacion estado;
     private List<EstadoSolicitud> historialDeSolicitud;
     private Long idHecho;
+    @Setter
     private Hecho hecho;
 
 
-    public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
+    public SolicitudEliminacion(String justificacion, Long idHecho, Long idSolicitante) {
         this.justificacion = this.validarJustificacion(justificacion);
-        this.solicitante = solicitante;
+        this.idSolicitante = idSolicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estado = EstadoSolicitudEliminacion.PENDIENTE;
         this.idHecho = idHecho;
         this.historialDeSolicitud = new ArrayList<>();
     }
 
+    //Las validaciones en el service
     public String validarJustificacion(String justificacionSolicitud) {
         if (justificacionSolicitud == null || justificacionSolicitud.length() < 500) {
             throw new IllegalArgumentException("La justificacion debe tener al menos 500 caracteres");
