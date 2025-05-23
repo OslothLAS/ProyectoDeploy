@@ -1,6 +1,8 @@
 package ar.utn.ba.ddsi.fuenteProxy.repository.impl;
 
 
+import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
+import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteProxy.repository.IHechoRepository;
 import org.springframework.stereotype.Repository;
@@ -11,15 +13,15 @@ import java.util.List;
 @Repository
 public class HechoRepository implements IHechoRepository {
 
-    private final List<Hecho> hechos = new ArrayList<>();
+    private final List<HechoDto> hechos = new ArrayList<>();
 
     @Override
-    public void save(Hecho hecho) {
+    public void save(HechoDto hecho) {
         hechos.add(hecho);
     }
 
     @Override
-    public List<Hecho> findAll() {
+    public List<HechoDto> findAll() {
         return new ArrayList<>(hechos); // protegés la colección original
     }
 }

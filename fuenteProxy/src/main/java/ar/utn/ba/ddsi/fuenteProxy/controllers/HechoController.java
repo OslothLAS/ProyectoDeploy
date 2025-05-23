@@ -1,6 +1,8 @@
 package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
+import entities.hechos.DatosHechos;
+import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

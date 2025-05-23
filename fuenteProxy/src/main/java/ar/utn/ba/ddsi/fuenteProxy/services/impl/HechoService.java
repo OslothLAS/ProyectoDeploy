@@ -2,16 +2,17 @@ package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthRequest;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthResponse;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.DesastresResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
-import entities.hechos.Hecho;
-import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
+import ar.utn.ba.ddsi.fuenteProxy.mappers.DatosHechosMapper;
 import ar.utn.ba.ddsi.fuenteProxy.repository.IHechoRepository;
+import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
+import entities.hechos.DatosHechos;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,19 +69,21 @@ public class HechoService implements IHechoService {
             token = obtenerToken();
         }
 
-        List<HechoDto> hechosDto = webClient.get()
-                .uri(desastresPath)
+        // Obtener la primera página de hechos desde el campo 'data'
+        DesastresResponse response = webClient.get()
+                .uri(desastresPath)  // ejemplo: "/public/api/desastres?page=1"
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
-                .bodyToFlux(HechoDto.class)
-                .collectList()
+                .bodyToMono(DesastresResponse.class)
                 .block();
 
-        List<Hecho> hechos = hechosDto.stream()
-                .map(HechoMapper::map)
+        List<HechoDto> hechosDto = response != null ? response.getData() : List.of();
+/*
+        List<DatosHechos> hechos = hechosDto.stream()
+                .map(DatosHechosMapper::map)
                 .collect(Collectors.toList());
-
-        hechos.forEach(hechoRepository::save);
+*/
+        hechosDto.forEach(hechoRepository::save);
 
         return hechosDto;
     }
