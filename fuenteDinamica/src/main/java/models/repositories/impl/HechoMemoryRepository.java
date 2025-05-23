@@ -1,13 +1,15 @@
 package models.repositories.impl;
 
+import lombok.Getter;
 import models.entities.hechos.Hecho;
 import models.repositories.IHechoRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
+
 
 @Repository
 public class HechoMemoryRepository implements IHechoRepository {
+    @Getter
     private List<Hecho> hechos;
 
     @Override

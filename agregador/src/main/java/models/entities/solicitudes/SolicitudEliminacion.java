@@ -15,6 +15,7 @@ import java.util.List;
 
 @Getter
 public class SolicitudEliminacion {
+    private Long idSolicitante;
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
     @Setter
@@ -22,15 +23,16 @@ public class SolicitudEliminacion {
     private String justificacion;
     private EstadoSolicitudEliminacion estado;
     private List<EstadoSolicitud> historialDeSolicitud;
+    private Long idHecho;
     private Hecho hecho;
 
 
-    public SolicitudEliminacion(String justificacion, Hecho hecho, Contribuyente solicitante) {
+    public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
         this.justificacion = this.validarJustificacion(justificacion);
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estado = EstadoSolicitudEliminacion.PENDIENTE;
-        this.hecho = hecho;
+        this.idHecho = idHecho;
         this.historialDeSolicitud = new ArrayList<>();
     }
 
