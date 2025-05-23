@@ -1,8 +1,8 @@
-package models.repository.impl;
+package ar.utn.ba.ddsi.fuenteProxy.repository.impl;
 
 
 import entities.hechos.Hecho;
-import models.repository.IHechoRepository;
+import ar.utn.ba.ddsi.fuenteProxy.repository.IHechoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

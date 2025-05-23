@@ -1,4 +1,4 @@
-package dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos;
 
 
 import lombok.Getter;

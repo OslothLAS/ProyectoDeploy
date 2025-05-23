@@ -1,4 +1,4 @@
-package models.repository;
+package ar.utn.ba.ddsi.fuenteProxy.repository;
 
 
 import entities.hechos.Hecho;
