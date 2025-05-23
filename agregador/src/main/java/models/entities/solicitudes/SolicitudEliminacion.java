@@ -15,6 +15,9 @@ import java.util.List;
 
 @Getter
 public class SolicitudEliminacion {
+    @Setter
+    private Long id;
+    private Long idSolicitante;
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
     @Setter
@@ -22,18 +25,21 @@ public class SolicitudEliminacion {
     private String justificacion;
     private EstadoSolicitudEliminacion estado;
     private List<EstadoSolicitud> historialDeSolicitud;
+    private Long idHecho;
+    @Setter
     private Hecho hecho;
 
 
-    public SolicitudEliminacion(String justificacion, Hecho hecho, Contribuyente solicitante) {
+    public SolicitudEliminacion(String justificacion, Long idHecho, Long idSolicitante) {
         this.justificacion = this.validarJustificacion(justificacion);
-        this.solicitante = solicitante;
+        this.idSolicitante = idSolicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estado = EstadoSolicitudEliminacion.PENDIENTE;
-        this.hecho = hecho;
+        this.idHecho = idHecho;
         this.historialDeSolicitud = new ArrayList<>();
     }
 
+    //Las validaciones en el service
     public String validarJustificacion(String justificacionSolicitud) {
         if (justificacionSolicitud == null || justificacionSolicitud.length() < 500) {
             throw new IllegalArgumentException("La justificacion debe tener al menos 500 caracteres");
@@ -44,12 +50,15 @@ public class SolicitudEliminacion {
 
     }
 
+    //TODAS ESTAS VANA  SER DEL AGREGADOR
+
     public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
             cambiarEstadoSolicitud(estado);
         }
         else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
             cambiarEstadoSolicitud(estado);
+            //si la solicitud es aceptada, se cambia el estado del hecho
             hecho.setEsValido(false);
         }
         this.actualizarHistorialDeOperacion(estado, admin);
@@ -66,5 +75,4 @@ public class SolicitudEliminacion {
         estadoSolicitud.guardarEstado(estado, admin, this);
         this.historialDeSolicitud.add(estadoSolicitud);
     }
-
 }
