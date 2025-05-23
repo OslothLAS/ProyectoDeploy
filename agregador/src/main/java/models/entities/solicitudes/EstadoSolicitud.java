@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import lombok.*;
 @Getter
 public class EstadoSolicitud {
-
+// hola
     private Administrador administrador;
     private Long tiempoDeRespuesta;
     private EstadoSolicitudEliminacion estado;
