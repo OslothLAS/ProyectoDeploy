@@ -17,7 +17,7 @@ import java.util.List;
 public class SolicitudEliminacion {
     @Setter
     private Long id;
-    private Long idSolicitante;
+    //se crea al contribuyente
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
     @Setter
@@ -30,9 +30,9 @@ public class SolicitudEliminacion {
     private Hecho hecho;
 
 
-    public SolicitudEliminacion(String justificacion, Long idHecho, Long idSolicitante) {
+    public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
         this.justificacion = this.validarJustificacion(justificacion);
-        this.idSolicitante = idSolicitante;
+        this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estado = EstadoSolicitudEliminacion.PENDIENTE;
         this.idHecho = idHecho;
