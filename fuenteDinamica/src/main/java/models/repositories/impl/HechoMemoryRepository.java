@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public class HechoMemoryRepository implements IHechoRepository {
+
     @Getter
     private List<Hecho> hechos;
 
@@ -23,5 +24,10 @@ public class HechoMemoryRepository implements IHechoRepository {
             this.hechos.set(hechos.indexOf(hecho), hecho);
         }
         //TODO (gadi)
+    }
+
+    @Override
+    public List<Hecho> findAll() {
+        return List.of();
     }
 }

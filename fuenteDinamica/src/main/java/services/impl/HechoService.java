@@ -22,4 +22,6 @@ public class HechoService implements IHechoService {
     public void editarHecho(Hecho hecho) {
         this.hechoRepository.edit(hecho);
     }
+
+
 }

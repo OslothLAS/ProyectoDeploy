@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ISolicitudEliminacionService {
 
-    public void crearSolicitud(String justificacion, Long idHecho, Contribuyente solicitante);
+    public void crearSolicitud(String justificacion, Long idHecho, Long solicitante);
 }

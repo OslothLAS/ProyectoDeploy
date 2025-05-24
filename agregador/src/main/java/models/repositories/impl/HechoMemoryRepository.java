@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class HechoMemoryRepository implements IHechoRepository {
+
     private final Map<Long, Hecho> hechos = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
