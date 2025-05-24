@@ -11,16 +11,19 @@ import java.util.List;
 public class Coleccion {
     private final String titulo;
     private final String descripcion;
-    //lista de importadores ahora
+    private final Handle handle; // Ahora es un objeto Handle
     private final List<Importador> importadores;
     private List<CriterioDePertenencia> criteriosDePertenencia;
 
+    // Constructor que genera automáticamente el handle
     public Coleccion(String titulo, String descripcion, List<Importador> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
+        this.handle = new Handle(); // Genera un handle único automáticamente
         this.importadores = importadores;
         this.criteriosDePertenencia = criteriosDePertenencia;
     }
+
 
     // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!
     public void filtrarHechos(List<Hecho> listaHechos) {
