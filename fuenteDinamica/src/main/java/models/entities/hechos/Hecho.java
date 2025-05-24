@@ -1,6 +1,7 @@
 package models.entities.hechos;
 
 
+import entities.colecciones.Coleccion;
 import models.entities.usuarios.Usuario;
 import lombok.*;
 
@@ -20,7 +21,7 @@ public class Hecho {
     private Multimedia multimedia;
     private List<String> etiquetas;
     private Boolean mostrarDatos;
-
+    private List<Coleccion> colecciones;
     public Boolean estaRegistrado(){
         return this.usuario.getRegistrado();
     }
