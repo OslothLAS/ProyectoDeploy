@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories;
 
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
+import entities.hechos.Hecho;
 
 import java.util.List;
 import java.util.Optional;

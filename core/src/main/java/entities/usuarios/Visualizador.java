@@ -1,7 +1,6 @@
-package ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios;
+package entities.usuarios;
 
 import lombok.Getter;
-
 import java.time.LocalDate;
 
 @Getter
@@ -14,10 +13,7 @@ public class Visualizador implements Usuario {
     public Boolean getRegistrado() {
         return false;
     }
-//    @Override
-//    public Boolean esAdministrador() {
-//        return false;
-//    }
+
 
     public Visualizador(String nombre, String apellido, LocalDate fechaDeNacimiento) {
         this.nombre = nombre;
@@ -25,3 +21,4 @@ public class Visualizador implements Usuario {
         this.fechaDeNacimiento = fechaDeNacimiento;
     }
 }
+

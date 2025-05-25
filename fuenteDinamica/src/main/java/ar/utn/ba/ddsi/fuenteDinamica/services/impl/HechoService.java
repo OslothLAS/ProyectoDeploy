@@ -1,18 +1,20 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.DatosHechos;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Ubicacion;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Contribuyente;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Visualizador;
+
 import config.HechoProperties;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
+import entities.hechos.DatosHechos;
+import entities.hechos.Hecho;
+import entities.hechos.Ubicacion;
+import entities.usuarios.Contribuyente;
+import entities.usuarios.Visualizador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,9 +31,9 @@ public class HechoService implements IHechoService {
         Ubicacion ubi = new Ubicacion(hechoDTO.getLatitud(), hechoDTO.getLongitud());
         DatosHechos datos = new DatosHechos(hechoDTO.getTitulo(), hechoDTO.getDescripcion(), hechoDTO.getCategoria(), ubi, hechoDTO.getFechaHecho());
 
-        if(hechoDTO.getId() != null) { //si tiene ID => es contribuyente
-            Contribuyente cont = new Contribuyente(hechoDTO.getId(), hechoDTO.getNombre(), hechoDTO.getApellido(), hechoDTO.getFechaHecho());
-            Hecho hecho = Hecho.create(datos,cont,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
+        if(hechoDTO.getIdUsuario() != null) { //si tiene ID => es contribuyente
+            Contribuyente contribuyente = new Contribuyente(hechoDTO.getIdUsuario(), hechoDTO.getNombre(), hechoDTO.getApellido(), hechoDTO.getFechaHecho());
+            Hecho hecho = Hecho.create(datos, contribuyente,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
             hecho.setEsEditable(true);
             hecho.setPlazoEdicion(Duration.ofDays(hechoProperties.getPlazoEdicionDias()));
             this.hechoRepository.save(hecho);
@@ -50,12 +52,14 @@ public class HechoService implements IHechoService {
     public void editarHecho(Long idHecho, HechoInputDTO dto) throws Exception {
         Hecho hecho = hechoRepository.findById(idHecho)
                 .orElseThrow(Exception::new);
-       /* if(!hecho.getUsuario().getId().equals(dto.getUsuario().getId())) {
-            throw new Exception("Solo el autor del hecho puede modificarlo");
-        }*/
+
         if (!hecho.getUsuario().getRegistrado()) {
             throw new Exception("Usuarios anonimos no pueden editar hechos");
         }
+
+        /*if(!hecho.getUsuario().getId().equals(dto.getUsuario().getId())) {
+            throw new Exception("Solo el autor del hecho puede modificarlo");
+        }*/
 
         if (!hecho.esEditable()) {
             throw new Exception("El plazo de edicion ha expirado");
@@ -89,7 +93,6 @@ public class HechoService implements IHechoService {
             hecho.setMultimedia(dto.getMultimedia());
         }
 
-
         hechoRepository.save(hecho);
     }
 
@@ -98,4 +101,15 @@ public class HechoService implements IHechoService {
     public List<Hecho> obtenerTodos(){
         return hechoRepository.findAll();
     }
+
+    /*
+    @PutMapping("/{id}")
+    public Product updateProduct(@PathVariable Long id, @RequestBody Product productDetail){
+        Product product = productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found with id: "+id));
+
+        product.setName(productDetail.getName());
+        product.setPrice(productDetail.getPrice());
+
+        return productRepository.save(product);
+    }*/
 }

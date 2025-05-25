@@ -1,7 +1,8 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories.impl;
 
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
+
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
+import entities.hechos.Hecho;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
