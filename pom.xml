@@ -18,7 +18,6 @@
     <module>fuenteProxy</module>
     <module>agregador</module>
     <module>core</module>
-    <module>solicitudes</module>
   </modules>
 
   <properties>

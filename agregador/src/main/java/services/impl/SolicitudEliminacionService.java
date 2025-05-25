@@ -23,7 +23,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
     @Override
-    public void crearSolicitud(String justificacion, Long idHecho, Long solicitante) {
+    public void crearSolicitud(String justificacion, Long idHecho, Contribuyente solicitante) {
             SolicitudEliminacion solicitud = new SolicitudEliminacion(
                     justificacion,
                     idHecho,

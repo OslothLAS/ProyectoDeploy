@@ -1,9 +1,11 @@
 package models.entities.solicitudes;
+import services.IDetectorDeSpam;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class DetectoDeSpam {
+public class DetectorDeSpam implements IDetectorDeSpam {
 
         // Términos de spam comunes con sus pesos IDF (Inverse Document Frequency)
         private static final Map<String, Double> SPAM_TERMS_IDF = Map.ofEntries(
@@ -31,6 +33,7 @@ public class DetectoDeSpam {
 
         private static final double SPAM_THRESHOLD = 5.0; // Umbral para considerar spam
 
+        @Override
         public boolean isSpam(String texto) {
             // Preprocesamiento del texto
             String cleanedText = texto.toLowerCase()

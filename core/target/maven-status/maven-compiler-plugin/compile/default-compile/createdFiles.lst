@@ -1,0 +1,17 @@
+entities\hechos\Multimedia.class
+entities\hechos\DatosHechos$DatosHechosBuilder.class
+entities\hechos\Ubicacion.class
+utils\ConfigReader.class
+entities\Importador.class
+entities\criteriosDePertenencia\CriterioPorCategoria.class
+entities\criteriosDePertenencia\CriterioPorFecha.class
+entities\usuarios\Contribuyente.class
+entities\colecciones\Coleccion.class
+entities\hechos\Hecho.class
+entities\criteriosDePertenencia\CriterioDePertenencia.class
+entities\hechos\Hecho$HechoBuilder.class
+entities\hechos\Origen.class
+entities\hechos\DatosHechos.class
+utils\NormalizadorTexto.class
+entities\usuarios\Administrador.class
+entities\usuarios\Usuario.class
