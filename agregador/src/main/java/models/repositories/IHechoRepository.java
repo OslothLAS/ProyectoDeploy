@@ -1,5 +1,6 @@
 package models.repositories;
 
+import models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import models.entities.hechos.Hecho;
 
 import java.util.List;
@@ -9,4 +10,6 @@ public interface IHechoRepository {
     void save(Hecho hecho);
     Optional<Hecho> findById(Long id);
     List<Hecho> findAll();
+
+    List<Hecho> findSegunCriterios(List<CriterioDePertenencia> criterios);
 }
