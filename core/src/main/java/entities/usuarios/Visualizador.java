@@ -14,6 +14,10 @@ public class Visualizador implements Usuario {
         return false;
     }
 
+    @Override
+    public Long getId() {
+        return null;
+    }
 
     public Visualizador(String nombre, String apellido, LocalDate fechaDeNacimiento) {
         this.nombre = nombre;

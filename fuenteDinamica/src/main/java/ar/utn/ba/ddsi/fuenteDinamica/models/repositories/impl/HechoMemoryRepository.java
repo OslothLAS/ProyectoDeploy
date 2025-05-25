@@ -12,14 +12,17 @@ import java.util.concurrent.atomic.AtomicLong;
 public class HechoMemoryRepository implements IHechoRepository {
     private final Map<Long, Hecho> hechos = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
+    private final Map<Hecho, Long> hechoToIdMap = new HashMap<>();
 
     @Override
     public void save(Hecho hecho) {
-        if(hecho.getId() == null){
-            hecho.setId(idGenerator.getAndIncrement());
-            hechos.put(hecho.getId(), hecho);
-        }else{
-            hechos.put(hecho.getId(), hecho);
+        if (hechoToIdMap.containsKey(hecho)) {
+            Long existingId = hechoToIdMap.get(hecho);
+            hechos.put(existingId, hecho);
+        }else {
+            Long newId = idGenerator.getAndIncrement();
+            hechos.put(newId, hecho);
+            hechoToIdMap.put(hecho, newId);
         }
     }
 

@@ -32,6 +32,18 @@ public class Hecho {
     private Duration plazoEdicion;
     private Boolean esEditable;
 
+    public static Hecho create(DatosHechos datosHechos){
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .usuario(null)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.DATASET)
+                .build();
+    }
+
+
     public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
         return Hecho.builder()
                 .datosHechos(datosHechos)

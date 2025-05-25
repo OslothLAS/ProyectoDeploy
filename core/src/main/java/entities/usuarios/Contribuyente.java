@@ -37,5 +37,8 @@ public class Contribuyente implements Usuario {
 
     public Boolean esAdministrador() {return false;}
 
-
+    @Override
+    public Long getId() {
+        return id;
+    }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -57,9 +56,9 @@ public class HechoService implements IHechoService {
             throw new Exception("Usuarios anonimos no pueden editar hechos");
         }
 
-        /*if(!hecho.getUsuario().getId().equals(dto.getUsuario().getId())) {
+        if(!hecho.getUsuario().getId().equals(dto.getIdUsuario())) {
             throw new Exception("Solo el autor del hecho puede modificarlo");
-        }*/
+        }
 
         if (!hecho.esEditable()) {
             throw new Exception("El plazo de edicion ha expirado");
