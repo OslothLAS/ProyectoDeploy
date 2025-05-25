@@ -1,5 +1,6 @@
 package models.entities.solicitudes;
 import services.IDetectorDeSpam;
+import utils.ConfigLoader;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -7,31 +8,13 @@ import java.util.stream.Collectors;
 
 public class DetectorDeSpam implements IDetectorDeSpam {
 
-        // Términos de spam comunes con sus pesos IDF (Inverse Document Frequency)
-        private static final Map<String, Double> SPAM_TERMS_IDF = Map.ofEntries(
-                Map.entry("oferta", 2.1),
-                Map.entry("gratis", 2.3),
-                Map.entry("ganador", 2.5),
-                Map.entry("urgente", 2.2),
-                Map.entry("dinero", 2.0),
-                Map.entry("click", 2.4),
-                Map.entry("aquí", 1.8),
-                Map.entry("promoción", 2.3),
-                Map.entry("exclusivo", 2.1),
-                Map.entry("limitado", 2.2),
-                Map.entry("prueba", 1.9),
-                Map.entry("seguro", 1.7),
-                Map.entry("crédito", 2.0),
-                Map.entry("préstamo", 2.1),
-                Map.entry("millón", 2.5),
-                Map.entry("dólar", 2.0),
-                Map.entry("bitcoin", 2.4),
-                Map.entry("ganar", 2.3),
-                Map.entry("sorteo", 2.6),
-                Map.entry("visita", 1.8)
-        );
+        private final Map<String, Double> spamTermsIdf;
+        private final double spamThreshold;
 
-        private static final double SPAM_THRESHOLD = 5.0; // Umbral para considerar spam
+        public DetectorDeSpam() {
+            this.spamTermsIdf = ConfigLoader.getSpamTermsIdf(); // Términos de spam comunes con sus pesos IDF (Inverse Document Frequency)
+            this.spamThreshold = ConfigLoader.getSpamThreshold(); // Umbral para considerar spam
+        }
 
         @Override
         public boolean isSpam(String texto) {
@@ -50,7 +33,7 @@ public class DetectorDeSpam implements IDetectorDeSpam {
 
             // Calcular puntuación TF-IDF para términos de spam
             double spamScore = 0.0;
-            for (Map.Entry<String, Double> entry : SPAM_TERMS_IDF.entrySet()) {
+            for (Map.Entry<String, Double> entry : this.spamTermsIdf.entrySet()) {
                 String term = entry.getKey();
                 double idf = entry.getValue();
                 int tf = termFrequency.getOrDefault(term, 0);
@@ -61,6 +44,6 @@ public class DetectorDeSpam implements IDetectorDeSpam {
             // Normalizar por longitud del texto
             spamScore = spamScore * 500 / texto.length();
 
-            return spamScore > SPAM_THRESHOLD;
+            return spamScore > this.spamThreshold;
         }
 }
