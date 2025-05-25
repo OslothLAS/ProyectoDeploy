@@ -9,6 +9,13 @@ class DetectorDeSpamTest {
     public void detectarSpam() {
         DetectorDeSpam detectoDeSpam = new DetectorDeSpam();
         String text = "Oferta, gratis un auto 0KM";
-        assertEquals(detectoDeSpam.isSpam(text), true);
+        assertTrue(detectoDeSpam.isSpam(text));
+    }
+
+    @Test
+    public void detectarTextoValido() {
+        DetectorDeSpam detectoDeSpam = new DetectorDeSpam();
+        String text = "Buenas tardes, quiero reportar un hecho";
+        assertFalse(detectoDeSpam.isSpam(text));
     }
 }
