@@ -16,6 +16,9 @@ import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 import java.time.Duration;
 import java.util.List;
 
+
+
+
 @Service
 public class HechoService implements IHechoService {
     @Autowired  // ← Opcional en Spring Boot
@@ -94,6 +97,8 @@ public class HechoService implements IHechoService {
 
         hechoRepository.save(hecho);
     }
+
+
 
     //solo para debug, no está contemplado en la entrega
     @Override
