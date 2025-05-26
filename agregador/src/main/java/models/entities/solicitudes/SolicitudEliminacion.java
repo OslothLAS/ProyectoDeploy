@@ -46,7 +46,7 @@ public class SolicitudEliminacion {
         this.historialDeSolicitud = new ArrayList<>();
     }
 
-    //TODAS ESTAS VANA  SER DEL AGREGADOR
+    //TODAS ESTAS VANA  SER DEL AGREGADOR? (No estoy tan seguro)
 
     public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
@@ -56,7 +56,6 @@ public class SolicitudEliminacion {
             cambiarEstadoSolicitud(estado);
             //si la solicitud es aceptada, se cambia el estado del hecho (26/5 ahora con idHecho)
             hechoRepository.findById(idHecho).setEsValido(false);
-
         }
         this.actualizarHistorialDeOperacion(estado, admin);
     }

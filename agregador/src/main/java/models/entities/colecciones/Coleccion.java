@@ -24,10 +24,18 @@ public class Coleccion {
         this.criteriosDePertenencia = criteriosDePertenencia;
     }
 
-
+    //--------------------------------------------------------------------------------------------------
     // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!
+    // ESTE METODO TAMBIEN AGREGA LA COLECCION ACTUAL A LOS HECHOS
+    //Le asignamos una lista de hechos y trabaja con eso
+    //--------------------------------------------------------------------------------------------------
     public void filtrarHechos(List<Hecho> listaHechos) {
+
+        //Toma de la lista de hechos que le dimos para trabajar y filtra las que cumplen con
+        //los criterios de pertenencia de ESTA COLECCION
         List<Hecho> hechosFiltrados = listaHechos.stream().filter(this::cumpleCriterios).toList();
+
+        //A la lista de los hechos, se le asigna la coleccion actual
         hechosFiltrados.forEach(hecho -> hecho.addColeccion(this));
     }
 
