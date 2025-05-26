@@ -1,5 +1,6 @@
 package models.repositories.impl;
 
+import models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import models.entities.hechos.Hecho;
 import models.repositories.IHechoRepository;
 import org.springframework.stereotype.Repository;
@@ -24,12 +25,19 @@ public class HechoMemoryRepository implements IHechoRepository {
     }
 
     @Override
-    public Optional<Hecho> findById(Long id){
-        return Optional.ofNullable(hechos.get(id));
+    public Hecho findById(Long id){
+        return hechos.get(id);
     }
 
     @Override
     public List<Hecho> findAll(){
         return new ArrayList<>(hechos.values());
     }
+
+    @Override
+    public List<Hecho> findSegunCriterios(List<CriterioDePertenencia> criterios) {
+        return List.of(); //TODO
+    }
+
+
 }

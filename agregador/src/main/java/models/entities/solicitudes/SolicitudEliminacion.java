@@ -1,9 +1,11 @@
 package models.entities.solicitudes;
 
-import entities.hechos.Hecho;
+import models.entities.hechos.Hecho;
 import entities.usuarios.Administrador;
 import entities.usuarios.Contribuyente;
 import lombok.*;
+import models.repositories.IHechoRepository;
+import services.IDetectorDeSpam;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,26 +30,20 @@ public class SolicitudEliminacion {
     private Long idHecho;
     @Setter
     private Hecho hecho;
+    public IDetectorDeSpam detectorDeSpam;
+    public IHechoRepository hechoRepository;
 
 
     public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
-        this.justificacion = this.validarJustificacion(justificacion);
+        this.justificacion = justificacion;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
-        this.estado = EstadoSolicitudEliminacion.PENDIENTE;
+        if(detectorDeSpam.isSpam(justificacion)){
+            this.estado = EstadoSolicitudEliminacion.RECHAZADA;}
+        else{
+            this.estado = EstadoSolicitudEliminacion.PENDIENTE;};
         this.idHecho = idHecho;
         this.historialDeSolicitud = new ArrayList<>();
-    }
-
-    //Las validaciones en el service
-    public String validarJustificacion(String justificacionSolicitud) {
-        if (justificacionSolicitud == null || justificacionSolicitud.length() < 500) {
-            throw new IllegalArgumentException("La justificacion debe tener al menos 500 caracteres");
-        }
-        else{
-            return justificacionSolicitud;
-        }
-
     }
 
     //TODAS ESTAS VANA  SER DEL AGREGADOR
@@ -58,11 +54,11 @@ public class SolicitudEliminacion {
         }
         else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
             cambiarEstadoSolicitud(estado);
-            //si la solicitud es aceptada, se cambia el estado del hecho
-            hecho.setEsValido(false);
+            //si la solicitud es aceptada, se cambia el estado del hecho (26/5 ahora con idHecho)
+            hechoRepository.findById(idHecho).setEsValido(false);
+
         }
         this.actualizarHistorialDeOperacion(estado, admin);
-
     }
 
     private void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {

@@ -43,6 +43,6 @@ public class SolicitudMemoryRepository implements ISolicitudEliminacionRepositor
     }
 
     @Override
-    public void deleteSolicitude(SolicitudEliminacion solicitud) {
+    public void deleteSolicitudes(SolicitudEliminacion solicitud) {
     }
 }
