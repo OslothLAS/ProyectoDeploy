@@ -78,7 +78,7 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
         LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
         Ubicacion nuevaUbi = new Ubicacion(latitud, longitud);
 
-        DatosHechos data = new DatosHechos(titulo,descripcion, categoria, nuevaUbi, fechaHecho,LocalDate.now(), Origen.DATASET);
+        DatosHechos data = new DatosHechos(titulo,descripcion, categoria, nuevaUbi, fechaHecho);
         return Hecho.create(data);
     }
 
