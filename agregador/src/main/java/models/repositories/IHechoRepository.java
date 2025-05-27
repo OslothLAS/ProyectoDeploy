@@ -10,6 +10,5 @@ public interface IHechoRepository {
     void save(Hecho hecho);
     Hecho findById(Long id);
     List<Hecho> findAll();
-
     List<Hecho> findSegunCriterios(List<CriterioDePertenencia> criterios);
 }
