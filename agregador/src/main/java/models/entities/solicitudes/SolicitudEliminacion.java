@@ -1,9 +1,12 @@
 package models.entities.solicitudes;
 
-import entities.hechos.Hecho;
-import entities.usuarios.Administrador;
-import entities.usuarios.Contribuyente;
+import models.entities.hechos.Hecho;
+import models.entities.usuarios.Administrador;
+import models.entities.usuarios.Contribuyente;
 import lombok.*;
+import models.repositories.IHechoRepository;
+import models.entities.solicitudes.IDetectorDeSpam;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,35 +18,38 @@ import java.util.List;
 
 @Getter
 public class SolicitudEliminacion {
+    @Setter
+    private Long id;
+    //se crea al contribuyente
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
-
     @Setter
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;
     private EstadoSolicitudEliminacion estado;
     private List<EstadoSolicitud> historialDeSolicitud;
-    private Hecho hecho;
+    private Long idHecho;
+    @Setter
+    public IDetectorDeSpam detectorDeSpam;
+    public IHechoRepository hechoRepository;
 
 
-    public SolicitudEliminacion(String justificacion, Hecho hecho, Contribuyente solicitante) {
-        this.justificacion = this.validarJustificacion(justificacion);
+    public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
+        this.detectorDeSpam = new DetectorDeSpam();
+        this.justificacion = justificacion;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
-        this.estado = EstadoSolicitudEliminacion.PENDIENTE;
-        this.hecho = hecho;
+        if(detectorDeSpam.isSpam(justificacion)){
+            this.estado = EstadoSolicitudEliminacion.RECHAZADA;}
+        else{
+            this.estado = EstadoSolicitudEliminacion.PENDIENTE;
+        }
+        this.idHecho = idHecho;
         this.historialDeSolicitud = new ArrayList<>();
     }
 
-    public String validarJustificacion(String justificacionSolicitud) {
-        if (justificacionSolicitud == null || justificacionSolicitud.length() < 500) {
-            throw new IllegalArgumentException("La justificacion debe tener al menos 500 caracteres");
-        }
-        else{
-            return justificacionSolicitud;
-        }
 
-    }
+    //TODAS ESTAS VANA  SER DEL AGREGADOR? (No estoy tan seguro)
 
     public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
@@ -51,10 +57,10 @@ public class SolicitudEliminacion {
         }
         else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
             cambiarEstadoSolicitud(estado);
-            hecho.setEsValido(false);
+            //si la solicitud es aceptada, se cambia el estado del hecho (26/5 ahora con idHecho)
+            hechoRepository.findById(idHecho).setEsValido(false);
         }
         this.actualizarHistorialDeOperacion(estado, admin);
-
     }
 
     private void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {
@@ -67,5 +73,4 @@ public class SolicitudEliminacion {
         estadoSolicitud.guardarEstado(estado, admin, this);
         this.historialDeSolicitud.add(estadoSolicitud);
     }
-
 }

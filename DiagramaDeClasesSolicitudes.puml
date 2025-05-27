@@ -1,0 +1,209 @@
+@startuml
+class Coleccion {
+    -titulo: String
+    -descripcion: String
+    -importador: Importador
+    -criteriosDePertenencia: List<CriterioDePertenencia>
+
+    +filtrarHechos(listaHechos: List<Hecho>): void
+    +cumpleCriterios(hecho: Hecho): Boolean
+    +setCriteriosDePertenencia(criterios: List<CriterioDePertenencia>): void
+}
+
+interface CriterioDePertenencia {
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+
+class CriterioPorFecha implements CriterioDePertenencia {
+    -fechaInicio: LocalDate
+    -fechaFin: LocalDate
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+
+class CriterioPorCategoria implements CriterioDePertenencia {
+    -categoria: String
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+ class Ubicacion {
+   -latitud: Double
+   -longitud: Double
+ }
+
+
+class SolicitudEliminacion{
+    -solicitante: Contribuyente
+    -fechaDeCreacion: LocalDateTime
+    -fechaDeEvaluacion: LocalDateTime
+    -justificacion: String
+    -estado: EstadoSolicitudEliminacion
+    -historialSolicitud:List<EstadoSolicitud>
+    -idHecho: Long
+    +detectorDeSpam: IDetectorDeSpam
+    +hechoRepository: IHechoRepository
+
+    +cambiarEstadoHecho(Administrador, EstadoSolicitudEliminacion): void
+    -cambiarEstadoSolicitud(EstadoSolicitudEliminacion): void
+    -actualizarHistorialDeOperacion():void
+}
+
+class SolicitudEliminacionService implements ISolicitudEliminacionService{
+    -solicitudRepository: ISolicitudEliminacionRepository
+    +validarJustificacion(String): String
+    +crearSolicitud(String, Long, Contribuyente): void
+}
+
+
+
+class ColeccionSerive implements IColeccionService{
+    -ihechoRepository: IHechoRepository
+    +actualizarHechos(): void
+    +traerColecciones(): List<Coleccion>
+    -filtrarHechoValidos(List<Hecho>): List<Hecho>
+}
+
+class IColeccionService{
+    +actualizarHechos(): void
+}
+
+class ISolicitudEliminacionService{
+    +crearSolicitud: void
+    +validarJustificacion:String
+}
+
+class DetectorDeSpam implements IDetectorDeSpam{
+    -SPAM_TERMS_IDF Map<String, Double>
+    +isSpam:boolean
+}
+
+class IDetectorDeSpam{
++isSpam:boolean
+
+}
+
+class  SolicitudMemoryRepository implements ISolicitudEliminacionRepository {
+    - solicitudes: Map<Long, SolicitudEliminacion>
+    - idGenerator: AtomicLong
+
+}
+
+class ISolicitudEliminacionRepository{
+    + save(SolicitudEliminacion): void
+    + findById: Optional<SolicitudEliminacion>
+    + findAll: List<SolicitudEliminacion>
+    + findByEstado :List<SolicitudEliminacion>
+    + deleteSolicitudes: SolicitudEliminacion
+}
+
+class HechoMemoryRepository implements IHechoRepository{
+    -hechos: Map<Long, Hecho>
+    -idGenerator: AtomicLong
+}
+
+class IHechoRepository{
+    save(Hecho): void
+    findById(Long): Hecho
+    findAll(): List<Hecho>
+    findSegunCriterios(List<CriterioDePertenencia>): List<Hecho>
+}
+
+
+class EstadoSolicitud{
+    -evaluador: Administrador
+    -tiempoDeRespuesta: Integer
+    -solicitudes: List<SolicitudEliminacion>
+
+    +guardarEstado(Administrador, SolicitudEliminacion)
+
+}
+
+enum EstadoSolicitudEliminacion {
+      PENDIENTE
+      ACEPTADA
+      RECHAZADA
+}
+
+
+class Hecho {
+    -id: Long
+    -autor: String
+    -usuario: Usuario
+    -esValido: boolean
+    -datosHechos: DatosHechos
+    -multimedia: Multimedia
+    -etiquetas: List<String>
+    -colecciones: List<Coleccion>
+    -origen: Origen
+    -mostrarDatos: boolean
+    -fechaCreacion: LocalDateTime
+    -plazoEdicion: Duration
+    -esEditable: boolean
+
+
+    +addEtiqueta(etiqueta: String): void
+    +addColeccion(coleccion: Coleccion): void
+    +esEditable(): boolean
+}
+
+
+
+class Multimedia{
+    -url: string
+-extension: string
+}
+
+enum Origen {
+    CARGA_MANUAL
+    DATASET
+    CONTRIBUYENTE
+    VISUALIZADOR
+}
+
+class Ubicacion {
+   -latitud: Double
+   -longitud: Double
+ }
+
+
+
+class FuenteEstatica{
+    -pathArchivos: List<String>;
+    -EstrategiaExtraccionHechos: EstrategiaExtraccionHechos
+    +obtenerHechos(): map<String,Hecho>
+    +csvExtractor(hechos, pathArchivos): FuenteEstatica
+}
+
+
+interface EstrategiaExtraccionHechos{
+    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
+}
+
+
+class EstrategiaExtraccionHechosCSV implements EstrategiaExtraccionHechos{
+    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
+}
+
+
+class Contribuyente{
+   -nombre: String
+   -apellido: String
+   -fechaDeNacimiento: LocalDate
+   +obtenerEdad(): Integer
+}
+
+
+  Coleccion --> FuenteEstatica
+  Coleccion --> Hecho
+  Origen <-- Hecho
+  Ubicacion <--* Hecho
+  SolicitudEliminacion --> Hecho
+  SolicitudEliminacion --> Contribuyente
+  FuenteEstatica --> EstrategiaExtraccionHechos
+  SolicitudEliminacion --> EstadoSolicitudEliminacion
+  Coleccion -->"*" CriterioDePertenencia
+  EstadoSolicitud <-- SolicitudEliminacion
+
+  Multimedia <--* Hecho
+@enduml

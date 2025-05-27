@@ -1,0 +1,4 @@
+EstrategiasExtraccion\EstrategiaExtraccionHechoCSV.class
+utils\ExtensionReader.class
+entities\ImportadorHechos.class
+EstrategiasExtraccion\EstrategiaExtraccionHecho.class

@@ -1,7 +1,6 @@
 package models.entities.solicitudes;
 
-import entities.usuarios.Administrador;
-import entities.usuarios.Contribuyente;
+import models.entities.usuarios.Administrador;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -9,7 +8,7 @@ import java.time.LocalDateTime;
 import lombok.*;
 @Getter
 public class EstadoSolicitud {
-
+// hola
     private Administrador administrador;
     private Long tiempoDeRespuesta;
     private EstadoSolicitudEliminacion estado;
