@@ -1,7 +1,5 @@
 package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
-import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +19,7 @@ public class HechoController {
     }
 
     @GetMapping
-    public List<HechoDto> obtenerHechos() {
+    public List<Hecho> obtenerHechos() {
         return hechoService.getHechos();
     }
 }

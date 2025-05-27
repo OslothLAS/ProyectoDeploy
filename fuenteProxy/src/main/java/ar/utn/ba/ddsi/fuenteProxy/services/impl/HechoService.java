@@ -4,10 +4,10 @@ import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthRequest;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.DesastresResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
-import ar.utn.ba.ddsi.fuenteProxy.mappers.DatosHechosMapper;
+import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
 import ar.utn.ba.ddsi.fuenteProxy.repository.IHechoRepository;
 import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
-import entities.hechos.DatosHechos;
+import entities.hechos.Hecho;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -64,27 +64,28 @@ public class HechoService implements IHechoService {
     }
 
     @Override
-    public List<HechoDto> getHechos() {
+    public List<Hecho> getHechos() {
         if (token == null) {
             token = obtenerToken();
         }
 
-        // Obtener la primera página de hechos desde el campo 'data'
         DesastresResponse response = webClient.get()
-                .uri(desastresPath)  // ejemplo: "/public/api/desastres?page=1"
+                .uri(desastresPath)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .bodyToMono(DesastresResponse.class)
                 .block();
 
         List<HechoDto> hechosDto = response != null ? response.getData() : List.of();
-/*
-        List<DatosHechos> hechos = hechosDto.stream()
-                .map(DatosHechosMapper::map)
-                .collect(Collectors.toList());
-*/
-        hechosDto.forEach(hechoRepository::save);
 
-        return hechosDto;
+        // Mapear los HechoDto a Hecho
+        List<Hecho> hechos = hechosDto.stream()
+                .map(HechoMapper::mapHechoDtoToHecho)
+                .toList(); // Java 16+ (si estás en <16, usá collect(Collectors.toList()))
+
+        // Guardar cada Hecho
+        hechos.forEach(hechoRepository::save);
+
+        return hechos;
     }
 }

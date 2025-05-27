@@ -1,10 +1,9 @@
 package ar.utn.ba.ddsi.fuenteProxy.services;
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
-import entities.hechos.DatosHechos;
+import entities.hechos.Hecho;
 
 import java.util.List;
 
 public interface IHechoService {
-    List<HechoDto> getHechos();
+    List<Hecho> getHechos();
 }

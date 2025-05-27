@@ -1,13 +1,12 @@
 package ar.utn.ba.ddsi.fuenteProxy.repository;
 
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
-import entities.hechos.DatosHechos;
+import entities.hechos.Hecho;
 
 import java.util.List;
 
 public interface IHechoRepository {
-    void save(HechoDto hecho);
-    List<HechoDto> findAll();
+    void save(Hecho hecho);
+    List<Hecho> findAll();
 }
 
