@@ -47,6 +47,7 @@ public class ColeccionService implements IColeccionService {
     private void actualizarColeccionesDeHechos(List<Coleccion> colecciones){
         List<Hecho> hechos =  this.hechoRepository.findAll();
         colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechos));
+        hechoRepository.findAll().forEach(hecho -> hechoRepository.save(hecho));
     }
 
 
