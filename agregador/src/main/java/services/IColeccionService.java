@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IColeccionService {
 
-    public void actualizarHechos(IHechoRepository repositorioDeFuente, List<Coleccion> colecciones);
+    public void actualizarHechos();
 
 }

@@ -13,8 +13,7 @@ import java.util.List;
 public class ColeccionScheduler {
 
     private ColeccionService coleccionService;
-    private IHechoRepository hechoRepository;
-    private List<Coleccion> colecciones;
+
 
     public ColeccionScheduler(ColeccionService coleccionService) {
         this.coleccionService = coleccionService;
@@ -22,6 +21,6 @@ public class ColeccionScheduler {
 
     @Scheduled(cron = "0 0 * * * *")
     public void actualizarColecciones(){
-        this.coleccionService.actualizarHechos(this.hechoRepository, this.colecciones);
+        this.coleccionService.actualizarHechos();
     }
 }
