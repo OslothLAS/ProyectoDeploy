@@ -1,11 +1,9 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories.impl;
 
-
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.solicitudes.EstadoSolicitudEliminacion;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.solicitudes.SolicitudEliminacion;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ISolicitudRepository;
+import entities.solicitudes.EstadoSolicitudEliminacion;
+import entities.solicitudes.SolicitudEliminacion;
 import org.springframework.stereotype.Repository;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;

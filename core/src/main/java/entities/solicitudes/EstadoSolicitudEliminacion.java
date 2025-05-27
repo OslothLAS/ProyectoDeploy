@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.fuenteDinamica.models.entities.solicitudes;
+package entities.solicitudes;
 
 public enum EstadoSolicitudEliminacion {
     PENDIENTE,

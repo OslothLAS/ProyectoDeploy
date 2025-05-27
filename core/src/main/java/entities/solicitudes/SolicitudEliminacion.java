@@ -1,10 +1,9 @@
-package ar.utn.ba.ddsi.fuenteDinamica.models.entities.solicitudes;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Administrador;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Contribuyente;
-import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.impl.HechoMemoryRepository;
-import lombok.*;
+package entities.solicitudes;
 
+import entities.hechos.Hecho;
+import entities.usuarios.Administrador;
+import entities.usuarios.Contribuyente;
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
 public class SolicitudEliminacion {
     @Setter
     private Long id;
-    private Long idSolicitante;
+    @Getter
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
     @Setter
@@ -25,32 +24,16 @@ public class SolicitudEliminacion {
     private String justificacion;
     private EstadoSolicitudEliminacion estado;
     private List<EstadoSolicitud> historialDeSolicitud;
-    private Long idHecho;
     @Setter
     private Hecho hecho;
 
-
-    public SolicitudEliminacion(String justificacion, Long idHecho, Long idSolicitante) {
-        this.justificacion = this.validarJustificacion(justificacion);
-        this.idSolicitante = idSolicitante;
+    public SolicitudEliminacion(String justificacion, Contribuyente solicitante) {
+        this.justificacion = justificacion;
+        this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
-        this.estado = EstadoSolicitudEliminacion.PENDIENTE;
-        this.idHecho = idHecho;
         this.historialDeSolicitud = new ArrayList<>();
     }
 
-    //Las validaciones en el service
-    public String validarJustificacion(String justificacionSolicitud) {
-        if (justificacionSolicitud == null || justificacionSolicitud.length() < 500) {
-            throw new IllegalArgumentException("La justificacion debe tener al menos 500 caracteres");
-        }
-        else{
-            return justificacionSolicitud;
-        }
-
-    }
-
-    //TODAS ESTAS VANA  SER DEL AGREGADOR
 
     public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
@@ -58,11 +41,8 @@ public class SolicitudEliminacion {
         }
         else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
             cambiarEstadoSolicitud(estado);
-            //si la solicitud es aceptada, se cambia el estado del hecho
-            hecho.setEsValido(false);
         }
         this.actualizarHistorialDeOperacion(estado, admin);
-
     }
 
     private void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {

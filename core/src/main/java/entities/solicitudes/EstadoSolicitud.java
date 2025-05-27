@@ -1,8 +1,7 @@
-package ar.utn.ba.ddsi.fuenteDinamica.models.entities.solicitudes;
+package entities.solicitudes;
 
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Administrador;
+import entities.usuarios.Administrador;
 import lombok.*;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -28,3 +27,4 @@ public class EstadoSolicitud {
     }
 
 }
+

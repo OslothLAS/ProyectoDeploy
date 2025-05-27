@@ -1,7 +1,8 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories;
 
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.solicitudes.EstadoSolicitudEliminacion;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.solicitudes.SolicitudEliminacion;
+
+import entities.solicitudes.EstadoSolicitudEliminacion;
+import entities.solicitudes.SolicitudEliminacion;
 
 import java.util.List;
 import java.util.Optional;
