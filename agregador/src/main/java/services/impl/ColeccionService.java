@@ -25,7 +25,9 @@ public class ColeccionService implements IColeccionService {
 
     public void actualizarHechos(){
         List<Hecho> hechos = filtrarHechosValidos(hechoRepository.findAll());
-        this.actualizarColeccionesDeHechos(this.traerColecciones());
+        List<Coleccion> colecciones = this.traerColecciones();
+        colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechos));
+        hechos.forEach(hecho -> hechoRepository.save(hecho));
     }
 
     //Crea una lista con todas las colecciones existentes para usarse (por el momento)
@@ -39,16 +41,7 @@ public class ColeccionService implements IColeccionService {
 
     //Esto es solo para agregar los hechos validos
     private List<Hecho> filtrarHechosValidos(List<Hecho> hechos){
-       return hechos.stream().filter(
-               hecho -> hecho.getEsValido()).
-               collect(Collectors.toList());
+       return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList());
     }
-
-    private void actualizarColeccionesDeHechos(List<Coleccion> colecciones){
-        List<Hecho> hechos =  this.hechoRepository.findAll();
-        colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechos));
-        hechoRepository.findAll().forEach(hecho -> hechoRepository.save(hecho));
-    }
-
 
 }
