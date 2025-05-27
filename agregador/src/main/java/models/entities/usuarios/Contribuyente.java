@@ -11,6 +11,7 @@ public class Contribuyente implements Usuario {
     private final String apellido;
     private final LocalDate fechaDeNacimiento;
 
+
     @Override
     public String getNombre() {
         return nombre;
@@ -34,6 +35,8 @@ public class Contribuyente implements Usuario {
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.apellido = apellido;
     }
+
+
 
     public Boolean esAdministrador() {return false;}
 

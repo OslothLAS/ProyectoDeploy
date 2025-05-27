@@ -16,8 +16,11 @@ import java.util.stream.Collectors;
 @Service
 public class ColeccionService implements IColeccionService {
 
-    @Autowired
     private IHechoRepository hechoRepository;
+
+    public ColeccionService(IHechoRepository hechoRepository) {
+        this.hechoRepository = hechoRepository;
+    }
 
 
     public void actualizarHechos(){
@@ -27,7 +30,7 @@ public class ColeccionService implements IColeccionService {
 
     //Crea una lista con todas las colecciones existentes para usarse (por el momento)
     //en actualizarHechos
-    private List<Coleccion> traerColecciones(){
+    public List<Coleccion> traerColecciones(){
         Set<Coleccion> colecciones = new HashSet<>();
         List<Hecho> hechos = hechoRepository.findAll();
         hechos.forEach(hecho -> colecciones.addAll(hecho.getColecciones()));
@@ -46,29 +49,5 @@ public class ColeccionService implements IColeccionService {
         colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechos));
     }
 
-
-/*
-    public Coleccion getColeccion(String titulo, String descripcion, List<Importador> importadores, List<CriterioDePertenencia> criteriosDePertenencia){
-
-        List<Hecho> hechosSegunCriterio = this.hechoRepository.findSegunCriterios(criteriosDePertenencia);
-        Coleccion coleccion = new Coleccion(titulo,descripcion, importadores, criteriosDePertenencia);
-
-        //Agrego la coleccion a cada hecho
-        hechosSegunCriterio.forEach(hecho -> {
-            hecho.addColeccion(coleccion);
-        });
-
-        return coleccion;
-    }
-*/
-
-/* Capaz en algun momento use esta funcion
-    private boolean perteneceALaColeccion(Hecho hecho, Coleccion coleccion){
-        return hecho
-                .getColecciones()
-                .stream()
-                .anyMatch(num -> num.equals(coleccion) );
-    }
-*/
 
 }

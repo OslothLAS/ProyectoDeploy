@@ -1,6 +1,6 @@
 package services;
 
-import entities.usuarios.Contribuyente;
+import models.entities.usuarios.Contribuyente;
 import models.entities.solicitudes.EstadoSolicitudEliminacion;
 import models.entities.solicitudes.SolicitudEliminacion;
 import java.util.List;

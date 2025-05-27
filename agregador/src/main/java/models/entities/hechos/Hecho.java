@@ -2,7 +2,6 @@ package models.entities.hechos;
 import lombok.*;
 import models.entities.colecciones.Coleccion;
 import models.entities.usuarios.Usuario;
-import org.springframework.web.service.annotation.GetExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,7 @@ public class Hecho {
     private DatosHechos datosHechos;
     private Multimedia multimedia;
     private List<String> etiquetas;
+    @Getter
     private List<Coleccion> colecciones;
     private Boolean mostrarDatos;
 

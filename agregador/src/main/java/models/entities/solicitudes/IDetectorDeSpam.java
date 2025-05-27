@@ -1,4 +1,4 @@
-package services;
+package models.entities.solicitudes;
 
 public interface IDetectorDeSpam {
 

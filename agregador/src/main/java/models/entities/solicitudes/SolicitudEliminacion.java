@@ -1,11 +1,12 @@
 package models.entities.solicitudes;
 
 import models.entities.hechos.Hecho;
-import entities.usuarios.Administrador;
-import entities.usuarios.Contribuyente;
+import models.entities.usuarios.Administrador;
+import models.entities.usuarios.Contribuyente;
 import lombok.*;
 import models.repositories.IHechoRepository;
-import services.IDetectorDeSpam;
+import models.entities.solicitudes.IDetectorDeSpam;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class SolicitudEliminacion {
     private Long idHecho;
     @Setter
     private Hecho hecho;
-    public IDetectorDeSpam detectorDeSpam;
+    public IDetectorDeSpam detectorDeSpam = new DetectorDeSpam();
     public IHechoRepository hechoRepository;
 
 
@@ -41,10 +42,12 @@ public class SolicitudEliminacion {
         if(detectorDeSpam.isSpam(justificacion)){
             this.estado = EstadoSolicitudEliminacion.RECHAZADA;}
         else{
-            this.estado = EstadoSolicitudEliminacion.PENDIENTE;};
+            this.estado = EstadoSolicitudEliminacion.PENDIENTE;
+        }
         this.idHecho = idHecho;
         this.historialDeSolicitud = new ArrayList<>();
     }
+
 
     //TODAS ESTAS VANA  SER DEL AGREGADOR? (No estoy tan seguro)
 

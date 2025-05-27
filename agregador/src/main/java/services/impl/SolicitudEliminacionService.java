@@ -1,12 +1,12 @@
 package services.impl;
 
-import entities.usuarios.Contribuyente;
+import models.entities.usuarios.Contribuyente;
 import models.entities.solicitudes.SolicitudEliminacion;
 import services.ISolicitudEliminacionService;
 
 import java.util.List;
 
-public class SolicitudEliminacionService implements ISolicitudEliminacionService{
+public class SolicitudEliminacionService implements ISolicitudEliminacionService {
 
 
     @Override

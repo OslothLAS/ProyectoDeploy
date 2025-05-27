@@ -1,7 +1,6 @@
 package models.entities.solicitudes;
 
-import entities.usuarios.Administrador;
-import entities.usuarios.Contribuyente;
+import models.entities.usuarios.Administrador;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

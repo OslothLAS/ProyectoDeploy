@@ -1,10 +1,10 @@
 package models.entities.solicitudes;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DetectorDeSpamTest {
-
     @Test
     public void detectarSpam() {
         DetectorDeSpam detectorDeSpam = new DetectorDeSpam();
