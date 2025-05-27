@@ -13,7 +13,7 @@ import java.util.*;
 @Component
 public class ImportadorHechos implements Importador {
     private final ConfigReader config;
-    String[] pathArchivos;
+    private String[] pathArchivos;
 
 
     //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
