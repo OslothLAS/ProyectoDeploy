@@ -1,5 +1,6 @@
 package entities.hechos;
 
 public class Multimedia {
-    private String urlImagen;
+    private String url;
+    private String extension;
 }

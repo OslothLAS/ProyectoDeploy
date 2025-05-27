@@ -1,13 +1,16 @@
 package entities.usuarios;
 
+import lombok.Getter;
 import java.time.LocalDate;
 import java.time.Period;
 
+@Getter
 public class Contribuyente implements Usuario {
-    private String nombre;
-    private String apellido;
-    private LocalDate fechaDeNacimiento;
-    private Boolean registrado;
+    private final long id;
+    private final String nombre;
+    private final String apellido;
+    private final LocalDate fechaDeNacimiento;
+
     @Override
     public String getNombre() {
         return nombre;
@@ -22,6 +25,20 @@ public class Contribuyente implements Usuario {
 
     @Override
     public Boolean getRegistrado() {
-        return registrado;
+        return true;
+    }
+
+    public Contribuyente(Long id, String nombre, String apellido, LocalDate fechaDeNacimiento) {
+        this.id = id;
+        this.nombre = nombre;
+        this.fechaDeNacimiento = fechaDeNacimiento;
+        this.apellido = apellido;
+    }
+
+    public Boolean esAdministrador() {return false;}
+
+    @Override
+    public Long getId() {
+        return id;
     }
 }
