@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ColeccionServiceTest {
         @Test
-        public void test() {
+        public void actualizarColeccionesDelRepositorio() {
 
             HechoMemoryRepository repo = new HechoMemoryRepository();
 
