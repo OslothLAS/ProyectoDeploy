@@ -1,0 +1,33 @@
+@startuml
+[Fuente Dinamica]
+[Fuente Estatica]
+[Servicio Agregador]
+[Fuente Proxy]
+[Detector de Spam]
+
+
+
+database "Agregador Hecho Repository"
+database "Agregador Solicitudes Repository"
+database "Dinamica Hecho Repository"
+database "Dinamica Solicitudes Repository"
+
+
+node "Externo" {
+  [Instancias Metamapa]
+  [Api de la Catedra]
+database "Hechos CSV"
+}
+
+[Servicio Agregador]--->"Consulta Hechos "[Fuente Dinamica]
+[Servicio Agregador]--->"Consulta Hechos "[Fuente Estatica]
+[Servicio Agregador]--->"Consulta Hechos "[Fuente Proxy]
+[Servicio Agregador] --->"Verifica Spam"[Detector de Spam]
+[Servicio Agregador] --->"Consulta Solicitudes"[Agregador Solicitudes Repository]
+[Servicio Agregador] --->"Consulta Hechos en tiempo real"[Agregador Hecho Repository]
+[Fuente Dinamica]--->"Persiste en Memoria"[Dinamica Hecho Repository]
+[Fuente Dinamica] --->"Persiste en Memoria"[Dinamica Solicitudes Repository]
+[Fuente Estatica] ---> "Lee Hechos"[Hechos CSV]
+[Fuente Proxy] --(0- [Api de la Catedra]
+[Fuente Proxy] --(0- [Instancias Metamapa]
+@enduml

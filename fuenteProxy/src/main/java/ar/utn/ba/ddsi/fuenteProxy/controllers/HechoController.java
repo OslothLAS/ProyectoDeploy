@@ -1,0 +1,25 @@
+package ar.utn.ba.ddsi.fuenteProxy.controllers;
+
+import entities.hechos.Hecho;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/hechos")
+public class HechoController {
+
+    private final IHechoService hechoService;
+
+    public HechoController(IHechoService hechoService) {
+        this.hechoService = hechoService;
+    }
+
+    @GetMapping
+    public List<Hecho> obtenerHechos() {
+        return hechoService.getHechos();
+    }
+}
