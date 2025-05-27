@@ -1,7 +1,10 @@
 package entities.usuarios;
 
+import lombok.Getter;
+
+@Getter
 public class Administrador implements Usuario {
-    private Integer id;
+    private Long id;
     private String nombre;
 
     @Override
@@ -14,4 +17,8 @@ public class Administrador implements Usuario {
         return true;
     }
 
+    @Override
+    public Long getId() {
+        return this.id;
+    }
 }

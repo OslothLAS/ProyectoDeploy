@@ -2,7 +2,11 @@ package entities.hechos;
 
 import entities.colecciones.Coleccion;
 import entities.usuarios.Usuario;
+import entities.usuarios.Visualizador;
 import lombok.*;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Hecho {
+    private Long id;
     private String autor;
     private Usuario usuario;
     private Boolean esValido;
@@ -19,52 +24,48 @@ public class Hecho {
     private Multimedia multimedia;
     private List<String> etiquetas;
     private List<Coleccion> colecciones;
+    private Origen origen;
+
     private Boolean mostrarDatos;
 
-
-    public static Hecho create(DatosHechos datosHechos, String autor) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .autor(autor)
-                .etiquetas(new ArrayList<>())
-                .colecciones(new ArrayList<>())
-                .build();
-    }
+    private LocalDateTime fechaCreacion;
+    private Duration plazoEdicion;
+    private Boolean esEditable;
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
                 .datosHechos(datosHechos)
+                .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .colecciones(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.DATASET)
                 .build();
     }
 
 
-    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Boolean mostrarDatos) {
+    public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
+                .usuario(visualizador)
                 .esValido(true)
-                .autor(usuario.getNombre())
-                .usuario(usuario)
                 .etiquetas(new ArrayList<>())
-                .colecciones(new ArrayList<>())
-                .mostrarDatos(mostrarDatos)
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.VISUALIZADOR)
                 .build();
     }
 
-    public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
+    //creacion con multimedia anonima
+    public static Hecho create(DatosHechos datosHechos, Multimedia multimedia) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
-                .autor(autor)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
-                .colecciones(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
                 .build();
     }
-
+    //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
     public static Hecho create(DatosHechos datosHechos, Usuario usuario, Multimedia multimedia, Boolean mostrarDatos) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
@@ -73,8 +74,9 @@ public class Hecho {
                 .usuario(usuario)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
-                .colecciones(new ArrayList<>())
                 .mostrarDatos(mostrarDatos)
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.CONTRIBUYENTE)
                 .build();
     }
 
@@ -87,4 +89,11 @@ public class Hecho {
         this.colecciones.add(coleccion);
     }
 
+    public Boolean esEditable() {
+        if (!this.esEditable) {
+            return false;
+        }
+        LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
+        return LocalDateTime.now().isBefore(fechaLimite);
+    }
 }
