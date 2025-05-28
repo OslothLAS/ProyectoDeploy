@@ -1,7 +1,9 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
-import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
-import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+
+
+import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.hechos.Hecho;
 
 import java.util.List;
 

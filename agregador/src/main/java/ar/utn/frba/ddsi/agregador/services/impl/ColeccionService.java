@@ -31,17 +31,21 @@ public class ColeccionService implements IColeccionService {
         this.hechoRepository = hechoRepository;
     }
 
-
+//creo la coleccion
     @Override
     public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
+        //lo primero que hago es tomar todas las fuentes importadoras de hechos y a cada una la ionstancio
+        //ver la clase fuente en core para entender
         List<Fuente> importadores = coleccionDTO.getImportadores().stream()
                 .map(Fuente::new)
                 .toList();
 
+        //ahora tomo los criterios y los instancio con la funcion mapearCriterioDTO
+
         List<CriterioDePertenencia> criterios = coleccionDTO.getCriterios().stream()
                 .map(this::mapearCriterioDTO)
                 .toList();
-
+    //creo la coleccion
         Coleccion coleccion = new Coleccion(
                 coleccionDTO.getTitulo(),
                 coleccionDTO.getDescripcion(),
@@ -49,10 +53,12 @@ public class ColeccionService implements IColeccionService {
                 criterios
         );
 
+        //agarro y tomo todos los hechos de los importadores que tiene mi coleccion
+
         List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores);
-
+//me quedo con los hechos validos
         List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
-
+//y ahora me fijo si los hechos cumplen con los criterios de la coleccion y si es asi los meto
         return hechosValidos.stream()
                 .filter(coleccion::cumpleCriterios)
                 .peek(h -> h.addColeccion(coleccion))
