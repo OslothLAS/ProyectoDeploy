@@ -56,14 +56,24 @@ public class ColeccionService implements IColeccionService {
         //agarro y tomo todos los hechos de los importadores que tiene mi coleccion
 
         List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores);
-//me quedo con los hechos validos
+
+        //me quedo con los hechos validos
         List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
-//y ahora me fijo si los hechos cumplen con los criterios de la coleccion y si es asi los meto
+
+        //y ahora me fijo si los hechos cumplen con los criterios de la coleccion y si es asi los meto
+        return asignarHechosAColeccion(hechosValidos, coleccion);
+
+        //ahora mi duda es si deberia de guardar estos hechos ya con la coleccion asignada en el repo?
+    }
+
+    //aca asigno los hechos a una coleccion
+    private List<Hecho> asignarHechosAColeccion(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
                 .filter(coleccion::cumpleCriterios)
                 .peek(h -> h.addColeccion(coleccion))
                 .toList();
     }
+
 
     private CriterioDePertenencia mapearCriterioDTO(CriterioInputDTO dto) {
         return switch (dto.getTipo().toLowerCase()) {
@@ -78,6 +88,9 @@ public class ColeccionService implements IColeccionService {
                 .flatMap(i -> i.obtenerHechos().stream())
                 .toList();
     }
+
+
+
 
 
 
