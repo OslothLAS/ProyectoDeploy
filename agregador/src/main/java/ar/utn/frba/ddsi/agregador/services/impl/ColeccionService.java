@@ -6,7 +6,6 @@ import ar.utn.frba.ddsi.agregador.dtos.input.CriterioInputDTO;
 
 
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
-import entities.Importador;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
@@ -36,9 +35,14 @@ public class ColeccionService implements IColeccionService {
     public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
         //lo primero que hago es tomar todas las fuentes importadoras de hechos y a cada una la ionstancio
         //ver la clase fuente en core para entender
-        List<Fuente> importadores = coleccionDTO.getImportadores().stream()
+        Fuente fuenteEstatica = new Fuente("localhost","8060");
+        Fuente fuenteDinamica = new Fuente("localhost","8070");
+        Fuente fuenteProxy = new Fuente("localhost","8090");
+
+        /*= coleccionDTO.getImportadores().stream()
                 .map(Fuente::new)
-                .toList();
+                .toList();*/
+        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
         //ahora tomo los criterios y los instancio con la funcion mapearCriterioDTO
 
@@ -109,7 +113,7 @@ public class ColeccionService implements IColeccionService {
         List<Hecho> hechos = filtrarHechosValidos(hechoRepository.findAll());
         List<Coleccion> colecciones = this.traerColecciones();
         colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechos));
-        hechos.forEach(hecho -> hechoRepository.save(hecho));
+        hechos.forEach(hechoRepository::save);
     }
 
     //Crea una lista con todas las colecciones existentes para usarse (por el momento)

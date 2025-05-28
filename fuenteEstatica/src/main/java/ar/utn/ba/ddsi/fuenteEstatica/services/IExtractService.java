@@ -1,4 +1,4 @@
-package services;
+package ar.utn.ba.ddsi.fuenteEstatica.services;
 
 import entities.hechos.Hecho;
 

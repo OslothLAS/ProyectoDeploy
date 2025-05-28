@@ -1,4 +1,4 @@
-package EstrategiasExtraccion;
+package ar.utn.ba.ddsi.fuenteEstatica.EstrategiasExtraccion;
 
 import entities.hechos.Hecho;
 import java.time.format.DateTimeFormatter;

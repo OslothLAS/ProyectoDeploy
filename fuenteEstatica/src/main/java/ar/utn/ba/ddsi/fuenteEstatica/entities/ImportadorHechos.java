@@ -1,7 +1,8 @@
-package entities;
+package ar.utn.ba.ddsi.fuenteEstatica.entities;
 
+import entities.Importador;
 import entities.hechos.Hecho;
-import EstrategiasExtraccion.EstrategiaExtraccionHechoCSV;
+import ar.utn.ba.ddsi.fuenteEstatica.EstrategiasExtraccion.EstrategiaExtraccionHechoCSV;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import utils.ConfigReader;
@@ -13,7 +14,7 @@ import java.util.*;
 @Component
 public class ImportadorHechos implements Importador {
     private final ConfigReader config;
-    private String[] pathArchivos;
+    private final String[] pathArchivos;
 
 
     //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
