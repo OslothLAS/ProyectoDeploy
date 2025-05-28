@@ -47,7 +47,7 @@ public class SolicitudEliminacion {
     }
 
 
-    //TODAS ESTAS VANA  SER DEL AGREGADOR? (No estoy tan seguro)
+    //TODAS ESTAS VANA  SER DEL AGREGADOR?
 
     public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
         if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
