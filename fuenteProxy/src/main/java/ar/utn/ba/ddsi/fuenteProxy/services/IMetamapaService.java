@@ -4,6 +4,6 @@ import entities.hechos.Hecho;
 
 import java.util.List;
 
-public interface IHechoService {
+public interface IMetamapaService {
     List<Hecho> getHechos();
 }

@@ -5,8 +5,7 @@ import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.DesastresResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
 import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
-import ar.utn.ba.ddsi.fuenteProxy.repository.IHechoRepository;
-import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
+import ar.utn.ba.ddsi.fuenteProxy.services.IApiService;
 import entities.hechos.Hecho;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -15,14 +14,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class HechoService implements IHechoService {
+public class ApiService implements IApiService {
 
     private final WebClient webClient;
     private final WebClient authClient;
-    private final IHechoRepository hechoRepository;
 
     private final String baseUrl;
     private final String loginPath;
@@ -32,20 +29,18 @@ public class HechoService implements IHechoService {
 
     private String token;
 
-    public HechoService(
+    public ApiService(
             @Value("${desastre.api.base-url}") String baseUrl,
             @Value("${desastre.api.login-path}") String loginPath,
             @Value("${desastre.api.desastres-path}") String desastresPath,
             @Value("${desastre.api.email}") String email,
-            @Value("${desastre.api.password}") String password,
-            IHechoRepository hechoRepository
+            @Value("${desastre.api.password}") String password
     ) {
         this.baseUrl = baseUrl;
         this.loginPath = loginPath;
         this.desastresPath = desastresPath;
         this.email = email;
         this.password = password;
-        this.hechoRepository = hechoRepository;
 
         this.authClient = WebClient.builder().baseUrl(baseUrl).build();
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
@@ -83,8 +78,6 @@ public class HechoService implements IHechoService {
                 .map(HechoMapper::mapHechoDtoToHecho)
                 .toList(); // Java 16+ (si estás en <16, usá collect(Collectors.toList()))
 
-        // Guardar cada Hecho
-        hechos.forEach(hechoRepository::save);
 
         return hechos;
     }
