@@ -46,6 +46,7 @@ public class ApiService implements IApiService {
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
+
     private String obtenerToken() {
         AuthRequest request = new AuthRequest(email, password);
         Mono<AuthResponse> responseMono = authClient.post()
@@ -76,7 +77,7 @@ public class ApiService implements IApiService {
         // Mapear los HechoDto a Hecho
         List<Hecho> hechos = hechosDto.stream()
                 .map(HechoMapper::mapHechoDtoToHecho)
-                .toList(); // Java 16+ (si estás en <16, usá collect(Collectors.toList()))
+                .toList();
 
 
         return hechos;
