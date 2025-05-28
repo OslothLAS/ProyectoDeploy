@@ -20,10 +20,7 @@ public class HechoMapper {
                         String.valueOf(dto.getLongitud())
                 ))
                 .fechaHecho(parseDate(dto.getFecha_hecho()))
-                .fechaCarga(parseDate(dto.getCreated_at()))
-                .origen(Origen.DATASET) // o un origen por defecto, si tenés definido alguno
                 .build();
-
         return Hecho.create(datosHechos);
     }
 

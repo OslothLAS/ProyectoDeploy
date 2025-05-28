@@ -4,17 +4,17 @@ import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
+import ar.utn.ba.ddsi.fuenteProxy.services.IApiService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/hechos")
-public class HechoController {
+@RequestMapping("/api/hechos")
+public class ApiController {
 
-    private final IHechoService hechoService;
+    private final IApiService hechoService;
 
-    public HechoController(IHechoService hechoService) {
+    public ApiController(IApiService hechoService) {
         this.hechoService = hechoService;
     }
 
@@ -23,3 +23,4 @@ public class HechoController {
         return hechoService.getHechos();
     }
 }
+
