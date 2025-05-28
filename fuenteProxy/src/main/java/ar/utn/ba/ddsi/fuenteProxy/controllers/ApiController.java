@@ -9,7 +9,7 @@ import ar.utn.ba.ddsi.fuenteProxy.services.IApiService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hechos")
+@RequestMapping("/api/hechos")
 public class ApiController {
 
     private final IApiService hechoService;

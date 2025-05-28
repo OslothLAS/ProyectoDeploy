@@ -9,7 +9,7 @@ import ar.utn.ba.ddsi.fuenteEstatica.services.IExtractService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hechos")
+@RequestMapping("/api/hechos")
 public class HechoController {
 
     private final IExtractService hechoService;

@@ -15,7 +15,7 @@ public class Fuente{
 
     public List<Hecho> obtenerHechos() {
         return webClient.get()
-               .uri("/hechos")
+               .uri("/api/hechos")
                .retrieve()
                .bodyToFlux(Hecho.class)
                .collectList()

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hechos")
+@RequestMapping("/api/hechos")
 public class HechoController {
     private final IHechoService hechoService;
     public HechoController(IHechoService hechoService) {
