@@ -11,7 +11,7 @@ database "Agregador Hecho Repository"
 database "Agregador Solicitudes Repository"
 database "Dinamica Hecho Repository"
 database "Dinamica Solicitudes Repository"
-
+database "Proxy Metamapa Repository"
 
 node "Externo" {
   [Instancias Metamapa]
@@ -25,6 +25,7 @@ database "Hechos CSV"
 [Servicio Agregador] --->"Verifica Spam"[Detector de Spam]
 [Servicio Agregador] --->"Consulta Solicitudes"[Agregador Solicitudes Repository]
 [Servicio Agregador] --->"Consulta Hechos en tiempo real"[Agregador Hecho Repository]
+[Fuente Proxy] --->"Consulta los metamapas que tiene"[Proxy Metamapa Repository]
 [Fuente Dinamica]--->"Persiste en Memoria"[Dinamica Hecho Repository]
 [Fuente Dinamica] --->"Persiste en Memoria"[Dinamica Solicitudes Repository]
 [Fuente Estatica] ---> "Lee Hechos"[Hechos CSV]
