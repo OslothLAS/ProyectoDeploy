@@ -1,11 +1,7 @@
 package ar.utn.ba.ddsi.fuenteProxy;
 
-import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
-import entities.Metamapa;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class FuenteProxyApplication {
@@ -14,7 +10,8 @@ public class FuenteProxyApplication {
         SpringApplication.run(FuenteProxyApplication.class, args);
     }
 
-    @Bean
+    // Este método se ejecuta automáticamente al iniciar la aplicación
+    /*@Bean
     public CommandLineRunner preloadMetamapas(IRepositoryMetamapa repository) {
         return args -> {
             Metamapa m1 = new Metamapa();
@@ -32,5 +29,5 @@ public class FuenteProxyApplication {
             // Metamapa m2 = ...
             // repository.save(m2);
         };
-    }
+    }*/
 }

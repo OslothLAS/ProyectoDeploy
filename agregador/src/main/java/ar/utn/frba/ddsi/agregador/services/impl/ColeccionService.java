@@ -6,7 +6,6 @@ import ar.utn.frba.ddsi.agregador.dtos.input.CriterioInputDTO;
 
 
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
-import entities.Importador;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
@@ -36,9 +35,14 @@ public class ColeccionService implements IColeccionService {
     public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
         //lo primero que hago es tomar todas las fuentes importadoras de hechos y a cada una la ionstancio
         //ver la clase fuente en core para entender
-        List<Fuente> importadores = coleccionDTO.getImportadores().stream()
+        Fuente fuenteEstatica = new Fuente("localhost","8060");
+        Fuente fuenteDinamica = new Fuente("localhost","8070");
+        Fuente fuenteProxy = new Fuente("localhost","8090");
+
+        /*= coleccionDTO.getImportadores().stream()
                 .map(Fuente::new)
-                .toList();
+                .toList();*/
+        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
         //ahora tomo los criterios y los instancio con la funcion mapearCriterioDTO
 
@@ -106,17 +110,21 @@ public class ColeccionService implements IColeccionService {
     }
 
     public void actualizarHechos(){
-        List<Hecho> hechos = filtrarHechosValidos(hechoRepository.findAll());
-        List<Coleccion> colecciones = this.traerColecciones();
-        colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechos));
-        hechos.forEach(hecho -> hechoRepository.save(hecho));
+        Fuente fuenteEstatica = new Fuente("localhost","8060");
+        Fuente fuenteDinamica = new Fuente("localhost","8070");
+        Fuente fuenteProxy = new Fuente("localhost","8090");
+        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
+        List<Hecho> hechos = this.tomarHechosImportadores(importadores);
+        List<Hecho> hechosValidos = filtrarHechosValidos(hechos);
+        List<Coleccion> colecciones = this.traerColecciones(hechos);
+        colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechosValidos));
+        hechos.forEach(hechoRepository::save);
     }
 
     //Crea una lista con todas las colecciones existentes para usarse (por el momento)
     //en actualizarHechos
-    public List<Coleccion> traerColecciones(){
+    public List<Coleccion> traerColecciones(List<Hecho> hechos){
         Set<Coleccion> colecciones = new HashSet<>();
-        List<Hecho> hechos = hechoRepository.findAll();
         hechos.forEach(hecho -> colecciones.addAll(hecho.getColecciones()));
         return new ArrayList<>(colecciones);
     }

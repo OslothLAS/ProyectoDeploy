@@ -1,10 +1,10 @@
-package controllers;
+package ar.utn.ba.ddsi.fuenteEstatica.controllers;
 
 import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import services.IExtractService;
+import ar.utn.ba.ddsi.fuenteEstatica.services.IExtractService;
 
 import java.util.List;
 

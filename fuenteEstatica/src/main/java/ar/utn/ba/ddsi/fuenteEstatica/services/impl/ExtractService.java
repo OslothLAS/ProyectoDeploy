@@ -1,9 +1,9 @@
-package services.impl;
+package ar.utn.ba.ddsi.fuenteEstatica.services.impl;
 
-import entities.ImportadorHechos;
+import ar.utn.ba.ddsi.fuenteEstatica.entities.ImportadorHechos;
 import entities.hechos.Hecho;
 import org.springframework.stereotype.Service;
-import services.IExtractService;
+import ar.utn.ba.ddsi.fuenteEstatica.services.IExtractService;
 
 import java.util.List;
 

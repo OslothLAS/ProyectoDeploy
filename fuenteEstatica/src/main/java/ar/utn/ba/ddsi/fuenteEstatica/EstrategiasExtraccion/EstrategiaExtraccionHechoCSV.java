@@ -1,10 +1,9 @@
-package EstrategiasExtraccion;
+package ar.utn.ba.ddsi.fuenteEstatica.EstrategiasExtraccion;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
-import entities.hechos.Origen;
 import entities.hechos.Ubicacion;
 
 import java.io.FileReader;
