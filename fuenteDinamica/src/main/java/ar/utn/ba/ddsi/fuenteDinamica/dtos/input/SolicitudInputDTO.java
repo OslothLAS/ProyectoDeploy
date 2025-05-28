@@ -7,7 +7,7 @@ import lombok.Getter;
 public class SolicitudInputDTO {
 
     private Long idHecho;
-    private Long idContribuyente;
+    //private Long idContribuyente;
     private String justificacion;
 
     //este no va

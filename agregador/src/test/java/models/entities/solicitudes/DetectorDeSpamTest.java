@@ -1,5 +1,6 @@
 package models.entities.solicitudes;
 
+import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.DetectorDeSpam;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
