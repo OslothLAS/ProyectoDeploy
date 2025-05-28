@@ -1,8 +1,9 @@
 package ar.utn.frba.ddsi.agregador.models.repositories.impl;
 
-import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
-import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.hechos.Hecho;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
