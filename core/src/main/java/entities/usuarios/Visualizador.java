@@ -1,5 +1,6 @@
 package entities.usuarios;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import java.time.LocalDate;
 
@@ -19,7 +20,9 @@ public class Visualizador implements Usuario {
         return null;
     }
 
-    public Visualizador(String nombre, String apellido, LocalDate fechaDeNacimiento) {
+    public Visualizador(@JsonProperty("nombre") String nombre,
+                        @JsonProperty("apellido") String apellido,
+                        @JsonProperty("fechaDeNacimiento") LocalDate fechaDeNacimiento) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.fechaDeNacimiento = fechaDeNacimiento;

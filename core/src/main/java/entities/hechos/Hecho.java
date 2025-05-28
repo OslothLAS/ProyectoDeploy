@@ -1,11 +1,9 @@
 package entities.hechos;
 
 import entities.colecciones.Coleccion;
-import entities.colecciones.Handle;
 import entities.usuarios.Usuario;
 import entities.usuarios.Visualizador;
 import lombok.*;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

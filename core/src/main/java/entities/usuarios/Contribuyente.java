@@ -1,5 +1,6 @@
 package entities.usuarios;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import java.time.LocalDate;
 import java.time.Period;
@@ -28,7 +29,9 @@ public class Contribuyente implements Usuario {
         return true;
     }
 
-    public Contribuyente(Long id, String nombre, String apellido, LocalDate fechaDeNacimiento) {
+    public Contribuyente(@JsonProperty("id") Long id, @JsonProperty("nombre") String nombre,
+                         @JsonProperty("apellido") String apellido,
+                         @JsonProperty("fechaDeNacimiento") LocalDate fechaDeNacimiento) {
         this.id = id;
         this.nombre = nombre;
         this.fechaDeNacimiento = fechaDeNacimiento;

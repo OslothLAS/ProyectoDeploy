@@ -14,10 +14,6 @@ public class Fuente{
     }
 
     public List<Hecho> obtenerHechos() {
-//        System.out.println(webClient.get()
-//                .uri("/hechos")
-//                .retrieve().bodyToMono(String.class).block());
-
         return webClient.get()
                .uri("/hechos")
                .retrieve()
