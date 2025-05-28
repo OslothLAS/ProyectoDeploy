@@ -1,23 +1,20 @@
 package services.impl;
 
-import models.entities.colecciones.Coleccion;
-import models.entities.criteriosDePertenencia.CriterioDePertenencia;
-import models.entities.criteriosDePertenencia.CriterioPorCategoria;
-import models.entities.fuentes.Importador;
-import models.entities.fuentes.ImportadorHechos;
-import models.entities.hechos.DatosHechos;
-import models.entities.hechos.Hecho;
-import models.entities.hechos.Ubicacion;
-import models.entities.usuarios.Administrador;
-import models.entities.usuarios.Usuario;
-import models.repositories.impl.HechoMemoryRepository;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
+import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioPorCategoria;
+import ar.utn.frba.ddsi.agregador.models.entities.fuentes.Importador;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.DatosHechos;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Ubicacion;
+import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Administrador;
+import ar.utn.frba.ddsi.agregador.models.repositories.impl.HechoMemoryRepository;
+import ar.utn.frba.ddsi.agregador.services.impl.ColeccionService;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 

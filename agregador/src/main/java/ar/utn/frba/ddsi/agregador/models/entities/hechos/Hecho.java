@@ -1,15 +1,11 @@
-package entities.hechos;
-
-import entities.colecciones.Coleccion;
-import entities.colecciones.Handle;
-import entities.usuarios.Usuario;
-import entities.usuarios.Visualizador;
+package ar.utn.frba.ddsi.agregador.models.entities.hechos;
 import lombok.*;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Getter
 @Setter
@@ -24,49 +20,54 @@ public class Hecho {
     private DatosHechos datosHechos;
     private Multimedia multimedia;
     private List<String> etiquetas;
+    @Getter
     private List<Coleccion> colecciones;
-    private Origen origen;
-
     private Boolean mostrarDatos;
 
-    private LocalDateTime fechaCreacion;
-    private Duration plazoEdicion;
-    private Boolean esEditable;
+
+    public static Hecho create(DatosHechos datosHechos, String autor) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .autor(autor)
+                .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
+                .build();
+    }
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.DATASET)
+                .colecciones(new ArrayList<>())
                 .build();
     }
 
 
-    public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
+    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Boolean mostrarDatos) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .usuario(visualizador)
                 .esValido(true)
+                .autor(usuario.getNombre())
+                .usuario(usuario)
                 .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.VISUALIZADOR)
+                .colecciones(new ArrayList<>())
+                .mostrarDatos(mostrarDatos)
                 .build();
     }
 
-    //creacion con multimedia anonima
-    public static Hecho create(DatosHechos datosHechos, Multimedia multimedia) {
+    public static Hecho create(DatosHechos datosHechos, String autor, Multimedia multimedia) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
+                .autor(autor)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
+                .colecciones(new ArrayList<>())
                 .build();
     }
-    //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
+
     public static Hecho create(DatosHechos datosHechos, Usuario usuario, Multimedia multimedia, Boolean mostrarDatos) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
@@ -75,26 +76,18 @@ public class Hecho {
                 .usuario(usuario)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
+                .colecciones(new ArrayList<>())
                 .mostrarDatos(mostrarDatos)
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.CONTRIBUYENTE)
                 .build();
     }
 
 
     public void addEtiqueta(String etiqueta) {
-            this.etiquetas.add(etiqueta);
+        this.etiquetas.add(etiqueta);
     }
 
     public void addColeccion(Coleccion coleccion) {
         this.colecciones.add(coleccion);
     }
 
-    public Boolean esEditable() {
-        if (!this.esEditable) {
-            return false;
-        }
-        LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
-        return LocalDateTime.now().isBefore(fechaLimite);
-    }
 }

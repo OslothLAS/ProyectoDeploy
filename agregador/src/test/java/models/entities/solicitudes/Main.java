@@ -1,6 +1,6 @@
 package models.entities.solicitudes;
 
-import models.entities.TestBuilder;
+import ar.utn.frba.ddsi.agregador.models.entities.TestBuilder;
 
 public class Main {
     public static void main(String[] args) {
