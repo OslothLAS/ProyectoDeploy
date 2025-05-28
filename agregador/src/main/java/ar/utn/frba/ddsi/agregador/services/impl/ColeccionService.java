@@ -1,8 +1,18 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
-import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.input.CriterioInputDTO;
+
+
+
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import entities.Importador;
+import entities.colecciones.Coleccion;
+import entities.colecciones.Fuente;
+import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.criteriosDePertenencia.CriterioPorCategoria;
+import entities.criteriosDePertenencia.CriterioPorFecha;
+import entities.hechos.Hecho;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
@@ -15,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class ColeccionService implements IColeccionService {
 
-    private IHechoRepository hechoRepository;
+    private final IHechoRepository hechoRepository;
 
     public ColeccionService(IHechoRepository hechoRepository) {
         this.hechoRepository = hechoRepository;
@@ -23,20 +33,48 @@ public class ColeccionService implements IColeccionService {
 
 
     @Override
-    public List<Hecho> createColeccion(Coleccion coleccion) {
-        // Obtener todos los hechos de todos los importadores
-        List<Hecho> todosLosHechos = coleccion.getImportadores().stream()
-                .flatMap(importador -> importador.obtenerHechos().stream())
+    public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
+        List<Fuente> importadores = coleccionDTO.getImportadores().stream()
+                .map(Fuente::new)
                 .toList();
 
-        // Filtrar según los criterios y agregar la colección a cada hecho filtrado
-        List<Hecho> hechosFiltrados = todosLosHechos.stream()
+        List<CriterioDePertenencia> criterios = coleccionDTO.getCriterios().stream()
+                .map(this::mapearCriterioDTO)
+                .toList();
+
+        Coleccion coleccion = new Coleccion(
+                coleccionDTO.getTitulo(),
+                coleccionDTO.getDescripcion(),
+                importadores,
+                criterios
+        );
+
+        List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores);
+
+        List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
+
+        return hechosValidos.stream()
                 .filter(coleccion::cumpleCriterios)
-                .peek(hecho -> hecho.addColeccion(coleccion)) // ← aquí se agrega la colección
+                .peek(h -> h.addColeccion(coleccion))
                 .toList();
-
-        return hechosFiltrados;
     }
+
+    private CriterioDePertenencia mapearCriterioDTO(CriterioInputDTO dto) {
+        return switch (dto.getTipo().toLowerCase()) {
+            case "categoria" -> new CriterioPorCategoria(dto.getCategoria());
+            case "fecha" -> new CriterioPorFecha(dto.getFechaInicio(), dto.getFechaFin());
+            default -> throw new IllegalArgumentException("Tipo de criterio desconocido: " + dto.getTipo());
+        };
+    }
+
+    private List<Hecho> tomarHechosImportadores(List<Fuente> importadores) {
+        return importadores.stream()
+                .flatMap(i -> i.obtenerHechos().stream())
+                .toList();
+    }
+
+
+
 
     @Override
     public List<Hecho> getColeccion(String idColeccion) {

@@ -11,11 +11,11 @@ import java.util.List;
 public class Coleccion {
     private final String titulo;
     private final String descripcion;
-    private final List<Importador> importadores;
+    private final List<Fuente> importadores;
     private List<CriterioDePertenencia> criteriosDePertenencia;
     private final Handle handle;
 
-    public Coleccion(String titulo, String descripcion, List<Importador> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.importadores = importadores;

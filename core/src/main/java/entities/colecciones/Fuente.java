@@ -7,14 +7,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
-public class Fuente implements Importador {
+public class Fuente{
     private final String url;
     private final WebClient webClient;
-    public Fuente() {
-        this.url = "http://localhost:8080/fuentedinamica/hechos";
+
+    public Fuente(String url) {
+        this.url = url.startsWith("http") ? url : "http://localhost:8080/" + url;
         this.webClient = WebClient.builder().baseUrl(this.url).build();
     }
-    @Override
     public List<Hecho> obtenerHechos() {
          List<Hecho> hechos = webClient.get()
                 .uri(this.url)

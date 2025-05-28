@@ -1,7 +1,8 @@
 package ar.utn.frba.ddsi.agregador.controllers;
 
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
-import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
+
+import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
@@ -15,7 +16,7 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
     @PostMapping
-    public List<Hecho> createColeccion(@RequestBody Coleccion coleccion){
+    public List<Hecho> createColeccion(@RequestBody ColeccionInputDTO coleccion){
         return this.coleccionService.createColeccion(coleccion);
     }
 
