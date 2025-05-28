@@ -39,6 +39,7 @@ public class Hecho {
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.DATASET)
+                .colecciones(new ArrayList<>())
                 .build();
     }
 
@@ -51,6 +52,7 @@ public class Hecho {
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.VISUALIZADOR)
+                .colecciones(new ArrayList<>())
                 .build();
     }
 
@@ -62,6 +64,7 @@ public class Hecho {
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
+                .colecciones(new ArrayList<>())
                 .build();
     }
     //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
@@ -76,6 +79,7 @@ public class Hecho {
                 .mostrarDatos(mostrarDatos)
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.CONTRIBUYENTE)
+                .colecciones(new ArrayList<>())
                 .build();
     }
 
@@ -85,6 +89,9 @@ public class Hecho {
     }
 
     public void addColeccion(Coleccion coleccion) {
+        if (this.colecciones == null) {
+            this.colecciones = new ArrayList<>();
+        }
         this.colecciones.add(coleccion);
     }
 

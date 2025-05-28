@@ -2,9 +2,6 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.CriterioInputDTO;
-
-
-
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
@@ -14,7 +11,6 @@ import entities.criteriosDePertenencia.CriterioPorFecha;
 import entities.hechos.Hecho;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,14 +30,10 @@ public class ColeccionService implements IColeccionService {
     @Override
     public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
         //lo primero que hago es tomar todas las fuentes importadoras de hechos y a cada una la ionstancio
-        //ver la clase fuente en core para entender
         Fuente fuenteEstatica = new Fuente("localhost","8060");
         Fuente fuenteDinamica = new Fuente("localhost","8070");
         Fuente fuenteProxy = new Fuente("localhost","8090");
 
-        /*= coleccionDTO.getImportadores().stream()
-                .map(Fuente::new)
-                .toList();*/
         List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
         //ahora tomo los criterios y los instancio con la funcion mapearCriterioDTO
@@ -65,9 +57,9 @@ public class ColeccionService implements IColeccionService {
         List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
 
         //y ahora me fijo si los hechos cumplen con los criterios de la coleccion y si es asi los meto
-        return asignarHechosAColeccion(hechosValidos, coleccion);
-
-        //ahora mi duda es si deberia de guardar estos hechos ya con la coleccion asignada en el repo?
+        List<Hecho> hechos = asignarHechosAColeccion(hechosValidos, coleccion);
+        hechos.forEach(hechoRepository::save);
+        return hechos;
     }
 
     //aca asigno los hechos a una coleccion
