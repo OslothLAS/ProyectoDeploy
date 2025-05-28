@@ -27,5 +27,10 @@ public class RepositoryMetamapa implements IRepositoryMetamapa {
         @Override
         public List<Metamapa> findAll(){
             return new ArrayList<>(metamapas.values());
-}
+        }
+
+        @Override
+        public Metamapa findById(Long Id){
+            return metamapas.get(Id);
+        }
 }

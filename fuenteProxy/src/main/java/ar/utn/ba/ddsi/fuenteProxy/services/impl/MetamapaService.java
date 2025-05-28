@@ -1,22 +1,18 @@
 package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthRequest;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthResponse;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.DesastresResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
 import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
 import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaService;
+import entities.Metamapa;
 import entities.hechos.Hecho;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class MetamapaService implements IMetamapaService {
@@ -37,24 +33,51 @@ public class MetamapaService implements IMetamapaService {
                 .flatMap(metamapa -> {
                     String fullUrl = metamapa.getUrl() + HECHOS_PATH;
 
-                    List<HechoDto> hechosDto;
-                    try {
-                        hechosDto = webClient.get()
-                                .uri(fullUrl)
-                                .retrieve()
-                                .bodyToFlux(HechoDto.class)
-                                .collectList()
-                                .block();
-                    } catch (Exception e) {
-                        // Si falla una URL, devolvemos una lista vacía y seguimos
-                        hechosDto = List.of();
-                    }
+                    List<Hecho> hechos = fetchHechosFromUrl(fullUrl);
 
-                    return hechosDto.stream()
-                            .map(HechoMapper::mapHechoDtoToHecho);
+                    return hechos.stream();
                 })
                 .toList();
     }
+
+
+     @Override
+     public List<Hecho> getHechosXcategoria(String categoria) {
+         return getHechos().stream()
+                 .filter(hecho -> hecho.getDatosHechos() != null)
+                 .filter(hecho -> hecho.getDatosHechos().getCategoria() != null)
+                 .filter(hecho -> hecho.getDatosHechos().getCategoria().equalsIgnoreCase(categoria.trim()))
+                 .toList();
+    }
+
+    @Override
+    public List<Hecho> getHechosXmetamapa(Long id) {
+        Metamapa metamapa = metamapaRepository.findById(id);
+        String fullUrl = metamapa.getUrl() + HECHOS_PATH;
+        return fetchHechosFromUrl(fullUrl);
+    }
+
+
+
+    private List<Hecho> fetchHechosFromUrl(String url) {
+        try {
+            List<HechoDto> hechosDto = webClient.get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToFlux(HechoDto.class)
+                    .collectList()
+                    .block();
+            if (hechosDto == null) return List.of();
+            return hechosDto.stream()
+                    .map(HechoMapper::mapHechoDtoToHecho)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            // Podés loggear el error si querés
+            return List.of();
+        }
+    }
 }
+
+
 
 

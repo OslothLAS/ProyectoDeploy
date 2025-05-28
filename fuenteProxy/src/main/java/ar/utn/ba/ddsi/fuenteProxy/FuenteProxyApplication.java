@@ -14,7 +14,6 @@ public class FuenteProxyApplication {
         SpringApplication.run(FuenteProxyApplication.class, args);
     }
 
-    // Este método se ejecuta automáticamente al iniciar la aplicación
     @Bean
     public CommandLineRunner preloadMetamapas(IRepositoryMetamapa repository) {
         return args -> {

@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface IRepositoryMetamapa {
     void save(Metamapa metamapa);
     List<Metamapa> findAll();
+    Metamapa findById(Long Id);
 }
