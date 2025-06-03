@@ -1,6 +1,5 @@
 package ar.utn.frba.ddsi.agregador.models.entities.hechos;
 import lombok.*;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 
 import java.util.ArrayList;

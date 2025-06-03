@@ -15,18 +15,16 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Override
     public void crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
-        /*
-        Ya desde este punto, por constructor analiza la justificacion.
-        Si es Spam automaticamente cambia el estado a RECHAZADA, en vez
-        de PENDIENTE (ver constructor de SolicitudEliminacion)
-        */
-        SolicitudEliminacion nuevaSolicitud = new SolicitudEliminacion(
+        solicitudRepository.save(this.dtoToSolicitud(solicitud));
+    }
+
+    private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
+        return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
                 solicitud.getId(),
                 solicitud.getSolicitante());
-
-        solicitudRepository.save(nuevaSolicitud);
     }
+
 
     @Override
     public SolicitudEliminacion getSolicitud(Long idSolicitud) {

@@ -2,7 +2,11 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.CriterioInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import entities.Importador;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
@@ -41,26 +45,35 @@ public class ColeccionService implements IColeccionService {
         List<CriterioDePertenencia> criterios = coleccionDTO.getCriterios().stream()
                 .map(this::mapearCriterioDTO)
                 .toList();
-    //creo la coleccion
-        Coleccion coleccion = new Coleccion(
-                coleccionDTO.getTitulo(),
-                coleccionDTO.getDescripcion(),
-                importadores,
-                criterios
-        );
-
+        //creo la coleccion
+        Coleccion nuevaColeccion = this.dtoToColeccion(coleccionDTO, importadores);
         //agarro y tomo todos los hechos de los importadores que tiene mi coleccion
-
         List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores);
 
         //me quedo con los hechos validos
         List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
 
         //y ahora me fijo si los hechos cumplen con los criterios de la coleccion y si es asi los meto
-        List<Hecho> hechos = asignarHechosAColeccion(hechosValidos, coleccion);
+        List<Hecho> hechos = asignarHechosAColeccion(hechosValidos,nuevaColeccion);
         hechos.forEach(hechoRepository::save);
         return hechos;
     }
+
+
+    private Coleccion dtoToColeccion(ColeccionInputDTO coleccionDTO,List<Fuente> importadores){
+        return new Coleccion(
+                coleccionDTO.getTitulo(),
+                coleccionDTO.getDescripcion(),
+                importadores,
+                obtenerCriteriosDTO(coleccionDTO));
+    }
+
+    private List<CriterioDePertenencia> obtenerCriteriosDTO (ColeccionInputDTO coleccion){
+        return coleccion.getCriterios().stream()
+                .map(this::mapearCriterioDTO)
+                .toList();
+    }
+
 
     //aca asigno los hechos a una coleccion
     private List<Hecho> asignarHechosAColeccion(List<Hecho> hechosValidos, Coleccion coleccion) {
@@ -84,10 +97,6 @@ public class ColeccionService implements IColeccionService {
                 .flatMap(i -> i.obtenerHechos().stream())
                 .toList();
     }
-
-
-
-
 
 
 
@@ -126,6 +135,14 @@ public class ColeccionService implements IColeccionService {
        return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList());
     }
 
-
+    private ColeccionOutputDTO coleccionTODTO(Coleccion coleccion) {
+        return new ColeccionOutputDTO(
+              coleccion.getTitulo(),
+              coleccion.getDescripcion(),
+              coleccion.getImportadores(),
+              //Falta cambiar el package de donde viene
+              coleccion.getCriteriosDePertenencia()
+        );
+    }
 
 }

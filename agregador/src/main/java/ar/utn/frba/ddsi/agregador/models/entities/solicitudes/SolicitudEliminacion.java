@@ -33,7 +33,6 @@ public class SolicitudEliminacion {
 
 
     public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
-        this.detectorDeSpam = new DetectorDeSpam();
         this.justificacion = justificacion;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
