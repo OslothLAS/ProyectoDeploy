@@ -6,6 +6,8 @@ import ar.utn.ba.ddsi.fuenteProxy.dtos.DesastresResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
 import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
 import ar.utn.ba.ddsi.fuenteProxy.services.IApiService;
+import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.factories.CriterioDePertenenciaFactory;
 import entities.hechos.Hecho;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ApiService implements IApiService {
@@ -60,7 +64,7 @@ public class ApiService implements IApiService {
     }
 
     @Override
-    public List<Hecho> getHechos() {
+    public List<Hecho> getHechos(Map<String, String> filtros) {
         if (token == null) {
             token = obtenerToken();
         }
@@ -79,7 +83,14 @@ public class ApiService implements IApiService {
                 .map(HechoMapper::mapHechoDtoToHecho)
                 .toList();
 
+        List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
 
-        return hechos;
+        if (criterios.isEmpty()) {
+            return hechos;
+        }
+
+        return hechos.stream()
+                .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
+                .collect(Collectors.toList());
     }
 }

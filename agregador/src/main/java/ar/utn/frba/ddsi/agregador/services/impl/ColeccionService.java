@@ -1,20 +1,17 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.input.CriterioInputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
-import entities.criteriosDePertenencia.CriterioPorCategoria;
-import entities.criteriosDePertenencia.CriterioPorFecha;
 import entities.hechos.Hecho;
 import entities.hechos.Origen;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
-
 import java.util.*;
 import java.util.stream.Collectors;
+import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 
 @Service
 public class ColeccionService implements IColeccionService {
@@ -35,22 +32,10 @@ public class ColeccionService implements IColeccionService {
 
         List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
-        //ahora tomo los criterios y los instancio con la funcion mapearCriterioDTO
 
-        List<CriterioDePertenencia> criterios = coleccionDTO.getCriterios().stream()
-                .map(this::mapearCriterioDTO)
-                .toList();
-    //creo la coleccion
-        Coleccion coleccion = new Coleccion(
-                coleccionDTO.getTitulo(),
-                coleccionDTO.getDescripcion(),
-                importadores,
-                criterios
-        );
+        Coleccion coleccion = dtoToColeccion(coleccionDTO,importadores);
 
-        //agarro y tomo todos los hechos de los importadores que tiene mi coleccion
-
-        List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores);
+        List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores,coleccion.getCriteriosDePertenencia());
 
         //me quedo con los hechos validos
         List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
@@ -70,25 +55,15 @@ public class ColeccionService implements IColeccionService {
     }
 
 
-    private CriterioDePertenencia mapearCriterioDTO(CriterioInputDTO dto) {
-        return switch (dto.getTipo().toLowerCase()) {
-            case "categoria" -> new CriterioPorCategoria(dto.getCategoria());
-            case "fecha" -> new CriterioPorFecha(dto.getFechaInicio(), dto.getFechaFin());
-            default -> throw new IllegalArgumentException("Tipo de criterio desconocido: " + dto.getTipo());
-        };
-    }
-
-    private List<Hecho> tomarHechosImportadores(List<Fuente> importadores) {
+//aca se debería mandar la request para filtrar los hechos en cada fuente
+    private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<CriterioDePertenencia> criterios) {
         return importadores.stream()
                 .flatMap(fuente ->
-                        fuente.obtenerHechos().stream()
+                        fuente.obtenerHechos(criterios).stream()
                                 .peek(hecho -> hecho.setOrigen(fuente.getOrigenHechos()))
                 )
                 .toList();
     }
-
-
-
 
 
 
@@ -108,7 +83,7 @@ public class ColeccionService implements IColeccionService {
         Fuente fuenteDinamica = new Fuente("localhost", "8070", Origen.CONTRIBUYENTE); // o CARGA_MANUAL
         Fuente fuenteProxy = new Fuente("localhost", "8090", Origen.EXTERNO);
         List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
-        List<Hecho> hechos = this.tomarHechosImportadores(importadores);
+        List<Hecho> hechos = this.tomarHechosImportadores(importadores,null);
         List<Hecho> hechosValidos = filtrarHechosValidos(hechos);
         List<Coleccion> colecciones = this.traerColecciones(hechos);
         colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechosValidos));
