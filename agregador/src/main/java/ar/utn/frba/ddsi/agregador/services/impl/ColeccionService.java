@@ -9,12 +9,11 @@ import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.criteriosDePertenencia.CriterioPorCategoria;
 import entities.criteriosDePertenencia.CriterioPorFecha;
 import entities.hechos.Hecho;
+import entities.hechos.Origen;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,9 +29,9 @@ public class ColeccionService implements IColeccionService {
     @Override
     public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
         //lo primero que hago es tomar todas las fuentes importadoras de hechos y a cada una la ionstancio
-        Fuente fuenteEstatica = new Fuente("localhost","8060");
-        Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost","8090");
+        Fuente fuenteEstatica = new Fuente("localhost", "8060", Origen.DATASET);
+        Fuente fuenteDinamica = new Fuente("localhost", "8070", Origen.CONTRIBUYENTE); // o CARGA_MANUAL
+        Fuente fuenteProxy = new Fuente("localhost", "8090", Origen.EXTERNO);
 
         List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
@@ -81,7 +80,10 @@ public class ColeccionService implements IColeccionService {
 
     private List<Hecho> tomarHechosImportadores(List<Fuente> importadores) {
         return importadores.stream()
-                .flatMap(i -> i.obtenerHechos().stream())
+                .flatMap(fuente ->
+                        fuente.obtenerHechos().stream()
+                                .peek(hecho -> hecho.setOrigen(fuente.getOrigenHechos()))
+                )
                 .toList();
     }
 
@@ -102,9 +104,9 @@ public class ColeccionService implements IColeccionService {
     }
 
     public void actualizarHechos(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060");
-        Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost","8090");
+        Fuente fuenteEstatica = new Fuente("localhost", "8060", Origen.DATASET);
+        Fuente fuenteDinamica = new Fuente("localhost", "8070", Origen.CONTRIBUYENTE); // o CARGA_MANUAL
+        Fuente fuenteProxy = new Fuente("localhost", "8090", Origen.EXTERNO);
         List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
         List<Hecho> hechos = this.tomarHechosImportadores(importadores);
         List<Hecho> hechosValidos = filtrarHechosValidos(hechos);
