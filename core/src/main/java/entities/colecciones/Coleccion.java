@@ -1,5 +1,6 @@
 package entities.colecciones;
 
+
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import lombok.Getter;
