@@ -1,4 +1,5 @@
 package ar.utn.frba.ddsi.agregador.models.entities.hechos;
+import entities.colecciones.Coleccion;
 import lombok.*;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 

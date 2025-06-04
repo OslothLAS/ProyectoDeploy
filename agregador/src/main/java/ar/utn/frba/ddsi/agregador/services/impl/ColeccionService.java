@@ -5,6 +5,7 @@ import ar.utn.frba.ddsi.agregador.dtos.input.CriterioInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
+import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionMemoryRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import entities.Importador;
 import entities.colecciones.Coleccion;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class ColeccionService implements IColeccionService {
 
     private final IHechoRepository hechoRepository;
+    private IColeccionMemoryRepository coleccionMemoryRepository;
 
     public ColeccionService(IHechoRepository hechoRepository) {
         this.hechoRepository = hechoRepository;
@@ -34,14 +36,8 @@ public class ColeccionService implements IColeccionService {
     @Override
     public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
         //lo primero que hago es tomar todas las fuentes importadoras de hechos y a cada una la ionstancio
-        Fuente fuenteEstatica = new Fuente("localhost","8060");
-        Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost","8090");
-
-        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
-
+        List<Fuente> importadores = this.instanciarFuentes();
         //ahora tomo los criterios y los instancio con la funcion mapearCriterioDTO
-
         List<CriterioDePertenencia> criterios = coleccionDTO.getCriterios().stream()
                 .map(this::mapearCriterioDTO)
                 .toList();
@@ -59,14 +55,6 @@ public class ColeccionService implements IColeccionService {
         return hechos;
     }
 
-
-    private Coleccion dtoToColeccion(ColeccionInputDTO coleccionDTO,List<Fuente> importadores){
-        return new Coleccion(
-                coleccionDTO.getTitulo(),
-                coleccionDTO.getDescripcion(),
-                importadores,
-                obtenerCriteriosDTO(coleccionDTO));
-    }
 
     private List<CriterioDePertenencia> obtenerCriteriosDTO (ColeccionInputDTO coleccion){
         return coleccion.getCriterios().stream()
@@ -111,15 +99,21 @@ public class ColeccionService implements IColeccionService {
     }
 
     public void actualizarHechos(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060");
-        Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost","8090");
-        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
-        List<Hecho> hechos = this.tomarHechosImportadores(importadores);
+        List<Hecho> hechos = this.tomarHechosImportadores(this.instanciarFuentes());
         List<Hecho> hechosValidos = filtrarHechosValidos(hechos);
         List<Coleccion> colecciones = this.traerColecciones(hechos);
         colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechosValidos));
         hechos.forEach(hechoRepository::save);
+        this.coleccionMemoryRepository.actualizarColecciones(colecciones);
+    }
+
+    private List<Fuente> instanciarFuentes(){
+        Fuente fuenteEstatica = new Fuente("localhost","8060");
+        Fuente fuenteDinamica = new Fuente("localhost","8070");
+        Fuente fuenteProxy = new Fuente("localhost","8090");
+        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
+
+        return importadores;
     }
 
     //Crea una lista con todas las colecciones existentes para usarse (por el momento)
@@ -135,14 +129,28 @@ public class ColeccionService implements IColeccionService {
        return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList());
     }
 
+
+
     private ColeccionOutputDTO coleccionTODTO(Coleccion coleccion) {
-        return new ColeccionOutputDTO(
-              coleccion.getTitulo(),
-              coleccion.getDescripcion(),
-              coleccion.getImportadores(),
+            ColeccionOutputDTO coleccionDTO =  new ColeccionOutputDTO();
+
+              coleccionDTO.setTitulo(coleccion.getTitulo());
+              coleccionDTO.setDescripcion(coleccion.getDescripcion());
+              coleccionDTO.setImportadores(coleccion.getImportadores());
               //Falta cambiar el package de donde viene
-              coleccion.getCriteriosDePertenencia()
-        );
+              coleccionDTO.setCriteriosDePertenencia(coleccion.getCriteriosDePertenencia());
+
+       return coleccionDTO;
     }
+
+
+    private Coleccion dtoToColeccion(ColeccionInputDTO coleccionDTO,List<Fuente> importadores){
+        return new Coleccion(
+                coleccionDTO.getTitulo(),
+                coleccionDTO.getDescripcion(),
+                importadores,
+                obtenerCriteriosDTO(coleccionDTO));
+    }
+
 
 }
