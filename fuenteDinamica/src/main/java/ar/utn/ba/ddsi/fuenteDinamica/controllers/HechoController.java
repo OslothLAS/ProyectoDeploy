@@ -6,6 +6,7 @@ import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/hechos")
@@ -15,8 +16,8 @@ public class HechoController {
         this.hechoService = hechoService;
     }
     @GetMapping
-    public List<Hecho> getHechos(){
-        return this.hechoService.obtenerTodos();
+    public List<Hecho> getHechos(@RequestParam Map<String, String> filtros){
+        return this.hechoService.obtenerTodos(filtros);
     }
 
     @PostMapping

@@ -4,6 +4,8 @@ package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 import config.HechoProperties;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
+import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.factories.CriterioDePertenenciaFactory;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
@@ -15,8 +17,8 @@ import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 
 import java.time.Duration;
 import java.util.List;
-
-
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -99,21 +101,18 @@ public class HechoService implements IHechoService {
     }
 
 
-
-    //solo para debug, no está contemplado en la entrega
     @Override
-    public List<Hecho> obtenerTodos(){
-        return hechoRepository.findAll();
+    public List<Hecho> obtenerTodos(Map<String, String> filtros){
+        List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
+        List<Hecho> hechos = this.hechoRepository.findAll();
+
+        if (criterios.isEmpty()) {
+            return hechos;
+        }
+
+        return hechos.stream()
+                .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
+                .collect(Collectors.toList());
     }
 
-    /*
-    @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product productDetail){
-        Product product = productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found with id: "+id));
-
-        product.setName(productDetail.getName());
-        product.setPrice(productDetail.getPrice());
-
-        return productRepository.save(product);
-    }*/
 }

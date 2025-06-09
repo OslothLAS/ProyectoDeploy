@@ -1,5 +1,6 @@
 package entities.colecciones;
 
+
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import lombok.Getter;
@@ -34,10 +35,10 @@ public class Coleccion {
 
     public void setCriteriosDePertenencia(List<CriterioDePertenencia> criterios) {
         criteriosDePertenencia.addAll(criterios);
-        List<Hecho> todosLosHechos = importadores.stream()
+        /*List<Hecho> todosLosHechos = importadores.stream()
                 .flatMap(importador -> importador.obtenerHechos().stream())
                 .toList();
-        this.filtrarHechos(todosLosHechos);
+        this.filtrarHechos(todosLosHechos)*/
     }
 
 }
