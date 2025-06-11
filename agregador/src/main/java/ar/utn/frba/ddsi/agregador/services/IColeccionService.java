@@ -1,7 +1,6 @@
 package ar.utn.frba.ddsi.agregador.services;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import entities.hechos.Hecho;
 
 

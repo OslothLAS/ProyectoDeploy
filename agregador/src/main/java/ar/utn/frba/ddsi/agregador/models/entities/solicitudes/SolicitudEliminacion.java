@@ -28,12 +28,11 @@ public class SolicitudEliminacion {
     private List<EstadoSolicitud> historialDeSolicitud;
     private Long idHecho;
     @Setter
-    public IDetectorDeSpam detectorDeSpam;
-    public IHechoRepository hechoRepository;
+    private IDetectorDeSpam detectorDeSpam;
+    private IHechoRepository hechoRepository;
 
 
     public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
-        this.detectorDeSpam = new DetectorDeSpam();
         this.justificacion = justificacion;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();

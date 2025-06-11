@@ -1,10 +1,13 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Contribuyente;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
+import entities.colecciones.Coleccion;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,17 +18,27 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Override
     public void crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
-        /*
-        Ya desde este punto, por constructor analiza la justificacion.
-        Si es Spam automaticamente cambia el estado a RECHAZADA, en vez
-        de PENDIENTE (ver constructor de SolicitudEliminacion)
-        */
-        SolicitudEliminacion nuevaSolicitud = new SolicitudEliminacion(
+        solicitudRepository.save(this.dtoToSolicitud(solicitud));
+    }
+
+    private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
+        return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
                 solicitud.getId(),
                 solicitud.getSolicitante());
+    }
 
-        solicitudRepository.save(nuevaSolicitud);
+    private SolicitudOutputDTO solicitudToDTO(SolicitudEliminacion solicitud) {
+        SolicitudOutputDTO solicitudOutputDTO = new SolicitudOutputDTO();
+            solicitudOutputDTO.setId(solicitud.getId());
+            solicitudOutputDTO.setSolicitante(solicitud.getSolicitante());
+            solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
+            solicitudOutputDTO.setFechaDeEvaluacion(solicitud.getFechaDeEvaluacion());
+            solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
+            solicitudOutputDTO.setEstado(solicitud.getEstado());
+            solicitudOutputDTO.setHistorialDeSolicitud(solicitud.getHistorialDeSolicitud());
+
+            return solicitudOutputDTO;
     }
 
     @Override
@@ -42,4 +55,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
             return justificacionSolicitud;
         }
     }
+
+
 }

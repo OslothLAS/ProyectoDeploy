@@ -4,6 +4,9 @@ package entities.colecciones;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -14,6 +17,9 @@ public class Coleccion {
     private final List<Fuente> importadores;
     private List<CriterioDePertenencia> criteriosDePertenencia;
     private final Handle handle;
+    @Setter
+    private LocalDateTime fechaYHoraDeActualizacion;
+
 
     public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
@@ -21,6 +27,7 @@ public class Coleccion {
         this.importadores = importadores;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
+        this.fechaYHoraDeActualizacion = LocalDateTime.now();
     }
 
     // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!

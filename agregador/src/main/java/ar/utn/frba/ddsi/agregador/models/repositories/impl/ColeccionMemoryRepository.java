@@ -31,4 +31,17 @@ public class ColeccionMemoryRepository implements IColeccionRepository {
         return new ArrayList<>(colecciones.values());
     }
 
+    @Override
+    public void actualizarColecciones(List<Coleccion> colecciones) {
+        Set<Coleccion> coleccionActualizada = new HashSet<>();
+        coleccionActualizada.addAll(this.colecciones);
+        coleccionActualizada.addAll(colecciones);
+        this.colecciones = coleccionActualizada.stream().toList();
+        this.setearUltimaActualizacion();
+    }
+
+    private void setearUltimaActualizacion(){
+        this.colecciones.forEach(coleccion -> coleccion.setFechaYHoraDeActualizacion(LocalDateTime.now()));
+    }
+
 }
