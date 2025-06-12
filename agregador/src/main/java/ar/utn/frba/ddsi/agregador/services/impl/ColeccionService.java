@@ -11,16 +11,13 @@ import entities.Importador;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
-import entities.criteriosDePertenencia.CriterioPorCategoria;
-import entities.criteriosDePertenencia.CriterioPorFecha;
 import entities.hechos.Hecho;
+import entities.hechos.Origen;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 
 @Service
 public class ColeccionService implements IColeccionService {
@@ -45,6 +42,7 @@ public class ColeccionService implements IColeccionService {
         Coleccion nuevaColeccion = this.dtoToColeccion(coleccionDTO, importadores);
         //agarro y tomo todos los hechos de los importadores que tiene mi coleccion
         List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores);
+
 
         //me quedo con los hechos validos
         List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
@@ -72,20 +70,15 @@ public class ColeccionService implements IColeccionService {
     }
 
 
-    private CriterioDePertenencia mapearCriterioDTO(CriterioInputDTO dto) {
-        return switch (dto.getTipo().toLowerCase()) {
-            case "categoria" -> new CriterioPorCategoria(dto.getCategoria());
-            case "fecha" -> new CriterioPorFecha(dto.getFechaInicio(), dto.getFechaFin());
-            default -> throw new IllegalArgumentException("Tipo de criterio desconocido: " + dto.getTipo());
-        };
-    }
-
-    private List<Hecho> tomarHechosImportadores(List<Fuente> importadores) {
+//aca se debería mandar la request para filtrar los hechos en cada fuente
+    private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<CriterioDePertenencia> criterios) {
         return importadores.stream()
-                .flatMap(i -> i.obtenerHechos().stream())
+                .flatMap(fuente ->
+                        fuente.obtenerHechos(criterios).stream()
+                                .peek(hecho -> hecho.setOrigen(fuente.getOrigenHechos()))
+                )
                 .toList();
     }
-
 
 
     @Override
@@ -100,6 +93,7 @@ public class ColeccionService implements IColeccionService {
 
     public void actualizarHechos(){
         List<Hecho> hechos = this.tomarHechosImportadores(this.instanciarFuentes());
+
         List<Hecho> hechosValidos = filtrarHechosValidos(hechos);
         List<Coleccion> colecciones = this.traerColecciones(hechos);
         colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechosValidos));

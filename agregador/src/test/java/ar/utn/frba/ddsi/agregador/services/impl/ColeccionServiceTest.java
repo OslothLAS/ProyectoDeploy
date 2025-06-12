@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import entities.colecciones.Fuente;
 import entities.hechos.Hecho;
+import entities.hechos.Origen;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,9 +15,9 @@ class ColeccionServiceTest {
 
     @Test
     public void tomarHechosImportador(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060");
-        Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost","8090");
+        Fuente fuenteEstatica = new Fuente("localhost", "8060", Origen.DATASET);
+        Fuente fuenteDinamica = new Fuente("localhost", "8070", Origen.CONTRIBUYENTE); // o CARGA_MANUAL
+        Fuente fuenteProxy = new Fuente("localhost", "8090", Origen.EXTERNO);
 
         List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
@@ -33,7 +34,9 @@ class ColeccionServiceTest {
 
     @Test
     public void tomarHechosImportadorEstatica(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060");
+
+        Fuente fuenteEstatica = new Fuente("localhost", "8060", Origen.DATASET);
+
 
         List<Fuente> importadores = List.of(fuenteEstatica);
 
@@ -50,7 +53,8 @@ class ColeccionServiceTest {
 
     @Test
     public void tomarHechosImportadorDinamica(){
-        Fuente fuenteDinamica = new Fuente("localhost","8070");
+        Fuente fuenteDinamica = new Fuente("localhost", "8070", Origen.CONTRIBUYENTE); // o CARGA_MANUAL
+
 
         List<Fuente> importadores = List.of(fuenteDinamica);
 
@@ -69,7 +73,7 @@ class ColeccionServiceTest {
     public void tomarHechosImportadorProxy(){
         //Fuente fuenteEstatica = new Fuente("localhost","8060");
         //Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost","8090");
+        Fuente fuenteProxy = new Fuente("localhost", "8090", Origen.EXTERNO);
 
         List<Fuente> importadores = List.of(fuenteProxy);
 
