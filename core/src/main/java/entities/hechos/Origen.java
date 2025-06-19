@@ -5,5 +5,7 @@ public enum Origen {
     DATASET,
     CONTRIBUYENTE,
     VISUALIZADOR,
-    EXTERNO
+    EXTERNO,
+    ESTATICO,
+    DINAMICO,
 }

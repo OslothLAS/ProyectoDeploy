@@ -41,7 +41,7 @@ public class ColeccionService implements IColeccionService {
         //creo la coleccion
         Coleccion nuevaColeccion = this.dtoToColeccion(coleccionDTO, importadores);
         //agarro y tomo todos los hechos de los importadores que tiene mi coleccion
-        List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores);
+        List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores, criterios);
 
 
         //me quedo con los hechos validos
@@ -92,31 +92,26 @@ public class ColeccionService implements IColeccionService {
     }
 
     public void actualizarHechos(){
-        List<Hecho> hechos = this.tomarHechosImportadores(this.instanciarFuentes());
+        List<Coleccion> colecciones = this.coleccionMemoryRepository.getColecciones();
+        List<Hecho> hechos = this.tomarHechosImportadores(this.instanciarFuentes(), null);
 
         List<Hecho> hechosValidos = filtrarHechosValidos(hechos);
-        List<Coleccion> colecciones = this.traerColecciones(hechos);
         colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechosValidos));
         hechos.forEach(hechoRepository::save);
         this.coleccionMemoryRepository.actualizarColecciones(colecciones);
     }
 
     private List<Fuente> instanciarFuentes(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060");
-        Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost","8090");
+        Fuente fuenteEstatica = new Fuente("localhost","8060", Origen.ESTATICO);
+        Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO);
+        Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO);
         List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
         return importadores;
     }
 
-    //Crea una lista con todas las colecciones existentes para usarse (por el momento)
-    //en actualizarHechos
-    public List<Coleccion> traerColecciones(List<Hecho> hechos){
-        Set<Coleccion> colecciones = new HashSet<>();
-        hechos.forEach(hecho -> colecciones.addAll(hecho.getColecciones()));
-        return new ArrayList<>(colecciones);
-    }
+
+
 
     //Esto es solo para agregar los hechos validos
     private List<Hecho> filtrarHechosValidos(List<Hecho> hechos){

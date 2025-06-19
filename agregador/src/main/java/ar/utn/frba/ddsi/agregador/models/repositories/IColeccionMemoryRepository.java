@@ -7,7 +7,7 @@ import java.util.List;
 public interface IColeccionMemoryRepository {
 
 
-    public List<Coleccion> getColecciones();
-
-    public void actualizarColecciones(List<Coleccion> listaColecciones);
+    void save(Coleccion coleccion);
+    Coleccion findById(String handleValue);
+    List<Coleccion> findAll();
 }
