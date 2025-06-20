@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
@@ -16,12 +17,12 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
     @PostMapping
-    public List<Hecho> createColeccion(@RequestBody ColeccionInputDTO coleccion){
-        return this.coleccionService.createColeccion(coleccion);
+    public void createColeccion(@RequestBody ColeccionInputDTO coleccion){
+        this.coleccionService.createColeccion(coleccion);
     }
 
     @GetMapping("/{idColeccion}")
-    public List<Hecho> getColeccion(@PathVariable String idColeccion) {
+    public ColeccionOutputDTO getColeccion(@PathVariable String idColeccion) {
         return this.coleccionService.getColeccion(idColeccion);
     }
 }

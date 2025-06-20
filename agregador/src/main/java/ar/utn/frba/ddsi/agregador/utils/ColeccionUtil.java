@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.utils;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
 
@@ -20,16 +21,20 @@ public class ColeccionUtil {
         );
     }
 
-    public static ColeccionInputDTO coleccionToDto(Coleccion coleccion) {
-        ColeccionInputDTO dto = new ColeccionInputDTO();
+    public static ColeccionOutputDTO coleccionToDto(Coleccion coleccion) {
+        if (coleccion == null) {
+            return null;
+        }
 
+        ColeccionOutputDTO dto = new ColeccionOutputDTO();
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
-        //dto.setImportadores(nombresImportadores);
-        dto.setCriterios(coleccion.getCriteriosDePertenencia());
+        dto.setImportadores(coleccion.getImportadores());  // Direct reference (ensure proper JPA mappings)
+        dto.setCriteriosDePertenencia(coleccion.getCriteriosDePertenencia());
 
-        //ver como setear los importadores
         return dto;
     }
+
+
 
 }

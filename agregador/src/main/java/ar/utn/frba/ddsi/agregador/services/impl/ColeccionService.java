@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionMemoryRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import entities.colecciones.Coleccion;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.coleccionToDto;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 
 @Service
@@ -26,34 +29,20 @@ public class ColeccionService implements IColeccionService {
 
 //creo la coleccion
     @Override
-    public List<Hecho> createColeccion(ColeccionInputDTO coleccionDTO) {
-        //Instancio las fuentes
+    public void createColeccion(ColeccionInputDTO coleccionDTO) {
+
         List<Fuente> importadores = this.instanciarFuentes();
-        //ahora tomo los criterios y los instancio con la funcion mapearCriterioDTO
-
-
-
 
         List<CriterioDePertenencia> criterios = coleccionDTO.getCriterios().stream().toList();
 
-
-        //creo la coleccion
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
 
-        //agarro y tomo todos los hechos de los importadores que tiene mi coleccion
         List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores, criterios);
 
-
-        //TODO: ademas de filtar por criterio que ya esta hecho tomar solo los que tengan el atributo valido en true
-        //List<Hecho> hechosValidos = filtrarHechosValidos(todosLosHechos);
-
-        //y ahora me fijo si los hechos cumplen con los criterios de la coleccion y si es asi los meto
         List<Hecho> hechos = asignarHechosAColeccion(todosLosHechos,nuevaColeccion);
         hechos.forEach(hechoRepository::save);
-        //agrego la coleccion a la memoria
-        //TODO: PERSISTIR SOLO EL HANDLE
+
         this.coleccionMemoryRepository.save(nuevaColeccion);
-        return hechos;
     }
 
 
@@ -80,25 +69,21 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
 
 
     @Override
-    public List<Hecho> getColeccion(String idColeccion) {
-        //TODO: LO SACO DEL REPOSITORY
-        List<Hecho> hechos = new ArrayList<>();
-        return hechos;
+    public ColeccionOutputDTO getColeccion(String idColeccion) {
+        Coleccion coleccion = this.coleccionMemoryRepository.findById(idColeccion);
+        return coleccionToDto(coleccion);
     }
 
     public void actualizarHechos(){
         List<Coleccion> colecciones = this.coleccionMemoryRepository.findAll();
-        //TODO: por cada coleccion tomar sus hechos y volver a traerlos de las fuentes
 
-
-        List<Hecho> hechos = this.tomarHechosImportadores(this.instanciarFuentes(), null);
-
-        List<Hecho> hechosValidos = filtrarHechosValidos(hechos);
-        colecciones.forEach(coleccion -> coleccion.filtrarHechos(hechosValidos));
-        hechos.forEach(hechoRepository::save);
-        //TODO: volver a guardar las colecciones con los hechos actualizados
-        //hacer for each de cada coleccion y guardaR
-        this.coleccionMemoryRepository.save(coleccion);
+        colecciones.forEach(coleccion -> {
+            List<CriterioDePertenencia> criterios = coleccion.getCriteriosDePertenencia().stream().toList();
+            List<Hecho> hechos = tomarHechosImportadores(instanciarFuentes(), criterios);
+            asignarHechosAColeccion(hechos, coleccion);
+            hechos.forEach(hechoRepository::save);
+            coleccionMemoryRepository.save(coleccion);
+        });
     }
 
     private List<Fuente> instanciarFuentes(){
@@ -112,8 +97,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
 
 
 
-
-    //Esto es solo para agregar los hechos validos
+    //TODO: esto tiene que esdtar en cada fuente
     private List<Hecho> filtrarHechosValidos(List<Hecho> hechos){
        return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList());
     }
