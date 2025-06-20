@@ -4,6 +4,9 @@ import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionMemoryRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+
+import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
+import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
@@ -67,11 +70,24 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
             .toList();
 }
 
+    private List<Hecho> tomarHechosDeColeccion(Coleccion coleccion) {
+        // 1. Obtener todos los hechos que tienen esta colección en su lista de colecciones
+        List<Hecho> hechos = hechoRepository.findAll().stream()
+                .filter(hecho -> hecho.getColecciones() != null)
+                .filter(hecho -> hecho.getColecciones().contains(coleccion))
+                .collect(Collectors.toList());
+        return hechos;
+        }
 
     @Override
-    public ColeccionOutputDTO getColeccion(String idColeccion) {
+    public List<Hecho> getColeccion(String idColeccion, String modoNavegacion) {
         Coleccion coleccion = this.coleccionMemoryRepository.findById(idColeccion);
-        return coleccionToDto(coleccion);
+        List<Hecho> hechosDeColeccion = tomarHechosDeColeccion(coleccion);
+
+        NavegacionStrategy strategy = NavegacionStrategyFactory.getStrategy(modoNavegacion);
+
+        // Aplica la estrategia
+        return strategy.navegar(coleccion, hechosDeColeccion);
     }
 
     public void actualizarHechos(){

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IColeccionService {
     public void createColeccion(ColeccionInputDTO coleccion);
-    public ColeccionOutputDTO getColeccion(String idColeccion);
+    public List<Hecho> getColeccion(String idColeccion, String modoNavegacion);
     public void actualizarHechos();
 
 }

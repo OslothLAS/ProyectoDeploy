@@ -22,7 +22,10 @@ public class ColeccionController {
     }
 
     @GetMapping("/{idColeccion}")
-    public ColeccionOutputDTO getColeccion(@PathVariable String idColeccion) {
-        return this.coleccionService.getColeccion(idColeccion);
+    public List<Hecho> getColeccion(
+            @PathVariable String idColeccion,
+            @RequestParam(name = "modoNavegacion", defaultValue = "curada") String modoNavegacion) {
+
+        return this.coleccionService.getColeccion(idColeccion, modoNavegacion);
     }
 }
