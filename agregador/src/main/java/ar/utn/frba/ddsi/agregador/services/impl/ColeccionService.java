@@ -1,10 +1,9 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
+import ar.utn.frba.ddsi.agregador.consenso.strategies.ConsensoStrategy;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionMemoryRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
-
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import entities.colecciones.Coleccion;
@@ -12,12 +11,12 @@ import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import entities.hechos.Origen;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.coleccionToDto;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 
 @Service
@@ -26,9 +25,12 @@ public class ColeccionService implements IColeccionService {
     private final IHechoRepository hechoRepository;
     private IColeccionMemoryRepository coleccionMemoryRepository;
 
+
     public ColeccionService(IHechoRepository hechoRepository) {
         this.hechoRepository = hechoRepository;
     }
+
+
 
 //creo la coleccion
     @Override
@@ -47,8 +49,6 @@ public class ColeccionService implements IColeccionService {
 
         this.coleccionMemoryRepository.save(nuevaColeccion);
     }
-
-
 
 
     //aca asigno los hechos a una coleccion

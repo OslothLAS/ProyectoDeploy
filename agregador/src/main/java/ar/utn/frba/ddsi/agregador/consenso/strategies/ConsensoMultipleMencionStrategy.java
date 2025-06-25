@@ -1,4 +1,14 @@
 package ar.utn.frba.ddsi.agregador.consenso.strategies;
 
-public class ConsensoMultipleMencionStrategy {
+import entities.hechos.Hecho;
+import entities.colecciones.Fuente;
+
+import java.util.List;
+
+public class ConsensoMultipleMencionStrategy implements ConsensoStrategy{
+    @Override
+    public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes) {
+        return List.of();
+    }
+
 }

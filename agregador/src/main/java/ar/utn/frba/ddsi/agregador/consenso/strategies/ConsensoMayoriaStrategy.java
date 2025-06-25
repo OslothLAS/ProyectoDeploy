@@ -1,4 +1,14 @@
 package ar.utn.frba.ddsi.agregador.consenso.strategies;
 
-public class ConsensoMayoriaStrategy {
+import entities.hechos.Hecho;
+import entities.colecciones.Fuente;
+
+import java.util.List;
+
+public class ConsensoMayoriaStrategy implements ConsensoStrategy{
+
+    @Override
+    public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes) {
+        return List.of();
+    }
 }

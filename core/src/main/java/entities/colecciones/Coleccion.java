@@ -1,6 +1,7 @@
 package entities.colecciones;
 
 
+import ar.utn.frba.ddsi.agregador.consenso.strategies.ConsensoStrategy;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import lombok.Getter;
@@ -19,7 +20,17 @@ public class Coleccion {
     private final Handle handle;
     @Setter
     private LocalDateTime fechaYHoraDeActualizacion;
+    private ConsensoStrategy consensoStrategy;
 
+    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia, ConsensoStrategy consensoStrategy) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.importadores = importadores;
+        this.criteriosDePertenencia = criteriosDePertenencia;
+        this.handle = new Handle();
+        this.fechaYHoraDeActualizacion = LocalDateTime.now();
+        this.consensoStrategy = consensoStrategy;
+    }
 
     public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
