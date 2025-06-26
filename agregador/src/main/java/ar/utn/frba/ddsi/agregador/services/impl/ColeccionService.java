@@ -55,7 +55,7 @@ public class ColeccionService implements IColeccionService {
     private List<Hecho> asignarHechosAColeccion(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
                 .filter(coleccion::cumpleCriterios)
-                .peek(h -> h.addColeccion(coleccion))
+                .peek(h -> h.addColeccion(coleccion.getHandle()))
                 .toList();
     }
 

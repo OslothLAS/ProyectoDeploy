@@ -33,7 +33,7 @@ public class Coleccion {
     // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!
     public void filtrarHechos(List <Hecho> listaHechos) {
         List<Hecho> hechosFiltrados = listaHechos.stream().filter(this::cumpleCriterios).toList();
-        hechosFiltrados.forEach(hecho -> hecho.addColeccion(this));
+        hechosFiltrados.forEach(hecho -> hecho.addColeccion(this.getHandle()));
     }
 
     public Boolean cumpleCriterios(Hecho hecho){

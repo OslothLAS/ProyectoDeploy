@@ -1,6 +1,7 @@
 package entities.hechos;
 
 import entities.colecciones.Coleccion;
+import entities.colecciones.Handle;
 import entities.usuarios.Usuario;
 import entities.usuarios.Visualizador;
 import lombok.*;
@@ -22,7 +23,7 @@ public class Hecho {
     private DatosHechos datosHechos;
     private Multimedia multimedia;
     private List<String> etiquetas;
-    private List<Coleccion> colecciones;
+    private List<Handle> colecciones;
     private Origen origen;
 
     private Boolean mostrarDatos;
@@ -88,7 +89,7 @@ public class Hecho {
             this.etiquetas.add(etiqueta);
     }
 
-    public void addColeccion(Coleccion coleccion) {
+    public void addColeccion(Handle coleccion) {
         if (this.colecciones == null) {
             this.colecciones = new ArrayList<>();
         }

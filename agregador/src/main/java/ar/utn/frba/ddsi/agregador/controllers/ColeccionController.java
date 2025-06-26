@@ -16,6 +16,7 @@ public class ColeccionController {
     public ColeccionController(IColeccionService coleccionService) {
         this.coleccionService = coleccionService;
     }
+
     @PostMapping
     public void createColeccion(@RequestBody ColeccionInputDTO coleccion){
         this.coleccionService.createColeccion(coleccion);
