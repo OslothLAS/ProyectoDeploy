@@ -31,6 +31,18 @@ public class Hecho {
     private Duration plazoEdicion;
     private Boolean esEditable;
 
+    public static Hecho create(DatosHechos datosHechos, Origen origen) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .usuario(null)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(origen)
+                .colecciones(new ArrayList<>())
+                .build();
+    }
+
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
                 .datosHechos(datosHechos)
@@ -102,4 +114,5 @@ public class Hecho {
         LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
         return LocalDateTime.now().isBefore(fechaLimite);
     }
+
 }

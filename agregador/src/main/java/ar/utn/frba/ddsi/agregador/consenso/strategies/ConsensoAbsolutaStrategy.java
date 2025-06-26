@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ConsensoAbsolutaStrategy implements ConsensoStrategy{
     @Override
-    public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes) {
+    public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos) {
         return List.of();
     }
 }

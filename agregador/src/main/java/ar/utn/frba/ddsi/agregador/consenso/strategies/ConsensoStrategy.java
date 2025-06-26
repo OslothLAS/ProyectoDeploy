@@ -7,5 +7,5 @@ import entities.colecciones.Fuente;
 import java.util.List;
 
 public interface ConsensoStrategy {
-    List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes);
+    List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos);
 }
