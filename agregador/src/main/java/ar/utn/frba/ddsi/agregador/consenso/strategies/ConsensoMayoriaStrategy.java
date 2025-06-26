@@ -5,10 +5,12 @@ import entities.colecciones.Fuente;
 
 import java.util.List;
 
-public class ConsensoMayoriaStrategy implements ConsensoStrategy{
+public class ConsensoMayoriaStrategy extends ConsensoStrategy{
 
     @Override
     public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos) {
-        return List.of();
+        int cantidadDeFuentes = fuentes.size()/2;
+        return super.obtenerHechos(fuentes, hechos, cantidadDeFuentes);
     }
+
 }

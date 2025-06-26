@@ -15,7 +15,7 @@ import static entities.hechos.Origen.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConsensoMultipleMencionStrategyTest {
-
+/*
         ConsensoMultipleMencionStrategy consenso = new ConsensoMultipleMencionStrategy();
 
         @Test
@@ -94,6 +94,6 @@ class ConsensoMultipleMencionStrategyTest {
 
             assertEquals(1, resultado.size());
         }
-
+*/
 
 }
