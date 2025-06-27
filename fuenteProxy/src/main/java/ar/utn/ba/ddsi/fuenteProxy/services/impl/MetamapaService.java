@@ -56,6 +56,14 @@ public class MetamapaService implements IMetamapaService {
         return fetchHechosFromUrl(fullUrl);
     }
 
+    @Override
+    public List<Hecho> getHechosXcoleccion(Long id) {
+        return getHechos().stream()
+                .filter(hecho -> hecho.getDatosHechos() != null)
+                .filter(hecho -> hecho.getColecciones() != null)
+                .filter(hecho -> hecho.getColecciones().contains(id))
+                .toList();
+    }
 
 
     private List<Hecho> fetchHechosFromUrl(String url) {
@@ -71,7 +79,6 @@ public class MetamapaService implements IMetamapaService {
                     .map(HechoMapper::mapHechoDtoToHecho)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            // Podés loggear el error si querés
             return List.of();
         }
     }

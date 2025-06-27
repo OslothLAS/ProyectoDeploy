@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface IMetamapaService {
     List<Hecho> getHechos();
+    List<Hecho> getHechosXcoleccion(Long id);
     List<Hecho> getHechosXcategoria(String categoria);
     List<Hecho> getHechosXmetamapa(Long id);
 }

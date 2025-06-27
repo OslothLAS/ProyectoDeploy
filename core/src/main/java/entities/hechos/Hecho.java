@@ -44,6 +44,18 @@ public class Hecho {
                 .build();
     }
 
+    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones, Origen origen, Boolean esValido) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .usuario(null)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.EXTERNO)
+                .colecciones(colecciones)
+                .build();
+    }
+
 
     public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
         return Hecho.builder()

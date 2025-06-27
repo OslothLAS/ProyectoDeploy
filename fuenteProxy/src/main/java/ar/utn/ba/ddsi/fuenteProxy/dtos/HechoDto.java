@@ -1,6 +1,9 @@
 package ar.utn.ba.ddsi.fuenteProxy.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import entities.colecciones.Handle;
+
+import java.util.List;
 
 public class HechoDto {
 
@@ -10,6 +13,8 @@ public class HechoDto {
     private String categoria;
     private Double latitud;
     private Double longitud;
+    private Boolean esValido;
+    private List<Long> colecciones;
 
     @JsonProperty("fecha_hecho")
     private String fechaHecho;
@@ -45,11 +50,15 @@ public class HechoDto {
         return longitud;
     }
 
-    public String getFecha_hecho() {
+    public List<Long> getColecciones() {
+        return colecciones;
+    }
+
+    public String getFechaHecho() {
         return fechaHecho;
     }
 
-    public String getCreated_at() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
@@ -57,40 +66,7 @@ public class HechoDto {
         return updatedAt;
     }
 
-    // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
-    public void setLatitud(Double latitud) {
-        this.latitud = latitud;
-    }
-
-    public void setLongitud(Double longitud) {
-        this.longitud = longitud;
-    }
-
-    public void setFechaHecho(String fechaHecho) {
-        this.fechaHecho = fechaHecho;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
+    public Boolean getEsValido() {
+        return esValido;
     }
 }
