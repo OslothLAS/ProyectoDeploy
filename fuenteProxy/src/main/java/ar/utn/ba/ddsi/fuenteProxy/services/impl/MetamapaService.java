@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
 import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaService;
 import entities.Metamapa;
+import entities.colecciones.Handle;
 import entities.hechos.Hecho;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -57,11 +58,11 @@ public class MetamapaService implements IMetamapaService {
     }
 
     @Override
-    public List<Hecho> getHechosXcoleccion(Long id) {
-        return getHechos().stream()
+    public List<Hecho> getHechosXcoleccionXmetamapa(Handle id_coleccion, Long metamapa) {
+        return getHechosXmetamapa(metamapa).stream()
                 .filter(hecho -> hecho.getDatosHechos() != null)
                 .filter(hecho -> hecho.getColecciones() != null)
-                .filter(hecho -> hecho.getColecciones().contains(id))
+                .filter(hecho -> hecho.getColecciones().contains(id_coleccion))
                 .toList();
     }
 
