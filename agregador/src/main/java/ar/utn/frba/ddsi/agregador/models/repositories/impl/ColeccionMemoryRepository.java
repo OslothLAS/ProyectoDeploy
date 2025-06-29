@@ -1,15 +1,17 @@
 package ar.utn.frba.ddsi.agregador.models.repositories.impl;
 
-import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionMemoryRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Handle;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ColeccionMemoryRepository implements IColeccionMemoryRepository {
+@Repository
+public class ColeccionMemoryRepository implements IColeccionRepository {
     private final Map<Handle, Coleccion> colecciones = new HashMap<>();
     @Override
     public void save(Coleccion coleccion) {

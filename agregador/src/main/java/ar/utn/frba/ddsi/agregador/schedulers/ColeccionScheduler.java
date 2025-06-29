@@ -8,7 +8,7 @@ import ar.utn.frba.ddsi.agregador.services.impl.ColeccionService;
 @Component
 public class ColeccionScheduler {
 
-    private ColeccionService coleccionService;
+    private final ColeccionService coleccionService;
 
 
     public ColeccionScheduler(ColeccionService coleccionService) {
@@ -18,5 +18,10 @@ public class ColeccionScheduler {
     @Scheduled(cron = "0 0 * * * *")
     public void actualizarColecciones(){
         this.coleccionService.actualizarHechos();
+    }
+
+    @Scheduled(cron = "0 0 */6 * * *")
+    public void consensuarHechos(){
+        this.coleccionService.consensuarHechos();
     }
 }

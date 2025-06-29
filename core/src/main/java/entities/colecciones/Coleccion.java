@@ -1,7 +1,6 @@
 package entities.colecciones;
 
-
-import ar.utn.frba.ddsi.agregador.consenso.strategies.ConsensoStrategy;
+import entities.colecciones.consenso.strategies.ConsensoStrategy;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import lombok.Getter;
@@ -10,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+@Setter
 @Getter
 public class Coleccion {
     private final String titulo;
@@ -18,7 +17,7 @@ public class Coleccion {
     private final List<Fuente> importadores;
     private List<CriterioDePertenencia> criteriosDePertenencia;
     private final Handle handle;
-    @Setter
+
     private LocalDateTime fechaYHoraDeActualizacion;
     private ConsensoStrategy consensoStrategy;
 

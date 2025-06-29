@@ -1,4 +1,4 @@
-package ar.utn.frba.ddsi.agregador.consenso.strategies;
+package entities.colecciones.consenso.strategies;
 
 import entities.hechos.Hecho;
 import entities.colecciones.Fuente;
@@ -11,6 +11,4 @@ public class ConsensoAbsolutaStrategy extends ConsensoStrategy{
     public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos) {
             return super.obtenerHechos(fuentes, hechos, fuentes.size());
     }
-
-
 }

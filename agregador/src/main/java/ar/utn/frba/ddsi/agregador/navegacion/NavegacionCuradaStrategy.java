@@ -3,6 +3,7 @@ package ar.utn.frba.ddsi.agregador.navegacion;
 import entities.colecciones.Coleccion;
 import entities.hechos.Hecho;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NavegacionCuradaStrategy implements NavegacionStrategy{
@@ -14,6 +15,6 @@ public class NavegacionCuradaStrategy implements NavegacionStrategy{
     }
 
     private List<Hecho> filtrarPorConsenso(){
-
+        return new ArrayList<>();
     }
 }

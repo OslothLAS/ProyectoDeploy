@@ -1,4 +1,4 @@
-package ar.utn.frba.ddsi.agregador.consenso.strategies;
+package entities.colecciones.consenso.strategies;
 
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
@@ -10,10 +10,7 @@ import java.util.stream.Collectors;
 
 public abstract class ConsensoStrategy {
 
-
-    public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos){
-        return List.of();
-    }
+    public abstract List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos);
 
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, List<Hecho> hechos, int cantidadDeFuentesQueCoinciden) {
 

@@ -1,4 +1,4 @@
-package ar.utn.frba.ddsi.agregador.consenso.strategies;
+package entities.colecciones.consenso.strategies;
 
 import entities.hechos.Hecho;
 import entities.colecciones.Fuente;

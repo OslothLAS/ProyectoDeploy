@@ -1,8 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
-import ar.utn.frba.ddsi.agregador.consenso.strategies.ConsensoStrategy;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
-import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionMemoryRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
@@ -11,7 +10,6 @@ import entities.colecciones.Fuente;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import entities.hechos.Origen;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import java.util.*;
@@ -23,11 +21,12 @@ import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 public class ColeccionService implements IColeccionService {
 
     private final IHechoRepository hechoRepository;
-    private IColeccionMemoryRepository coleccionMemoryRepository;
+    private final IColeccionRepository coleccionRepository;
 
 
-    public ColeccionService(IHechoRepository hechoRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository) {
         this.hechoRepository = hechoRepository;
+        this.coleccionRepository = coleccionRepository;
     }
 
 
@@ -44,15 +43,15 @@ public class ColeccionService implements IColeccionService {
 
         List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores, criterios);
 
-        List<Hecho> hechos = asignarHechosAColeccion(todosLosHechos,nuevaColeccion);
+        List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos,nuevaColeccion);
         hechos.forEach(hechoRepository::save);
 
-        this.coleccionMemoryRepository.save(nuevaColeccion);
+        this.coleccionRepository.save(nuevaColeccion);
     }
 
 
     //aca asigno los hechos a una coleccion
-    private List<Hecho> asignarHechosAColeccion(List<Hecho> hechosValidos, Coleccion coleccion) {
+    private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
                 .filter(coleccion::cumpleCriterios)
                 .peek(h -> h.addColeccion(coleccion))
@@ -72,16 +71,15 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
 
     private List<Hecho> tomarHechosDeColeccion(Coleccion coleccion) {
         // 1. Obtener todos los hechos que tienen esta colección en su lista de colecciones
-        List<Hecho> hechos = hechoRepository.findAll().stream()
+        return hechoRepository.findAll().stream()
                 .filter(hecho -> hecho.getColecciones() != null)
                 .filter(hecho -> hecho.getColecciones().contains(coleccion))
                 .collect(Collectors.toList());
-        return hechos;
         }
 
     @Override
     public List<Hecho> getColeccion(String idColeccion, String modoNavegacion) {
-        Coleccion coleccion = this.coleccionMemoryRepository.findById(idColeccion);
+        Coleccion coleccion = this.coleccionRepository.findById(idColeccion);
         List<Hecho> hechosDeColeccion = tomarHechosDeColeccion(coleccion);
 
         NavegacionStrategy strategy = NavegacionStrategyFactory.getStrategy(modoNavegacion);
@@ -91,14 +89,14 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
     }
 
     public void actualizarHechos(){
-        List<Coleccion> colecciones = this.coleccionMemoryRepository.findAll();
+        List<Coleccion> colecciones = this.coleccionRepository.findAll();
 
         colecciones.forEach(coleccion -> {
             List<CriterioDePertenencia> criterios = coleccion.getCriteriosDePertenencia().stream().toList();
             List<Hecho> hechos = tomarHechosImportadores(instanciarFuentes(), criterios);
-            asignarHechosAColeccion(hechos, coleccion);
+            asignarColeccionAHechos(hechos, coleccion);
             hechos.forEach(hechoRepository::save);
-            coleccionMemoryRepository.save(coleccion);
+            coleccionRepository.save(coleccion);
         });
     }
 
@@ -106,9 +104,8 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         Fuente fuenteEstatica = new Fuente("localhost","8060", Origen.ESTATICO);
         Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO);
         Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO);
-        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
 
-        return importadores;
+        return List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
     }
 
 
@@ -119,6 +116,20 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
     }
 
 
+    public void consensuarHechos(){
+        List<Coleccion> colecciones =  this.coleccionRepository.findAll();
+        List <Hecho> hechosAsignados = new ArrayList<>();
 
+        colecciones.forEach(c -> {
+            List<Hecho> hechosConsensuados = c.getConsensoStrategy()
+                    .obtenerHechosConsensuados(c.getImportadores(), tomarHechosDeColeccion(c));
+
+            List<Hecho> hechosAsignadosPorColeccion = asignarColeccionAHechos(hechosConsensuados, c);
+
+            hechosAsignados.addAll(hechosAsignadosPorColeccion);
+        });
+
+        hechosAsignados.forEach(hechoRepository::save); //aca actualizo los ids de colecciones
+    }
 
 }
