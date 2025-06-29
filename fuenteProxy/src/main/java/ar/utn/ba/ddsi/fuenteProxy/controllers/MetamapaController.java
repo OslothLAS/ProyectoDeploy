@@ -1,8 +1,11 @@
 package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
+import ar.utn.ba.ddsi.fuenteProxy.dtos.ColeccionDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudDto;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaService;
 import entities.colecciones.Handle;
 import entities.hechos.Hecho;
+import entities.solicitudes.SolicitudEliminacion;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.ba.ddsi.fuenteProxy.services.IApiService;
 
@@ -23,7 +26,7 @@ public class MetamapaController {
         return MetemapaService.getHechos();
     }
 
-    @GetMapping("/{metamapa}/coleccion/{id}")
+    @GetMapping("/colecciones/{metamapa}/{id}")
     public List<Hecho> obtenerHechosXcoleccionXmetamapa(
             @PathVariable("metamapa") Long metamapa,
             @PathVariable("id") Long id_coleccionX) {
@@ -32,16 +35,26 @@ public class MetamapaController {
         return MetemapaService.getHechosXcoleccionXmetamapa(id_coleccion, metamapa);
     }
 
+    @GetMapping("/colecciones/{metamapa}")
+    public List<ColeccionDto> obtenerColeccionesXMetamapa(
+        @PathVariable("metamapa") Long metamapa){
+        return MetemapaService.getColeccionesXmetamapa(metamapa);
+    }
+
     @GetMapping("/hechos/categoria")
     public List<Hecho> obtenerHechosXcategoria(@RequestParam("categoria") String categoria) {
         return MetemapaService.getHechosXcategoria(categoria);
     }
 
-    @GetMapping("/hechos/{id}/metamapa")
+    @GetMapping("/hechos/{id}")
     public List<Hecho> obtenerHechosXMetamapa(@PathVariable("id") Long id) {
         return MetemapaService.getHechosXmetamapa(id);
     }
 
+    @GetMapping("/solicitudes/{id}")
+    public List<SolicitudDto> obtenerSolicitudesXmetamapa(@PathVariable("id") Long metamapa) {
+        return MetemapaService.getSolicitudesXmetamapa(metamapa);
+    }
 }
 
 

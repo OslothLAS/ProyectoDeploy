@@ -44,9 +44,10 @@ public class Hecho {
                 .build();
     }
 
-    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones, Origen origen, Boolean esValido) {
+    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones, Origen origen, Boolean esValido,Long id) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
+                .id(id)
                 .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())

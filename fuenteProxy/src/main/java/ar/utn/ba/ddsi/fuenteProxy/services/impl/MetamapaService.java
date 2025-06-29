@@ -1,16 +1,20 @@
 package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
+import ar.utn.ba.ddsi.fuenteProxy.dtos.ColeccionDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudDto;
 import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
 import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaService;
 import entities.Metamapa;
 import entities.colecciones.Handle;
 import entities.hechos.Hecho;
+import entities.solicitudes.SolicitudEliminacion;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +25,8 @@ public class MetamapaService implements IMetamapaService {
     private final IRepositoryMetamapa metamapaRepository;
 
     private static final String HECHOS_PATH = "/api/hechos";
+    private static final String SOLICITUDES_PATH = "/api/solicitudes";
+    private static final String COLECCIONES_PATH = "/api/colecciones";
 
     public MetamapaService(IRepositoryMetamapa metamapaRepository) {
         this.metamapaRepository = metamapaRepository;
@@ -66,6 +72,54 @@ public class MetamapaService implements IMetamapaService {
                 .toList();
     }
 
+    @Override
+    public List<SolicitudDto> getSolicitudesXmetamapa(Long metamapaId) {
+        Metamapa metamapa = metamapaRepository.findById(metamapaId);
+        if (metamapa == null) return List.of();
+
+        String fullUrl = metamapa.getUrl() + SOLICITUDES_PATH;
+        return fetchSolicitudesFromUrl(fullUrl);
+    }
+
+    public List<ColeccionDto> getColeccionesXmetamapa(Long metamapaId) {
+        Metamapa metamapa = metamapaRepository.findById(metamapaId);
+        if (metamapa == null) return List.of();
+        String fullUrl = metamapa.getUrl() + COLECCIONES_PATH;
+        return fetchColeccionesFromUrl(fullUrl);
+    }
+
+
+    private List<ColeccionDto> fetchColeccionesFromUrl(String url) {
+        try {
+            List<ColeccionDto> colecciones = webClient.get()
+                    .uri(URI.create(url))
+                    .retrieve()
+                    .bodyToFlux(ColeccionDto.class)
+                    .collectList()
+                    .block();
+
+            return colecciones != null ? colecciones : List.of();
+        } catch (Exception e) {
+            System.err.println("Error al obtener colecciones desde: " + url + " - " + e.getMessage());
+            return List.of();
+        }
+    }
+
+
+    private List<SolicitudDto> fetchSolicitudesFromUrl(String url) {
+        try {
+            List<SolicitudDto> solicitudesDto = webClient.get()
+                    .uri(URI.create(url))
+                    .retrieve()
+                    .bodyToFlux(SolicitudDto.class)
+                    .collectList()
+                    .block();
+            return solicitudesDto != null ? solicitudesDto : List.of();
+        } catch (Exception e) {
+            System.err.println("Error al obtener solicitudes desde: " + url + " - " + e.getMessage());
+            return List.of();
+        }
+    }
 
     private List<Hecho> fetchHechosFromUrl(String url) {
         try {
