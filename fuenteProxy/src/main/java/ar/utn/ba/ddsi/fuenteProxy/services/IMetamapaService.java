@@ -2,10 +2,9 @@ package ar.utn.ba.ddsi.fuenteProxy.services;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.ColeccionDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudesInputDto;
 import entities.colecciones.Handle;
 import entities.hechos.Hecho;
-import io.netty.channel.RecvByteBufAllocator;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -16,4 +15,5 @@ public interface IMetamapaService {
     List<Hecho> getHechosXmetamapa(Long id);
     List<SolicitudDto> getSolicitudesXmetamapa(Long metamapaId);
     List<ColeccionDto> getColeccionesXmetamapa(Long metamapaId);
+    SolicitudDto postSolicitudesXmetamapa(Long id, SolicitudesInputDto solicitud);
 }

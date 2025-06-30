@@ -2,7 +2,9 @@ package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.ColeccionDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudesInputDto;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaService;
+import ar.utn.ba.ddsi.fuenteProxy.services.impl.MetamapaService;
 import entities.colecciones.Handle;
 import entities.hechos.Hecho;
 import entities.solicitudes.SolicitudEliminacion;
@@ -16,9 +18,11 @@ import java.util.List;
 public class MetamapaController {
 
     private final IMetamapaService MetemapaService;
+    private final MetamapaService metamapaService;
 
-    public MetamapaController(IMetamapaService MetemapaService) {
+    public MetamapaController(IMetamapaService MetemapaService, MetamapaService metamapaService) {
         this.MetemapaService = MetemapaService;
+        this.metamapaService = metamapaService;
     }
 
     @GetMapping("/hechos")
@@ -54,6 +58,12 @@ public class MetamapaController {
     @GetMapping("/solicitudes/{id}")
     public List<SolicitudDto> obtenerSolicitudesXmetamapa(@PathVariable("id") Long metamapa) {
         return MetemapaService.getSolicitudesXmetamapa(metamapa);
+    }
+
+    @PostMapping("/solicitudes/{metamapa}")
+    public SolicitudDto subirSolicitudxMetamapa(@PathVariable("metamapa") Long metamapa,
+                                        @RequestBody SolicitudesInputDto solicitud) {
+        return metamapaService.postSolicitudesXmetamapa(metamapa, solicitud);
     }
 }
 
