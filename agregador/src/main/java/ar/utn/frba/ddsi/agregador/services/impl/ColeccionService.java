@@ -22,11 +22,12 @@ public class ColeccionService implements IColeccionService {
 
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionRepository;
+    private final NavegacionStrategyFactory navegacionFactory;
 
-
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository,  NavegacionStrategyFactory navegacionFactory) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
+        this.navegacionFactory = navegacionFactory;
     }
 
 
@@ -53,7 +54,6 @@ public class ColeccionService implements IColeccionService {
     //aca asigno los hechos a una coleccion
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
-                .filter(coleccion::cumpleCriterios)
                 .peek(h -> h.addColeccion(coleccion))
                 .toList();
     }
@@ -82,7 +82,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion);
         List<Hecho> hechosDeColeccion = tomarHechosDeColeccion(coleccion);
 
-        NavegacionStrategy strategy = NavegacionStrategyFactory.getStrategy(modoNavegacion);
+        NavegacionStrategy strategy = navegacionFactory.getStrategy(modoNavegacion);
 
         // Aplica la estrategia
         return strategy.navegar(coleccion, hechosDeColeccion);

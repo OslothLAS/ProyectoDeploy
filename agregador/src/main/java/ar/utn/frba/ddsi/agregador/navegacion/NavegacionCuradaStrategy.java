@@ -2,19 +2,18 @@ package ar.utn.frba.ddsi.agregador.navegacion;
 
 import entities.colecciones.Coleccion;
 import entities.hechos.Hecho;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class NavegacionCuradaStrategy implements NavegacionStrategy{
-
-
+@Component("CURADO")
+public class NavegacionCuradaStrategy implements NavegacionStrategy {
     @Override
     public List<Hecho> navegar(Coleccion coleccion, List<Hecho> hechos) {
-        return hechos; // Sin filtrar, retorna todos
-    }
-
-    private List<Hecho> filtrarPorConsenso(){
-        return new ArrayList<>();
+        return hechos.stream()
+                .filter(hecho -> hecho.getEsConsensuado() != null && hecho.getEsConsensuado())
+                .collect(Collectors.toList());
     }
 }

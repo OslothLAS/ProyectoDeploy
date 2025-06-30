@@ -1,12 +1,23 @@
 package ar.utn.frba.ddsi.agregador.navegacion;
 
-public class NavegacionStrategyFactory {
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-    public static NavegacionStrategy getStrategy(String modoNavegacion) {
-        if ("irrestricta".equalsIgnoreCase(modoNavegacion)) {
-            return new NavegacionIrrestricaStrategy();
-        } else {
-            return new NavegacionCuradaStrategy();
-        }
+import java.util.Map;
+
+@Component
+public class NavegacionStrategyFactory {
+    private final Map<String, NavegacionStrategy> strategies;
+
+    public NavegacionStrategyFactory(@Qualifier("IRRESTRICTO") NavegacionStrategy irrestricto,
+                                     @Qualifier("CURADO") NavegacionStrategy curado) {
+        this.strategies = Map.of(
+                "IRRESTRICTO", irrestricto,
+                "CURADO", curado
+        );
+    }
+
+    public NavegacionStrategy getStrategy(String modoNavegacion) {
+        return strategies.getOrDefault(modoNavegacion.toUpperCase(), strategies.get("IRRESTRICTO"));
     }
 }

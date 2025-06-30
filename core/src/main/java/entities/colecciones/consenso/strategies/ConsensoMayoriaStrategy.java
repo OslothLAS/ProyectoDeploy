@@ -9,7 +9,7 @@ public class ConsensoMayoriaStrategy extends ConsensoStrategy{
 
     @Override
     public List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos) {
-        int cantidadDeFuentes = fuentes.size()/2;
+        int cantidadDeFuentes = (fuentes.size() / 2) + 1;
         return super.obtenerHechos(fuentes, hechos, cantidadDeFuentes);
     }
 
