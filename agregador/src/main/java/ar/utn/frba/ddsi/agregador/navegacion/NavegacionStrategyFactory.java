@@ -7,17 +7,17 @@ import java.util.Map;
 
 @Component
 public class NavegacionStrategyFactory {
-    private final Map<String, NavegacionStrategy> strategies;
+    private static Map<String, NavegacionStrategy> strategies;
 
     public NavegacionStrategyFactory(@Qualifier("IRRESTRICTO") NavegacionStrategy irrestricto,
                                      @Qualifier("CURADO") NavegacionStrategy curado) {
-        this.strategies = Map.of(
+        strategies = Map.of(
                 "IRRESTRICTO", irrestricto,
                 "CURADO", curado
         );
     }
 
-    public NavegacionStrategy getStrategy(String modoNavegacion) {
+    public static NavegacionStrategy getStrategy(String modoNavegacion) {
         return strategies.getOrDefault(modoNavegacion.toUpperCase(), strategies.get("IRRESTRICTO"));
     }
 }

@@ -17,6 +17,7 @@ public class Coleccion {
     private final List<Fuente> importadores;
     private List<CriterioDePertenencia> criteriosDePertenencia;
     private final Handle handle;
+    private Long id;
 
     private LocalDateTime fechaYHoraDeActualizacion;
     private ConsensoStrategy consensoStrategy;

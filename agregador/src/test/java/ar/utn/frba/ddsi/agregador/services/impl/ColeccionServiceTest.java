@@ -63,6 +63,7 @@ class ColeccionServiceTest {
         Assertions.assertFalse(hechos.get(0).getColecciones().contains(coleccion));
         Assertions.assertFalse(hechos.get(1).getColecciones().contains(coleccion));
 
-        // se puede ver que como no hay fuentes entonces consensuar Hechos le saca la coleccion a todos los hechos
     }
+
+
 }

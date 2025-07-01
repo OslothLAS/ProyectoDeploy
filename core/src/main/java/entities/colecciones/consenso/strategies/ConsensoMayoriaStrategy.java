@@ -2,9 +2,11 @@ package entities.colecciones.consenso.strategies;
 
 import entities.hechos.Hecho;
 import entities.colecciones.Fuente;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component("MAYORIA")
 public class ConsensoMayoriaStrategy extends ConsensoStrategy{
 
     @Override

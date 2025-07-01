@@ -22,12 +22,10 @@ public class ColeccionService implements IColeccionService {
 
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionRepository;
-    private final NavegacionStrategyFactory navegacionFactory;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository,  NavegacionStrategyFactory navegacionFactory) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
-        this.navegacionFactory = navegacionFactory;
     }
 
 
@@ -37,9 +35,11 @@ public class ColeccionService implements IColeccionService {
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
 
         List<Fuente> importadores = this.instanciarFuentes();
+        List<CriterioDePertenencia> criterios = new ArrayList<>();
 
-        List<CriterioDePertenencia> criterios = coleccionDTO.getCriterios().stream().toList();
-
+        if(coleccionDTO.getCriterios() != null && !coleccionDTO.getCriterios().isEmpty()) {
+            criterios = coleccionDTO.getCriterios().stream().toList();
+        }
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
 
         List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores, criterios);
@@ -51,7 +51,7 @@ public class ColeccionService implements IColeccionService {
     }
 
 
-    //aca asigno los hechos a una coleccion
+    //aca asigno los hechos a una coleccionockitoExtension.
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
                 .peek(h -> h.addColeccion(coleccion))
@@ -78,13 +78,13 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         }
 
     @Override
-    public List<Hecho> getColeccion(String idColeccion, String modoNavegacion) {
-        Coleccion coleccion = this.coleccionRepository.findById(idColeccion);
+    public List<Hecho> getColeccion(Long idColeccion, String modoNavegacion) {
+        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
+
         List<Hecho> hechosDeColeccion = tomarHechosDeColeccion(coleccion);
+        NavegacionStrategy strategy = NavegacionStrategyFactory.getStrategy(modoNavegacion);
 
-        NavegacionStrategy strategy = navegacionFactory.getStrategy(modoNavegacion);
-
-        // Aplica la estrategia
         return strategy.navegar(coleccion, hechosDeColeccion);
     }
 
@@ -105,7 +105,8 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO);
         Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO);
 
-        return List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
+
+        return List.of(fuenteEstatica,fuenteDinamica);
     }
 
 
@@ -115,7 +116,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
        return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList());
     }
 
-
+    @Override
     public void consensuarHechos(){
         List<Coleccion> colecciones =  this.coleccionRepository.findAll();
         List <Hecho> hechosAsignados = new ArrayList<>();
@@ -125,9 +126,17 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
                     .obtenerHechosConsensuados(c.getImportadores(), tomarHechosDeColeccion(c));
 
             List<Hecho> hechosAsignadosPorColeccion = asignarColeccionAHechos(hechosConsensuados, c);
+            hechosAsignadosPorColeccion.forEach(h->h.setEsConsensuado(true));
+
+            List<Hecho> hechosActualmenteAsociados = tomarHechosDeColeccion(c);
+
+            hechosActualmenteAsociados.stream()
+                    .filter(hecho -> !hechosConsensuados.contains(hecho))
+                    .forEach(hecho -> hecho.getColecciones().remove(c));
 
             hechosAsignados.addAll(hechosAsignadosPorColeccion);
         });
+
 
         hechosAsignados.forEach(hechoRepository::save); //aca actualizo los ids de colecciones
     }
