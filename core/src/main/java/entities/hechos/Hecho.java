@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -119,6 +120,13 @@ public class Hecho {
         }
         LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
         return LocalDateTime.now().isBefore(fechaLimite);
+    }
+
+    public List<String> getTituloYDescripcion(){
+        String titulo = this.getDatosHechos().getTitulo();
+        String descripcion = this.getDatosHechos().getDescripcion();
+
+        return Arrays.asList(titulo, descripcion);
     }
 
 }

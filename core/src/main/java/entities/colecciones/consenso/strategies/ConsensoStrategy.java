@@ -12,6 +12,7 @@ public abstract class ConsensoStrategy {
 
     public abstract List<Hecho> obtenerHechosConsensuados(List<Fuente> fuentes, List<Hecho> hechos);
 
+
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, List<Hecho> hechos, int cantidadDeFuentesQueCoinciden) {
 
         // mapeo orígenes de las fuentes disponibles
@@ -21,9 +22,9 @@ public abstract class ConsensoStrategy {
                 .collect(Collectors.toSet());
 
         // agrupo los hechos iguales por DatosHechos (uso como ID los DatosHechos)
-        Map<DatosHechos, List<Hecho>> hechosPorDatos = hechos.stream()
+        Map<List<String>, List<Hecho>> hechosPorDatos = hechos.stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.groupingBy(Hecho::getDatosHechos));
+                .collect(Collectors.groupingBy(Hecho::getTituloYDescripcion));
 
         // filtro los hechos presentes en múltiples orígenes
         List<Hecho> hechosFiltrados = new ArrayList<>();
@@ -45,4 +46,6 @@ public abstract class ConsensoStrategy {
 
         return hechosFiltrados;
     }
+
+
 }
