@@ -30,7 +30,7 @@ public class MetamapaController {
         return MetemapaService.getHechos();
     }
 
-    @GetMapping("/colecciones/{metamapa}/{id}")
+    @GetMapping("/{metamapa}/hechos/colecciones/{id}")
     public List<Hecho> obtenerHechosXcoleccionXmetamapa(
             @PathVariable("metamapa") Long metamapa,
             @PathVariable("id") Long id_coleccionX) {
@@ -39,7 +39,18 @@ public class MetamapaController {
         return MetemapaService.getHechosXcoleccionXmetamapa(id_coleccion, metamapa);
     }
 
-    @GetMapping("/colecciones/{metamapa}")
+    @GetMapping("/{metamapa}/hechos/colecciones/{id}/modoNavegacion")
+
+    public List<Hecho> obtenerHechosXcoleccionXmetamapaXfiltrado(
+            @PathVariable("metamapa") Long metamapa,
+            @PathVariable("id") Long id_coleccionX,
+            @RequestParam(name = "modoNavegacion") String modoNavegacion)
+    {
+        Handle id_coleccion = new Handle(id_coleccionX);
+        return MetemapaService.getHechosXColeccionXmetampaXModoNavegacion(modoNavegacion,id_coleccion,metamapa);
+    }
+
+    @GetMapping("/{metamapa}/colecciones")
     public List<ColeccionDto> obtenerColeccionesXMetamapa(
         @PathVariable("metamapa") Long metamapa){
         return MetemapaService.getColeccionesXmetamapa(metamapa);
@@ -50,17 +61,17 @@ public class MetamapaController {
         return MetemapaService.getHechosXcategoria(categoria);
     }
 
-    @GetMapping("/hechos/{id}")
-    public List<Hecho> obtenerHechosXMetamapa(@PathVariable("id") Long id) {
+    @GetMapping("/{metamapa}/hechos")
+    public List<Hecho> obtenerHechosXMetamapa(@PathVariable("metamapa") Long id) {
         return MetemapaService.getHechosXmetamapa(id);
     }
 
-    @GetMapping("/solicitudes/{id}")
-    public List<SolicitudDto> obtenerSolicitudesXmetamapa(@PathVariable("id") Long metamapa) {
+    @GetMapping("/{metamapa}/solicitudes")
+    public List<SolicitudDto> obtenerSolicitudesXmetamapa(@PathVariable("metamapa") Long metamapa) {
         return MetemapaService.getSolicitudesXmetamapa(metamapa);
     }
 
-    @PostMapping("/solicitudes/{metamapa}")
+    @PostMapping("/{metamapa}/solicitudes")
     public SolicitudDto subirSolicitudxMetamapa(@PathVariable("metamapa") Long metamapa,
                                         @RequestBody SolicitudesInputDto solicitud) {
         return metamapaService.postSolicitudesXmetamapa(metamapa, solicitud);

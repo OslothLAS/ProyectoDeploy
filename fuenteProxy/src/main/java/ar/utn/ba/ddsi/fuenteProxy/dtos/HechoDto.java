@@ -14,6 +14,7 @@ public class HechoDto {
     private Double latitud;
     private Double longitud;
     private Boolean esValido;
+    private Boolean esConsensuado;
     private List<Long> colecciones;
 
     @JsonProperty("fecha_hecho")
@@ -56,6 +57,10 @@ public class HechoDto {
 
     public String getFechaHecho() {
         return fechaHecho;
+    }
+
+    public Boolean getEsConsensuado() {
+        return esConsensuado;
     }
 
     public String getCreatedAt() {

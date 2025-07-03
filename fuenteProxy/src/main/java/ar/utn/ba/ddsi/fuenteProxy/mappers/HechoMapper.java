@@ -27,7 +27,7 @@ public class HechoMapper {
                 ))
                 .fechaHecho(parseDate(dto.getFechaHecho()))
                 .build();
-        return Hecho.create(datosHechos, handles, Origen.EXTERNO, dto.getEsValido(), dto.getId());
+        return Hecho.create(datosHechos, handles, Origen.EXTERNO, dto.getEsValido(), dto.getId(), dto.getEsConsensuado());
     }
 
 

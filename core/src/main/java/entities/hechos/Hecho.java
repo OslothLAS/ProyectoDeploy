@@ -31,6 +31,7 @@ public class Hecho {
     private LocalDateTime fechaCreacion;
     private Duration plazoEdicion;
     private Boolean esEditable;
+    private Boolean esConsensuado;
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
@@ -41,10 +42,11 @@ public class Hecho {
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.DATASET)
                 .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
 
-    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones, Origen origen, Boolean esValido,Long id) {
+    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones, Origen origen, Boolean esValido,Long id,Boolean esConsensuado) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .id(id)
@@ -54,6 +56,7 @@ public class Hecho {
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.EXTERNO)
                 .colecciones(colecciones)
+                .esConsensuado(esConsensuado)
                 .build();
     }
 
@@ -79,6 +82,7 @@ public class Hecho {
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
                 .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
     //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
@@ -94,6 +98,7 @@ public class Hecho {
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.CONTRIBUYENTE)
                 .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
 

@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,6 @@ public class MetamapaService implements IMetamapaService {
                 .toList();
     }
 
-
      @Override
      public List<Hecho> getHechosXcategoria(String categoria) {
          return getHechos().stream()
@@ -72,6 +72,21 @@ public class MetamapaService implements IMetamapaService {
                 .filter(hecho -> hecho.getColecciones() != null)
                 .filter(hecho -> hecho.getColecciones().contains(id_coleccion))
                 .toList();
+    }
+
+    @Override
+    public List<Hecho> getHechosXColeccionXmetampaXModoNavegacion(String modoNavegacion, Handle id_coleccion, Long metamapa) {
+        List<Hecho> hechosColeccionMetamapa = getHechosXcoleccionXmetamapa(id_coleccion, metamapa);
+
+        if (modoNavegacion.equals("irrestricta")) {
+            return hechosColeccionMetamapa;
+        } else if (modoNavegacion.equals("curada")) {
+            return hechosColeccionMetamapa.stream()
+                    .filter(Hecho::getEsConsensuado)
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList(); // O lanzar una excepción si no es un modo válido
+        }
     }
 
     @Override
@@ -119,7 +134,7 @@ public class MetamapaService implements IMetamapaService {
                     .bodyToMono(SolicitudDto.class)
                     .block();
 
-            return solicitudDto; //? solicitudCreada.getId() : null;
+            return solicitudDto;
 
         } catch (Exception e) {
             System.err.println("Error al postear la solicitud: " + e.getMessage());
