@@ -54,7 +54,7 @@ public class ColeccionService implements IColeccionService {
     //aca asigno los hechos a una coleccionockitoExtension.
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
-                .peek(h -> h.addColeccion(coleccion))
+                .peek(h -> h.addColeccion(coleccion.getHandle()))
                 .toList();
     }
 
@@ -73,7 +73,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         // 1. Obtener todos los hechos que tienen esta colección en su lista de colecciones
         return hechoRepository.findAll().stream()
                 .filter(hecho -> hecho.getColecciones() != null)
-                .filter(hecho -> hecho.getColecciones().contains(coleccion))
+                .filter(hecho -> hecho.getColecciones().contains(coleccion.getHandle()))
                 .collect(Collectors.toList());
         }
 
