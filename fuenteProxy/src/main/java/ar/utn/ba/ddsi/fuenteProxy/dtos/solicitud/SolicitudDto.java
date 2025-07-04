@@ -78,4 +78,8 @@ public class SolicitudDto {
     public void setHistorialDeSolicitud(List<String> historialDeSolicitud) {
         this.historialDeSolicitud = historialDeSolicitud;
     }
+
+    public void agregarEstadoHistorial(String estadoSolicitudEliminacion) {
+        this.historialDeSolicitud.add(estadoSolicitudEliminacion);
+    }
 }
