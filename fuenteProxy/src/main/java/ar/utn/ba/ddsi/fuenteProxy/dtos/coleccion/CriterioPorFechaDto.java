@@ -1,6 +1,5 @@
-package ar.utn.ba.ddsi.fuenteProxy.dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion;
 
-import entities.criteriosDePertenencia.CriterioPorFecha;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,16 +1,15 @@
 package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.ColeccionDto;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudDto;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.SolicitudesInputDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion.ColeccionDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudesInputDto;
 import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
 import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaService;
 import entities.Metamapa;
 import entities.colecciones.Handle;
 import entities.hechos.Hecho;
-import entities.solicitudes.SolicitudEliminacion;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -49,14 +48,15 @@ public class MetamapaService implements IMetamapaService {
                 .toList();
     }
 
-     @Override
-     public List<Hecho> getHechosXcategoria(String categoria) {
-         return getHechos().stream()
-                 .filter(hecho -> hecho.getDatosHechos() != null)
-                 .filter(hecho -> hecho.getDatosHechos().getCategoria() != null)
-                 .filter(hecho -> hecho.getDatosHechos().getCategoria().equalsIgnoreCase(categoria.trim()))
-                 .toList();
+    @Override
+    public List<Hecho> getHechosXcategoriaXcolecciones(String categoria, Long metamapa, Handle id_coleccion) {
+        return getHechosXcoleccionXmetamapa(id_coleccion, metamapa).stream()
+                .filter(hecho -> hecho.getDatosHechos() != null)
+                .filter(hecho -> hecho.getDatosHechos().getCategoria() != null)
+                .filter(hecho -> hecho.getDatosHechos().getCategoria().equalsIgnoreCase(categoria.trim()))
+                .toList();
     }
+
 
     @Override
     public List<Hecho> getHechosXmetamapa(Long id) {

@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.fuenteProxy.dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion;
 
 import lombok.Getter;
 import lombok.Setter;

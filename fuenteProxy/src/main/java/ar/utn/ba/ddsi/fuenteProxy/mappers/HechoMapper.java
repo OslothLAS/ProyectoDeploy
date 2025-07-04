@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.fuenteProxy.mappers;
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
 import entities.colecciones.Handle;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;

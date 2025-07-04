@@ -1,7 +1,6 @@
-package ar.utn.ba.ddsi.fuenteProxy.dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos.hecho;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import entities.colecciones.Handle;
 
 import java.util.List;
 

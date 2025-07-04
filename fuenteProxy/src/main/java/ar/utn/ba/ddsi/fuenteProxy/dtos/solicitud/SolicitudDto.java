@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.fuenteProxy.dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthRequest;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.AuthResponse;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.DesastresResponse;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.api.AuthRequest;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.api.AuthResponse;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.api.DesastresResponse;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
 import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
 import ar.utn.ba.ddsi.fuenteProxy.services.IApiService;
 import entities.criteriosDePertenencia.CriterioDePertenencia;

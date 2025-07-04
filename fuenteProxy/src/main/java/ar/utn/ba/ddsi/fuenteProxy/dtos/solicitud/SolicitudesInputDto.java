@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.fuenteProxy.dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud;
 
 public class SolicitudesInputDto {
     private Long id_solicitante;
