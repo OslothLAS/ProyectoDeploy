@@ -59,14 +59,14 @@ public class SolicitudService implements ISolicitudService {
         try {
             String fullUrl = metamapa.getUrl() + SOLICITUDES_PATH;
 
-            SolicitudDto solicitudCreada = webClient.post()
+            SolicitudDto solicitudDto1 = webClient.post()
                     .uri(URI.create(fullUrl))
                     .bodyValue(solicitudDto)
                     .retrieve()
                     .bodyToMono(SolicitudDto.class)
                     .block();
 
-            return solicitudCreada;
+            return solicitudDto;
 
         } catch (Exception e) {
             System.err.println("Error al postear la solicitud: " + e.getMessage());
