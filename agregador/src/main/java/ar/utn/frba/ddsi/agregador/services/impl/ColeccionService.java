@@ -117,6 +117,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
     }
 
     @Override
+
     public void consensuarHechos(){
         List<Coleccion> colecciones =  this.coleccionRepository.findAll();
         List <Hecho> hechosAsignados = new ArrayList<>();
@@ -131,14 +132,13 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
             List<Hecho> hechosActualmenteAsociados = tomarHechosDeColeccion(c);
 
             hechosActualmenteAsociados.stream()
+                    .filter(Hecho::getEsConsensuado)
                     .filter(hecho -> !hechosConsensuados.contains(hecho))
-                    .forEach(hecho -> hecho.getColecciones().remove(c));
+                    .forEach(hecho -> hecho.setEsConsensuado(false));
 
             hechosAsignados.addAll(hechosAsignadosPorColeccion);
         });
-
-
-        hechosAsignados.forEach(hechoRepository::save); //aca actualizo los ids de colecciones
+        hechosAsignados.forEach(hechoRepository::save);
     }
 
 }
