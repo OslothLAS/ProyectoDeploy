@@ -10,6 +10,9 @@ public class Handle {
         this.value = UUID.randomUUID().toString().replaceAll("-", "");
     }
 
+    public Handle(long value){
+        this.value = String.valueOf(value);
+    }
 
     public String getValue() {
         return value;
