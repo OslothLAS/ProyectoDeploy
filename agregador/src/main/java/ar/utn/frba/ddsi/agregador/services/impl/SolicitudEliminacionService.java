@@ -1,23 +1,23 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Contribuyente;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
-import entities.colecciones.Coleccion;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SolicitudEliminacionService implements ISolicitudEliminacionService {
 
+    @Autowired
     private ISolicitudEliminacionRepository solicitudRepository;
 
     @Override
     public void crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
+        solicitud.setJustificacion(s);
         solicitudRepository.save(this.dtoToSolicitud(solicitud));
     }
 
