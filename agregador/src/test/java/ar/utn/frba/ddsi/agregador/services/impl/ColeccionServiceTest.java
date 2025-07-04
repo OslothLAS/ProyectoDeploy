@@ -1,90 +1,69 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
-import entities.colecciones.Fuente;
+import ar.utn.frba.ddsi.agregador.models.repositories.impl.ColeccionMemoryRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.impl.HechoMemoryRepository;
+import entities.colecciones.consenso.strategies.ConsensoMultipleMencionStrategy;
+
+import entities.colecciones.Coleccion;
+import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
-import entities.hechos.Origen;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import java.time.LocalDate;
 import java.util.List;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+@ExtendWith(MockitoExtension.class)
 class ColeccionServiceTest {
     //levantar todas las fuentes para correr los tests
 
     @Test
-    public void tomarHechosImportador(){
-        Fuente fuenteEstatica = new Fuente("localhost", "8060", Origen.DATASET);
-        Fuente fuenteDinamica = new Fuente("localhost", "8070", Origen.CONTRIBUYENTE); // o CARGA_MANUAL
-        Fuente fuenteProxy = new Fuente("localhost", "8090", Origen.EXTERNO);
+    void consensuarHechos() {
+        DatosHechos datos1 = new DatosHechos("titulo1","desc1","cat1",null, LocalDate.now());
+        DatosHechos datos2 = new DatosHechos("titulo2","desc2","cat2",null, LocalDate.now());
 
-        List<Fuente> importadores = List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
+        Hecho hecho1 = Hecho.create(datos1);
+        Hecho hecho2 = Hecho.create(datos2);
 
-        List<Hecho> hechos = importadores.stream()
-                .flatMap(i -> i.obtenerHechos().stream())
-                .toList();
+        // Creamos una colección real, no un mock
+        Coleccion coleccion = new Coleccion(
+                "titulo",
+                "desc",
+                List.of(), // importadores
+                List.of(), // criterios
+                new ConsensoMultipleMencionStrategy() // estrategia real
+        );
+        hecho1.addColeccion(coleccion);
+        hecho2.addColeccion(coleccion);
 
-        Hecho hecho1 = hechos.get(0);
-        System.out.println(hecho1.getDatosHechos().getTitulo());
-        System.out.println(hecho1.getDatosHechos().getDescripcion());
+        HechoMemoryRepository hechoRepository = mock(HechoMemoryRepository.class);
+        ColeccionMemoryRepository coleccionRepository = mock(ColeccionMemoryRepository.class);
 
-        Assertions.assertNotNull(hechos);
+        when(coleccionRepository.findAll()).thenReturn(List.of(coleccion));
+        when(hechoRepository.findAll()).thenReturn(List.of(hecho1, hecho2));
+
+        hechoRepository.save(hecho1);
+        hechoRepository.save(hecho2);
+
+        System.out.println(hecho1.getColecciones());
+
+        ColeccionService coleccionService = new ColeccionService(hechoRepository, coleccionRepository);
+
+        when(coleccionRepository.findAll()).thenReturn(List.of(coleccion));
+
+        coleccionService.consensuarHechos();
+
+        List<Hecho> hechos = hechoRepository.findAll();
+        System.out.println(hechos.get(0).getDatosHechos().getTitulo());
+        System.out.println(hechos.get(0).getColecciones());
+
+        Assertions.assertFalse(hechos.get(0).getColecciones().contains(coleccion));
+        Assertions.assertFalse(hechos.get(1).getColecciones().contains(coleccion));
+
     }
 
-    @Test
-    public void tomarHechosImportadorEstatica(){
 
-        Fuente fuenteEstatica = new Fuente("localhost", "8060", Origen.DATASET);
-
-
-        List<Fuente> importadores = List.of(fuenteEstatica);
-
-        List<Hecho> hechos = importadores.stream()
-                .flatMap(i -> i.obtenerHechos().stream())
-                .toList();
-
-        Hecho hecho1 = hechos.get(0);
-        System.out.println(hecho1.getDatosHechos().getTitulo());
-        System.out.println(hecho1.getDatosHechos().getDescripcion());
-
-        Assertions.assertNotNull(hechos);
-    }
-
-    @Test
-    public void tomarHechosImportadorDinamica(){
-        Fuente fuenteDinamica = new Fuente("localhost", "8070", Origen.CONTRIBUYENTE); // o CARGA_MANUAL
-
-
-        List<Fuente> importadores = List.of(fuenteDinamica);
-
-        List<Hecho> hechos = importadores.stream()
-                .flatMap(i -> i.obtenerHechos().stream())
-                .toList();
-
-        Hecho hecho1 = hechos.get(0);
-        System.out.println(hecho1.getDatosHechos().getTitulo());
-        System.out.println(hecho1.getDatosHechos().getDescripcion());
-
-        Assertions.assertNotNull(hechos);
-    }
-
-    @Test
-    public void tomarHechosImportadorProxy(){
-        //Fuente fuenteEstatica = new Fuente("localhost","8060");
-        //Fuente fuenteDinamica = new Fuente("localhost","8070");
-        Fuente fuenteProxy = new Fuente("localhost", "8090", Origen.EXTERNO);
-
-        List<Fuente> importadores = List.of(fuenteProxy);
-
-        List<Hecho> hechos = importadores.stream()
-                .flatMap(i -> i.obtenerHechos().stream())
-                .toList();
-
-        Hecho hecho1 = hechos.get(0);
-        System.out.println(hecho1.getDatosHechos().getTitulo());
-        System.out.println(hecho1.getDatosHechos().getDescripcion());
-
-        Assertions.assertNotNull(hechos);
-    }
 }

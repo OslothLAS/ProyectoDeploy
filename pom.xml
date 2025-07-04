@@ -16,7 +16,6 @@
     <module>fuenteDinamica</module>
     <module>fuenteEstatica</module>
     <module>fuenteProxy</module>
-    <module>fuenteMetaMapa</module>
     <module>agregador</module>
     <module>core</module>
   </modules>

@@ -12,4 +12,5 @@ public class ColeccionInputDTO {
     private String descripcion;
     private List<String> importadores;
     private List<CriterioDePertenencia> criterios;
+    private String estrategiaConsenso;
 }

@@ -112,6 +112,11 @@
 							<version>1.18.30</version>
 						</path>
 					</annotationProcessorPaths>
+
+					<compilerArgs>
+						<arg>-Amaven.agregador.notApt=true</arg>
+						<arg>-Amaven.core.notApt=true</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 

@@ -7,8 +7,8 @@ import entities.hechos.Hecho;
 import java.util.List;
 
 public interface IColeccionService {
-    public List<Hecho> createColeccion(ColeccionInputDTO coleccion);
-    public List<Hecho> getColeccion(String idColeccion);
-    public void actualizarHechos();
-
+    void createColeccion(ColeccionInputDTO coleccion);
+    List<Hecho> getColeccion(Long idColeccion, String modoNavegacion);
+    void actualizarHechos();
+    void consensuarHechos();
 }

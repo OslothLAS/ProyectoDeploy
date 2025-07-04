@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -30,6 +31,20 @@ public class Hecho {
     private LocalDateTime fechaCreacion;
     private Duration plazoEdicion;
     private Boolean esEditable;
+    private Boolean esConsensuado;
+
+    public static Hecho create(DatosHechos datosHechos, Origen origen) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .usuario(null)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(origen)
+                .colecciones(new ArrayList<>())
+                .esConsensuado(false)
+                .build();
+    }
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
@@ -40,6 +55,7 @@ public class Hecho {
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.DATASET)
                 .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
 
@@ -53,6 +69,7 @@ public class Hecho {
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.VISUALIZADOR)
                 .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
 
@@ -65,6 +82,7 @@ public class Hecho {
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
                 .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
     //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
@@ -80,6 +98,7 @@ public class Hecho {
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.CONTRIBUYENTE)
                 .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
 
@@ -102,4 +121,12 @@ public class Hecho {
         LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
         return LocalDateTime.now().isBefore(fechaLimite);
     }
+
+    public List<String> getTituloYDescripcion(){
+        String titulo = this.getDatosHechos().getTitulo();
+        String descripcion = this.getDatosHechos().getDescripcion();
+
+        return Arrays.asList(titulo, descripcion);
+    }
+
 }
