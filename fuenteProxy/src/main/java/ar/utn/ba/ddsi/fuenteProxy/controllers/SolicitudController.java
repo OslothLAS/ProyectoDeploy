@@ -2,8 +2,11 @@ package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudesInputDto;
-import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaService;
-import ar.utn.ba.ddsi.fuenteProxy.services.impl.MetamapaService;
+import ar.utn.ba.ddsi.fuenteProxy.services.IColeccionService;
+import ar.utn.ba.ddsi.fuenteProxy.services.ISolicitudService;
+import ar.utn.ba.ddsi.fuenteProxy.services.impl.ColeccionService;
+import ar.utn.ba.ddsi.fuenteProxy.services.impl.SolicitudService;
+import entities.colecciones.Coleccion;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,22 +15,22 @@ import java.util.List;
 @RequestMapping("/metamapa/solicitudes")
 public class SolicitudController {
 
-    private final IMetamapaService MetemapaService;
-    private final MetamapaService metamapaService;
+    private final ISolicitudService SolicitudService;
+    private final SolicitudService solicitudService;
 
-    public SolicitudController(IMetamapaService MetemapaService, MetamapaService metamapaService) {
-        this.MetemapaService=MetemapaService;
-        this.metamapaService=metamapaService;
+    public SolicitudController(ISolicitudService SolicitudService, SolicitudService solicitudService) {
+        this.SolicitudService= SolicitudService;
+        this.solicitudService=solicitudService;
     }
 
     @GetMapping("/{metamapa}")
     public List<SolicitudDto> obtenerSolicitudesXmetamapa(@PathVariable("metamapa") Long metamapa) {
-        return MetemapaService.getSolicitudesXmetamapa(metamapa);
+        return SolicitudService.getSolicitudesXmetamapa(metamapa);
     }
 
     @PostMapping("/{metamapa}")
     public SolicitudDto subirSolicitudxMetamapa(@PathVariable("metamapa") Long metamapa,
                                                 @RequestBody SolicitudesInputDto solicitud) {
-        return metamapaService.postSolicitudesXmetamapa(metamapa, solicitud);
+        return solicitudService.postSolicitudesXmetamapa(metamapa, solicitud);
     }
 }
