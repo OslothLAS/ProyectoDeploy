@@ -1,9 +1,8 @@
 package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
-
-import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import entities.hechos.Hecho;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
@@ -23,10 +22,16 @@ public class ColeccionController {
     }
 
     @GetMapping("/{idColeccion}")
-    public List<Hecho> getColeccion(
-            @PathVariable String idColeccion,
-            @RequestParam(name = "modoNavegacion", defaultValue = "curada") String modoNavegacion) {
+    public ResponseEntity<List<Hecho>> getColeccion(
+            @PathVariable(name = "idColeccion") Long idColeccion,
+            @RequestParam(name = "modoNavegacion", defaultValue = "IRRESTRICTO") String modoNavegacion) {
+        List<Hecho> hechos = this.coleccionService.getColeccion(idColeccion, modoNavegacion);
+        return ResponseEntity.ok(hechos);
+    }
 
-        return this.coleccionService.getColeccion(idColeccion, modoNavegacion);
+    @GetMapping("/cron")
+    public ResponseEntity<Void> consensuarHechos() {
+        this.coleccionService.consensuarHechos();
+        return ResponseEntity.ok().build();
     }
 }

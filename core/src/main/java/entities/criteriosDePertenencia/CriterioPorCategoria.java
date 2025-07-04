@@ -1,5 +1,7 @@
 package entities.criteriosDePertenencia;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import entities.hechos.Hecho;
 import lombok.Getter;
 import org.springframework.util.LinkedMultiValueMap;
@@ -10,7 +12,8 @@ import static utils.NormalizadorTexto.normalizarTexto;
 public class CriterioPorCategoria implements CriterioDePertenencia{
     private final String categoria;
 
-    public CriterioPorCategoria(String categoria) {
+    @JsonCreator
+    public CriterioPorCategoria(@JsonProperty("categoria") String categoria) {
         this.categoria = categoria;
     }
 

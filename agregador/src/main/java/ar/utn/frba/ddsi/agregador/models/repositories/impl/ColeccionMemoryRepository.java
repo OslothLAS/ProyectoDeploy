@@ -1,30 +1,40 @@
 package ar.utn.frba.ddsi.agregador.models.repositories.impl;
 
-import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionMemoryRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import entities.colecciones.Coleccion;
-import entities.colecciones.Handle;
+import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class ColeccionMemoryRepository implements IColeccionMemoryRepository {
-    private final Map<Handle, Coleccion> colecciones = new HashMap<>();
+@Repository
+public class ColeccionMemoryRepository implements IColeccionRepository {
+    //private final Map<Handle, Coleccion> colecciones = new HashMap<>();
+    private final Map<Long, Coleccion> colecciones = new HashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
     @Override
     public void save(Coleccion coleccion) {
-        colecciones.put(coleccion.getHandle(), coleccion);
+        if(coleccion.getId() == null) {
+            coleccion.setId(idGenerator.getAndIncrement());
+            colecciones.put(coleccion.getId(), coleccion);
+        }
+        else{
+            colecciones.put(coleccion.getId(), coleccion);
+        }
     }
 
     @Override
-    public Coleccion findById(String handleValue) {
+    public Optional<Coleccion> findById(Long id){
+        return Optional.ofNullable(colecciones.get(id));
+    }
+    /*public Coleccion findById(String handleValue) {
         for (Handle handle : colecciones.keySet()) {
             if (handle.getValue().equals(handleValue)) {
                 return colecciones.get(handle);
             }
         }
         return null;
-    }
+    }*/
 
     @Override
     public List<Coleccion> findAll() {

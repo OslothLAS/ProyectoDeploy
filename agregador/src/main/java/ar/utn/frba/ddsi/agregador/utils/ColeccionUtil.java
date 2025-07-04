@@ -4,6 +4,7 @@ import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
+import entities.factories.ConsensoFactory;
 
 import java.util.List;
 
@@ -17,7 +18,8 @@ public class ColeccionUtil {
                 dto.getTitulo(),
                 dto.getDescripcion(),
                 importadores,
-                dto.getCriterios()
+                dto.getCriterios(),
+                ConsensoFactory.getStrategy(dto.getEstrategiaConsenso())
         );
     }
 

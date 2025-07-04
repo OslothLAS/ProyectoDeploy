@@ -19,6 +19,6 @@ public class SchedulingConfig implements SchedulingConfigurer {
 
     private Executor taskExecutor(){
         //Por defecto ya viene uno, pero hago esto para no codear despues
-        return Executors.newScheduledThreadPool(1);
+        return Executors.newScheduledThreadPool(2);
     }
 }
