@@ -18,7 +18,6 @@ import java.util.List;
 public class SolicitudEliminacion {
     @Setter
     private Long id;
-    //se crea al contribuyente
     private Contribuyente solicitante;
     private LocalDateTime fechaDeCreacion;
     @Setter

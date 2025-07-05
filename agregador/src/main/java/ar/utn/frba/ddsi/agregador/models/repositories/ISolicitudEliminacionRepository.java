@@ -16,6 +16,6 @@ public interface ISolicitudEliminacionRepository {
 
     List<SolicitudEliminacion> findByEstado(EstadoSolicitudEliminacion estado);
 
-    public void deleteSolicitudes(SolicitudEliminacion solicitud);
+    void deleteSolicitud(SolicitudEliminacion solicitud);
 
 }

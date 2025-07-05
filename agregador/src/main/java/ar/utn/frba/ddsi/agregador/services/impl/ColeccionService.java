@@ -109,13 +109,6 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         return List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
     }
 
-
-
-    //TODO: esto tiene que esdtar en cada fuente
-    private List<Hecho> filtrarHechosValidos(List<Hecho> hechos){
-       return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList());
-    }
-
     @Override
 
     public void consensuarHechos(){

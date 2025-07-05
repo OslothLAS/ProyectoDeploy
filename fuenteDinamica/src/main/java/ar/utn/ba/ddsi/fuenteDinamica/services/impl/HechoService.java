@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class HechoService implements IHechoService {
-    @Autowired  // ← Opcional en Spring Boot
+    @Autowired
     private HechoProperties hechoProperties;
     private final IHechoRepository hechoRepository;
 
@@ -111,6 +111,7 @@ public class HechoService implements IHechoService {
         }
 
         return hechos.stream()
+                .filter(Hecho::getEsValido)
                 .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
     }

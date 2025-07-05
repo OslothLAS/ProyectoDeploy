@@ -28,6 +28,7 @@ public class ExtractService implements IExtractService {
         }
 
         return hechos.stream()
+                .filter(Hecho::getEsValido)
                 .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
     }

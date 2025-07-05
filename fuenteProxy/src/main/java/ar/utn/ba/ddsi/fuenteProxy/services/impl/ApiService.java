@@ -90,6 +90,7 @@ public class ApiService implements IApiService {
         }
 
         return hechos.stream()
+                //.filter(Hecho::getEsValido) hay que ver si el hecho de otra instancia siempre es valido o no (imagino q si)
                 .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
     }

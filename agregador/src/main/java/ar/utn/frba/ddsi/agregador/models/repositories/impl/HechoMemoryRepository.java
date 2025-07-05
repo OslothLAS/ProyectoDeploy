@@ -2,7 +2,6 @@ package ar.utn.frba.ddsi.agregador.models.repositories.impl;
 
 
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
-import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +10,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class HechoMemoryRepository implements IHechoRepository {
-
     private final Map<Long, Hecho> hechos = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
@@ -34,11 +32,4 @@ public class HechoMemoryRepository implements IHechoRepository {
     public List<Hecho> findAll(){
         return new ArrayList<>(hechos.values());
     }
-
-    @Override
-    public List<Hecho> findSegunCriterios(List<CriterioDePertenencia> criterios) {
-        return List.of(); //TODO
-    }
-
-
 }
