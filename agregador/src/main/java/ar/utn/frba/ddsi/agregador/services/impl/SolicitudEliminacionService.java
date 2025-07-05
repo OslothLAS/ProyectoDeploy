@@ -10,12 +10,14 @@ import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminaci
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
 import entities.colecciones.Coleccion;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
 public class SolicitudEliminacionService implements ISolicitudEliminacionService {
 
+    @Autowired
     private ISolicitudEliminacionRepository solicitudRepository;
 
     @Override
