@@ -11,4 +11,6 @@ public interface IColeccionService {
     List<Hecho> getColeccion(Long idColeccion, String modoNavegacion);
     void actualizarHechos();
     void consensuarHechos();
+
+  boolean deleteColeccion(Long idColeccion);
 }

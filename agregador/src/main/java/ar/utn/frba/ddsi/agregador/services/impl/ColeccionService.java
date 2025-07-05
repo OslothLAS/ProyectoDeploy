@@ -88,6 +88,14 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         return strategy.navegar(coleccion, hechosDeColeccion);
     }
 
+    @Override
+    public boolean deleteColeccion(Long idColeccion) {
+        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
+            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
+
+        return this.coleccionRepository.delete(idColeccion);
+    }
+
     public void actualizarHechos(){
         List<Coleccion> colecciones = this.coleccionRepository.findAll();
 

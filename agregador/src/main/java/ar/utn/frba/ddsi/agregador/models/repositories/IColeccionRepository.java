@@ -10,4 +10,6 @@ public interface IColeccionRepository {
     void save(Coleccion coleccion);
     Optional<Coleccion> findById(Long id);
     List<Coleccion> findAll();
+
+    boolean delete(Long id);
 }

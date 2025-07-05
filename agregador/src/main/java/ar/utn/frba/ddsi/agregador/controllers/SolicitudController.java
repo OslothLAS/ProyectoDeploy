@@ -25,8 +25,11 @@ public class SolicitudController {
         this.solicitudService.getSolicitud(idSolicitud);
     }
 
+    @PutMapping("/{id_solicitud/aceptar")
+    public void aceptarSolicitud(@PathVariable Long idSolicitud) {this.solicitudService.aceptarSolicitud(idSolicitud);}
 
-
+    @PutMapping("/{id_solicitud/rechazar")
+    public void rechazarSolicitud(@PathVariable Long idSolicitud) {this.solicitudService.rechazarSolicitud(idSolicitud);}
 
 
 

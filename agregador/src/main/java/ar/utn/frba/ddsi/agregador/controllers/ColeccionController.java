@@ -29,6 +29,11 @@ public class ColeccionController {
         return ResponseEntity.ok(hechos);
     }
 
+    @DeleteMapping("/{idColeccion}")
+    public void deleteColeccion(@PathVariable("idColeccion") Long idColeccion) {
+        this.coleccionService.deleteColeccion(idColeccion);
+    }
+
     @GetMapping("/cron")
     public ResponseEntity<Void> consensuarHechos() {
         this.coleccionService.consensuarHechos();
