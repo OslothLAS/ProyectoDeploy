@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
+import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.hechos.Hecho;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,11 @@ public class ColeccionController {
     @DeleteMapping("/{idColeccion}")
     public void deleteColeccion(@PathVariable("idColeccion") Long idColeccion) {
         this.coleccionService.deleteColeccion(idColeccion);
+    }
+
+    @PostMapping("/{idColeccion}/cambiarConsenso")
+    public void cambiarConsenso(@PathVariable("idColeccion") Long idColeccion, @RequestBody TipoConsenso tipo) {
+        this.coleccionService.cambiarConsenso(idColeccion, tipo);
     }
 
     @GetMapping("/cron")

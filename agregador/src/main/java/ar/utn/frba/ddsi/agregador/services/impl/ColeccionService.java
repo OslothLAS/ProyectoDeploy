@@ -7,6 +7,11 @@ import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
+import entities.colecciones.consenso.strategies.ConsensoAbsolutaStrategy;
+import entities.colecciones.consenso.strategies.ConsensoMayoriaStrategy;
+import entities.colecciones.consenso.strategies.ConsensoMultipleMencionStrategy;
+import entities.colecciones.consenso.strategies.ConsensoStrategy;
+import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import entities.hechos.Origen;
@@ -22,6 +27,9 @@ public class ColeccionService implements IColeccionService {
 
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionRepository;
+
+    private final Map<TipoConsenso, ConsensoStrategy> estrategias = new HashMap<>();
+
 
     public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository) {
         this.hechoRepository = hechoRepository;
@@ -94,6 +102,18 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
         return this.coleccionRepository.delete(idColeccion);
+    }
+
+    @Override
+    public void cambiarConsenso(Long idColeccion, TipoConsenso tipo) {
+        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
+            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
+
+        switch (tipo) {
+            case ABSOLUTA -> coleccion.setConsensoStrategy(new ConsensoAbsolutaStrategy());
+            case MAYORIA -> coleccion.setConsensoStrategy(new ConsensoMayoriaStrategy());
+            case MULTIPLE_MENCION -> coleccion.setConsensoStrategy(new ConsensoMultipleMencionStrategy());
+        }
     }
 
     public void actualizarHechos(){
