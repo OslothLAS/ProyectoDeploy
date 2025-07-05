@@ -1,5 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.entities.usuarios;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import java.time.LocalDate;
 import java.time.Period;
@@ -34,6 +36,19 @@ public class Contribuyente implements Usuario {
         this.nombre = nombre;
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.apellido = apellido;
+    }
+
+    @JsonCreator
+    public Contribuyente(
+        @JsonProperty("id") long id,
+        @JsonProperty("nombre") String nombre,
+        @JsonProperty("apellido") String apellido,
+        @JsonProperty("fechaDeNacimiento") LocalDate fechaDeNacimiento
+    ) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.fechaDeNacimiento = fechaDeNacimiento;
     }
 
 
