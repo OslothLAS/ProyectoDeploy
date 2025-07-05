@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
@@ -116,6 +117,23 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         }
     }
 
+    @Override
+    public void agregarFuente(Long idColeccion, FuenteInputDTO fuenteDTO) {
+        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
+            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
+
+        Fuente fuente = this.fuenteDTOtoFuente(fuenteDTO);
+        coleccion.agregarImportador(fuente);
+    }
+
+    @Override
+    public void eliminarFuente(Long idColeccion, Long idFuente) {
+        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
+            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
+
+        coleccion.getImportadores().removeIf(fuente -> fuente.getId() == idFuente);
+    }
+
     public void actualizarHechos(){
         List<Coleccion> colecciones = this.coleccionRepository.findAll();
 
@@ -129,12 +147,16 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
     }
 
     private List<Fuente> instanciarFuentes(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060", Origen.ESTATICO);
-        Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO);
-        Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO);
+        Fuente fuenteEstatica = new Fuente("localhost","8060", Origen.ESTATICO, 1L);
+        Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO, 2L);
+        Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO, 3L);
 
 
         return List.of(fuenteEstatica,fuenteDinamica);
+    }
+
+    private Fuente fuenteDTOtoFuente(FuenteInputDTO fuenteDTO){
+        return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getOrigenHechos(), fuenteDTO.getId());
     }
 
 

@@ -17,7 +17,11 @@ public class Fuente{
     @Getter
     private final Origen origenHechos;
 
-    public Fuente(String ip, String puerto, Origen origenHechos) {
+    @Getter
+    private final long id;
+
+    public Fuente(String ip, String puerto, Origen origenHechos, Long id) {
+        this.id = id;
         this.origenHechos = origenHechos;
         this.webClient = WebClient.builder().baseUrl("http://" +ip+ ":" +puerto).build();
     }
