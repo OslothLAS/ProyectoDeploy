@@ -4,7 +4,6 @@ import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
 import entities.colecciones.Handle;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
-import entities.hechos.Origen;
 import entities.hechos.Ubicacion;
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +26,7 @@ public class HechoMapper {
                 ))
                 .fechaHecho(parseDate(dto.getFechaHecho()))
                 .build();
-        return Hecho.create(datosHechos, handles, Origen.EXTERNO, dto.getEsValido(), dto.getId(), dto.getEsConsensuado());
+        return Hecho.create(datosHechos, handles, dto.getId(), dto.getEsConsensuado());
     }
 
 
