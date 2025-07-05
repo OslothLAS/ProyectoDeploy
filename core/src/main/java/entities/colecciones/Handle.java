@@ -1,7 +1,10 @@
 package entities.colecciones;
 
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
 public class Handle {
     private final String value;
 
@@ -14,15 +17,10 @@ public class Handle {
         this.value = String.valueOf(value);
     }
 
-    public String getValue() {
-        return value;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Handle)) return false;
-        Handle handle = (Handle) o;
+        if (!(o instanceof Handle handle)) return false;
         return value.equals(handle.value);
     }
 

@@ -106,7 +106,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO);
 
 
-        return List.of(fuenteEstatica,fuenteDinamica);
+        return List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
     }
 
 

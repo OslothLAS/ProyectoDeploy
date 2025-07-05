@@ -7,7 +7,6 @@ import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -22,8 +21,10 @@ public class Hecho {
     private Boolean esValido;
     private DatosHechos datosHechos;
     private Multimedia multimedia;
-    private List<String> etiquetas;
-    private List<Handle> colecciones;
+    @Builder.Default
+    private List<String> etiquetas = new ArrayList<>();
+    @Builder.Default
+    private List<Handle> colecciones = new ArrayList<>();
     private Origen origen;
 
     private Boolean mostrarDatos;
@@ -46,7 +47,7 @@ public class Hecho {
                 .build();
     }
 
-    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones, Origen origen, Boolean esValido,Long id,Boolean esConsensuado) {
+    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones,Long id,Boolean esConsensuado) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .id(id)
@@ -125,7 +126,10 @@ public class Hecho {
     public List<String> getTituloYDescripcion(){
         String titulo = this.getDatosHechos().getTitulo();
         String descripcion = this.getDatosHechos().getDescripcion();
+        List<String> tituloYdesc = new ArrayList<>();
+        tituloYdesc.add(titulo);
+        tituloYdesc.add(descripcion);
 
-        return Arrays.asList(titulo, descripcion);
+        return tituloYdesc;
     }
 }
