@@ -20,6 +20,10 @@ public class Visualizador implements Usuario {
         return null;
     }
 
+    @Override
+    public void setId(Long id) {
+    }
+
     public Visualizador(@JsonProperty("nombre") String nombre,
                         @JsonProperty("apellido") String apellido,
                         @JsonProperty("fechaDeNacimiento") LocalDate fechaDeNacimiento) {

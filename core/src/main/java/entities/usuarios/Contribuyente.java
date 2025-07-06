@@ -5,9 +5,10 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.time.Period;
 
+
 @Getter
 public class Contribuyente implements Usuario {
-    private final long id;
+    private long id;
     private final String nombre;
     private final String apellido;
     private final LocalDate fechaDeNacimiento;
@@ -43,5 +44,10 @@ public class Contribuyente implements Usuario {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 }
