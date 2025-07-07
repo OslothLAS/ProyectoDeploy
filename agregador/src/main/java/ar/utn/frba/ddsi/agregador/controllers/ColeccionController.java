@@ -64,11 +64,3 @@ public class ColeccionController {
         return ResponseEntity.ok().build();
     }
 }
-
-//TODO CAMBIAR LAS URLS
-/*
-GET /colecciones
-GET /colecciones/:identificador/hechos
-
-PROBAR ESTRATEGIAS DE CONSENSO
- */

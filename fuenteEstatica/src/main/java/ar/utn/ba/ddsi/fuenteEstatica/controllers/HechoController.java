@@ -23,4 +23,9 @@ public class HechoController {
     public List<Hecho> obtenerHechos(@RequestParam Map<String, String> filtros) {
         return hechoService.getHechos(filtros);
     }
+
+    @GetMapping("/origen")
+    public String obtenerOrigen(){
+        return "ESTATICO";
+    }
 }

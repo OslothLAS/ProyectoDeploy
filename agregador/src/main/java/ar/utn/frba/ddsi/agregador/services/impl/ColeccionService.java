@@ -14,12 +14,10 @@ import entities.colecciones.consenso.strategies.ConsensoMultipleMencionStrategy;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
-import entities.hechos.Origen;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
 
@@ -34,12 +32,10 @@ public class ColeccionService implements IColeccionService {
         this.coleccionRepository = coleccionRepository;
     }
 
-
-//creo la coleccion
     @Override
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
 
-        List<Fuente> importadores = this.instanciarFuentes();
+        List<Fuente> importadores = coleccionDTO.getFuentes();
         List<CriterioDePertenencia> criterios = new ArrayList<>();
 
         if(coleccionDTO.getCriterios() != null && !coleccionDTO.getCriterios().isEmpty()) {
@@ -59,7 +55,6 @@ public class ColeccionService implements IColeccionService {
         return this.coleccionRepository.findAll();
     }
 
-    //aca asigno los hechos a una coleccionockitoExtension.
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
                 .peek(h -> h.addColeccion(coleccion.getHandle()))
@@ -70,7 +65,7 @@ public class ColeccionService implements IColeccionService {
         return fuentes.stream()
             .flatMap(fuente ->
                     fuente.obtenerHechos(criterios).stream()
-                            .peek(hecho -> hecho.setOrigen(fuente.getOrigenHechos()))
+                            .peek(hecho -> hecho.setFuenteOrigen(fuente.getOrigenHechos()))
             )
             .toList();
     }
@@ -80,7 +75,7 @@ public class ColeccionService implements IColeccionService {
                 .filter(hecho -> hecho.getColecciones() != null)
                 .filter(hecho -> hecho.getColecciones().contains(coleccion.getHandle()))
                 .collect(Collectors.toList());
-        }
+    }
 
     @Override
     public List<Hecho> getHechosDeColeccion(Long idColeccion, String modoNavegacion) {
@@ -115,8 +110,7 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
-        Fuente fuente = fuenteDTOtoFuente(fuenteDTO);
-        coleccion.agregarImportador(fuente);
+        coleccion.agregarImportador(fuenteDTOtoFuente(fuenteDTO));
     }
 
     @Override
@@ -132,20 +126,20 @@ public class ColeccionService implements IColeccionService {
 
         colecciones.forEach(coleccion -> {
             List<CriterioDePertenencia> criterios = coleccion.getCriteriosDePertenencia().stream().toList();
-            List<Hecho> hechos = tomarHechosFuentes(instanciarFuentes(), criterios);
+            List<Hecho> hechos = tomarHechosFuentes(coleccion.getImportadores(), criterios);
             asignarColeccionAHechos(hechos, coleccion);
             hechos.forEach(hechoRepository::save);
             coleccionRepository.save(coleccion);
         });
     }
 
-    private List<Fuente> instanciarFuentes(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060", Origen.ESTATICO, 1L);
-        Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO, 2L);
-        Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO, 3L);
+    /*private List<Fuente> instanciarFuentes(){
+        Fuente fuenteEstatica = new Fuente("localhost","8060", 1L);
+        Fuente fuenteDinamica = new Fuente("localhost","8070", 2L);
+        Fuente fuenteProxy = new Fuente("localhost","8090", 3L);
 
         return List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
-    }
+    }*/
 
     @Override
     public void consensuarHechos(){

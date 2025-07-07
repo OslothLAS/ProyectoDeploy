@@ -1,10 +1,8 @@
 package entities.colecciones.consenso.strategies;
 
-import entities.hechos.DatosHechos;
+import entities.hechos.FuenteOrigen;
 import entities.hechos.Hecho;
 import entities.colecciones.Fuente;
-import entities.hechos.Origen;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,7 +14,7 @@ public abstract class ConsensoStrategy {
     public List<Hecho> obtenerHechos(List<Fuente> fuentes, List<Hecho> hechos, int cantidadDeFuentesQueCoinciden) {
 
         // mapeo orígenes de las fuentes disponibles
-        Set<Origen> origenesDeFuentes = fuentes.stream()
+        Set<FuenteOrigen> origenesDeFuentes = fuentes.stream()
                 .filter(Objects::nonNull)
                 .map(Fuente::getOrigenHechos)
                 .collect(Collectors.toSet());
@@ -33,7 +31,7 @@ public abstract class ConsensoStrategy {
 
             // cuento orígenes distintos para estos DatosHechos
             long countOrigenesDistintos = listaHechos.stream()
-                    .map(Hecho::getOrigen)
+                    .map(Hecho::getFuenteOrigen)
                     .distinct()
                     .filter(origenesDeFuentes::contains)
                     .count();

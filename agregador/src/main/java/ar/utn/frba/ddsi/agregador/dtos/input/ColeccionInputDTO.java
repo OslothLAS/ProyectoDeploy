@@ -12,7 +12,8 @@ import java.util.List;
 public class ColeccionInputDTO {
     private String titulo;
     private String descripcion;
-    private List<Fuente> importadores;
+    @JsonProperty("fuentes")
+    private List<Fuente> fuentes;
     @JsonProperty("criterios")
     private List<CriterioDePertenencia> criterios;
     private String estrategiaConsenso;

@@ -39,7 +39,7 @@ public class ColeccionUtil {
     }
 
     public static Fuente fuenteDTOtoFuente(FuenteInputDTO fuenteDTO){
-        return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getOrigenHechos(), fuenteDTO.getId());
+        return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getId());
     }
 
 }

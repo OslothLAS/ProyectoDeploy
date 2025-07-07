@@ -26,7 +26,7 @@ public class Hecho {
     @Builder.Default
     private List<Handle> colecciones = new ArrayList<>();
     private Origen origen;
-
+    private FuenteOrigen fuenteOrigen;
     private Boolean mostrarDatos;
 
     private LocalDateTime fechaCreacion;

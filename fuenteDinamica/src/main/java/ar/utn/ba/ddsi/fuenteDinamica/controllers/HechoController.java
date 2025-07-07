@@ -29,4 +29,9 @@ public class HechoController {
     public void editarHecho(@PathVariable Long idHecho, @RequestBody HechoInputDTO hecho) throws Exception {
         this.hechoService.editarHecho(idHecho, hecho);
     }
+
+    @GetMapping("/origen")
+    public String obtenerOrigen(){
+        return "DINAMICO";
+    }
 }
