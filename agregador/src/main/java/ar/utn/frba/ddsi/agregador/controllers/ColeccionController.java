@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
+import entities.colecciones.Coleccion;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.hechos.Hecho;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +19,28 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Coleccion>> getColecciones(){
+        return ResponseEntity.ok(this.coleccionService.getColecciones());
+    }
+
     @PostMapping
     public void createColeccion(@RequestBody ColeccionInputDTO coleccion){
         this.coleccionService.createColeccion(coleccion);
     }
 
-    @GetMapping("/{idColeccion}")
-    public ResponseEntity<List<Hecho>> getColeccion(
+    @GetMapping("/{idColeccion}/hechos")
+    public ResponseEntity<List<Hecho>> getHechosDeColeccion(
             @PathVariable(name = "idColeccion") Long idColeccion,
             @RequestParam(name = "modoNavegacion", defaultValue = "IRRESTRICTO") String modoNavegacion) {
-        List<Hecho> hechos = this.coleccionService.getColeccion(idColeccion, modoNavegacion);
+        List<Hecho> hechos = this.coleccionService.getHechosDeColeccion(idColeccion, modoNavegacion);
         return ResponseEntity.ok(hechos);
     }
 
     @DeleteMapping("/{idColeccion}")
-    public void deleteColeccion(@PathVariable("idColeccion") Long idColeccion) {
+    public ResponseEntity<Void> deleteColeccion(@PathVariable("idColeccion") Long idColeccion) {
         this.coleccionService.deleteColeccion(idColeccion);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{idColeccion}/cambiarConsenso")

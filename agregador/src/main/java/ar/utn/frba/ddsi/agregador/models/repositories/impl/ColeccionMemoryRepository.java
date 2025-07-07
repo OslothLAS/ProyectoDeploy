@@ -38,6 +38,4 @@ public class ColeccionMemoryRepository implements IColeccionRepository {
     public boolean delete(Long id) {
       return this.colecciones.remove(id) != null;
     }
-
-
 }

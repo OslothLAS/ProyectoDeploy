@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.utils;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
@@ -37,6 +38,8 @@ public class ColeccionUtil {
         return dto;
     }
 
-
+    public static Fuente fuenteDTOtoFuente(FuenteInputDTO fuenteDTO){
+        return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getOrigenHechos(), fuenteDTO.getId());
+    }
 
 }

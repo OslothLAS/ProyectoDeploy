@@ -11,7 +11,6 @@ import entities.colecciones.Fuente;
 import entities.colecciones.consenso.strategies.ConsensoAbsolutaStrategy;
 import entities.colecciones.consenso.strategies.ConsensoMayoriaStrategy;
 import entities.colecciones.consenso.strategies.ConsensoMultipleMencionStrategy;
-import entities.colecciones.consenso.strategies.ConsensoStrategy;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
@@ -22,6 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
+import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
 
 @Service
 public class ColeccionService implements IColeccionService {
@@ -29,14 +29,10 @@ public class ColeccionService implements IColeccionService {
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionRepository;
 
-    private final Map<TipoConsenso, ConsensoStrategy> estrategias = new HashMap<>();
-
-
     public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
     }
-
 
 
 //creo la coleccion
@@ -51,7 +47,7 @@ public class ColeccionService implements IColeccionService {
         }
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
 
-        List<Hecho> todosLosHechos = this.tomarHechosImportadores(importadores, criterios);
+        List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
 
         List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos,nuevaColeccion);
         hechos.forEach(hechoRepository::save);
@@ -59,6 +55,9 @@ public class ColeccionService implements IColeccionService {
         this.coleccionRepository.save(nuevaColeccion);
     }
 
+    public List<Coleccion> getColecciones(){
+        return this.coleccionRepository.findAll();
+    }
 
     //aca asigno los hechos a una coleccionockitoExtension.
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
@@ -67,19 +66,16 @@ public class ColeccionService implements IColeccionService {
                 .toList();
     }
 
-
-//aca se debería mandar la request para filtrar los hechos en cada fuente
-private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<CriterioDePertenencia> criterios) {
-    return importadores.stream()
+    private List<Hecho> tomarHechosFuentes(List<Fuente> fuentes, List<CriterioDePertenencia> criterios) {
+        return fuentes.stream()
             .flatMap(fuente ->
                     fuente.obtenerHechos(criterios).stream()
                             .peek(hecho -> hecho.setOrigen(fuente.getOrigenHechos()))
             )
             .toList();
-}
+    }
 
     private List<Hecho> tomarHechosDeColeccion(Coleccion coleccion) {
-        // 1. Obtener todos los hechos que tienen esta colección en su lista de colecciones
         return hechoRepository.findAll().stream()
                 .filter(hecho -> hecho.getColecciones() != null)
                 .filter(hecho -> hecho.getColecciones().contains(coleccion.getHandle()))
@@ -87,7 +83,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         }
 
     @Override
-    public List<Hecho> getColeccion(Long idColeccion, String modoNavegacion) {
+    public List<Hecho> getHechosDeColeccion(Long idColeccion, String modoNavegacion) {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
@@ -98,11 +94,8 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
     }
 
     @Override
-    public boolean deleteColeccion(Long idColeccion) {
-        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
-            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
-
-        return this.coleccionRepository.delete(idColeccion);
+    public void deleteColeccion(Long idColeccion) {
+        this.coleccionRepository.delete(idColeccion);
     }
 
     @Override
@@ -122,7 +115,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
-        Fuente fuente = this.fuenteDTOtoFuente(fuenteDTO);
+        Fuente fuente = fuenteDTOtoFuente(fuenteDTO);
         coleccion.agregarImportador(fuente);
     }
 
@@ -139,7 +132,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
 
         colecciones.forEach(coleccion -> {
             List<CriterioDePertenencia> criterios = coleccion.getCriteriosDePertenencia().stream().toList();
-            List<Hecho> hechos = tomarHechosImportadores(instanciarFuentes(), criterios);
+            List<Hecho> hechos = tomarHechosFuentes(instanciarFuentes(), criterios);
             asignarColeccionAHechos(hechos, coleccion);
             hechos.forEach(hechoRepository::save);
             coleccionRepository.save(coleccion);
@@ -151,16 +144,10 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO, 2L);
         Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO, 3L);
 
-        return List.of(fuenteEstatica,fuenteDinamica);
+        return List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
     }
-
-    private Fuente fuenteDTOtoFuente(FuenteInputDTO fuenteDTO){
-        return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getOrigenHechos(), fuenteDTO.getId());
-    }
-
 
     @Override
-
     public void consensuarHechos(){
         List<Coleccion> colecciones =  this.coleccionRepository.findAll();
         List <Hecho> hechosAsignados = new ArrayList<>();
@@ -183,5 +170,4 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         });
         hechosAsignados.forEach(hechoRepository::save);
     }
-
 }
