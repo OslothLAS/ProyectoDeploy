@@ -2,7 +2,6 @@ package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
-import entities.colecciones.Fuente;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.hechos.Hecho;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +36,7 @@ public class ColeccionController {
         this.coleccionService.deleteColeccion(idColeccion);
     }
 
-    @PostMapping("/{idColeccion}/cambiarConsenso")
+    @PutMapping("/{idColeccion}/cambiarConsenso")
     public void cambiarConsenso(@PathVariable("idColeccion") Long idColeccion, @RequestBody TipoConsenso tipo) {
         this.coleccionService.cambiarConsenso(idColeccion, tipo);
     }
@@ -58,3 +57,11 @@ public class ColeccionController {
         return ResponseEntity.ok().build();
     }
 }
+
+//TODO CAMBIAR LAS URLS
+/*
+GET /colecciones
+GET /colecciones/:identificador/hechos
+
+PROBAR ESTRATEGIAS DE CONSENSO
+ */
