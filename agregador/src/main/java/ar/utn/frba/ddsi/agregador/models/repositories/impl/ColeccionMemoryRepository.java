@@ -32,4 +32,12 @@ public class ColeccionMemoryRepository implements IColeccionRepository {
     public List<Coleccion> findAll() {
         return new ArrayList<>(colecciones.values());
     }
+
+
+    @Override
+    public boolean delete(Long id) {
+      return this.colecciones.remove(id) != null;
+    }
+
+
 }

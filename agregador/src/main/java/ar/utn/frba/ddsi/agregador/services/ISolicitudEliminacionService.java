@@ -8,5 +8,7 @@ public interface ISolicitudEliminacionService {
     public void crearSolicitud(SolicitudInputDTO solicitud);
     public SolicitudEliminacion getSolicitud(Long idSolicitud);
     public String validarJustificacion(String justificacionSolicitud);
+    void aceptarSolicitud(Long idSolicitud);
 
+    void rechazarSolicitud(Long idSolicitud);
 }

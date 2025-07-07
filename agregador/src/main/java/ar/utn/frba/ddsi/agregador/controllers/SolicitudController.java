@@ -21,12 +21,15 @@ public class SolicitudController {
     }
 
     @GetMapping("/{idSolicitud}")
-    public void getSolicitud(@PathVariable Long idSolicitud) {
+    public void getSolicitud(@PathVariable("idSolicitud") Long idSolicitud) {
         this.solicitudService.getSolicitud(idSolicitud);
     }
 
+    @PostMapping("/{id_solicitud}/aceptar")
+    public void aceptarSolicitud(@PathVariable("id_solicitud") Long idSolicitud) {this.solicitudService.aceptarSolicitud(idSolicitud);}
 
-
+    @PostMapping("/{id_solicitud}/rechazar")
+    public void rechazarSolicitud(@PathVariable("id_solicitud") Long idSolicitud) {this.solicitudService.rechazarSolicitud(idSolicitud);}
 
 
 

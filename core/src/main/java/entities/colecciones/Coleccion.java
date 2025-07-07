@@ -59,4 +59,8 @@ public class Coleccion {
         this.filtrarHechos(todosLosHechos)*/
     }
 
+    public void agregarImportador(Fuente fuente) {
+        this.importadores.add(fuente);
+    }
+
 }

@@ -27,7 +27,7 @@ public class SolicitudEliminacion {
     private List<EstadoSolicitud> historialDeSolicitud;
     private Long idHecho;
     @Setter
-    private IDetectorDeSpam detectorDeSpam;
+    private IDetectorDeSpam detectorDeSpam = new DetectorDeSpam();
     private IHechoRepository hechoRepository;
 
 
