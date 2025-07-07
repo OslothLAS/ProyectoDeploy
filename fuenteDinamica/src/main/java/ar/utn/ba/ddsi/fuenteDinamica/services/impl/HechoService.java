@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
 
+import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IUsuarioRepository;
 import config.HechoProperties;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
@@ -8,13 +9,11 @@ import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.factories.CriterioDePertenenciaFactory;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
-import entities.hechos.Ubicacion;
-import entities.usuarios.Contribuyente;
+import entities.usuarios.Usuario;
 import entities.usuarios.Visualizador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -23,21 +22,23 @@ import java.util.stream.Collectors;
 
 @Service
 public class HechoService implements IHechoService {
-    @Autowired  // ← Opcional en Spring Boot
+    @Autowired
     private HechoProperties hechoProperties;
     private final IHechoRepository hechoRepository;
+    private final IUsuarioRepository usuarioRepository;
 
-    public HechoService(IHechoRepository hechoRepository) {
+    public HechoService(IHechoRepository hechoRepository,IUsuarioRepository usuarioRepository) {
         this.hechoRepository = hechoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
     @Override
     public void crearHecho(HechoInputDTO hechoDTO) {
-        Ubicacion ubi = new Ubicacion(hechoDTO.getLatitud(), hechoDTO.getLongitud());
-        DatosHechos datos = new DatosHechos(hechoDTO.getTitulo(), hechoDTO.getDescripcion(), hechoDTO.getCategoria(), ubi, hechoDTO.getFechaHecho());
+        DatosHechos datos = hechoDTO.getDatosHechos();
 
         if(hechoDTO.getIdUsuario() != null) { //si tiene ID => es contribuyente
-            Contribuyente contribuyente = new Contribuyente(hechoDTO.getIdUsuario(), hechoDTO.getNombre(), hechoDTO.getApellido(), hechoDTO.getFechaHecho());
-            Hecho hecho = Hecho.create(datos, contribuyente,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
+            Usuario usuario = usuarioRepository.findById(hechoDTO.getIdUsuario())
+                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el usuario con ID: " + hechoDTO.getIdUsuario()));
+            Hecho hecho = Hecho.create(datos, usuario,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
             hecho.setEsEditable(true);
             hecho.setPlazoEdicion(Duration.ofDays(hechoProperties.getPlazoEdicionDias()));
             this.hechoRepository.save(hecho);
@@ -69,24 +70,24 @@ public class HechoService implements IHechoService {
             throw new Exception("El plazo de edicion ha expirado");
         }
 
-        if (dto.getTitulo() != null) {
-            hecho.getDatosHechos().setTitulo(dto.getTitulo());
+        if (dto.getDatosHechos().getTitulo() != null) {
+            hecho.getDatosHechos().setTitulo(dto.getDatosHechos().getTitulo());
         }
 
-        if (dto.getDescripcion() != null) {
-            hecho.getDatosHechos().setDescripcion(dto.getDescripcion());
+        if (dto.getDatosHechos().getDescripcion() != null) {
+            hecho.getDatosHechos().setDescripcion(dto.getDatosHechos().getDescripcion());
         }
 
-        if (dto.getCategoria() != null) {
-            hecho.getDatosHechos().setCategoria(dto.getCategoria());
+        if (dto.getDatosHechos().getCategoria() != null) {
+            hecho.getDatosHechos().setCategoria(dto.getDatosHechos().getCategoria());
         }
 
 //        if (dto.getLatitud() != null) {
 //            //hecho.getDatosHechos().setUbicacion(dto.getUbicacion());
 //TODO        }
 
-        if (dto.getFechaHecho() != null) {
-            hecho.getDatosHechos().setFechaHecho(dto.getFechaHecho());
+        if (dto.getDatosHechos().getFechaHecho() != null) {
+            hecho.getDatosHechos().setFechaHecho(dto.getDatosHechos().getFechaHecho());
         }
 
         if (dto.getMostrarDatos() != null) {
@@ -111,6 +112,7 @@ public class HechoService implements IHechoService {
         }
 
         return hechos.stream()
+                .filter(Hecho::getEsValido)
                 .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
     }

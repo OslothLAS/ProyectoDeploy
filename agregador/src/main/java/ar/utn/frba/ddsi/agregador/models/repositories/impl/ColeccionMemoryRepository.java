@@ -9,9 +9,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ColeccionMemoryRepository implements IColeccionRepository {
-    //private final Map<Handle, Coleccion> colecciones = new HashMap<>();
     private final Map<Long, Coleccion> colecciones = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
+
     @Override
     public void save(Coleccion coleccion) {
         if(coleccion.getId() == null) {
@@ -27,23 +27,17 @@ public class ColeccionMemoryRepository implements IColeccionRepository {
     public Optional<Coleccion> findById(Long id){
         return Optional.ofNullable(colecciones.get(id));
     }
-    /*public Coleccion findById(String handleValue) {
-        for (Handle handle : colecciones.keySet()) {
-            if (handle.getValue().equals(handleValue)) {
-                return colecciones.get(handle);
-            }
-        }
-        return null;
-    }*/
 
     @Override
     public List<Coleccion> findAll() {
         return new ArrayList<>(colecciones.values());
     }
 
+
     @Override
     public boolean delete(Long id) {
       return this.colecciones.remove(id) != null;
     }
+
 
 }

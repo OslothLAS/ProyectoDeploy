@@ -1,16 +1,21 @@
 package ar.utn.ba.ddsi.fuenteProxy.mappers;
 
-import ar.utn.ba.ddsi.fuenteProxy.dtos.HechoDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
+import entities.colecciones.Handle;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
-import entities.hechos.Origen;
 import entities.hechos.Ubicacion;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class HechoMapper {
 
     public static Hecho mapHechoDtoToHecho(HechoDto dto) {
+        List<Handle> handles = dto.getColecciones().stream()
+                .map(Handle::new)
+                .collect(Collectors.toList());
+
         DatosHechos datosHechos = DatosHechos.builder()
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
@@ -19,10 +24,11 @@ public class HechoMapper {
                         String.valueOf(dto.getLatitud()),
                         String.valueOf(dto.getLongitud())
                 ))
-                .fechaHecho(parseDate(dto.getFecha_hecho()))
+                .fechaHecho(parseDate(dto.getFechaHecho()))
                 .build();
-        return Hecho.create(datosHechos);
+        return Hecho.create(datosHechos, handles, dto.getId(), dto.getEsConsensuado());
     }
+
 
     private static LocalDate parseDate(String dateString) {
         if (dateString == null || dateString.isEmpty()) return null;

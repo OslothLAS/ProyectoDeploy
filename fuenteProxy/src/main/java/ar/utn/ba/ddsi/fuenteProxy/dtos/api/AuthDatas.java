@@ -1,5 +1,5 @@
 // AuthData.java
-package ar.utn.ba.ddsi.fuenteProxy.dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

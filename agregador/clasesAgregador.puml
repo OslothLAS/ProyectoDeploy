@@ -1,0 +1,160 @@
+@startuml
+'class ColeccionInputDTO {
+'    -titulo: String
+'    -descripcion: String
+'    -importadores: List<Fuente>
+'    -criterios: List<CriterioDePertenencia>
+'    -estrategiaConsenso: String
+'}
+'
+'interface IColeccionService {
+'    +createColeccion(coleccion: ColeccionInputDTO): void
+'    +getColeccion(idColeccion: Long, modoNavegacion: String): List<Hecho>
+'    +actualizarHechos(): void
+'    +consensuarHechos(): void
+'}
+'
+'interface IColeccionRepository {
+'    +save(coleccion: Coleccion): void
+'    +findById(id: Long): Coleccion
+'    +findAll(): List<Coleccion>
+'}
+
+interface NavegacionStrategy {
+    +navegar(coleccion: Coleccion, hechos: List<Hecho>): List<Hecho>
+}
+
+class NavegacionCuradaStrategy implements NavegacionStrategy{
+    ++navegar(coleccion: Coleccion, hechos: List<Hecho>): List<Hecho>
+}
+
+class NavegacionIrrestrictaStrategy implements NavegacionStrategy{
+    +navegar(coleccion: Coleccion, hechos: List<Hecho>): List<Hecho>
+}
+
+class Coleccion {
+    -handle: Handle
+    -id: long
+    -titulo: String
+    -descripcion: String
+    -importadores: List<Fuente>
+    -criteriosDePertenencia: List<CriterioDePertenencia>
+    -fechaYHoraDeActualizacion: LocalDateTime
+    -consensoStrategy: ConsensoStrategy
+
+    +cumpleCriterios(hecho: Hecho): Boolean
+}
+
+class Fuente{
+    -webClient: WebClient
+    -origenHechos: Origen
+
+    +obtenerHechos(List<CriterioDePertenencia> criterios): List<Hecho>
+    +construirQueryParams(List<CriterioDePertenencia> criterios): MultiValueMap<String, String>
+}
+
+interface CriterioDePertenencia {
+    +cumpleCriterio(hecho: Hecho): boolean
+    +aQueryParam(): MultiValueMap<String, String>
+}
+
+class CriterioPorFecha implements CriterioDePertenencia{
+    -categoria: String
+    +cumpleCriterio(hecho: Hecho): boolean
+    +aQueryParam(): MultiValueMap<String, String>
+}
+
+class CriterioPorCategoria implements CriterioDePertenencia{
+    -fechaInicio: LocalDate
+    -fechaFin: LocalDate
+    -tipo: String
+    +cumpleCriterio(hecho: Hecho): boolean
+    +aQueryParam(): MultiValueMap<String, String>
+}
+
+abstract class ConsensoStrategy {
+    +//obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>)//: List<Hecho>
+    +obtenerHechos(List<Fuente> fuentes, List<Hecho> hechos, int cantidadDeFuentesQueCoinciden): List<Hecho>
+}
+
+class ConsensoMultipleMencionStrategy extends ConsensoStrategy{
+    +obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>): List<Hecho>
+}
+
+class ConsensoMayoriaStrategy extends ConsensoStrategy{
+    +obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>): List<Hecho>
+}
+
+class ConsensoAbsolutaStrategy extends ConsensoStrategy{
+    +obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>): List<Hecho>
+}
+
+class ConsensoFactory {
+    -strategies: Map<String, ConsensoStrategy>
+    +getStrategy(modoNavegacion: String): ConsensoStrategy
+}
+
+class Hecho {
+    -id: Long
+    -autor: String
+    -usuario: Usuario
+    -esValido: Boolean
+    -datosHechos: DatosHechos
+    -multimedia: Multimedia
+    -etiquetas: List<String>
+    -colecciones: List<Handle>
+    -origen: Origen
+    -mostrarDatos: Boolean
+    -fechaCreacion: LocalDateTime
+    -plazoEdicion: Duration
+    -esEditable: Boolean
+    -esConsensuado: Boolean
+
+    +esEditable(): Boolean
+}
+
+class DatosHechos{
+    -titulo: String
+    -descripcion: String
+    -categoria: String
+    -ubicacion: Ubicacion
+    -fechaHecho: LocalDate
+}
+
+class Handle{
+    -value: String
+}
+
+class Multimedia{
+    -url: String
+    -extension: String
+}
+
+enum Origen{
+    CARGA_MANUAL,
+    DATASET,
+    CONTRIBUYENTE,
+    VISUALIZADOR,
+    EXTERNO,
+    ESTATICO,
+    DINAMICO
+}
+
+Fuente -- Hecho
+
+NavegacionStrategy -- Coleccion
+NavegacionStrategy -- Hecho
+
+Coleccion --> Fuente
+Coleccion --> Handle
+Coleccion --> CriterioDePertenencia
+Coleccion --> ConsensoStrategy
+
+ConsensoFactory -- ConsensoStrategy
+
+Hecho --> DatosHechos
+Hecho --> Multimedia
+Hecho --> Handle
+Hecho --> Origen
+
+@enduml

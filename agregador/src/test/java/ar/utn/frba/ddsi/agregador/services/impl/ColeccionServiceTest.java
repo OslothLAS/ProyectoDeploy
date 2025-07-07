@@ -36,8 +36,8 @@ class ColeccionServiceTest {
                 List.of(), // criterios
                 new ConsensoMultipleMencionStrategy() // estrategia real
         );
-        hecho1.addColeccion(coleccion);
-        hecho2.addColeccion(coleccion);
+        hecho1.addColeccion(coleccion.getHandle());
+        hecho2.addColeccion(coleccion.getHandle());
 
         HechoMemoryRepository hechoRepository = mock(HechoMemoryRepository.class);
         ColeccionMemoryRepository coleccionRepository = mock(ColeccionMemoryRepository.class);
@@ -60,9 +60,8 @@ class ColeccionServiceTest {
         System.out.println(hechos.get(0).getDatosHechos().getTitulo());
         System.out.println(hechos.get(0).getColecciones());
 
-        Assertions.assertFalse(hechos.get(0).getColecciones().contains(coleccion));
-        Assertions.assertFalse(hechos.get(1).getColecciones().contains(coleccion));
-
+        Assertions.assertFalse(hechos.get(0).getEsConsensuado());
+        Assertions.assertFalse(hechos.get(1).getEsConsensuado());
     }
 
 

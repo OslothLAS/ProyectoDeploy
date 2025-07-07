@@ -1,7 +1,6 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Administrador;
@@ -23,6 +22,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Override
     public void crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
+        solicitud.setJustificacion(s);
         solicitudRepository.save(this.dtoToSolicitud(solicitud));
     }
 

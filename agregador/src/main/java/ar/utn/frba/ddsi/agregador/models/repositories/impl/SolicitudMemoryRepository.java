@@ -43,6 +43,7 @@ public class SolicitudMemoryRepository implements ISolicitudEliminacionRepositor
     }
 
     @Override
-    public void deleteSolicitudes(SolicitudEliminacion solicitud) {
+    public void deleteSolicitud(SolicitudEliminacion solicitud) {
+        solicitudes.remove(solicitud.getId());
     }
 }

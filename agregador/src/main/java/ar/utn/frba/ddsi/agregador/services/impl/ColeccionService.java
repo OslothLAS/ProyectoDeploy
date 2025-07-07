@@ -63,7 +63,7 @@ public class ColeccionService implements IColeccionService {
     //aca asigno los hechos a una coleccionockitoExtension.
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
-                .peek(h -> h.addColeccion(coleccion))
+                .peek(h -> h.addColeccion(coleccion.getHandle()))
                 .toList();
     }
 
@@ -82,7 +82,7 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         // 1. Obtener todos los hechos que tienen esta colección en su lista de colecciones
         return hechoRepository.findAll().stream()
                 .filter(hecho -> hecho.getColecciones() != null)
-                .filter(hecho -> hecho.getColecciones().contains(coleccion))
+                .filter(hecho -> hecho.getColecciones().contains(coleccion.getHandle()))
                 .collect(Collectors.toList());
         }
 
@@ -151,7 +151,6 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         Fuente fuenteDinamica = new Fuente("localhost","8070", Origen.DINAMICO, 2L);
         Fuente fuenteProxy = new Fuente("localhost","8090", Origen.EXTERNO, 3L);
 
-
         return List.of(fuenteEstatica,fuenteDinamica);
     }
 
@@ -159,12 +158,6 @@ private List<Hecho> tomarHechosImportadores(List<Fuente> importadores, List<Crit
         return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getOrigenHechos(), fuenteDTO.getId());
     }
 
-
-
-    //TODO: esto tiene que esdtar en cada fuente
-    private List<Hecho> filtrarHechosValidos(List<Hecho> hechos){
-       return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList());
-    }
 
     @Override
 

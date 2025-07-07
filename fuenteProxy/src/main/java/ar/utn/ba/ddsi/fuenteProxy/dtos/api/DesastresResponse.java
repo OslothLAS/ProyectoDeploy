@@ -1,4 +1,6 @@
-package ar.utn.ba.ddsi.fuenteProxy.dtos;
+package ar.utn.ba.ddsi.fuenteProxy.dtos.api;
+
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
 
 import java.util.List;
 

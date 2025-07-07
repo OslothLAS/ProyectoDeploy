@@ -12,5 +12,6 @@ public interface Usuario {
         String getNombre();
         Boolean getRegistrado();
         Long getId();
+        void setId(Long id);
 }
 

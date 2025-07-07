@@ -1,13 +1,12 @@
 package entities.hechos;
 
-import entities.colecciones.Coleccion;
+import entities.colecciones.Handle;
 import entities.usuarios.Usuario;
 import entities.usuarios.Visualizador;
 import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -22,8 +21,10 @@ public class Hecho {
     private Boolean esValido;
     private DatosHechos datosHechos;
     private Multimedia multimedia;
-    private List<String> etiquetas;
-    private List<Coleccion> colecciones;
+    @Builder.Default
+    private List<String> etiquetas = new ArrayList<>();
+    @Builder.Default
+    private List<Handle> colecciones = new ArrayList<>();
     private Origen origen;
 
     private Boolean mostrarDatos;
@@ -32,19 +33,6 @@ public class Hecho {
     private Duration plazoEdicion;
     private Boolean esEditable;
     private Boolean esConsensuado;
-
-    public static Hecho create(DatosHechos datosHechos, Origen origen) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .usuario(null)
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(origen)
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
-                .build();
-    }
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
@@ -59,6 +47,20 @@ public class Hecho {
                 .build();
     }
 
+    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones,Long id,Boolean esConsensuado) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .id(id)
+                .usuario(null)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.EXTERNO)
+                .colecciones(colecciones)
+                .esConsensuado(esConsensuado)
+                .build();
+    }
+
 
     public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
         return Hecho.builder()
@@ -69,7 +71,6 @@ public class Hecho {
                 .fechaCreacion(LocalDateTime.now())
                 .origen(Origen.VISUALIZADOR)
                 .colecciones(new ArrayList<>())
-                .esConsensuado(false)
                 .build();
     }
 
@@ -107,7 +108,7 @@ public class Hecho {
             this.etiquetas.add(etiqueta);
     }
 
-    public void addColeccion(Coleccion coleccion) {
+    public void addColeccion(Handle coleccion) {
         if (this.colecciones == null) {
             this.colecciones = new ArrayList<>();
         }
@@ -125,8 +126,10 @@ public class Hecho {
     public List<String> getTituloYDescripcion(){
         String titulo = this.getDatosHechos().getTitulo();
         String descripcion = this.getDatosHechos().getDescripcion();
+        List<String> tituloYdesc = new ArrayList<>();
+        tituloYdesc.add(titulo);
+        tituloYdesc.add(descripcion);
 
-        return Arrays.asList(titulo, descripcion);
+        return tituloYdesc;
     }
-
 }
