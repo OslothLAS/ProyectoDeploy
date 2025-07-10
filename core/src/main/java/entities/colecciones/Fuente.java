@@ -91,6 +91,25 @@ public class Fuente{
         }
         return params;
     }
+
+    public void invalidarHecho(String titulo, String descripcion) {
+        try {
+            this.webClient
+                    .put()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/api/hechos/invalidar")
+                            .queryParam("titulo", titulo)
+                            .queryParam("descripcion", descripcion)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .block();
+        } catch (Exception e) {
+            System.err.println("No se pudo invalidar hecho con título: " + titulo + " y descripción: " + descripcion +
+                    " en la fuente " + origenHechos);
+            e.printStackTrace();
+        }
+    }
 }
 
 

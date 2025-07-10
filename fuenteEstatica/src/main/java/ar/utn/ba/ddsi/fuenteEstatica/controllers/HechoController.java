@@ -1,10 +1,7 @@
 package ar.utn.ba.ddsi.fuenteEstatica.controllers;
 
 import entities.hechos.Hecho;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ar.utn.ba.ddsi.fuenteEstatica.services.IExtractService;
 import java.util.List;
 import java.util.Map;
@@ -27,5 +24,12 @@ public class HechoController {
     @GetMapping("/origen")
     public String obtenerOrigen(){
         return "ESTATICO";
+    }
+
+    @PutMapping("/invalidar")
+    public void invalidarHechoPorTituloYDescripcion(
+            @RequestParam("titulo") String titulo,
+            @RequestParam("descripcion") String descripcion) {
+        hechoService.invalidarHechoPorTituloYDescripcion(titulo, descripcion);
     }
 }

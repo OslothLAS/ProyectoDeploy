@@ -7,4 +7,5 @@ import java.util.Map;
 
 public interface IExtractService {
     List<Hecho> getHechos(Map<String, String> filtros);
+    void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion);
 }

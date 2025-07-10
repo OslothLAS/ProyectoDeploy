@@ -12,7 +12,6 @@ import utils.NormalizadorTexto;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-//necesito dar soporte para todos los tipos de archivos posibles
 @Slf4j
 @Getter
 @Component
@@ -20,7 +19,12 @@ public class ImportadorHechos implements Importador {
     private final ConfigReader config;
     private final String[] pathArchivos;
     private final Map<String, EstrategiaExtraccionHecho> estrategiasPorExtension;
+    private final Set<String> clavesHechosInvalidos = ConcurrentHashMap.newKeySet();
+    //por ahora persistimos en memoria...    ):
 
+    private String claveHecho(String titulo, String descripcion) {
+        return titulo.trim() + "::" + descripcion.trim();
+    }
 
     //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
     public List<Hecho> obtenerHechos() {
@@ -30,6 +34,10 @@ public class ImportadorHechos implements Importador {
             try {
                 String extension = utils.ExtensionReader.getFileExtension(pathArchivo);
                 List<Hecho> hechosDelArchivo = this.procesarArchivo(pathArchivo, extension);
+                for (Hecho hecho : hechosDelArchivo) {
+                    boolean valido = !clavesHechosInvalidos.contains(claveHecho(hecho.getDatosHechos().getTitulo(), hecho.getDatosHechos().getDescripcion()));
+                    hecho.setEsValido(valido);
+                }
                 hechos.addAll(hechosDelArchivo);
             }catch (Exception e) {
                 log.error("Error procesando archivo {}: {}", pathArchivo, e.getMessage(), e);
@@ -46,6 +54,10 @@ public class ImportadorHechos implements Importador {
         }
 
         return estrategia.obtenerHechosDesde(pathArchivo);
+    }
+
+    public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
+        clavesHechosInvalidos.add(claveHecho(titulo, descripcion));
     }
 
     public ImportadorHechos() {

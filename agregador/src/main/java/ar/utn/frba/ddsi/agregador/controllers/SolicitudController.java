@@ -2,8 +2,10 @@ package ar.utn.frba.ddsi.agregador.controllers;
 
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
 import org.springframework.web.bind.annotation.*;
+import static ar.utn.frba.ddsi.agregador.utils.SolicitudUtil.solicitudToDTO;
 
 @RestController
 @RequestMapping("/solicitudes")
@@ -16,21 +18,19 @@ public class SolicitudController {
     }
 
     @PostMapping
-    public void crearSolicitud(@RequestBody SolicitudInputDTO solicitud) {
-        this.solicitudService.crearSolicitud(solicitud);
+    public Long crearSolicitud(@RequestBody SolicitudInputDTO solicitud) {
+        return this.solicitudService.crearSolicitud(solicitud);
     }
 
     @GetMapping("/{idSolicitud}")
-    public void getSolicitud(@PathVariable("idSolicitud") Long idSolicitud) {
-        this.solicitudService.getSolicitud(idSolicitud);
+    public SolicitudOutputDTO getSolicitud(@PathVariable("idSolicitud") Long idSolicitud) {
+        return solicitudToDTO(this.solicitudService.getSolicitud(idSolicitud));
     }
 
-    @PostMapping("/{id_solicitud}/aceptar")
+    @PutMapping("/{id_solicitud}/aceptar")
     public void aceptarSolicitud(@PathVariable("id_solicitud") Long idSolicitud) {this.solicitudService.aceptarSolicitud(idSolicitud);}
 
-    @PostMapping("/{id_solicitud}/rechazar")
+    @PutMapping("/{id_solicitud}/rechazar")
     public void rechazarSolicitud(@PathVariable("id_solicitud") Long idSolicitud) {this.solicitudService.rechazarSolicitud(idSolicitud);}
-
-
 
 }

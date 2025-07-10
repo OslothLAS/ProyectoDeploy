@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ISolicitudEliminacionRepository {
 
-    void save(SolicitudEliminacion solicitud);
+    Long save(SolicitudEliminacion solicitud);
 
     Optional<SolicitudEliminacion> findById(Long id);
 

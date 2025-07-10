@@ -1,16 +1,19 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Administrador;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Contribuyente;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
+import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
-import entities.colecciones.Coleccion;
+import entities.colecciones.Fuente;
+import entities.hechos.Hecho;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,33 +21,39 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     @Autowired
     private ISolicitudEliminacionRepository solicitudRepository;
+    @Autowired
+    private IHechoRepository hechoRepository;
+    @Autowired
+    private IColeccionRepository coleccionRepository;
 
     @Override
-    public void crearSolicitud(SolicitudInputDTO solicitud) {
+    public Long crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
-        solicitudRepository.save(this.dtoToSolicitud(solicitud));
+        return solicitudRepository.save(this.dtoToSolicitud(solicitud));
     }
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
+        Long hechoID = obtenerIDconTituloyDesc(List.of(solicitud.getTitulo(),solicitud.getDescripcion()));
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
-                solicitud.getId(),
+                hechoID,
                 solicitud.getSolicitante());
     }
 
-    private SolicitudOutputDTO solicitudToDTO(SolicitudEliminacion solicitud) {
-        SolicitudOutputDTO solicitudOutputDTO = new SolicitudOutputDTO();
-            solicitudOutputDTO.setId(solicitud.getId());
-            solicitudOutputDTO.setSolicitante(solicitud.getSolicitante());
-            solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
-            solicitudOutputDTO.setFechaDeEvaluacion(solicitud.getFechaDeEvaluacion());
-            solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
-            solicitudOutputDTO.setEstado(solicitud.getEstado());
-            solicitudOutputDTO.setHistorialDeSolicitud(solicitud.getHistorialDeSolicitud());
+    private Long obtenerIDconTituloyDesc(List<String> tituloYdesc) {
+        String tituloBuscado = tituloYdesc.get(0);
+        String descripcionBuscada = tituloYdesc.get(1);
 
-            return solicitudOutputDTO;
+        return hechoRepository.findAll().stream()
+                .filter(hecho -> hecho.getDatosHechos().getTitulo().equals(tituloBuscado) &&
+                        hecho.getDatosHechos().getDescripcion().equals(descripcionBuscada))
+                .map(Hecho::getId)
+                .findFirst()
+                .orElse(null);
     }
+
+
 
     @Override
     public SolicitudEliminacion getSolicitud(Long idSolicitud) {
@@ -61,14 +70,44 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         }
     }
 
+    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Administrador admin, EstadoSolicitudEliminacion estado) {
+        if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
+            solicitud.cambiarEstadoSolicitud(estado);
+        }
+        else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
+            solicitud.cambiarEstadoSolicitud(estado);
+
+            Hecho hecho = hechoRepository.findById(solicitud.getIdHecho());
+
+            if (hecho != null) {
+                hecho.setEsValido(false);
+            } else {
+                System.err.println("Hecho no encontrado en agregador");
+            }
+
+        }
+        solicitud.actualizarHistorialDeOperacion(estado, admin);
+    }
+
     @Override
     public void aceptarSolicitud(Long idSolicitud) {
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
-            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
-        Administrador administrador = new Administrador(1L, "admin"); //ESTE ADMINISTRADOR DEBERIA VENIR EN PARAMS DE LOGIN
+        Administrador administrador = new Administrador(1L, "admin");
 
-        solicitud.cambiarEstadoHecho(administrador, EstadoSolicitudEliminacion.ACEPTADA);
+        this.cambiarEstadoHecho(solicitud,administrador, EstadoSolicitudEliminacion.ACEPTADA);
+
+        Hecho hecho = hechoRepository.findById(solicitud.getIdHecho());
+
+        List<Fuente> fuentesUnicas = coleccionRepository.findAll().stream()
+                .flatMap(coleccion -> coleccion.getImportadores().stream())
+                .distinct()
+                .toList();
+
+        for (Fuente fuente : fuentesUnicas) {
+            fuente.invalidarHecho(hecho.getDatosHechos().getTitulo(),hecho.getDatosHechos().getDescripcion());
+        }
     }
 
     @Override
@@ -78,7 +117,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
         Administrador administrador = new Administrador(1L, "admin"); //ESTE ADMINISTRADOR DEBERIA VENIR EN PARAMS DE LOGIN
 
-        solicitud.cambiarEstadoHecho(administrador, EstadoSolicitudEliminacion.RECHAZADA);
+        this.cambiarEstadoHecho(solicitud,administrador, EstadoSolicitudEliminacion.RECHAZADA);
     }
 
 

@@ -3,9 +3,6 @@ package ar.utn.frba.ddsi.agregador.models.entities.solicitudes;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Administrador;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Contribuyente;
 import lombok.*;
-import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
-
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +25,6 @@ public class SolicitudEliminacion {
     private Long idHecho;
     @Setter
     private IDetectorDeSpam detectorDeSpam = new DetectorDeSpam();
-    private IHechoRepository hechoRepository;
-
 
     public SolicitudEliminacion(String justificacion, Long idHecho, Contribuyente solicitante) {
         this.justificacion = justificacion;
@@ -45,27 +40,13 @@ public class SolicitudEliminacion {
     }
 
 
-    //TODAS ESTAS VANA  SER DEL AGREGADOR?
-
-    public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
-        if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
-            cambiarEstadoSolicitud(estado);
-        }
-        else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
-            cambiarEstadoSolicitud(estado);
-            //si la solicitud es aceptada, se cambia el estado del hecho (26/5 ahora con idHecho)
-            hechoRepository.findById(idHecho).setEsValido(false);
-        }
-        this.actualizarHistorialDeOperacion(estado, admin);
-    }
-
-    private void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {
+    public void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {
         this.estado = EstadoSolicitudEliminacion.valueOf(estado.name());
         this.fechaDeEvaluacion = LocalDateTime.now();
     }
 
-    private void actualizarHistorialDeOperacion(EstadoSolicitudEliminacion estado, Administrador admin){
-        EstadoSolicitud estadoSolicitud = new EstadoSolicitud();
+    public void actualizarHistorialDeOperacion(EstadoSolicitudEliminacion estado, Administrador admin){
+            EstadoSolicitud estadoSolicitud = new EstadoSolicitud();
         estadoSolicitud.guardarEstado(estado, admin, this);
         this.historialDeSolicitud.add(estadoSolicitud);
     }

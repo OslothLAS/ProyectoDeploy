@@ -121,25 +121,19 @@ public class ColeccionService implements IColeccionService {
         coleccion.getImportadores().removeIf(fuente -> fuente.getId() == idFuente);
     }
 
+    @Override
     public void actualizarHechos(){
         List<Coleccion> colecciones = this.coleccionRepository.findAll();
 
         colecciones.forEach(coleccion -> {
-            List<CriterioDePertenencia> criterios = coleccion.getCriteriosDePertenencia().stream().toList();
+            List<CriterioDePertenencia> criterios = Optional.ofNullable(coleccion.getCriteriosDePertenencia())
+                    .orElse(List.of());
             List<Hecho> hechos = tomarHechosFuentes(coleccion.getImportadores(), criterios);
             asignarColeccionAHechos(hechos, coleccion);
             hechos.forEach(hechoRepository::save);
             coleccionRepository.save(coleccion);
         });
     }
-
-    /*private List<Fuente> instanciarFuentes(){
-        Fuente fuenteEstatica = new Fuente("localhost","8060", 1L);
-        Fuente fuenteDinamica = new Fuente("localhost","8070", 2L);
-        Fuente fuenteProxy = new Fuente("localhost","8090", 3L);
-
-        return List.of(fuenteEstatica,fuenteDinamica,fuenteProxy);
-    }*/
 
     @Override
     public void consensuarHechos(){

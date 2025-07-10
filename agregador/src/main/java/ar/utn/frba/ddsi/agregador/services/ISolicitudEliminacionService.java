@@ -5,9 +5,9 @@ import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminaci
 
 public interface ISolicitudEliminacionService {
 
-    public void crearSolicitud(SolicitudInputDTO solicitud);
-    public SolicitudEliminacion getSolicitud(Long idSolicitud);
-    public String validarJustificacion(String justificacionSolicitud);
+    Long crearSolicitud(SolicitudInputDTO solicitud);
+    SolicitudEliminacion getSolicitud(Long idSolicitud);
+    String validarJustificacion(String justificacionSolicitud);
     void aceptarSolicitud(Long idSolicitud);
 
     void rechazarSolicitud(Long idSolicitud);

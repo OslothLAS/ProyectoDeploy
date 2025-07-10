@@ -21,15 +21,17 @@ public class ExtractService implements IExtractService {
     @Override
     public List<Hecho> getHechos(Map<String, String> filtros) {
         List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
-        List<Hecho> hechos = importador.obtenerHechos();
 
-        if (criterios.isEmpty()) {
-            return hechos;
-        }
+        List<Hecho> hechos = importador.obtenerHechos();
 
         return hechos.stream()
                 .filter(Hecho::getEsValido)
-                .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
+                .filter(hecho -> criterios.isEmpty() ||
+                        criterios.stream().allMatch(c -> c.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
+    }
+
+    public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion){
+        importador.invalidarHechoPorTituloYDescripcion(titulo, descripcion);
     }
 }

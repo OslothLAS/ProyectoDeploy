@@ -16,13 +16,15 @@ public class SolicitudMemoryRepository implements ISolicitudEliminacionRepositor
 
 
     @Override
-    public void save(SolicitudEliminacion solicitud) {
+    public Long save(SolicitudEliminacion solicitud) {
         if(solicitud.getId() == null){
             solicitud.setId(idGenerator.getAndIncrement());
             solicitudes.put(solicitud.getId(), solicitud);
         }else{
             solicitudes.put(solicitud.getId(), solicitud);
         }
+
+        return solicitud.getId();
     }
 
     @Override

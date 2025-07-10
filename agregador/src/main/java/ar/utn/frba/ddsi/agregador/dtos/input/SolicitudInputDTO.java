@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class SolicitudInputDTO {
-    private Long id;
+    private String titulo;
+    private String descripcion;
     private Contribuyente solicitante;
     private String justificacion;
-
 }

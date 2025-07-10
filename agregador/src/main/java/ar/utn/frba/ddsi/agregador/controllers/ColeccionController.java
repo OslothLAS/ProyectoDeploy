@@ -58,9 +58,15 @@ public class ColeccionController {
         this.coleccionService.eliminarFuente(idColeccion, idFuente);
     }
 
-    @GetMapping("/cron")
+    @GetMapping("/cronConsensuar")
     public ResponseEntity<Void> consensuarHechos() {
         this.coleccionService.consensuarHechos();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/cronActualizar")
+    public ResponseEntity<Void> actualizarHechos(){
+        this.coleccionService.actualizarHechos();
         return ResponseEntity.ok().build();
     }
 }
