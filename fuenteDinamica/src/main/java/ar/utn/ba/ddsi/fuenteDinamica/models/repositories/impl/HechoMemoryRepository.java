@@ -30,6 +30,15 @@ public class HechoMemoryRepository implements IHechoRepository {
     }
 
     @Override
+    public Optional<Hecho> findByTituloyDescripcion(String titulo, String descripcion) {
+        return hechos.values().stream()
+                .filter(hecho -> hecho.getDatosHechos() != null &&
+                        titulo.equals(hecho.getDatosHechos().getTitulo()) &&
+                        descripcion.equals(hecho.getDatosHechos().getDescripcion()))
+                .findFirst();
+    }
+
+    @Override
     public List<Hecho> findAll(){
         return new ArrayList<>(hechos.values());
     }

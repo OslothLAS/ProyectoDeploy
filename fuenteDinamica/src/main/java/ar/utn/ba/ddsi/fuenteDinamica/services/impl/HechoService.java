@@ -17,6 +17,7 @@ import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -116,5 +117,14 @@ public class HechoService implements IHechoService {
                 .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
     }
+    public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
+        Optional<Hecho> hechoInvalido = hechoRepository.findByTituloyDescripcion(titulo, descripcion);
+        hechoInvalido.ifPresent(hecho -> {
+            hecho.setEsValido(false);
+            hechoRepository.save(hecho);
+        });
+    }
+
+
 
 }

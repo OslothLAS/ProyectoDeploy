@@ -10,4 +10,5 @@ public interface IHechoService {
     void crearHecho(HechoInputDTO hecho);
     void editarHecho(Long idHecho, HechoInputDTO dto) throws Exception;
     List<Hecho> obtenerTodos(Map<String, String> filtros);
+    void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion);
 }

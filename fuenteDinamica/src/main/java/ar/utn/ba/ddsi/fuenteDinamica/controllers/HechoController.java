@@ -34,4 +34,11 @@ public class HechoController {
     public String obtenerOrigen(){
         return "DINAMICO";
     }
+
+    @PutMapping("/invalidar")
+    public void invalidarHechoPorTituloYDescripcion(
+            @RequestParam("titulo") String titulo,
+            @RequestParam("descripcion") String descripcion) {
+        hechoService.invalidarHechoPorTituloYDescripcion(titulo, descripcion);
+    }
 }
