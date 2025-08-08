@@ -1,7 +1,5 @@
 package entities.solicitudes;
 
-import entities.hechos.Hecho;
-import entities.usuarios.Administrador;
 import entities.usuarios.Contribuyente;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -11,48 +9,40 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Setter
 @Getter
 public class SolicitudEliminacion {
-    @Setter
     private Long id;
-    @Getter
+    private Long idHecho;
     private Contribuyente solicitante;
-    private LocalDateTime fechaDeCreacion;
-    @Setter
-    private LocalDateTime fechaDeEvaluacion;
-    private String justificacion;
-    private EstadoSolicitudEliminacion estado;
-    private List<EstadoSolicitud> historialDeSolicitud;
-    @Setter
-    private Hecho hecho;
 
-    public SolicitudEliminacion(String justificacion, Contribuyente solicitante) {
+    private LocalDateTime fechaDeCreacion;
+    private LocalDateTime fechaDeEvaluacion;
+
+    private String justificacion;
+    private List<EstadoSolicitud> estados;
+
+    public SolicitudEliminacion(String justificacion,Long idHecho, Contribuyente solicitante) {
         this.justificacion = justificacion;
+        this.idHecho = idHecho;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
-        this.historialDeSolicitud = new ArrayList<>();
-    }
-
-
-    public void cambiarEstadoHecho(Administrador admin, EstadoSolicitudEliminacion estado) {
-        if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
-            cambiarEstadoSolicitud(estado);
+        this.estados = new ArrayList<>();
+        if(DetectorDeSpam.getInstance().isSpam(justificacion)) {
+            this.estados.add(new EstadoSolicitud(null, PosibleEstadoSolicitud.RECHAZADA));
+        }else{
+            this.estados.add(new EstadoSolicitud(null,PosibleEstadoSolicitud.PENDIENTE));
         }
-        else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
-            cambiarEstadoSolicitud(estado);
+    }
+
+    public void cambiarEstadoSolicitud(EstadoSolicitud estado) {
+        if (!this.estados.isEmpty()) {
+            this.estados.get(this.estados.size() - 1).setFechaDeCambio(LocalDateTime.now());
         }
-        this.actualizarHistorialDeOperacion(estado, admin);
+        this.estados.add(estado);
     }
 
-    private void cambiarEstadoSolicitud(EstadoSolicitudEliminacion estado) {
-        this.estado = EstadoSolicitudEliminacion.valueOf(estado.name());
-        this.fechaDeEvaluacion = LocalDateTime.now();
-    }
-
-    private void actualizarHistorialDeOperacion(EstadoSolicitudEliminacion estado, Administrador admin){
-        EstadoSolicitud estadoSolicitud = new EstadoSolicitud();
-        estadoSolicitud.guardarEstado(estado, admin, this);
-        this.historialDeSolicitud.add(estadoSolicitud);
+    public PosibleEstadoSolicitud getEstado() {
+        return this.estados.get(estados.size() - 1).getEstado();
     }
 }

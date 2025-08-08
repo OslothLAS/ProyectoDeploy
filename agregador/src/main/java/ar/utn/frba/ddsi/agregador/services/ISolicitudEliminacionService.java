@@ -1,7 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
+import entities.solicitudes.SolicitudEliminacion;
 
 public interface ISolicitudEliminacionService {
 

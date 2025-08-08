@@ -1,17 +1,18 @@
 package entities.usuarios;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import java.time.LocalDate;
 import java.time.Period;
 
-
 @Getter
 public class Contribuyente implements Usuario {
-    private long id;
+    private final long id;
     private final String nombre;
     private final String apellido;
     private final LocalDate fechaDeNacimiento;
+
 
     @Override
     public String getNombre() {
@@ -30,24 +31,30 @@ public class Contribuyente implements Usuario {
         return true;
     }
 
-    public Contribuyente(@JsonProperty("id") Long id, @JsonProperty("nombre") String nombre,
-                         @JsonProperty("apellido") String apellido,
-                         @JsonProperty("fechaDeNacimiento") LocalDate fechaDeNacimiento) {
+    @Override
+    public void setId(Long id) {
+
+    }
+
+    public Contribuyente(Long id, String nombre, String apellido, LocalDate fechaDeNacimiento) {
         this.id = id;
         this.nombre = nombre;
         this.fechaDeNacimiento = fechaDeNacimiento;
         this.apellido = apellido;
     }
 
-    public Boolean esAdministrador() {return false;}
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
+    @JsonCreator
+    public Contribuyente(
+            @JsonProperty("id") long id,
+            @JsonProperty("nombre") String nombre,
+            @JsonProperty("apellido") String apellido,
+            @JsonProperty("fechaDeNacimiento") LocalDate fechaDeNacimiento
+    ) {
         this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.fechaDeNacimiento = fechaDeNacimiento;
     }
+
+    public Boolean esAdministrador() {return false;}
 }

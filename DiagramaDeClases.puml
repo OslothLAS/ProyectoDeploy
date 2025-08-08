@@ -1,14 +1,70 @@
 @startuml
+
+class Hecho {
+     -titulo: String
+     -descripcion: String
+     -autor: String
+     -colecciones: Map<Coleccion, Boolean>
+     -categoria: Categoria
+     -fechaHecho: LocalDate
+     -fechaCarga: LocalDate
+     -ubicacion: Ubicacion
+     -origenCarga: OrigenHecho
+     -origenFuente: TipoFuente
+     -multimedia: List<Multimedia>
+     -esEditable: Boolean
+     -esValido: boolean
+}
+
 class Coleccion {
     -titulo: String
     -descripcion: String
-    -fuente: FuenteEstatica
-    -hechos: map<String,Hecho>
+    -fuentes: List<Fuente>
     -categoria: String
+    -handle: Handle
     -fechaInicio: LocalDate
     -fechaFin: LocalDate
     -criteriosDePertenencia: List<CriterioDePertenencia>
-    +filtrarHechos(): void
+    -algoritmoConsenso: IAlgoritmoDeConsenso
+    +navegarHechos(modoNavegacion: TipoModoNavegacion): List<Hecho>
+    +filtrarHechos(filtros: List<CriterioDePertenencia>)
+    +consensuarHechos():void
+    +agregarFuente(fuente: Fuente): void
+    +quitarFuente(fuente: Fuente): void
+}
+
+enum TipoModoNavegacion {
+    IRRESTRICTA
+    CURADA
+}
+
+
+interface IAlgoritmoDeConsenso {
+    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
+}
+
+class Multiplesmenciones implements IAlgoritmoDeConsenso {
+    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
+}
+
+class MayoriaSimple implements IAlgoritmoDeConsenso {
+    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
+}
+
+class Absoluta implements IAlgoritmoDeConsenso {
+    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
+}
+
+class Fuente{
+    -webClient: WebClient
+    +obtenerHechos(criterios: List<CriterioDePertenencia>)
+}
+
+class Importador{
+    -pathArchivos: List<String>;
+    -estrategiasPorExtension: Map<String, EstrategiaExtraccionHecho>
+    +obtenerHechos(): List<Hecho>
+    +procesarArchivo(pathArchivo, extension): List<Hecho>
 }
 
 
@@ -37,53 +93,45 @@ class CriterioPorUbicacion implements CriterioDePertenencia {
 
 
  class Ubicacion {
-   -latitud: Double
-   -longitud: Double
- }
+    -latitud: Double
+    -longitud: Double
+}
 
 
 class SolicitudEliminacion{
     -solicitante: Contribuyente
-    -justificacion: String
-    -fechaDeCreacion: LocalDateTime
-    -fechaDeEvaluacion: LocalDateTime
-    -estado: EstadoSolicitudEliminacion
     -hecho: Hecho
-    +cambiarEstadoHecho(administrador, estado): void
-    -cambiarEstadoSolicitud(estado): void
-    -actualizarHistorial():void
+    -justificacion: String
+    -estados: List<EstadoSolicitud>
+    +cambiarEstadoSolicitud(estado): void
     +validarJustificacion(justificacion): string
 }
 
 class EstadoSolicitud{
     -evaluador: Administrador
-    -tiempoDeRespuesta: Integer
-    -solicitudes: List<SolicitudEliminacion>
-
-    +guardarEstado(Administrador, SolicitudEliminacion)
-
+    -fechaDeCreacion: LocalDateTime
+    -fechaDeEvaluacion: LocalDateTime
+    -estado: PosibleEstadoSolicitud
+    +calcularTiempoDeRespuesta(fechaDeCreacion,fechaDeEvaluacion): Long
 }
 
-enum EstadoSolicitudEliminacion {
+enum PosibleEstadoSolicitud {
       PENDIENTE
       ACEPTADA
       RECHAZADA
 }
 
-
-class Hecho {
-     -titulo: String
-     -descripcion: String
-     -autor: String
-     -categoria: String-ubicacion: Ubicacion
-     -fechaHecho: LocalDate
-     -fechaCarga: LocalDate
-     -origen: OrigenHecho
-     -multimedia: Multimedia
-     -esValido: boolean
+class Handle{
+    -value: String
+    +equals()
+    +hashCode()
+    +toString(): String
 }
 
 
+class Categoria{
+    -nombre: String
+}
 
 class Multimedia{
     -urlImagen: string
@@ -96,24 +144,19 @@ enum OrigenHecho {
     CONTRIBUYENTE
 }
 
-
-class FuenteEstatica{
-    -pathArchivos: List<String>;
-    -EstrategiaExtraccionHechos: EstrategiaExtraccionHechos
-    +obtenerHechos(): map<String,Hecho>
-    +csvExtractor(hechos, pathArchivos): FuenteEstatica
+enum TipoFuente{
+    PROXY
+    DINAMICA
+    ESTATICA
 }
-
 
 interface EstrategiaExtraccionHechos{
-    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
+    +obtenerHechosDesde(pathArchivo): List<Hecho>
 }
-
 
 class EstrategiaExtraccionHechosCSV implements EstrategiaExtraccionHechos{
-    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
+    +obtenerHechosDesde(pathArchivo): List<Hecho>
 }
-
 
 class Contribuyente{
    -nombre: String
@@ -122,18 +165,45 @@ class Contribuyente{
    +obtenerEdad(): Integer
 }
 
+class Administrador{
+   -nombre: String
+   -apellido: String
+   -fechaDeNacimiento: LocalDate
+}
+
+interface IDetectorSpam{
+    +isSpam(justificacion: String)
+}
+
+class DetectorSpam implements IDetectorSpam{
+    +isSpam(justificacion: String)
+}
 
 
-  Coleccion --> FuenteEstatica
-  Coleccion --> Hecho
-  OrigenHecho <-- Hecho
-  Ubicacion <--* Hecho
-  SolicitudEliminacion --> Hecho
-  SolicitudEliminacion --> Contribuyente
-   FuenteEstatica --> EstrategiaExtraccionHechos
-  SolicitudEliminacion --> EstadoSolicitudEliminacion
-  Coleccion -->"*" CriterioDePertenencia
-  EstadoSolicitud <-- SolicitudEliminacion
 
-  Multimedia <--* Hecho
+
+
+
+    Hecho --> Categoria
+    Hecho --> Ubicacion
+    Hecho -->"*" Multimedia
+    Hecho --> OrigenHecho
+    Hecho --> TipoFuente
+    Hecho --> "*"Coleccion
+
+    Coleccion --> TipoModoNavegacion
+    Coleccion --> Fuente
+    Coleccion -->"*" CriterioDePertenencia
+    SolicitudEliminacion --> Hecho
+    SolicitudEliminacion --> Contribuyente
+    Importador --> EstrategiaExtraccionHechos
+    SolicitudEliminacion --> "*"EstadoSolicitud
+    EstadoSolicitud --> PosibleEstadoSolicitud
+    EstadoSolicitud --> Administrador
+    Coleccion --> Handle
+    Coleccion --> IAlgoritmoDeConsenso
+
+
+
+
 @enduml

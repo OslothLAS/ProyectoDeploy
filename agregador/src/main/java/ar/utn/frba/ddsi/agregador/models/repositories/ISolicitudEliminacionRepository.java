@@ -1,7 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
+import entities.solicitudes.PosibleEstadoSolicitud;
+import entities.solicitudes.SolicitudEliminacion;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +14,7 @@ public interface ISolicitudEliminacionRepository {
 
     List<SolicitudEliminacion> findAll();
 
-    List<SolicitudEliminacion> findByEstado(EstadoSolicitudEliminacion estado);
+    List<SolicitudEliminacion> findByEstado(PosibleEstadoSolicitud estado);
 
     void deleteSolicitud(SolicitudEliminacion solicitud);
 

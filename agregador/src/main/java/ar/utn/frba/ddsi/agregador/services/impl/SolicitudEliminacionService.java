@@ -1,20 +1,20 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Administrador;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
 import entities.colecciones.Fuente;
 import entities.hechos.Hecho;
+import entities.solicitudes.EstadoSolicitud;
+import entities.solicitudes.PosibleEstadoSolicitud;
+import entities.solicitudes.SolicitudEliminacion;
+import entities.usuarios.Administrador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SolicitudEliminacionService implements ISolicitudEliminacionService {
@@ -70,12 +70,13 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         }
     }
 
-    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Administrador admin, EstadoSolicitudEliminacion estado) {
-        if(estado == EstadoSolicitudEliminacion.RECHAZADA) {
-            solicitud.cambiarEstadoSolicitud(estado);
+    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Administrador admin, PosibleEstadoSolicitud estado) {
+        EstadoSolicitud estadoSolicitud = new EstadoSolicitud(admin,estado);
+        if(estado == PosibleEstadoSolicitud.RECHAZADA) {
+            solicitud.cambiarEstadoSolicitud(estadoSolicitud);
         }
-        else if(estado == EstadoSolicitudEliminacion.ACEPTADA){
-            solicitud.cambiarEstadoSolicitud(estado);
+        else if(estado == PosibleEstadoSolicitud.ACEPTADA){
+            solicitud.cambiarEstadoSolicitud(estadoSolicitud);
 
             Hecho hecho = hechoRepository.findById(solicitud.getIdHecho());
 
@@ -86,7 +87,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
             }
 
         }
-        solicitud.actualizarHistorialDeOperacion(estado, admin);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
         Administrador administrador = new Administrador(1L, "admin");
 
-        this.cambiarEstadoHecho(solicitud,administrador, EstadoSolicitudEliminacion.ACEPTADA);
+        this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
 
         Hecho hecho = hechoRepository.findById(solicitud.getIdHecho());
 
@@ -117,7 +117,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
         Administrador administrador = new Administrador(1L, "admin"); //ESTE ADMINISTRADOR DEBERIA VENIR EN PARAMS DE LOGIN
 
-        this.cambiarEstadoHecho(solicitud,administrador, EstadoSolicitudEliminacion.RECHAZADA);
+        this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.RECHAZADA);
     }
 
 

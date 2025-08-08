@@ -1,8 +1,8 @@
 package ar.utn.frba.ddsi.agregador.models.repositories.impl;
 
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
+import entities.solicitudes.PosibleEstadoSolicitud;
+import entities.solicitudes.SolicitudEliminacion;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -38,7 +38,7 @@ public class SolicitudMemoryRepository implements ISolicitudEliminacionRepositor
     }
 
     @Override
-    public List<SolicitudEliminacion> findByEstado(EstadoSolicitudEliminacion estado) {
+    public List<SolicitudEliminacion> findByEstado(PosibleEstadoSolicitud estado) {
         return solicitudes.values().stream()
                 .filter(solicitud -> estado.equals(solicitud.getEstado()))
                 .collect(Collectors.toList());
