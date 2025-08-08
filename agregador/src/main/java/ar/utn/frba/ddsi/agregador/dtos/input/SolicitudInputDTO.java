@@ -1,6 +1,6 @@
 package ar.utn.frba.ddsi.agregador.dtos.input;
 
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Contribuyente;
+import entities.usuarios.Contribuyente;
 import lombok.Getter;
 import lombok.Setter;
 

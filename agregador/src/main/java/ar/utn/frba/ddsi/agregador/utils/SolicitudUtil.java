@@ -1,7 +1,7 @@
 package ar.utn.frba.ddsi.agregador.utils;
 
 import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
+import entities.solicitudes.SolicitudEliminacion;
 
 public class SolicitudUtil {
     public static SolicitudOutputDTO solicitudToDTO(SolicitudEliminacion solicitud) {
@@ -11,8 +11,7 @@ public class SolicitudUtil {
         solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
         solicitudOutputDTO.setFechaDeEvaluacion(solicitud.getFechaDeEvaluacion());
         solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
-        solicitudOutputDTO.setEstado(solicitud.getEstado());
-        solicitudOutputDTO.setHistorialDeSolicitud(solicitud.getHistorialDeSolicitud());
+        solicitudOutputDTO.setEstados(solicitud.getEstados());
 
         return solicitudOutputDTO;
     }

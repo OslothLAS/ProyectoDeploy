@@ -1,7 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories;
 
 
-import entities.solicitudes.EstadoSolicitudEliminacion;
+import entities.solicitudes.PosibleEstadoSolicitud;
 import entities.solicitudes.SolicitudEliminacion;
 
 import java.util.List;
@@ -11,5 +11,5 @@ public interface ISolicitudRepository {
     void save(SolicitudEliminacion solicitud);
     Optional<SolicitudEliminacion> findById(Long id);
     List<SolicitudEliminacion> findAll();
-    List<SolicitudEliminacion> findByEstado(EstadoSolicitudEliminacion estado);
+    List<SolicitudEliminacion> findByEstado(PosibleEstadoSolicitud estado);
 }

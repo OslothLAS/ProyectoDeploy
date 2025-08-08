@@ -1,10 +1,12 @@
-package ar.utn.frba.ddsi.agregador.models.entities.solicitudes;
+package entities.solicitudes;
+
 import java.util.*;
 
 
 
 public class DetectorDeSpam implements IDetectorDeSpam {
 
+    private static final DetectorDeSpam INSTANCE = new DetectorDeSpam();
     // Términos de spam comunes con sus pesos IDF (Inverse Document Frequency)
     private static final Map<String, Double> SPAM_TERMS_IDF = Map.ofEntries(
             Map.entry("oferta", 2.1),
@@ -61,4 +63,9 @@ public class DetectorDeSpam implements IDetectorDeSpam {
 
         return spamScore > SPAM_THRESHOLD;
     }
+
+    public static DetectorDeSpam getInstance() {
+        return INSTANCE;
+    }
+
 }

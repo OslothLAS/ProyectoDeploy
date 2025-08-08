@@ -12,13 +12,12 @@ import java.util.List;
 @Setter
 @Getter
 public class Coleccion {
+    private Long id;
     private final String titulo;
     private final String descripcion;
     private final List<Fuente> importadores;
     private List<CriterioDePertenencia> criteriosDePertenencia;
     private final Handle handle;
-    private Long id;
-
     private LocalDateTime fechaYHoraDeActualizacion;
     private IAlgoritmoConsenso consenso;
 

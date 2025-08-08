@@ -5,19 +5,19 @@ import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 public class EstadoSolicitud {
-
     private Administrador administrador;
-    private Long tiempoDeRespuesta;
-    private EstadoSolicitudEliminacion estado;
+    private PosibleEstadoSolicitud estado;
+    private LocalDateTime fechaDeCambio;
+    private LocalDateTime fechaDeCreacion;
 
-    public void guardarEstado(EstadoSolicitudEliminacion estado, Administrador administrador, SolicitudEliminacion solicitud){
+
+    public EstadoSolicitud(Administrador administrador, PosibleEstadoSolicitud estado) {
         this.administrador = administrador;
-        this.tiempoDeRespuesta = calcularTiempoDeRespuesta(
-                solicitud.getFechaDeCreacion(),
-                solicitud.getFechaDeEvaluacion());
         this.estado = estado;
+        this.fechaDeCreacion = LocalDateTime.now();
     }
 
 

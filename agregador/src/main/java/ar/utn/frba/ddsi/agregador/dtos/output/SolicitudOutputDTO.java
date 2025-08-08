@@ -1,12 +1,9 @@
 package ar.utn.frba.ddsi.agregador.dtos.output;
 
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitud;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion;
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.IDetectorDeSpam;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Contribuyente;
-import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import entities.solicitudes.EstadoSolicitud;
+import entities.solicitudes.PosibleEstadoSolicitud;
+import entities.usuarios.Contribuyente;
 import lombok.Data;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,8 +16,7 @@ public class SolicitudOutputDTO {
     private LocalDateTime fechaDeCreacion;
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;
-    private EstadoSolicitudEliminacion estado;
-    private List<EstadoSolicitud> historialDeSolicitud;
+    private List<EstadoSolicitud> estados;
     private Long idHecho;
 
 

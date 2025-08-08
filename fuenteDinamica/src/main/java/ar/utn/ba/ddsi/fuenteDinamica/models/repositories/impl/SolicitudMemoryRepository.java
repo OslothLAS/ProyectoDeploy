@@ -1,7 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories.impl;
 
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ISolicitudRepository;
-import entities.solicitudes.EstadoSolicitudEliminacion;
+import entities.solicitudes.PosibleEstadoSolicitud;
 import entities.solicitudes.SolicitudEliminacion;
 import org.springframework.stereotype.Repository;
 import java.util.*;
@@ -35,7 +35,7 @@ public class SolicitudMemoryRepository implements ISolicitudRepository {
     }
 
     @Override
-    public List<SolicitudEliminacion> findByEstado(EstadoSolicitudEliminacion estado) {
+    public List<SolicitudEliminacion> findByEstado(PosibleEstadoSolicitud estado) {
         return solicitudes.values().stream()
                 .filter(solicitud -> estado.equals(solicitud.getEstado()))
                 .collect(Collectors.toList());

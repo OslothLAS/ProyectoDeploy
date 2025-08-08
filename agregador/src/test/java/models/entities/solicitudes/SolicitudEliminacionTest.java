@@ -1,15 +1,12 @@
 package models.entities.solicitudes;
 
-import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Contribuyente;
+import entities.solicitudes.SolicitudEliminacion;
+import entities.usuarios.Contribuyente;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
-
-import static ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion.RECHAZADA;
-import static entities.solicitudes.EstadoSolicitudEliminacion.ACEPTADA;
-import static ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitudEliminacion.PENDIENTE;
-import static org.junit.jupiter.api.Assertions.*;
+import static entities.solicitudes.PosibleEstadoSolicitud.PENDIENTE;
+import static entities.solicitudes.PosibleEstadoSolicitud.RECHAZADA;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SolicitudEliminacionTest {
 

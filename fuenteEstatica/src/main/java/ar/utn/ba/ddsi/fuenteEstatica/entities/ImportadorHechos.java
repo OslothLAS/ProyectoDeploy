@@ -26,7 +26,6 @@ public class ImportadorHechos implements Importador {
         return titulo.trim() + "::" + descripcion.trim();
     }
 
-    //ir agregando mas cases a medida que van viniendo mas tipos de archivos...
     public List<Hecho> obtenerHechos() {
         List<Hecho> hechos = new ArrayList<>();
 

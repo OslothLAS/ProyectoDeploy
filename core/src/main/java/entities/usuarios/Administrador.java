@@ -5,7 +5,12 @@ import lombok.Getter;
 @Getter
 public class Administrador implements Usuario {
     private Long id;
-    private String nombre;
+    private final String nombre;
+
+    public Administrador(Long id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
 
     @Override
     public String getNombre() {
