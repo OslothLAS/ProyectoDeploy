@@ -19,16 +19,16 @@ public class Coleccion {
     private List<CriterioDePertenencia> criteriosDePertenencia;
     private final Handle handle;
     private LocalDateTime fechaYHoraDeActualizacion;
-    private ConsensoStrategy consensoStrategy;
+    private IAlgoritmoConsenso consenso;
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia, ConsensoStrategy consensoStrategy) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia, IAlgoritmoConsenso consenso) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fuentes = fuentes;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
-        this.consensoStrategy = consensoStrategy;
+        this.consenso = consenso;
     }
 
     public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia) {

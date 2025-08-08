@@ -2,7 +2,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.models.repositories.impl.ColeccionMemoryRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.impl.HechoMemoryRepository;
-import entities.colecciones.consenso.strategies.ConsensoMultipleMencionStrategy;
+import entities.colecciones.consenso.strategies.MultipleMencion;
 
 import entities.colecciones.Coleccion;
 import entities.hechos.DatosHechos;
@@ -34,7 +34,7 @@ class ColeccionServiceTest {
                 "desc",
                 List.of(), // importadores
                 List.of(), // criterios
-                new ConsensoMultipleMencionStrategy() // estrategia real
+                new MultipleMencion() // estrategia real
         );
         hecho1.addColeccion(coleccion.getHandle());
         hecho2.addColeccion(coleccion.getHandle());
