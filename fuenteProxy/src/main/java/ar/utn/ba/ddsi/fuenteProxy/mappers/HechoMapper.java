@@ -6,15 +6,12 @@ import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class HechoMapper {
 
     public static Hecho mapHechoDtoToHecho(HechoDto dto) {
-        List<Handle> handles = dto.getColecciones().stream()
-                .map(Handle::new)
-                .collect(Collectors.toList());
+        Map<Handle,Boolean> handles = dto.getColecciones();
 
         DatosHechos datosHechos = DatosHechos.builder()
                 .titulo(dto.getTitulo())
@@ -26,7 +23,7 @@ public class HechoMapper {
                 ))
                 .fechaHecho(parseDate(dto.getFechaHecho()))
                 .build();
-        return Hecho.create(datosHechos, handles, dto.getId(), dto.getEsConsensuado());
+        return Hecho.create(datosHechos, handles, dto.getId());
     }
 
 

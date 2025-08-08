@@ -57,6 +57,7 @@ class Absoluta implements IAlgoritmoDeConsenso {
 
 class Fuente{
     -webClient: WebClient
+    -tipoFuente: TipoFuente
     +obtenerHechos(criterios: List<CriterioDePertenencia>)
 }
 
@@ -194,6 +195,7 @@ class DetectorSpam implements IDetectorSpam{
     Coleccion --> TipoModoNavegacion
     Coleccion --> Fuente
     Coleccion -->"*" CriterioDePertenencia
+    Fuente --> TipoFuente
     SolicitudEliminacion --> Hecho
     SolicitudEliminacion --> Contribuyente
     Importador --> EstrategiaExtraccionHechos

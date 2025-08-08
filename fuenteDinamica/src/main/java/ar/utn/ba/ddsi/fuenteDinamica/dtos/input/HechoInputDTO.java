@@ -5,11 +5,12 @@ import entities.hechos.Multimedia;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 public class HechoInputDTO {
     private DatosHechos datosHechos;
-    private Multimedia multimedia;
+    private List<Multimedia> multimedia;
 
     private Long idUsuario; //esto lo vemos despues (id del usuario)
     private String nombre;

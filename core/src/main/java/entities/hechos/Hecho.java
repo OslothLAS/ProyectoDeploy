@@ -7,7 +7,9 @@ import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -16,23 +18,30 @@ import java.util.List;
 @NoArgsConstructor
 public class Hecho {
     private Long id;
-    private String autor;
-    private Usuario usuario;
-    private Boolean esValido;
-    private DatosHechos datosHechos;
-    private Multimedia multimedia;
-    @Builder.Default
-    private List<String> etiquetas = new ArrayList<>();
-    @Builder.Default
-    private List<Handle> colecciones = new ArrayList<>();
-    private Origen origen;
-    private FuenteOrigen fuenteOrigen;
-    private Boolean mostrarDatos;
 
-    private LocalDateTime fechaCreacion;
+    private DatosHechos datosHechos;
+    /*borrar!! (mucho quilombo)
+
+    private String titulo;
+    private String descripcion;
+    private String categoria;
+    private Ubicacion ubicacion;
+    private LocalDate fechaHecho;
+    */
+
+
+    private String autor; //?
+    private Map<Handle,Boolean> colecciones;
+    private Usuario usuario;
+    private List<String> etiquetas = new ArrayList<>();
+    private Boolean mostrarDatos;
     private Duration plazoEdicion;
+    private LocalDateTime fechaCarga;
+    private Origen origenCarga;
+    private FuenteOrigen fuenteOrigen;
+    private List<Multimedia> multimedia;
     private Boolean esEditable;
-    private Boolean esConsensuado;
+    private Boolean esValido;
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
@@ -40,24 +49,22 @@ public class Hecho {
                 .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.DATASET)
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
+                .fechaCarga(LocalDateTime.now())
+                .origenCarga(Origen.DATASET)
+                .colecciones(new HashMap<>())
                 .build();
     }
 
-    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones,Long id,Boolean esConsensuado) {
+    public static Hecho create(DatosHechos datosHechos, Map<Handle,Boolean> colecciones,Long id) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .id(id)
                 .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.EXTERNO)
+                .fechaCarga(LocalDateTime.now())
+                .origenCarga(Origen.EXTERNO)
                 .colecciones(colecciones)
-                .esConsensuado(esConsensuado)
                 .build();
     }
 
@@ -68,26 +75,25 @@ public class Hecho {
                 .usuario(visualizador)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.VISUALIZADOR)
-                .colecciones(new ArrayList<>())
+                .fechaCarga(LocalDateTime.now())
+                .origenCarga(Origen.VISUALIZADOR)
+                .colecciones(new HashMap<>())
                 .build();
     }
 
     //creacion con multimedia anonima
-    public static Hecho create(DatosHechos datosHechos, Multimedia multimedia) {
+    public static Hecho create(DatosHechos datosHechos, List<Multimedia> multimedia) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
+                .fechaCarga(LocalDateTime.now())
+                .colecciones(new HashMap<>())
                 .build();
     }
     //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
-    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Multimedia multimedia, Boolean mostrarDatos) {
+    public static Hecho create(DatosHechos datosHechos, Usuario usuario, List<Multimedia> multimedia, Boolean mostrarDatos) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
@@ -96,10 +102,9 @@ public class Hecho {
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
                 .mostrarDatos(mostrarDatos)
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.CONTRIBUYENTE)
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
+                .fechaCarga(LocalDateTime.now())
+                .origenCarga(Origen.CONTRIBUYENTE)
+                .colecciones(new HashMap<>())
                 .build();
     }
 
@@ -110,16 +115,16 @@ public class Hecho {
 
     public void addColeccion(Handle coleccion) {
         if (this.colecciones == null) {
-            this.colecciones = new ArrayList<>();
+            this.colecciones = new HashMap<>();
         }
-        this.colecciones.add(coleccion);
+        this.colecciones.put(coleccion, Boolean.TRUE);
     }
 
     public Boolean esEditable() {
         if (!this.esEditable) {
             return false;
         }
-        LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
+        LocalDateTime fechaLimite = this.fechaCarga.plus(this.plazoEdicion);
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 

@@ -15,26 +15,26 @@ public class Coleccion {
     private Long id;
     private final String titulo;
     private final String descripcion;
-    private final List<Fuente> importadores;
+    private final List<Fuente> fuentes;
     private List<CriterioDePertenencia> criteriosDePertenencia;
     private final Handle handle;
     private LocalDateTime fechaYHoraDeActualizacion;
     private ConsensoStrategy consensoStrategy;
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia, ConsensoStrategy consensoStrategy) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia, ConsensoStrategy consensoStrategy) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.importadores = importadores;
+        this.fuentes = fuentes;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
         this.consensoStrategy = consensoStrategy;
     }
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.importadores = importadores;
+        this.fuentes = fuentes;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
@@ -52,14 +52,13 @@ public class Coleccion {
 
     public void setCriteriosDePertenencia(List<CriterioDePertenencia> criterios) {
         criteriosDePertenencia.addAll(criterios);
-        /*List<Hecho> todosLosHechos = importadores.stream()
-                .flatMap(importador -> importador.obtenerHechos().stream())
-                .toList();
-        this.filtrarHechos(todosLosHechos)*/
     }
 
-    public void agregarImportador(Fuente fuente) {
-        this.importadores.add(fuente);
+    public void agregarFuente(Fuente fuente) {
+        this.fuentes.add(fuente);
     }
 
+    public void quitarFuente(Fuente fuente) {
+        this.fuentes.remove(fuente);
+    }
 }

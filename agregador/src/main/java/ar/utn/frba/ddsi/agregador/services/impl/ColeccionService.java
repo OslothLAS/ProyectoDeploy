@@ -73,7 +73,7 @@ public class ColeccionService implements IColeccionService {
     private List<Hecho> tomarHechosDeColeccion(Coleccion coleccion) {
         return hechoRepository.findAll().stream()
                 .filter(hecho -> hecho.getColecciones() != null)
-                .filter(hecho -> hecho.getColecciones().contains(coleccion.getHandle()))
+                .filter(hecho -> hecho.getColecciones().containsKey(coleccion.getHandle()))
                 .collect(Collectors.toList());
     }
 
@@ -110,7 +110,7 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
-        coleccion.agregarImportador(fuenteDTOtoFuente(fuenteDTO));
+        coleccion.agregarFuente(fuenteDTOtoFuente(fuenteDTO));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
-        coleccion.getImportadores().removeIf(fuente -> fuente.getId() == idFuente);
+        coleccion.getFuentes().removeIf(fuente -> fuente.getId() == idFuente);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class ColeccionService implements IColeccionService {
         colecciones.forEach(coleccion -> {
             List<CriterioDePertenencia> criterios = Optional.ofNullable(coleccion.getCriteriosDePertenencia())
                     .orElse(List.of());
-            List<Hecho> hechos = tomarHechosFuentes(coleccion.getImportadores(), criterios);
+            List<Hecho> hechos = tomarHechosFuentes(coleccion.getFuentes(), criterios);
             asignarColeccionAHechos(hechos, coleccion);
             hechos.forEach(hechoRepository::save);
             coleccionRepository.save(coleccion);
@@ -136,8 +136,10 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public void consensuarHechos(){
-        List<Coleccion> colecciones =  this.coleccionRepository.findAll();
+    public void consensuarHechos() {
+        //TODO
+    }
+        /*     List<Coleccion> colecciones =  this.coleccionRepository.findAll();
         List <Hecho> hechosAsignados = new ArrayList<>();
 
         colecciones.forEach(c -> {
@@ -157,5 +159,5 @@ public class ColeccionService implements IColeccionService {
             hechosAsignados.addAll(hechosAsignadosPorColeccion);
         });
         hechosAsignados.forEach(hechoRepository::save);
-    }
+    }*/
 }
