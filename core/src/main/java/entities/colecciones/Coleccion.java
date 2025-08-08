@@ -1,6 +1,6 @@
 package entities.colecciones;
 
-import entities.colecciones.consenso.strategies.ConsensoStrategy;
+import entities.colecciones.consenso.strategies.IAlgoritmoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import lombok.Getter;
