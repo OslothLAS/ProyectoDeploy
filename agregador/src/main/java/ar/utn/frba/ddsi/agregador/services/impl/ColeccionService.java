@@ -8,9 +8,9 @@ import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Fuente;
-import entities.colecciones.consenso.strategies.ConsensoAbsolutaStrategy;
-import entities.colecciones.consenso.strategies.ConsensoMayoriaStrategy;
-import entities.colecciones.consenso.strategies.ConsensoMultipleMencionStrategy;
+import entities.colecciones.consenso.strategies.Absoluta;
+import entities.colecciones.consenso.strategies.Mayoria;
+import entities.colecciones.consenso.strategies.MultipleMencion;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
@@ -99,9 +99,9 @@ public class ColeccionService implements IColeccionService {
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
         switch (tipo) {
-            case ABSOLUTA -> coleccion.setConsensoStrategy(new ConsensoAbsolutaStrategy());
-            case MAYORIA -> coleccion.setConsensoStrategy(new ConsensoMayoriaStrategy());
-            case MULTIPLE_MENCION -> coleccion.setConsensoStrategy(new ConsensoMultipleMencionStrategy());
+            case ABSOLUTA -> coleccion.setConsenso(new Absoluta());
+            case MAYORIA -> coleccion.setConsenso(new Mayoria());
+            case MULTIPLE_MENCION -> coleccion.setConsenso(new MultipleMencion());
         }
     }
 
@@ -141,7 +141,7 @@ public class ColeccionService implements IColeccionService {
         List <Hecho> hechosAsignados = new ArrayList<>();
 
         colecciones.forEach(c -> {
-            List<Hecho> hechosConsensuados = c.getConsensoStrategy()
+            List<Hecho> hechosConsensuados = c.getConsenso()
                     .obtenerHechosConsensuados(c.getImportadores(), tomarHechosDeColeccion(c));
 
             List<Hecho> hechosAsignadosPorColeccion = asignarColeccionAHechos(hechosConsensuados, c);

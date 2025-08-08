@@ -1,6 +1,6 @@
 package entities.colecciones;
 
-import entities.colecciones.consenso.strategies.ConsensoStrategy;
+import entities.colecciones.consenso.strategies.IAlgoritmoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import lombok.Getter;
@@ -20,16 +20,16 @@ public class Coleccion {
     private Long id;
 
     private LocalDateTime fechaYHoraDeActualizacion;
-    private ConsensoStrategy consensoStrategy;
+    private IAlgoritmoConsenso consenso;
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia, ConsensoStrategy consensoStrategy) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia, IAlgoritmoConsenso consenso) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.importadores = importadores;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
-        this.consensoStrategy = consensoStrategy;
+        this.consenso = consenso;
     }
 
     public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
