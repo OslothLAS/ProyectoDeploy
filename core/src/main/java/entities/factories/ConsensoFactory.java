@@ -11,15 +11,20 @@ import java.util.Map;
 public class ConsensoFactory {
     private static Map<String, IAlgoritmoConsenso> strategies;
 
-    public ConsensoFactory(@Qualifier("ABSOLUTA") IAlgoritmoConsenso absoluta,
-                           @Qualifier("MAYORIA") IAlgoritmoConsenso mayoria,
-                           @Qualifier("MULTIPLE_MENCION") IAlgoritmoConsenso multipleMencion) {
+    public ConsensoFactory(@Qualifier("ABSOLUTA")
+                           IAlgoritmoConsenso absoluta,
+                           @Qualifier("MAYORIA")
+                           IAlgoritmoConsenso mayoria,
+                           @Qualifier("MULTIPLE_MENCION")
+                           IAlgoritmoConsenso multipleMencion)
+
+        {
         strategies = Map.of(
                 "ABSOLUTA", absoluta,
                 "MAYORIA", mayoria,
                 "MULTIPLE_MENCION", multipleMencion
         );
-    }
+        }
 
     static {
         strategies = Map.of(
