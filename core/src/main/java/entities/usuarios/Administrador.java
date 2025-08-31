@@ -1,11 +1,22 @@
 package entities.usuarios;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Setter
 @Getter
+
+@Entity
+@Table(name ="administrador")
 public class Administrador implements Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private final String nombre;
+    private String nombre;
 
     public Administrador(Long id, String nombre) {
         this.id = id;

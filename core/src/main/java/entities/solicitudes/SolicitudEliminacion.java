@@ -1,25 +1,37 @@
 package entities.solicitudes;
 
 import entities.usuarios.Contribuyente;
+import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
+
+@Entity
+@Table( name ="solicitudEliminacion")
 public class SolicitudEliminacion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long idHecho;
+
+    @OneToOne
     private Contribuyente solicitante;
 
     private LocalDateTime fechaDeCreacion;
     private LocalDateTime fechaDeEvaluacion;
 
     private String justificacion;
+
+    @OneToMany
     private List<EstadoSolicitud> estados;
 
     public SolicitudEliminacion(String justificacion,Long idHecho, Contribuyente solicitante) {

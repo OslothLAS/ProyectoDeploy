@@ -2,17 +2,26 @@ package entities.usuarios;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.Period;
 
+@NoArgsConstructor
 @Getter
+@Entity
+@Table(name = "contribuyente")
 public class Contribuyente implements Usuario {
-    private final long id;
-    private final String nombre;
-    private final String apellido;
-    private final LocalDate fechaDeNacimiento;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private String nombre;
+    private String apellido;
+    private LocalDate fechaDeNacimiento;
 
     @Override
     public String getNombre() {
@@ -35,6 +44,9 @@ public class Contribuyente implements Usuario {
     public void setId(Long id) {
 
     }
+
+    @Override
+    public Long getId() { return this.id; }
 
     public Contribuyente(Long id, String nombre, String apellido, LocalDate fechaDeNacimiento) {
         this.id = id;

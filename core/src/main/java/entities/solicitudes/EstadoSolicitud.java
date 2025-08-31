@@ -1,14 +1,26 @@
 package entities.solicitudes;
 
 import entities.usuarios.Administrador;
+import jakarta.persistence.*;
 import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Setter
 @Getter
+
+@Entity
+@Table(name ="estadoSolicitud")
 public class EstadoSolicitud {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long idEstadoSolicitud;
+
+    @OneToOne
     private Administrador administrador;
+
     private PosibleEstadoSolicitud estado;
     private LocalDateTime fechaDeCambio;
     private LocalDateTime fechaDeCreacion;
