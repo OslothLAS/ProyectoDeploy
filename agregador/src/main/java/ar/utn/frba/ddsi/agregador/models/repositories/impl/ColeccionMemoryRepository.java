@@ -8,10 +8,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class ColeccionMemoryRepository implements IColeccionRepository {
+public class ColeccionMemoryRepository {
     private final Map<Long, Coleccion> colecciones = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
-
+/*
     @Override
     public void save(Coleccion coleccion) {
         if(coleccion.getId() == null) {
@@ -38,4 +38,6 @@ public class ColeccionMemoryRepository implements IColeccionRepository {
     public boolean delete(Long id) {
       return this.colecciones.remove(id) != null;
     }
+    */
+
 }

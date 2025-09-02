@@ -1,7 +1,9 @@
 package entities.hechos;
 
 import entities.colecciones.Handle;
+import entities.usuarios.IUsuario;
 import entities.usuarios.Usuario;
+import entities.usuarios.Visualizador;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Duration;
@@ -86,6 +88,16 @@ public class Hecho {
     }
 
 
+    public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.VISUALIZADOR)
+                .colecciones(new ArrayList<>())
+                .build();
+    }
 
     //creacion con multimedia anonima
     public static Hecho create(DatosHechos datosHechos, List<Multimedia> multimedia) {
@@ -143,5 +155,13 @@ public class Hecho {
         tituloYdesc.add(descripcion);
 
         return tituloYdesc;
+    }
+
+    public String getTitulo() {
+        return this.getDatosHechos().getTitulo();
+    }
+
+    public String getDescripcion() {
+        return this.getDatosHechos().getDescripcion();
     }
 }

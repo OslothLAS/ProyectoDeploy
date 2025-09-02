@@ -6,12 +6,14 @@ import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "coleccion")
 public class Coleccion {
@@ -63,6 +65,8 @@ public class Coleccion {
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
     }
+
+
 
     // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!
     public void filtrarHechos(List <Hecho> listaHechos) {

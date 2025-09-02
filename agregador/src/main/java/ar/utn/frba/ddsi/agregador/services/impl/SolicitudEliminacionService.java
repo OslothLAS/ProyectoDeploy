@@ -31,7 +31,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
-        return solicitudRepository.save(this.dtoToSolicitud(solicitud));
+        SolicitudEliminacion solicitudEliminacion =this.solicitudRepository.save(this.dtoToSolicitud(solicitud));
+        return solicitudEliminacion.getId();
     }
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
@@ -57,6 +58,9 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     @Override
     public SolicitudEliminacion getSolicitud(Long idSolicitud) {
+        SolicitudEliminacion solicitud = this.solicitudRepository
+                .findById(idSolicitud)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con id: " + idSolicitud));
         return solicitudRepository.findById(idSolicitud).orElse(null);
     }
 

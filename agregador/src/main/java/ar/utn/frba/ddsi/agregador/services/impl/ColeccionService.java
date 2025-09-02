@@ -90,7 +90,9 @@ public class ColeccionService implements IColeccionService {
 
     @Override
     public void deleteColeccion(Long idColeccion) {
-        this.coleccionRepository.delete(idColeccion);
+        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
+        this.coleccionRepository.delete(coleccion);
     }
 
     @Override

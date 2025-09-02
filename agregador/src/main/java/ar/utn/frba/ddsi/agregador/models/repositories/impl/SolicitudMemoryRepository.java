@@ -10,11 +10,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Repository
-public class SolicitudMemoryRepository implements ISolicitudEliminacionRepository {
+public class SolicitudMemoryRepository  {
     private final Map<Long, SolicitudEliminacion> solicitudes = new HashMap<>();
     private final AtomicLong idGenerator = new AtomicLong(1);
 
-
+/*
     @Override
     public Long save(SolicitudEliminacion solicitud) {
         if(solicitud.getId() == null){
@@ -47,5 +47,5 @@ public class SolicitudMemoryRepository implements ISolicitudEliminacionRepositor
     @Override
     public void deleteSolicitud(SolicitudEliminacion solicitud) {
         solicitudes.remove(solicitud.getId());
-    }
+    }*/
 }
