@@ -3,8 +3,6 @@ package entities.usuarios;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +13,7 @@ import java.time.Period;
 @Getter
 @Entity
 @Table(name = "contribuyente")
-public class Contribuyente implements Usuario {
+public class Contribuyente implements IUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

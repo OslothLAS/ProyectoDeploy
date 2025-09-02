@@ -59,11 +59,11 @@ public class HechoService implements IHechoService {
         Hecho hecho = hechoRepository.findById(idHecho)
                 .orElseThrow(Exception::new);
 
-        if (!hecho.getUsuario().getRegistrado()) {
+        if (!hecho.getAutor().getRegistrado()) {
             throw new Exception("Usuarios anonimos no pueden editar hechos");
         }
 
-        if(!hecho.getUsuario().getId().equals(dto.getIdUsuario())) {
+        if(!hecho.getAutor().getId().equals(dto.getIdUsuario())) {
             throw new Exception("Solo el autor del hecho puede modificarlo");
         }
 

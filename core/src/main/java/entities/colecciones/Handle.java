@@ -1,11 +1,15 @@
 package entities.colecciones;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @Getter
+@Embeddable
 public class Handle {
+    @Column(name = "handle")
     private final String value;
 
     public Handle() {

@@ -1,8 +1,10 @@
 package entities.hechos;
 
 import entities.colecciones.Handle;
+import entities.usuarios.IUsuario;
 import entities.usuarios.Usuario;
 import entities.usuarios.Visualizador;
+import jakarta.persistence.*;
 import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -14,30 +16,54 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "hecho")
 public class Hecho {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String autor;
-    private Usuario usuario;
+
+    @ManyToOne()
+    @JoinColumn(name = "autor_id")
+    private Usuario autor;
+
+    @Column(name = "valido")
     private Boolean esValido;
+
+    @Embedded
     private DatosHechos datosHechos;
-    private Multimedia multimedia;
-    @Builder.Default
+
+    @OneToMany
+    @JoinColumn(name = "hecho_id")
+    private List<Multimedia> multimedia;
+
+    @Builder.Default //falta el atributo en db
     private List<String> etiquetas = new ArrayList<>();
+
     @Builder.Default
     private List<Handle> colecciones = new ArrayList<>();
-    private Origen origen;
-    private FuenteOrigen fuenteOrigen;
-    private Boolean mostrarDatos;
 
+    @Column(name = "origen_carga")
+    private Origen origen;
+
+    @Column(name = "origen_fuente")
+    private FuenteOrigen fuenteOrigen;
+
+    private Boolean mostrarDatos; //ver esto
+
+    @Column(name = "fecha_carga")
     private LocalDateTime fechaCreacion;
+
     private Duration plazoEdicion;
+
+    @Column(name = "editable")
     private Boolean esEditable;
+
     private Boolean esConsensuado;
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
@@ -51,7 +77,6 @@ public class Hecho {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .id(id)
-                .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
@@ -65,7 +90,6 @@ public class Hecho {
     public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .usuario(visualizador)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
@@ -75,7 +99,7 @@ public class Hecho {
     }
 
     //creacion con multimedia anonima
-    public static Hecho create(DatosHechos datosHechos, Multimedia multimedia) {
+    public static Hecho create(DatosHechos datosHechos, List<Multimedia> multimedia) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
@@ -87,12 +111,11 @@ public class Hecho {
                 .build();
     }
     //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
-    public static Hecho create(DatosHechos datosHechos, Usuario usuario, Multimedia multimedia, Boolean mostrarDatos) {
+    public static Hecho create(DatosHechos datosHechos, Usuario usuario, List<Multimedia> multimedia, Boolean mostrarDatos) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
-                .autor(usuario.getNombre())
-                .usuario(usuario)
+                .autor(usuario)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
                 .mostrarDatos(mostrarDatos)

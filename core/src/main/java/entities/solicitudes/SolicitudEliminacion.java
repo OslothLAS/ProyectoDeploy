@@ -1,5 +1,6 @@
 package entities.solicitudes;
 
+import entities.hechos.Hecho;
 import entities.usuarios.Contribuyente;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,14 +17,18 @@ import java.util.List;
 @Getter
 
 @Entity
-@Table( name ="solicitudEliminacion")
+@Table( name ="solicitud_eliminacion")
 public class SolicitudEliminacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long idHecho;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "hecho_id")
+    private Hecho hecho;
+
+    @ManyToOne
+    @JoinColumn(name = "solicitante_id")
     private Contribuyente solicitante;
 
     private LocalDateTime fechaDeCreacion;
@@ -34,9 +39,9 @@ public class SolicitudEliminacion {
     @OneToMany
     private List<EstadoSolicitud> estados;
 
-    public SolicitudEliminacion(String justificacion,Long idHecho, Contribuyente solicitante) {
+    public SolicitudEliminacion(String justificacion,Hecho hecho, Contribuyente solicitante) {
         this.justificacion = justificacion;
-        this.idHecho = idHecho;
+        this.hecho = hecho;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estados = new ArrayList<>();

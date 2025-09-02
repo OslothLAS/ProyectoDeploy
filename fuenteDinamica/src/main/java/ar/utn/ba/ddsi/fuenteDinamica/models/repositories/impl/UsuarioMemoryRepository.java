@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories.impl;
 
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IUsuarioRepository;
+import entities.usuarios.IUsuario;
 import entities.usuarios.Usuario;
 import org.springframework.stereotype.Repository;
 

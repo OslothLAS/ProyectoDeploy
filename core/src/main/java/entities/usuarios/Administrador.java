@@ -1,7 +1,6 @@
 package entities.usuarios;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +11,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name ="administrador")
-public class Administrador implements Usuario {
+public class Administrador implements IUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -5,14 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "multimedia")
+@Table(name = "categoria")
 @Getter
 @Setter
-public class Multimedia {
+public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "url")
-    private String url;
+    @Column(name = "categoria")
+    private String categoria;
+
+    public Categoria(String categoria) {
+        this.categoria = categoria;
+    }
 }

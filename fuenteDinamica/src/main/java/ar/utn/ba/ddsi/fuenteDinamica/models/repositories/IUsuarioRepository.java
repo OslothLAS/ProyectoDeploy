@@ -1,6 +1,8 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories;
 
+import entities.usuarios.IUsuario;
 import entities.usuarios.Usuario;
+
 import java.util.Optional;
 
 public interface IUsuarioRepository {

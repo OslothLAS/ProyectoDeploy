@@ -22,7 +22,8 @@ public class HechoMapper {
                 .categoria(dto.getCategoria())
                 .ubicacion(new Ubicacion(
                         String.valueOf(dto.getLatitud()),
-                        String.valueOf(dto.getLongitud())
+                        String.valueOf(dto.getLongitud()),
+                        null
                 ))
                 .fechaHecho(parseDate(dto.getFechaHecho()))
                 .build();

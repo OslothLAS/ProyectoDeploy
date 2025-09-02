@@ -4,15 +4,19 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-@Table(name = "multimedia")
 @Getter
 @Setter
-public class Multimedia {
+@Entity
+@Table(name = "localidad")
+public class Localidad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "url")
-    private String url;
+    @ManyToOne
+    @JoinColumn(name = "provincia_id")
+    private Provincia provincia;
+
+    private String nombre;
 }
+

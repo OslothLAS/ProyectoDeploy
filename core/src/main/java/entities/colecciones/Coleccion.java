@@ -1,8 +1,10 @@
 package entities.colecciones;
 
+import entities.colecciones.consenso.strategies.AlgoritmoConsensoConverter;
 import entities.colecciones.consenso.strategies.IAlgoritmoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.Hecho;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,14 +13,37 @@ import java.util.List;
 
 @Setter
 @Getter
+@Entity
+@Table(name = "coleccion")
 public class Coleccion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private final String titulo;
+
+    @Column(nullable = false)
     private final String descripcion;
+
+    @ManyToMany
+    @JoinTable(name = "fuentes_coleccion",
+        joinColumns = @JoinColumn(name = "coleccion_id"),
+        inverseJoinColumns = @JoinColumn(name = "fuente_id")
+    )
     private final List<Fuente> importadores;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "coleccion_id")
     private List<CriterioDePertenencia> criteriosDePertenencia;
+
+    @Embedded
     private final Handle handle;
+
+    @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaYHoraDeActualizacion;
+
+    @Convert(converter = AlgoritmoConsensoConverter.class) //testear!!
     private IAlgoritmoConsenso consenso;
 
     public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia, IAlgoritmoConsenso consenso) {

@@ -1,20 +1,34 @@
 package entities.hechos;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Builder
-@AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
+@Embeddable
 public class DatosHechos {
+    @Column(name = "titulo")
     private String titulo;
+
+    @Column(name = "descripcion")
     private String descripcion;
-    private String categoria;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
+    @ManyToOne
+    @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
+
+    @Column(name = "fecha")
     private LocalDate fechaHecho;
     @Override
     public boolean equals(Object o) {
@@ -44,5 +58,22 @@ public class DatosHechos {
                 ", ubicacion=" + ubicacion +
                 ", fechaHecho=" + fechaHecho +
                 '}';
+    }
+
+    public String getCategoria() {
+        return categoria.getCategoria();
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria.setCategoria(categoria);
+    }
+
+    @Builder
+    public DatosHechos(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.ubicacion = ubicacion;
+        this.fechaHecho = fechaHecho;
+        this.categoria = new Categoria(categoria);
     }
 }

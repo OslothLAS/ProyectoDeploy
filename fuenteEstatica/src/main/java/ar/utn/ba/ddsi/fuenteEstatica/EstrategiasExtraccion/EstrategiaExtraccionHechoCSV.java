@@ -5,6 +5,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
         String fecha = fila[indices.get("fecha del hecho")].trim();
 
         LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
-        Ubicacion nuevaUbi = new Ubicacion(latitud, longitud);
+        Ubicacion nuevaUbi = new Ubicacion(latitud, longitud, null);
 
         DatosHechos data = new DatosHechos(titulo,descripcion, categoria, nuevaUbi, fechaHecho);
         return Hecho.create(data);
