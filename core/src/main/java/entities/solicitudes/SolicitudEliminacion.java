@@ -8,14 +8,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-
 @Entity
 @Table( name ="solicitud_eliminacion")
 public class SolicitudEliminacion {
@@ -31,12 +28,14 @@ public class SolicitudEliminacion {
     @JoinColumn(name = "solicitante_id")
     private Contribuyente solicitante;
 
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaDeCreacion;
-    private LocalDateTime fechaDeEvaluacion;
 
+    @Column(name = "justificacion")
     private String justificacion;
 
     @OneToMany
+    @JoinColumn(name = "solicitud_id")
     private List<EstadoSolicitud> estados;
 
     public SolicitudEliminacion(String justificacion,Hecho hecho, Contribuyente solicitante) {

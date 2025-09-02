@@ -10,10 +10,11 @@ import entities.hechos.Hecho;
 import entities.solicitudes.EstadoSolicitud;
 import entities.solicitudes.PosibleEstadoSolicitud;
 import entities.solicitudes.SolicitudEliminacion;
-import entities.usuarios.Administrador;
+import entities.usuarios.TipoUsuario;
+import entities.usuarios.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,21 +35,20 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
-        Long hechoID = obtenerIDconTituloyDesc(List.of(solicitud.getTitulo(),solicitud.getDescripcion()));
+        Hecho hecho = this.hechoRepository.findById(solicitud.getIdHecho());
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
-                hechoID,
+                hecho,
                 solicitud.getSolicitante());
     }
 
-    private Long obtenerIDconTituloyDesc(List<String> tituloYdesc) {
+    private Hecho obtenerHechoconTituloyDesc(List<String> tituloYdesc) {
         String tituloBuscado = tituloYdesc.get(0);
         String descripcionBuscada = tituloYdesc.get(1);
 
         return hechoRepository.findAll().stream()
                 .filter(hecho -> hecho.getDatosHechos().getTitulo().equals(tituloBuscado) &&
                         hecho.getDatosHechos().getDescripcion().equals(descripcionBuscada))
-                .map(Hecho::getId)
                 .findFirst()
                 .orElse(null);
     }
@@ -70,7 +70,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         }
     }
 
-    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Administrador admin, PosibleEstadoSolicitud estado) {
+    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Usuario admin, PosibleEstadoSolicitud estado) {
         EstadoSolicitud estadoSolicitud = new EstadoSolicitud(admin,estado);
         if(estado == PosibleEstadoSolicitud.RECHAZADA) {
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
@@ -78,14 +78,13 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         else if(estado == PosibleEstadoSolicitud.ACEPTADA){
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
 
-            Hecho hecho = hechoRepository.findById(solicitud.getIdHecho());
+            Hecho hecho = solicitud.getHecho();
 
             if (hecho != null) {
                 hecho.setEsValido(false);
             } else {
                 System.err.println("Hecho no encontrado en agregador");
             }
-
         }
     }
 
@@ -94,11 +93,11 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
-        Administrador administrador = new Administrador(1L, "admin");
+        Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
 
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
 
-        Hecho hecho = hechoRepository.findById(solicitud.getIdHecho());
+        Hecho hecho = solicitud.getHecho();
 
         List<Fuente> fuentesUnicas = coleccionRepository.findAll().stream()
                 .flatMap(coleccion -> coleccion.getImportadores().stream())
@@ -115,7 +114,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
 
-        Administrador administrador = new Administrador(1L, "admin"); //ESTE ADMINISTRADOR DEBERIA VENIR EN PARAMS DE LOGIN
+        Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
 
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.RECHAZADA);
     }
