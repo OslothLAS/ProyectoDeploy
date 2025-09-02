@@ -10,7 +10,7 @@ import java.util.UUID;
 @Embeddable
 public class Handle {
     @Column(name = "handle")
-    private final String value;
+    private String value;
 
     public Handle() {
         // Genera un UUID y lo convierte a un string alfanumérico (sin guiones)

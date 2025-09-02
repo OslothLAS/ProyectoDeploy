@@ -11,6 +11,10 @@ import lombok.Setter;
 @Entity
 @Table(name = "ubicacion")
 public class Ubicacion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "latitud")
     private String latitud;
 

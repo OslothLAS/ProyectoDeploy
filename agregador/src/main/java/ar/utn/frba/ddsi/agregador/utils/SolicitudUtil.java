@@ -9,7 +9,6 @@ public class SolicitudUtil {
         solicitudOutputDTO.setId(solicitud.getId());
         solicitudOutputDTO.setSolicitante(solicitud.getSolicitante());
         solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
-        solicitudOutputDTO.setFechaDeEvaluacion(solicitud.getFechaDeEvaluacion());
         solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
         solicitudOutputDTO.setEstados(solicitud.getEstados());
 

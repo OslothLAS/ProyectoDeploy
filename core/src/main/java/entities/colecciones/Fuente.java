@@ -5,26 +5,40 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.hechos.FuenteOrigen;
 import entities.hechos.Hecho;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-
-
 import java.util.List;
 import java.util.Map;
 
+@Getter
+@Entity
+@Table(name = "fuente")
 public class Fuente{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private final Long id;
+
+    @Column(name = "ip")
+    private final String ip;
+
+    @Column(name = "puerto")
+    private final String puerto;
+
+    @Transient
     private final WebClient webClient;
     @Getter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nombre")
     private final FuenteOrigen origenHechos;
-
-    @Getter
-    private final long id;
 
     @JsonCreator
     public Fuente(@JsonProperty("ip") String ip, @JsonProperty("puerto") String puerto,@JsonProperty("id") Long id) { // el id no va
         this.id = id;
+        this.ip = ip;
+        this.puerto = puerto;
         this.webClient = WebClient.builder().baseUrl("http://" +ip+ ":" +puerto).build();
         this.origenHechos = this.determinarOrigen();
     }

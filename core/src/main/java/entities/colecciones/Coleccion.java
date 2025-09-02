@@ -20,24 +20,24 @@ public class Coleccion {
     private Long id;
 
     @Column(nullable = false)
-    private final String titulo;
+    private String titulo;
 
     @Column(nullable = false)
-    private final String descripcion;
+    private String descripcion;
 
     @ManyToMany
     @JoinTable(name = "fuentes_coleccion",
         joinColumns = @JoinColumn(name = "coleccion_id"),
         inverseJoinColumns = @JoinColumn(name = "fuente_id")
     )
-    private final List<Fuente> importadores;
+    private List<Fuente> importadores;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "coleccion_id")
     private List<CriterioDePertenencia> criteriosDePertenencia;
 
     @Embedded
-    private final Handle handle;
+    private Handle handle;
 
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaYHoraDeActualizacion;

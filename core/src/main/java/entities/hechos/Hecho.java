@@ -1,9 +1,7 @@
 package entities.hechos;
 
 import entities.colecciones.Handle;
-import entities.usuarios.IUsuario;
 import entities.usuarios.Usuario;
-import entities.usuarios.Visualizador;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Duration;
@@ -41,6 +39,7 @@ public class Hecho {
     private List<String> etiquetas = new ArrayList<>();
 
     @Builder.Default
+    @Transient
     private List<Handle> colecciones = new ArrayList<>();
 
     @Column(name = "origen_carga")
@@ -87,16 +86,6 @@ public class Hecho {
     }
 
 
-    public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.VISUALIZADOR)
-                .colecciones(new ArrayList<>())
-                .build();
-    }
 
     //creacion con multimedia anonima
     public static Hecho create(DatosHechos datosHechos, List<Multimedia> multimedia) {

@@ -1,15 +1,23 @@
 package entities.criteriosDePertenencia;
 
 import entities.hechos.Hecho;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import java.time.LocalDate;
 
 @Getter
-public class CriterioPorFecha implements CriterioDePertenencia{
+@Entity
+@Table(name = "criterio_fecha")
+@DiscriminatorValue("fecha")
+public class CriterioPorFecha extends CriterioDePertenencia{
+    @Column(name = "fecha_desde")
     private final LocalDate fechaInicio;
+    @Column(name = "fecha_hasta")
     private final LocalDate fechaFin;
+
+    @Transient
     private final String tipo;
 
     public CriterioPorFecha(LocalDate fechaInicio, LocalDate fechaFin) {

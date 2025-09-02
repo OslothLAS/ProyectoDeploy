@@ -23,7 +23,7 @@ public class Usuario {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
-    @Column(name = "tipo")
+    @Enumerated(EnumType.STRING)
     private TipoUsuario tipo;
 
     public Boolean getRegistrado(){
