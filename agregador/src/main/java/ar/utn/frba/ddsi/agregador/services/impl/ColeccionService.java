@@ -4,6 +4,7 @@ import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.ICategoriaRepository;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import entities.colecciones.Coleccion;
@@ -13,6 +14,7 @@ import entities.colecciones.consenso.strategies.Mayoria;
 import entities.colecciones.consenso.strategies.MultipleMencion;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.hechos.Categoria;
 import entities.hechos.Hecho;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
@@ -20,16 +22,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
+import static utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
 public class ColeccionService implements IColeccionService {
 
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionRepository;
+    private final ICategoriaRepository categoriaRepository;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
+        this.categoriaRepository = categoriaRepository;
+    }
+
+    public Categoria obtenerOCrear(String nombre) {
+        String clave = normalizarTrimTexto(nombre);
+        return categoriaRepository.findByCategoriaNormalizada(clave)
+                .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
     @Override
@@ -45,10 +56,24 @@ public class ColeccionService implements IColeccionService {
 
         List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
 
+        Set<String> nombresCategorias = todosLosHechos.stream()
+                .map(h -> h.getDatosHechos().getCategoria().getCategoria())
+                .collect(Collectors.toSet());
+
+        Map<String, Categoria> categoriaMap = nombresCategorias.stream()
+                .map(this::obtenerOCrear)
+                .collect(Collectors.toMap(Categoria::getCategoriaNormalizada, c -> c));
+
+        todosLosHechos.forEach(h -> {
+            String clave = h.getDatosHechos().getCategoria().getCategoriaNormalizada();
+            Categoria cat = categoriaMap.get(clave);
+            h.getDatosHechos().setCategoria(cat);
+        });
+
         List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos,nuevaColeccion);
-        hechos.forEach(hechoRepository::save);
 
         this.coleccionRepository.save(nuevaColeccion);
+        this.hechoRepository.saveAll(hechos);
     }
 
     public List<Coleccion> getColecciones(){
@@ -57,7 +82,7 @@ public class ColeccionService implements IColeccionService {
 
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
         return hechosValidos.stream()
-                .peek(h -> h.addColeccion(coleccion.getHandle()))
+                .peek(h -> h.addColeccion(coleccion))
                 .toList();
     }
 
@@ -73,7 +98,7 @@ public class ColeccionService implements IColeccionService {
     private List<Hecho> tomarHechosDeColeccion(Coleccion coleccion) {
         return hechoRepository.findAll().stream()
                 .filter(hecho -> hecho.getColecciones() != null)
-                .filter(hecho -> hecho.getColecciones().contains(coleccion.getHandle()))
+                .filter(hecho -> hecho.getColecciones().stream().anyMatch(c -> c.getHandle().equals(coleccion.getHandle())))
                 .collect(Collectors.toList());
     }
 
@@ -120,7 +145,7 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
-        coleccion.getImportadores().removeIf(fuente -> fuente.getId() == idFuente);
+        coleccion.getImportadores().removeIf(fuente -> Objects.equals(fuente.getId(), idFuente));
     }
 
     @Override
@@ -132,7 +157,7 @@ public class ColeccionService implements IColeccionService {
                     .orElse(List.of());
             List<Hecho> hechos = tomarHechosFuentes(coleccion.getImportadores(), criterios);
             asignarColeccionAHechos(hechos, coleccion);
-            hechos.forEach(hechoRepository::save);
+            hechoRepository.saveAll(hechos);
             coleccionRepository.save(coleccion);
         });
     }
@@ -158,6 +183,6 @@ public class ColeccionService implements IColeccionService {
 
             hechosAsignados.addAll(hechosAsignadosPorColeccion);
         });
-        hechosAsignados.forEach(hechoRepository::save);
+        hechoRepository.saveAll(hechosAsignados);
     }
 }

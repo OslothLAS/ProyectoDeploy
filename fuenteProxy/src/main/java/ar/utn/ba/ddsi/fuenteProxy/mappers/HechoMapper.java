@@ -1,7 +1,9 @@
 package ar.utn.ba.ddsi.fuenteProxy.mappers;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
+import entities.colecciones.Coleccion;
 import entities.colecciones.Handle;
+import entities.hechos.Categoria;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
@@ -12,14 +14,12 @@ import java.util.stream.Collectors;
 public class HechoMapper {
 
     public static Hecho mapHechoDtoToHecho(HechoDto dto) {
-        List<Handle> handles = dto.getColecciones().stream()
-                .map(Handle::new)
-                .collect(Collectors.toList());
+        List<Handle> handles = dto.getColecciones();
 
         DatosHechos datosHechos = DatosHechos.builder()
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())
-                .categoria(dto.getCategoria())
+                .categoria(new Categoria(dto.getCategoria()))
                 .ubicacion(new Ubicacion(
                         String.valueOf(dto.getLatitud()),
                         String.valueOf(dto.getLongitud()),
@@ -27,7 +27,7 @@ public class HechoMapper {
                 ))
                 .fechaHecho(parseDate(dto.getFechaHecho()))
                 .build();
-        return Hecho.create(datosHechos, handles, dto.getId(), dto.getEsConsensuado());
+        return Hecho.create(datosHechos,null ,handles, dto.getEsConsensuado());
     }
 
 

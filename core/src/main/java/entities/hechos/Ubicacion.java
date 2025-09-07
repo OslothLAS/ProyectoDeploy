@@ -21,7 +21,7 @@ public class Ubicacion {
     @Column(name = "longitud")
     private String longitud;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "localidad_id")
     private Localidad localidad;
 

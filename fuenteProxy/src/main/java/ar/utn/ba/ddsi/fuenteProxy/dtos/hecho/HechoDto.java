@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.fuenteProxy.dtos.hecho;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import entities.colecciones.Handle;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,6 @@ import java.util.List;
 public class HechoDto {
 
     // Getters
-    private Long id;
     private String titulo;
     private String descripcion;
     private String categoria;
@@ -20,7 +20,7 @@ public class HechoDto {
     private Double longitud;
     private Boolean esValido;
     private Boolean esConsensuado;
-    private List<Long> colecciones = new ArrayList<>();
+    private List<Handle> colecciones = new ArrayList<>();
 
     @JsonProperty("fecha_hecho")
     private String fechaHecho;

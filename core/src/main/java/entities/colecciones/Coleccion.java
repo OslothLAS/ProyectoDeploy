@@ -27,7 +27,7 @@ public class Coleccion {
     @Column(nullable = false)
     private String descripcion;
 
-    @ManyToMany
+    @ManyToMany(cascade =  CascadeType.ALL)
     @JoinTable(name = "fuentes_coleccion",
         joinColumns = @JoinColumn(name = "coleccion_id"),
         inverseJoinColumns = @JoinColumn(name = "fuente_id")
@@ -69,10 +69,10 @@ public class Coleccion {
 
 
     // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!
-    public void filtrarHechos(List <Hecho> listaHechos) {
+   /* public void filtrarHechos(List <Hecho> listaHechos) {
         List<Hecho> hechosFiltrados = listaHechos.stream().filter(this::cumpleCriterios).toList();
         hechosFiltrados.forEach(hecho -> hecho.addColeccion(this.getHandle()));
-    }
+    }*/
 
     public Boolean cumpleCriterios(Hecho hecho){
         return this.criteriosDePertenencia.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho));

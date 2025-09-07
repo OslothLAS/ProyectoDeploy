@@ -1,7 +1,7 @@
 package entities.hechos;
 
+import entities.colecciones.Coleccion;
 import entities.colecciones.Handle;
-import entities.usuarios.IUsuario;
 import entities.usuarios.Usuario;
 import entities.usuarios.Visualizador;
 import jakarta.persistence.*;
@@ -40,13 +40,22 @@ public class Hecho {
     @Builder.Default //falta el atributo en db
     private List<String> etiquetas = new ArrayList<>();
 
-    @Builder.Default
-    @Transient
-    private List<Handle> colecciones = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "hecho_coleccion",
+            joinColumns = @JoinColumn(name = "hecho_id"),
+            inverseJoinColumns = @JoinColumn(name = "coleccion_id")
+    )
+    private List<Coleccion> colecciones = new ArrayList<>();
 
+    @Transient
+    private List<Handle> handles = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "origen_carga")
     private Origen origen;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "origen_fuente")
     private FuenteOrigen fuenteOrigen;
 
@@ -74,10 +83,22 @@ public class Hecho {
                 .build();
     }
 
-    public static Hecho create(DatosHechos datosHechos, List<Handle> colecciones,Long id,Boolean esConsensuado) {
+    public static Hecho create(DatosHechos datosHechos,List<Coleccion> colecciones ,List<Handle> handles, Boolean esConsensuado) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .id(id)
+                .esValido(true)
+                .etiquetas(new ArrayList<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.EXTERNO)
+                .handles(handles)
+                .colecciones(colecciones)
+                .esConsensuado(esConsensuado)
+                .build();
+    }
+
+    public static Hecho create(DatosHechos datosHechos, List<Coleccion> colecciones, Boolean esConsensuado) {
+        return Hecho.builder()
+                .datosHechos(datosHechos)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
                 .fechaCreacion(LocalDateTime.now())
@@ -132,7 +153,7 @@ public class Hecho {
             this.etiquetas.add(etiqueta);
     }
 
-    public void addColeccion(Handle coleccion) {
+    public void addColeccion(Coleccion coleccion) {
         if (this.colecciones == null) {
             this.colecciones = new ArrayList<>();
         }

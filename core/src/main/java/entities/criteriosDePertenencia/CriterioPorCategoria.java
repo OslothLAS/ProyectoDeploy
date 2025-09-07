@@ -26,7 +26,7 @@ public class CriterioPorCategoria extends CriterioDePertenencia{
 
     @Override
     public boolean cumpleCriterio(Hecho hecho) {
-        return normalizarTexto(hecho.getDatosHechos().getCategoria()).contains(normalizarTexto(this.categoria.getCategoria()));
+        return normalizarTexto(hecho.getDatosHechos().getCategoria().getCategoria()).contains(normalizarTexto(this.categoria.getCategoria()));
     }
 
     @Override

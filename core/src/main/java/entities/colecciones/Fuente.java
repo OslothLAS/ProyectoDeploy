@@ -7,46 +7,50 @@ import entities.hechos.FuenteOrigen;
 import entities.hechos.Hecho;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
 import java.util.Map;
 
+@NoArgsConstructor(force = true)
 @Getter
 @Entity
 @Table(name = "fuente")
 public class Fuente{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
+    private Long id;
 
     @Column(name = "ip")
-    private final String ip;
+    private String ip;
 
     @Column(name = "puerto")
-    private final String puerto;
+    private String puerto;
 
-    @Transient
-    private final WebClient webClient;
-    @Getter
+    public WebClient webClient() {
+        return WebClient.builder()
+                .baseUrl("http://" + ip + ":" + puerto)
+                .build();
+    }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "nombre")
-    private final FuenteOrigen origenHechos;
+    private FuenteOrigen origenHechos;
 
     @JsonCreator
     public Fuente(@JsonProperty("ip") String ip, @JsonProperty("puerto") String puerto,@JsonProperty("id") Long id) { // el id no va
         this.id = id;
         this.ip = ip;
         this.puerto = puerto;
-        this.webClient = WebClient.builder().baseUrl("http://" +ip+ ":" +puerto).build();
         this.origenHechos = this.determinarOrigen();
     }
 
     private FuenteOrigen determinarOrigen() {
         try {
-            assert webClient != null;
-            String tipoServicio = webClient.get()
+            assert this.webClient() != null;
+            String tipoServicio = this.webClient().get()
                     .uri("/api/hechos/origen") // Endpoint que debe existir en cada servicio
                     .retrieve()
                     .bodyToMono(String.class)
@@ -65,7 +69,7 @@ public class Fuente{
     }
 
     public List<Hecho> obtenerHechos(List<CriterioDePertenencia> criterios) {
-        WebClient.RequestHeadersUriSpec<?> requestSpec = webClient.get();
+        WebClient.RequestHeadersUriSpec<?> requestSpec = this.webClient().get();
 
         if (criterios == null || criterios.isEmpty()) {
             return requestSpec
@@ -108,7 +112,7 @@ public class Fuente{
 
     public void invalidarHecho(String titulo, String descripcion) {
         try {
-            this.webClient
+            this.webClient()
                     .put()
                     .uri(uriBuilder -> uriBuilder
                             .path("/api/hechos/invalidar")

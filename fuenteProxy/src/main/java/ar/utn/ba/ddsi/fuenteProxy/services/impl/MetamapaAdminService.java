@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static utils.NormalizadorTexto.normalizarTrimTexto;
+
 @Service
 public class MetamapaAdminService implements IMetamapaAdminService {
 
@@ -57,7 +59,7 @@ public class MetamapaAdminService implements IMetamapaAdminService {
         return getHechos().stream()
                 .filter(hecho -> hecho.getDatosHechos() != null)
                 .filter(hecho -> hecho.getDatosHechos().getCategoria() != null)
-                .filter(hecho -> hecho.getDatosHechos().getCategoria().equalsIgnoreCase(categoria.trim()))
+                .filter(hecho -> hecho.getDatosHechos().getCategoria().getCategoriaNormalizada().equalsIgnoreCase(normalizarTrimTexto(categoria)))
                 .toList();
     }
 

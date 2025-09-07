@@ -36,7 +36,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
-        Hecho hecho = this.hechoRepository.findById(solicitud.getIdHecho());
+        Hecho hecho = this.hechoRepository.findById(solicitud.getIdHecho())
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + solicitud.getIdHecho()));;
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
                 hecho,

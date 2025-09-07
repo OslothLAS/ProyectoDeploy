@@ -1,9 +1,6 @@
 package entities.hechos;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -26,7 +23,7 @@ public class DatosHechos {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
 
@@ -62,21 +59,13 @@ public class DatosHechos {
                 '}';
     }
 
-    public String getCategoria() {
-        return categoria.getCategoria();
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria.setCategoria(categoria);
-    }
-
     @Builder
-    public DatosHechos(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaHecho) {
+    public DatosHechos(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaHecho) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
         this.fechaHecho = fechaHecho;
-        this.categoria = new Categoria(categoria);
+        this.categoria = categoria;
     }
 
 

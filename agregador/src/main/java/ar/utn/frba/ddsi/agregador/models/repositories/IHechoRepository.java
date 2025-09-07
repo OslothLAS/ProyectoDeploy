@@ -1,10 +1,10 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
 import entities.hechos.Hecho;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface IHechoRepository {
-    void save(Hecho hecho);
+public interface IHechoRepository extends JpaRepository<Hecho, Long> {
+    /*void save(Hecho hecho);
     Hecho findById(Long id);
-    List<Hecho> findAll();
+    List<Hecho> findAll();*/
 }
