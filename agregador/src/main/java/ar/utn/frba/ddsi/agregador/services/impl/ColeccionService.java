@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ICategoriaRepository;
@@ -184,5 +185,10 @@ public class ColeccionService implements IColeccionService {
             hechosAsignados.addAll(hechosAsignadosPorColeccion);
         });
         hechoRepository.saveAll(hechosAsignados);
+    }
+
+    public List<StatDTO> getHechosProvincia(Long idColeccion){
+
+        return new ArrayList<>();
     }
 }

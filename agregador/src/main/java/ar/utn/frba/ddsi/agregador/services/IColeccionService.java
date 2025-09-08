@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.services;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import entities.colecciones.Coleccion;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.hechos.Hecho;
@@ -19,4 +20,5 @@ public interface IColeccionService {
     void cambiarConsenso(Long idColeccion, TipoConsenso tipo);
     void agregarFuente(Long idColeccion, FuenteInputDTO fuente);
     void eliminarFuente(Long idColeccion, Long idFuente);
+    List <StatDTO> getHechosProvincia(Long idColeccion);
 }
