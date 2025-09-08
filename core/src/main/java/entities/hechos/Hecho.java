@@ -6,6 +6,8 @@ import entities.usuarios.Usuario;
 import entities.usuarios.Visualizador;
 import jakarta.persistence.*;
 import lombok.*;
+import utils.NormalizadorHecho;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -176,6 +178,17 @@ public class Hecho {
         tituloYdesc.add(descripcion);
 
         return tituloYdesc;
+    }
+
+    public void normalizarHecho(){
+     Categoria categoria = this.getDatosHechos().getCategoria();
+     categoria.setCategoria(NormalizadorHecho.
+             normalizarCategoria(this.getDatosHechos().getCategoria().getCategoria()));
+
+
+
+
+
     }
 
     public String getTitulo() {
