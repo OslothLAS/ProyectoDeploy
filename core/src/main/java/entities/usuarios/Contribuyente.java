@@ -5,22 +5,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.Period;
 
+
 @NoArgsConstructor
+
 @Getter
+@Setter
 @Entity
 @Table(name = "contribuyente")
-public class Contribuyente implements IUsuario {
+public class Contribuyente  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nombre;
     private String apellido;
-    private LocalDate fechaDeNacimiento;
-
+    //private LocalDate fechaDeNacimiento;
+/*
     @Override
     public String getNombre() {
         return nombre;
@@ -67,4 +71,6 @@ public class Contribuyente implements IUsuario {
     }
 
     public Boolean esAdministrador() {return false;}
+
+ */
 }

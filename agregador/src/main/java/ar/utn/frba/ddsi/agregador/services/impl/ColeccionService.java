@@ -57,6 +57,7 @@ public class ColeccionService implements IColeccionService {
 
         List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
 
+
         Set<String> nombresCategorias = todosLosHechos.stream()
                 .map(h -> h.getDatosHechos().getCategoria().getCategoria())
                 .collect(Collectors.toSet());

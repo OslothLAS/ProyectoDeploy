@@ -66,5 +66,10 @@ public class DatosHechos {
         this.categoria = categoria;
     }
 
+    public void normalizarDatos(){
+
+
+    }
+
 
 }

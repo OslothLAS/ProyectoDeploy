@@ -25,7 +25,7 @@ public class SolicitudEliminacion {
     private Hecho hecho;
 
     @ManyToOne
-    @JoinColumn(name = "solicitante_id")
+    @JoinColumn(name = "contribuyente_id")
     private Contribuyente solicitante;
 
     @Column(name = "fecha_creacion")
