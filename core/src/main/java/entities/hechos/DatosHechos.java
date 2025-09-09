@@ -1,5 +1,6 @@
 package entities.hechos;
 
+import entities.normalizador.NormalizadorHecho;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -66,10 +67,25 @@ public class DatosHechos {
         this.categoria = categoria;
     }
 
-    public void normalizarDatos(){
+    public void normalizarHecho(){
+        Categoria categoria = this.getCategoria();
+        categoria.setCategoria(NormalizadorHecho.
+                normalizarCategoria(this.getCategoria().getCategoria()));
 
+        Ubicacion ubicacion = this.getUbicacion();
+        double latitud = Double.parseDouble(ubicacion.getLatitud());
+        double longitud =  Double.parseDouble(ubicacion.getLongitud());
+        Provincia provincia = this.getUbicacion().getLocalidad().getProvincia();
+
+        provincia.setNombre(NormalizadorHecho.normalizarUbicacion(latitud,longitud).get(0));
 
     }
+
+
+     /*LocalDate fechaHecho = this.getDatosHechos().getFechaHecho();
+
+     this.getDatosHechos().setFechaHecho(NormalizadorHecho.normalizarFecha(fechaHecho));
+     */
 
 
 }

@@ -102,6 +102,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
 
+
         Hecho hecho = solicitud.getHecho();
 
         List<Fuente> fuentesUnicas = coleccionRepository.findAll().stream()

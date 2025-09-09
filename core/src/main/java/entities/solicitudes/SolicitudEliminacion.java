@@ -55,10 +55,5 @@ public class SolicitudEliminacion {
         if (!this.estados.isEmpty()) {
             this.estados.get(this.estados.size() - 1).setFechaDeCambio(LocalDateTime.now());
         }
-        this.estados.add(estado);
-    }
-
-    public PosibleEstadoSolicitud getEstado() {
-        return this.estados.get(estados.size() - 1).getEstado();
     }
 }
