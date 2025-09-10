@@ -2,8 +2,10 @@ package entities.hechos;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "provincia")
 @Getter

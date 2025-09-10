@@ -10,7 +10,6 @@ import entities.factories.CriterioDePertenenciaFactory;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.usuarios.Usuario;
-import entities.usuarios.Visualizador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
@@ -36,19 +35,16 @@ public class HechoService implements IHechoService {
     public void crearHecho(HechoInputDTO hechoDTO) {
         DatosHechos datos = hechoDTO.getDatosHechos();
 
-        if(hechoDTO.getIdUsuario() != null) { //si tiene ID => es contribuyente
-            Usuario usuario = usuarioRepository.findById(hechoDTO.getIdUsuario())
-                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el usuario con ID: " + hechoDTO.getIdUsuario()));
+        if(hechoDTO.getId() != null) { //si tiene ID => es contribuyente
+            Usuario usuario = usuarioRepository.findById(hechoDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el usuario con ID: " + hechoDTO.getId()));
             Hecho hecho = Hecho.create(datos, usuario,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
             hecho.setEsEditable(true);
             hecho.setPlazoEdicion(Duration.ofDays(hechoProperties.getPlazoEdicionDias()));
             this.hechoRepository.save(hecho);
         } else{
-            if(hechoDTO.getNombre() == null) {// si la request no tiene ID => es visualizador
-                throw new IllegalArgumentException("El campo 'nombre' es obligatorio para usuarios anónimos");
-            }
-            Visualizador visualizador = new Visualizador(hechoDTO.getNombre(),hechoDTO.getApellido(),hechoDTO.getFechaDeNacimiento());
-            Hecho hecho = Hecho.create(datos,visualizador);
+//          Visualizador visualizador = new Visualizador(hechoDTO.getNombre(),hechoDTO.getApellido(),hechoDTO.getFechaDeNacimiento());
+            Hecho hecho = Hecho.create(datos);
             hecho.setEsEditable(false);
             this.hechoRepository.save(hecho);
         }
@@ -58,12 +54,12 @@ public class HechoService implements IHechoService {
     public void editarHecho(Long idHecho, HechoInputDTO dto) throws Exception {
         Hecho hecho = hechoRepository.findById(idHecho)
                 .orElseThrow(Exception::new);
-
+/*
         if (!hecho.getAutor().getRegistrado()) {
             throw new Exception("Usuarios anonimos no pueden editar hechos");
         }
-
-        if(!hecho.getAutor().getId().equals(dto.getIdUsuario())) {
+*/
+        if(!hecho.getAutor().getId().equals(dto.getId())) {
             throw new Exception("Solo el autor del hecho puede modificarlo");
         }
 
@@ -118,13 +114,10 @@ public class HechoService implements IHechoService {
                 .collect(Collectors.toList());
     }
     public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
-        Optional<Hecho> hechoInvalido = hechoRepository.findByTituloyDescripcion(titulo, descripcion);
+        Optional<Hecho> hechoInvalido = hechoRepository.findByDatosHechosTituloAndDatosHechosDescripcion(titulo, descripcion);
         hechoInvalido.ifPresent(hecho -> {
             hecho.setEsValido(false);
             hechoRepository.save(hecho);
         });
     }
-
-
-
 }

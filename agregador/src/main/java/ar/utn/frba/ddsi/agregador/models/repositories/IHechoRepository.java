@@ -8,10 +8,31 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface IHechoRepository extends JpaRepository<Hecho, Long> {
-    @Query("SELECT NEW StatDTO(h.datosHechos.ubicacion.provincia, COUNT(h)) " +
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(h.datosHechos.ubicacion.localidad.provincia.nombre, COUNT(h)) " +
             "FROM Hecho h JOIN h.colecciones c " +
             "WHERE c.id = :idColeccion " +
-            "GROUP BY h.datosHechos.ubicacion.provincia " +
+            "GROUP BY h.datosHechos.ubicacion.localidad.provincia.nombre " +
             "ORDER BY COUNT(h) DESC")
     List<StatDTO> countHechosByProvinciaAndColeccion(@Param("idColeccion") Long idColeccion);
+
+
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(h.datosHechos.categoria.categoria, COUNT(h)) " +
+            "FROM Hecho h " +
+            "GROUP BY h.datosHechos.categoria.categoria " +
+            "ORDER BY COUNT(h) DESC")
+    List<StatDTO> findCategoriaWithMostHechos();
+
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string), COUNT(h)) " +
+            "FROM Hecho h " +
+            "WHERE h.datosHechos.categoria.id = :categoria_id " +
+            "GROUP BY FUNCTION('HOUR', h.datosHechos.fechaHecho) " +
+            "ORDER BY COUNT(h) DESC")
+    List<StatDTO> findHoraWithMostHechosByCategoria(@Param("categoria_id") Long idCategoria);
+
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(h.datosHechos.ubicacion.localidad.provincia.nombre, COUNT(h)) " +
+            "FROM Hecho h " +
+            "WHERE h.datosHechos.categoria.id = :categoria_id " +
+            "GROUP BY h.datosHechos.ubicacion.localidad.provincia.nombre " +
+            "ORDER BY COUNT(h) DESC")
+    List<StatDTO> findProvinciaWithMostHechosByCategoria(@Param("categoria_id") Long idCategoria);
 }

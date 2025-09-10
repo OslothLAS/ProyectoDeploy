@@ -1,16 +1,13 @@
-package ar.utn.frba.ddsi.agregador.dtos.output;
+package entities.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatDTO {
-    private String descripcion;
-    private Long cantidad;
+@Setter
+@Getter
+public class ProvinciaDTO {
+    private String nombre;
 }

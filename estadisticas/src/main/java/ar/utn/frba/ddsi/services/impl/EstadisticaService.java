@@ -20,10 +20,26 @@ public class EstadisticaService implements IEstadisticaService {
 
     }
 
-    public List<Estadistica> calcularHechosPorProvincia(Long idColeccion){
+    public List<Estadistica> calcularProvinciaPorHechos(Long idColeccion){
         //con el webclient pegarle a la API de Agregador e instanciar y persistir las estadisticas, tambien
         //devolverlas
 
+        return new ArrayList<>();
+    }
+
+    public List<Estadistica> calcularCategoriaPorHechos(){
+        return new ArrayList<>();
+    }
+
+    public List<Estadistica> calcularMaxHechos(Long idCategoria){
+        return new ArrayList<>();
+    }
+
+    public List<Estadistica> calcularHoraPico(Long idCategoria){
+        return new ArrayList<>();
+    }
+
+    public List<Estadistica> calcularSolicitudesPorSpam(){
         return new ArrayList<>();
     }
 }

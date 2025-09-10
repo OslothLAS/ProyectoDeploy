@@ -15,8 +15,10 @@ import entities.colecciones.consenso.strategies.Mayoria;
 import entities.colecciones.consenso.strategies.MultipleMencion;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.criteriosDePertenencia.CriterioPorCategoria;
 import entities.hechos.Categoria;
 import entities.hechos.Hecho;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import java.util.*;
@@ -38,44 +40,74 @@ public class ColeccionService implements IColeccionService {
         this.categoriaRepository = categoriaRepository;
     }
 
-    public Categoria obtenerOCrear(String nombre) {
+    public Categoria obtenerOCrearCategoria(String nombre) {
         String clave = normalizarTrimTexto(nombre);
         return categoriaRepository.findByCategoriaNormalizada(clave)
                 .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
+   /* @Transactional
     @Override
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
-
         List<Fuente> importadores = coleccionDTO.getFuentes();
         List<CriterioDePertenencia> criterios = new ArrayList<>();
 
-        if(coleccionDTO.getCriterios() != null && !coleccionDTO.getCriterios().isEmpty()) {
+        if (coleccionDTO.getCriterios() != null && !coleccionDTO.getCriterios().isEmpty()) {
             criterios = coleccionDTO.getCriterios().stream().toList();
         }
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
-
         List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
-
-
-        Set<String> nombresCategorias = todosLosHechos.stream()
-                .map(h -> h.getDatosHechos().getCategoria().getCategoria())
-                .collect(Collectors.toSet());
-
-        Map<String, Categoria> categoriaMap = nombresCategorias.stream()
-                .map(this::obtenerOCrear)
-                .collect(Collectors.toMap(Categoria::getCategoriaNormalizada, c -> c));
-
-        todosLosHechos.forEach(h -> {
-            String clave = h.getDatosHechos().getCategoria().getCategoriaNormalizada();
-            Categoria cat = categoriaMap.get(clave);
-            h.getDatosHechos().setCategoria(cat);
-        });
-
-        List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos,nuevaColeccion);
+        List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos, nuevaColeccion);
 
         this.coleccionRepository.save(nuevaColeccion);
         this.hechoRepository.saveAll(hechos);
+    }
+*/
+    @Transactional
+    public void createColeccion(ColeccionInputDTO coleccionDTO) {
+        List<Fuente> importadores = coleccionDTO.getFuentes();
+
+        List<CriterioDePertenencia> criterios = Optional.ofNullable(coleccionDTO.getCriterios())
+                .orElseGet(ArrayList::new);
+        for (CriterioDePertenencia criterio : criterios) {
+            if (criterio instanceof CriterioPorCategoria catCriterio) { // Asumiendo que tienes una subclase como CriterioPorCategoria; ajusta si es diferente
+                String nombreCategoria = catCriterio.getCategoria().getCategoria();
+                Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
+                catCriterio.setCategoria(categoriaExistente);
+            }
+        }
+
+        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
+        nuevaColeccion.setCriteriosDePertenencia(criterios);
+
+        // Persistir la colección primero para generar el ID
+        coleccionRepository.save(nuevaColeccion);
+
+        // Obtener los hechos de las fuentes aplicando criterios
+        List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
+
+        // Normalizar y deduplicar categorías para cada hecho
+        for (Hecho hecho : todosLosHechos) {
+            // Normalizar el hecho (incluye normalización de categoría y ubicación)
+           // hecho.normalizarHecho();
+
+            // Después de normalizar, obtener o crear la categoría para evitar duplicados
+            String nombreCategoriaNormalizada = hecho.getDatosHechos().getCategoria().getCategoria();
+            Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoriaNormalizada);
+            hecho.getDatosHechos().setCategoria(categoriaExistente);
+        }
+
+
+        // Asignar la colección a los hechos
+        List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos, nuevaColeccion);
+
+        // Persistir los hechos (las composiciones como Ubicacion, Multimedia, etc., se persistirán vía cascade donde aplique)
+        hechoRepository.saveAll(hechos);
+
+        // Guardar nuevamente la colección para asegurar que todas las relaciones se persistan
+        coleccionRepository.save(nuevaColeccion);
+
+        //return nuevaColeccion;
     }
 
     public List<Coleccion> getColecciones(){
@@ -188,8 +220,20 @@ public class ColeccionService implements IColeccionService {
         hechoRepository.saveAll(hechosAsignados);
     }
 
-    public List<StatDTO> getHechosProvincia(Long idColeccion){
-
-        return new ArrayList<>();
+    public List<StatDTO> getProvinciaMasReportada(Long idColeccion){
+        return this.hechoRepository.countHechosByProvinciaAndColeccion(idColeccion);
     }
+
+    public List<StatDTO> getCategoriaMasReportada(){
+        return hechoRepository.findCategoriaWithMostHechos();
+    }
+
+    public List<StatDTO> getHoraMasReportada(Long idCategoria){
+        return hechoRepository.findHoraWithMostHechosByCategoria(idCategoria);
+    }
+
+    public List<StatDTO> getProviniciaMasReportadaPorCategoria(Long idCategoria){
+        return hechoRepository.findProvinciaWithMostHechosByCategoria(idCategoria);
+    }
+
 }

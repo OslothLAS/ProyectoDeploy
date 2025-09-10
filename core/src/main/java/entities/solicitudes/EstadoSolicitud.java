@@ -30,6 +30,9 @@ public class EstadoSolicitud {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaDeCreacion;
 
+    @Column(name = "spam")
+    private Boolean spam;
+
     public EstadoSolicitud(Usuario administrador, PosibleEstadoSolicitud estado) {
         this.evaluador = administrador;
         this.estado = estado;

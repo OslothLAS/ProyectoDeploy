@@ -4,12 +4,15 @@ import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import entities.colecciones.Coleccion;
 import entities.colecciones.consenso.strategies.TipoConsenso;
+import entities.dtos.HechoOutputDTO;
 import entities.hechos.Hecho;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
 import java.util.List;
+
+import static utils.HechoUtil.hechosToDTO;
 
 @RestController
 @RequestMapping("/colecciones")
@@ -30,11 +33,11 @@ public class ColeccionController {
     }
 
     @GetMapping("/{idColeccion}/hechos")
-    public ResponseEntity<List<Hecho>> getHechosDeColeccion(
+    public ResponseEntity<List<HechoOutputDTO>> getHechosDeColeccion(
             @PathVariable(name = "idColeccion") Long idColeccion,
             @RequestParam(name = "modoNavegacion", defaultValue = "IRRESTRICTO") String modoNavegacion) {
         List<Hecho> hechos = this.coleccionService.getHechosDeColeccion(idColeccion, modoNavegacion);
-        return ResponseEntity.ok(hechos);
+        return ResponseEntity.ok(hechosToDTO(hechos));
     }
 
     @DeleteMapping("/{idColeccion}")

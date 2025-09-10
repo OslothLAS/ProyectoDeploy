@@ -45,7 +45,7 @@ public class SolicitudEliminacion {
         this.fechaDeCreacion = LocalDateTime.now();
         this.estados = new ArrayList<>();
         if(DetectorDeSpam.getInstance().isSpam(justificacion)) {
-            this.estados.add(new EstadoSolicitud(null, PosibleEstadoSolicitud.RECHAZADA));
+            this.marcarComoSpam();
         }else{
             this.estados.add(new EstadoSolicitud(null,PosibleEstadoSolicitud.PENDIENTE));
         }
@@ -55,5 +55,11 @@ public class SolicitudEliminacion {
         if (!this.estados.isEmpty()) {
             this.estados.get(this.estados.size() - 1).setFechaDeCambio(LocalDateTime.now());
         }
+        this.estados.add(estado);
+    }
+
+    public void marcarComoSpam() {
+        this.estados.add(new EstadoSolicitud(null, PosibleEstadoSolicitud.RECHAZADA));
+        this.estados.get(this.estados.size() - 1).setSpam(true);
     }
 }

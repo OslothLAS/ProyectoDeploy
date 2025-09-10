@@ -2,11 +2,12 @@ package ar.utn.ba.ddsi.fuenteDinamica.controllers;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
-import entities.hechos.Hecho;
+import entities.dtos.HechoOutputDTO;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
+
+import static utils.HechoUtil.hechosToDTO;
 
 @RestController
 @RequestMapping("/api/hechos")
@@ -16,8 +17,8 @@ public class HechoController {
         this.hechoService = hechoService;
     }
     @GetMapping
-    public List<Hecho> getHechos(@RequestParam Map<String, String> filtros){
-        return this.hechoService.obtenerTodos(filtros);
+    public List<HechoOutputDTO> getHechos(@RequestParam Map<String, String> filtros){
+        return hechosToDTO(this.hechoService.obtenerTodos(filtros));
     }
 
     @PostMapping

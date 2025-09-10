@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
@@ -37,7 +38,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
         Hecho hecho = this.hechoRepository.findById(solicitud.getIdHecho())
-                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + solicitud.getIdHecho()));;
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + solicitud.getIdHecho()));
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
                 hecho,
@@ -125,5 +126,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.RECHAZADA);
     }
 
-
+    public StatDTO getCantidadSpam(){
+        Long cantSpam = this.solicitudRepository.countSolicitudesSpam();
+        return new StatDTO("Solicitudes rechazadas por spam",cantSpam);
+    }
 }

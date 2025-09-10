@@ -3,6 +3,7 @@ package entities.colecciones;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.dtos.HechoOutputDTO;
 import entities.hechos.FuenteOrigen;
 import entities.hechos.Hecho;
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import utils.HechoUtil;
 import java.util.List;
 import java.util.Map;
 
@@ -88,12 +90,15 @@ public class Fuente{
                             .build();
                 })
                 .retrieve()
-                .bodyToFlux(Hecho.class)
+                .bodyToFlux(HechoOutputDTO.class)
+                .map(HechoUtil::hechoDTOtoHecho)
                 .collectList()
                 .block();
 
         assert hechos != null;
-        hechos.forEach(h -> h.setFuenteOrigen(this.origenHechos));
+        hechos.forEach(h -> {
+                h.setFuenteOrigen(this.origenHechos);
+            });
         return hechos;
     }
 

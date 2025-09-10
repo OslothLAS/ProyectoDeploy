@@ -6,18 +6,22 @@ import entities.hechos.Categoria;
 import entities.hechos.Hecho;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import static utils.NormalizadorTexto.normalizarTexto;
 
+@Setter
 @Getter
 @Entity
 @Table(name = "criterio_categoria")
 @DiscriminatorValue("categoria")
+@NoArgsConstructor
 public class CriterioPorCategoria extends CriterioDePertenencia{
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "categoria_id")
-    private final Categoria categoria;
+    private Categoria categoria;
 
     @JsonCreator
     public CriterioPorCategoria(@JsonProperty("categoria") String categoria) {

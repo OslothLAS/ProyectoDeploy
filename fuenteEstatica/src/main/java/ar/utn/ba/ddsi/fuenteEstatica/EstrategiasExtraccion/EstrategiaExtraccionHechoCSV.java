@@ -6,11 +6,10 @@ import entities.hechos.Categoria;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
-import org.apache.commons.lang3.ObjectUtils;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static utils.NormalizadorTexto.normalizarTexto;
@@ -77,7 +76,7 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
         String longitud = fila[indices.get("longitud")].trim();
         String fecha = fila[indices.get("fecha del hecho")].trim();
 
-        LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
+        LocalDateTime fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA).atStartOfDay();
         Ubicacion nuevaUbi = new Ubicacion(latitud, longitud, null);
         Categoria cat =  new Categoria(categoria);
         DatosHechos data = new DatosHechos(titulo,descripcion, cat, nuevaUbi, fechaHecho);

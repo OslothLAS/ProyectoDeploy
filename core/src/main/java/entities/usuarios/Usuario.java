@@ -2,9 +2,11 @@ package entities.usuarios;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -26,9 +28,6 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipo;
 
-    public Boolean getRegistrado(){
-        return true;
-    }
 
     public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, TipoUsuario tipo) {
         this.nombre = nombre;

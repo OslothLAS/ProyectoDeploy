@@ -1,7 +1,6 @@
 package ar.utn.ba.ddsi.fuenteProxy.mappers;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
-import entities.colecciones.Coleccion;
 import entities.colecciones.Handle;
 import entities.hechos.Categoria;
 import entities.hechos.DatosHechos;
@@ -9,7 +8,7 @@ import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+import static java.time.LocalDateTime.parse;
 
 public class HechoMapper {
 
@@ -25,7 +24,7 @@ public class HechoMapper {
                         String.valueOf(dto.getLongitud()),
                         null
                 ))
-                .fechaHecho(parseDate(dto.getFechaHecho()))
+                .fechaHecho(parse(dto.getFechaHecho()))
                 .build();
         return Hecho.create(datosHechos,null ,handles, dto.getEsConsensuado());
     }

@@ -3,18 +3,14 @@ package ar.utn.ba.ddsi.fuenteDinamica.dtos.input;
 import entities.hechos.DatosHechos;
 import entities.hechos.Multimedia;
 import lombok.Getter;
-
-import java.time.LocalDate;
+import lombok.Setter;
 import java.util.List;
 
+@Setter
 @Getter
 public class HechoInputDTO {
     private DatosHechos datosHechos;
     private List<Multimedia> multimedia;
-
-    private Long idUsuario; //esto lo vemos despues (id del usuario)
-    private String nombre;
-    private String apellido;
-    private LocalDate fechaDeNacimiento;
+    private Long id; //esto lo vemos despues (id del usuario)
     private Boolean mostrarDatos;
 }

@@ -3,6 +3,7 @@ package entities.hechos;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,15 +14,17 @@ import static utils.NormalizadorTexto.normalizarTrimTexto;
 @Table(name = "categoria")
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "categoria")
-    private String categoria;
+        private String categoria;
 
     @Column(name = "categoria_normalizada", unique = true)
+    @EqualsAndHashCode.Include
     private String categoriaNormalizada;
 
     @JsonCreator

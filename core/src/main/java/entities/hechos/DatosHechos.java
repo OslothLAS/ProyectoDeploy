@@ -1,10 +1,10 @@
 package entities.hechos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import entities.normalizador.NormalizadorHecho;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -27,7 +27,8 @@ public class DatosHechos {
     private Ubicacion ubicacion;
 
     @Column(name = "fecha")
-    private LocalDate fechaHecho;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime fechaHecho;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,7 +60,7 @@ public class DatosHechos {
     }
 
     @Builder
-    public DatosHechos(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaHecho) {
+    public DatosHechos(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaHecho) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;

@@ -3,13 +3,9 @@ package entities.hechos;
 import entities.colecciones.Coleccion;
 import entities.colecciones.Handle;
 import entities.usuarios.Usuario;
-import entities.usuarios.Visualizador;
 import jakarta.persistence.*;
 import lombok.*;
-import entities.normalizador.NormalizadorHecho;
-
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +22,7 @@ public class Hecho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne(cascade =  CascadeType.ALL)
     @JoinColumn(name = "autor_id")
     private Usuario autor;
 
@@ -62,16 +58,19 @@ public class Hecho {
     @Column(name = "origen_fuente")
     private FuenteOrigen fuenteOrigen;
 
+    @Transient
     private Boolean mostrarDatos; //ver esto
 
     @Column(name = "fecha_carga")
     private LocalDateTime fechaCreacion;
 
+    @Transient //corregir
     private Duration plazoEdicion;
 
     @Column(name = "editable")
     private Boolean esEditable;
 
+    @Transient
     private Boolean esConsensuado;
 
     public static Hecho create(DatosHechos datosHechos){
@@ -108,18 +107,6 @@ public class Hecho {
                 .origen(Origen.EXTERNO)
                 .colecciones(colecciones)
                 .esConsensuado(esConsensuado)
-                .build();
-    }
-
-
-    public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.VISUALIZADOR)
-                .colecciones(new ArrayList<>())
                 .build();
     }
 
