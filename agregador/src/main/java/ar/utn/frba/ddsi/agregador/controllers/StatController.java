@@ -19,9 +19,9 @@ public class StatController {
         this.solcitudService = solcitudService;
     }
 
-    @GetMapping("/colecciones/{idColeccion}/provincias-top")
-    public ResponseEntity<List<StatDTO>> getHechosDeColeccion(@PathVariable(name = "idColeccion") Long idColeccion) {
-        List<StatDTO> stats = this.coleccionService.getProvinciaMasReportada(idColeccion);
+    @GetMapping("/colecciones/provincias-top")
+    public ResponseEntity<List<StatDTO>> getHechosDeColeccion() {
+        List<StatDTO> stats = this.coleccionService.getProvinciaMasReportadaPorTodasLasColecciones();
         return ResponseEntity.ok(stats);
     }
 

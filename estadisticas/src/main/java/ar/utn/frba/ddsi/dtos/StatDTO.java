@@ -17,6 +17,9 @@ public class StatDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "tituloColeccion")
+    private String tituloColeccion;
+
     @Column(name = "descripcion")
     private String descripcion;
 

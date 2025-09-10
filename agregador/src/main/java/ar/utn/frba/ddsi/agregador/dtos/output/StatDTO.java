@@ -11,6 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatDTO {
+
+    private String tituloColeccion;
+
+
     private String descripcion;
 
     private Long cantidad;

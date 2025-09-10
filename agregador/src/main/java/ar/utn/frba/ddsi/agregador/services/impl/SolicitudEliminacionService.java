@@ -124,6 +124,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     public StatDTO getCantidadSpam(){
         Long cantSpam = this.solicitudRepository.countSolicitudesSpam();
-        return new StatDTO("Solicitudes rechazadas por spam",cantSpam);
+        return new StatDTO("rachazo","Solicitudes rechazadas por spam",cantSpam);
     }
 }

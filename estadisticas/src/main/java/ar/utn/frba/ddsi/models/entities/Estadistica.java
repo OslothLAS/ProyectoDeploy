@@ -1,4 +1,4 @@
-/*package ar.utn.frba.ddsi.models.entities;
+package ar.utn.frba.ddsi.models.entities;
 
 import entities.colecciones.Coleccion;
 import entities.hechos.Categoria;
@@ -39,4 +39,3 @@ public class Estadistica {
     @Column(name = "fecha_generacion", nullable = false)
     private LocalDateTime fechaGeneracion;
 }
-*/

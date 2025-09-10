@@ -205,8 +205,21 @@ public class ColeccionService implements IColeccionService {
         hechoRepository.saveAll(hechosAsignados);
     }
 
-    public List<StatDTO> getProvinciaMasReportada(Long idColeccion){
-        return this.hechoRepository.countHechosByProvinciaAndColeccion(idColeccion);
+    public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
+        List<Coleccion> colecciones = coleccionRepository.findAll();
+        List<StatDTO> resultados = new ArrayList<>();
+
+        for (Coleccion coleccion : colecciones) {
+            List<StatDTO> statsColeccion = this.hechoRepository.countHechosByProvinciaAndColeccion(coleccion.getId());
+
+            // Agregar el nombre de la colección a cada StatDTO
+            for (StatDTO stat : statsColeccion) {
+                stat.setTituloColeccion(coleccion.getTitulo()); // Asumiendo que Coleccion tiene un campo 'nombre'
+                resultados.add(stat);
+            }
+        }
+
+        return resultados;
     }
 
     public List<StatDTO> getCategoriaMasReportada(){
