@@ -2,7 +2,9 @@ package ar.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import entities.hechos.Hecho;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
@@ -22,10 +24,12 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
             "ORDER BY COUNT(h) DESC")
     List<StatDTO> findCategoriaWithMostHechos();
 
-    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string), COUNT(h)) " +
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(" +
+            "CONCAT('HORA: ', CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string)), " +
+            "COUNT(h)) " +
             "FROM Hecho h " +
             "WHERE h.datosHechos.categoria.id = :categoria_id " +
-            "GROUP BY FUNCTION('HOUR', h.datosHechos.fechaHecho) " +
+            "GROUP BY CONCAT('HORA: ', CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string)) " +
             "ORDER BY COUNT(h) DESC")
     List<StatDTO> findHoraWithMostHechosByCategoria(@Param("categoria_id") Long idCategoria);
 
@@ -35,4 +39,13 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
             "GROUP BY h.datosHechos.ubicacion.localidad.provincia.nombre " +
             "ORDER BY COUNT(h) DESC")
     List<StatDTO> findProvinciaWithMostHechosByCategoria(@Param("categoria_id") Long idCategoria);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Hecho h " +
+            "SET h.esValido = false " +
+            "WHERE h.datosHechos.titulo = :titulo " +
+            "AND h.datosHechos.descripcion = :descripcion")
+    int invalidateByTituloAndDescripcion(@Param("titulo") String titulo,
+                                         @Param("descripcion") String descripcion);
 }

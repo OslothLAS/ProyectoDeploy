@@ -20,7 +20,7 @@ public class AgregadorApplication {
 
 		// Ejemplo 1: Obelisco de Buenos Aires
 		double lat1 = -34.914536;
-		double lon1 = -60.035774;
+		double lon1 = -060.035774;
 		List<String> resultado1 = osm.obtenerUbicacion(lat1, lon1);
 		System.out.println("Chivilcoy en alerta por Emanación de gas tóxico");
 		System.out.println("Buenos Aires -> " + resultado1.get(0));

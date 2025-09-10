@@ -5,6 +5,7 @@ import entities.normalizador.NormalizadorHecho;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -89,13 +90,15 @@ public class DatosHechos {
             provincia = new Provincia();
         }
 
-        provincia.setNombre(NormalizadorHecho.normalizarUbicacion(latitud,longitud).get(0));
+        List<String> resultados = NormalizadorHecho.normalizarUbicacion(latitud,longitud);
+        provincia.setNombre(resultados.get(0));
 
         if (localidad == null) {
             localidad = new Localidad();
             localidad.setProvincia(provincia);
             ubicacion.setLocalidad(localidad);
         } else {
+            localidad.setNombre(resultados.get(1));
             localidad.setProvincia(provincia);
         }
     }

@@ -1,7 +1,7 @@
 package entities.solicitudes;
 
 import entities.hechos.Hecho;
-import entities.usuarios.Contribuyente;
+import entities.usuarios.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -24,9 +24,9 @@ public class SolicitudEliminacion {
     @JoinColumn(name = "hecho_id")
     private Hecho hecho;
 
-    @ManyToOne
-    @JoinColumn(name = "contribuyente_id")
-    private Contribuyente solicitante;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "usuario_id")
+    private Usuario solicitante;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaDeCreacion;
@@ -34,11 +34,11 @@ public class SolicitudEliminacion {
     @Column(name = "justificacion")
     private String justificacion;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "solicitud_id")
     private List<EstadoSolicitud> estados;
 
-    public SolicitudEliminacion(String justificacion,Hecho hecho, Contribuyente solicitante) {
+    public SolicitudEliminacion(String justificacion,Hecho hecho, Usuario solicitante) {
         this.justificacion = justificacion;
         this.hecho = hecho;
         this.solicitante = solicitante;

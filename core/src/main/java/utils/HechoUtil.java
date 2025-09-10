@@ -90,18 +90,17 @@ public class HechoUtil {
     }
 
     private static DatosHechos getDatosHechos(HechoOutputDTO dto) {
-        Provincia provincia = null;
-        Localidad localidad = null;
+        Provincia provincia = new Provincia(null);
+        Localidad localidad = new Localidad(provincia,null);
 
         if (dto.getUbicacion().getLocalidad() != null) {
             if (dto.getUbicacion().getLocalidad().getProvincia() != null) {
-                provincia = new Provincia(dto.getUbicacion().getLocalidad().getProvincia().getNombre());
+                provincia.setNombre(dto.getUbicacion().getLocalidad().getProvincia().getNombre());
             }
-            localidad = new Localidad(provincia, dto.getUbicacion().getLocalidad().getNombre());
+            localidad.setNombre(dto.getUbicacion().getLocalidad().getNombre());
+            localidad.setProvincia(provincia);
         }
-
         Ubicacion ubi = new Ubicacion(dto.getUbicacion().getLatitud(), dto.getUbicacion().getLongitud(),localidad);
-
         Categoria cat = new Categoria(dto.getCategoria().getCategoria());
 
         return new DatosHechos(dto.getTitulo(), dto.getDescripcion(),cat,ubi, dto.getFechaHecho());

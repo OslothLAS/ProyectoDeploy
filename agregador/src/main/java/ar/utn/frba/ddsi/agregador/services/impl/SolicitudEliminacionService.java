@@ -13,6 +13,7 @@ import entities.solicitudes.PosibleEstadoSolicitud;
 import entities.solicitudes.SolicitudEliminacion;
 import entities.usuarios.TipoUsuario;
 import entities.usuarios.Usuario;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Autowired
     private IColeccionRepository coleccionRepository;
 
+    @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
@@ -39,24 +41,12 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
         Hecho hecho = this.hechoRepository.findById(solicitud.getIdHecho())
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + solicitud.getIdHecho()));
+
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
                 hecho,
                 solicitud.getSolicitante());
     }
-
-    private Hecho obtenerHechoconTituloyDesc(List<String> tituloYdesc) {
-        String tituloBuscado = tituloYdesc.get(0);
-        String descripcionBuscada = tituloYdesc.get(1);
-
-        return hechoRepository.findAll().stream()
-                .filter(hecho -> hecho.getDatosHechos().getTitulo().equals(tituloBuscado) &&
-                        hecho.getDatosHechos().getDescripcion().equals(descripcionBuscada))
-                .findFirst()
-                .orElse(null);
-    }
-
-
 
     @Override
     public SolicitudEliminacion getSolicitud(Long idSolicitud) {
@@ -87,7 +77,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
             Hecho hecho = solicitud.getHecho();
 
             if (hecho != null) {
-                hecho.setEsValido(false);
+                int updated = this.hechoRepository.invalidateByTituloAndDescripcion(hecho.getTitulo(), hecho.getDescripcion());
+                System.out.println("modificadas " + updated + " filas");
             } else {
                 System.err.println("Hecho no encontrado en agregador");
             }

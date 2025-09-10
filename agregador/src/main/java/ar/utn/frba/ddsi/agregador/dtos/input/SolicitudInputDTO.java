@@ -1,6 +1,6 @@
 package ar.utn.frba.ddsi.agregador.dtos.input;
 
-import entities.usuarios.Contribuyente;
+import entities.usuarios.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SolicitudInputDTO {
     private Long idHecho;
-    private Contribuyente solicitante;
+    private Usuario solicitante;
     private String justificacion;
 }

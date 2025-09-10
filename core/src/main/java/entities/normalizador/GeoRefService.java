@@ -14,7 +14,7 @@ import org.json.JSONObject;
 public class GeoRefService {
 
 
-    public List<String> obtenerUbicacion(double latitud, double longitud) {
+    public static List<String> obtenerUbicacion(double latitud, double longitud) {
         List<String> resultado = new ArrayList<>();
 
         try {

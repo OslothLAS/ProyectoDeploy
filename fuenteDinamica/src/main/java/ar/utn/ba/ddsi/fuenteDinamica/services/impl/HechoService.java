@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
 
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ICategoriaRepository;
+import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IProvinciaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IUsuarioRepository;
 import config.HechoProperties;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
@@ -11,7 +12,9 @@ import entities.factories.CriterioDePertenenciaFactory;
 import entities.hechos.Categoria;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
+import entities.hechos.Provincia;
 import entities.usuarios.Usuario;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -30,12 +33,15 @@ public class HechoService implements IHechoService {
     private final IHechoRepository hechoRepository;
     private final IUsuarioRepository usuarioRepository;
     private final ICategoriaRepository categoriaRepository;
-
-    public HechoService(IHechoRepository hechoRepository,IUsuarioRepository usuarioRepository, ICategoriaRepository categoriaRepository) {
+    private final IProvinciaRepository provinciaRepository;
+    public HechoService(IHechoRepository hechoRepository,IUsuarioRepository usuarioRepository, ICategoriaRepository categoriaRepository,IProvinciaRepository provinciaRepository) {
         this.hechoRepository = hechoRepository;
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
+        this.provinciaRepository = provinciaRepository;
     }
+
+    @Transactional
     @Override
     public void crearHecho(HechoInputDTO hechoDTO) {
         DatosHechos datos = hechoDTO.getDatosHechos();
@@ -51,6 +57,11 @@ public class HechoService implements IHechoService {
                     }
                 });
         datos.setCategoria(categoriaPersistida);
+
+        Provincia provincia = this.provinciaRepository.findById(hechoDTO.getDatosHechos().getUbicacion().getLocalidad().getProvincia().getId())
+                .orElseThrow(() -> new RuntimeException("No se encontró la provincia"));
+
+        datos.getUbicacion().getLocalidad().setProvincia(provincia);
 
         if(hechoDTO.getId() != null) { //si tiene ID => es contribuyente
             Usuario usuario = usuarioRepository.findById(hechoDTO.getId())

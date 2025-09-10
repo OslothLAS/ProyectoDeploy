@@ -6,6 +6,7 @@ import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ICategoriaRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IProvinciaRepository;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import entities.colecciones.Coleccion;
@@ -18,6 +19,7 @@ import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.criteriosDePertenencia.CriterioPorCategoria;
 import entities.hechos.Categoria;
 import entities.hechos.Hecho;
+import entities.hechos.Provincia;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
@@ -33,11 +35,13 @@ public class ColeccionService implements IColeccionService {
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionRepository;
     private final ICategoriaRepository categoriaRepository;
+    private final IProvinciaRepository provinciaRepository;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository,IProvinciaRepository provinciaRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
         this.categoriaRepository = categoriaRepository;
+        this.provinciaRepository = provinciaRepository;
     }
 
     public Categoria obtenerOCrearCategoria(String nombre) {
@@ -66,11 +70,15 @@ public class ColeccionService implements IColeccionService {
         nuevaColeccion.setCriteriosDePertenencia(criterios);
         coleccionRepository.save(nuevaColeccion);
 
+
         List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
 
         for (Hecho hecho : todosLosHechos) {
-            // Normalizar el hecho (incluye normalización de categoría y ubicación)
-           //hecho.normalizarHecho();
+            hecho.normalizarHecho();
+            if(hecho.getDatosHechos().getUbicacion().getLocalidad() != null){
+                Provincia provincia = this.provinciaRepository.findByNombre(hecho.getDatosHechos().getUbicacion().getLocalidad().getProvincia().getNombre());
+                hecho.getDatosHechos().getUbicacion().getLocalidad().setProvincia(provincia);
+            }
 
             String nombreCategoriaNormalizada = hecho.getDatosHechos().getCategoria().getCategoria();
             Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoriaNormalizada);
