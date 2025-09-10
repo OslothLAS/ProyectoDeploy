@@ -1,79 +1,41 @@
-Osmar
-o…
-En canal de voz
 
-Aquí empieza el canal #tareas. 
-g… — 01/06/2025 17:05
-persistir colecciones en memoria en agregador (Gadi)
-hacer una clase para el criterio (Fran)
-coleccion to dto dentro de coleccion y dto to coleccion  (Osmar)
-responsabilisa de la fuente de filtrar los hechos pasandole los criterios (Fran y Gadi)
-4.1. cuando hace el get hechos pasar los criterios y filtra desde cada fuente
-traigo todos los hechos y modulo para eliminar repetido a futuro implementar (Osmar)
-que pasa cuando se esta ejecutando elcronjob y me solicitan hechos (Ivan)
-6.1. decision: tenemos estas colecciones estan desactualizadas, se estan actualizando (ultima actualizaciona  tal hora) (Ivan)
-fecha y hora de ultima actualizacion como atributo en coleccion (Osmar)
-se esta instanciando un detector de spam por cada solicitud (Eitan)
-8.1. patron de creacion para solicitud eliminacion (Eitan)
-agregar adminmistrador para la fuente estatica en diagrama (Gadi)
- 
-g… — 11/06/2025 18:29
-Tareas Entrega 3;
-Modos de navegacion (Osmar, Gadi y Fran)
- 
-API administrativa de MetaMapa (Ivan)
-API pública para otras instancias de MetaMapa (ver entrega anterior):(Eitan)
-g… — 27/06/2025 18:14
-Tareas del grupo modo navegacion
-UNir concenso con curada
-crear endpont para crear estrategia de concenso
-hacer irrestricta
-cronjob de etsrategias de concenso
-Franco Ysrraelit — 10/07/2025 16:54
-lindaaa
-g… — 10/07/2025 17:06
-Imagen
-Imagen
-g… — 10/07/2025 17:31
-Imagen
-g… — 16:34
-Tipo de archivo adjunto: acrobat
-correcciones G23, entrega 3 (1).pdf
-603.53 KB
-g… — 18:42
 @startuml
 
 class Hecho {
-     -titulo: String
-     -descripcion: String
-     -autor: String
-     -colecciones: Map<Coleccion, Boolean>
-     -categoria: Categoria
-     -fechaHecho: LocalDate
-     -fechaCarga: LocalDate
-     -ubicacion: Ubicacion
-     -origenCarga: OrigenHecho
-     -origenFuente: TipoFuente
+     -id: Long
+     -autor: Usuario
+     -esValido: Boolean
+     -datosHechos: DatosHechos
      -multimedia: List<Multimedia>
+     -etiquetas: List<String>
+     -colecciones: List<Coleccion>
+     -handles: List<Handle>
+     -origen: Origen
+     -fuenteOrigen: FuenteOrigen
+     -mostrarDatos: Boolean
+     -fechaCreacion: LocalDateTime
+     -plazoEdicion: Duration
      -esEditable: Boolean
-     -esValido: boolean
-}
+     -esConsensuado: Boolean
 
+     +normalizarHecho(): void
+     +addColeccion(Coleccion): void
+
+
+}
 class Coleccion {
+    -id: Long
     -titulo: String
     -descripcion: String
-    -fuentes: List<Fuente>
-    -categoria: String
-    -handle: Handle
-    -fechaInicio: LocalDate
-    -fechaFin: LocalDate
+    -importadores: List<Fuente>
     -criteriosDePertenencia: List<CriterioDePertenencia>
-    -algoritmoConsenso: IAlgoritmoDeConsenso
-    +navegarHechos(modoNavegacion: TipoModoNavegacion): List<Hecho>
-    +filtrarHechos(filtros: List<CriterioDePertenencia>)
-    +consensuarHechos():void
-    +agregarFuente(fuente: Fuente): void
-    +quitarFuente(fuente: Fuente): void
+    -handle: Handle
+    -fechaYHoraDeActualizacion: LocalDateTime
+    -consenso: IAlgoritmoDeConsenso
+
+    +cumpleCriterios(Hecho): boolean
+    +setCriteriosDePertenencia(List<CriterioDePertenencia>): void
+    +agregarImportador(Fuente): void
 }
 
 enum TipoModoNavegacion {
@@ -97,113 +59,6 @@ class mayoriaSimple implements IAlgoritmoDeConsenso {
 class absoluta implements IAlgoritmoDeConsenso {
     +consensuarhechos(hechos: List<Hecho>): List<Hecho>
 }
-
-
-
-
-
-
-
-
-class Fuente{
-    -webClient: WebClient
-    +obtenerHechos(criterios: List<CriterioDePertenencia>)
-}
-
-class Importador{
-    -pathArchivos: List<String>;
-    -EstrategiaExtraccionHechos: EstrategiaExtraccionHechos
-    +obtenerHechos(): map<String,Hecho>
-    +csvExtractor(hechos, pathArchivos): FuenteEstatica
-}
-
-
-interface CriterioDePertenencia {
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-
-class CriterioPorFecha implements CriterioDePertenencia {
-    -fechaInicio: LocalDate
-    -fechaFin: LocalDate
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-
-class CriterioPorCategoria implements CriterioDePertenencia {
-    -categoria: String
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-
-class CriterioPorUbicacion implements CriterioDePertenencia {
-    -ubicacion: Ubicacion
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-... (134 líneas restantes)
-Contraer
-message.txt
-5 KB
-﻿
-@startuml
-
-class Hecho {
-     -titulo: String
-     -descripcion: String
-     -autor: String
-     -colecciones: Map<Coleccion, Boolean>
-     -categoria: Categoria
-     -fechaHecho: LocalDate
-     -fechaCarga: LocalDate
-     -ubicacion: Ubicacion
-     -origenCarga: OrigenHecho
-     -origenFuente: TipoFuente
-     -multimedia: List<Multimedia>
-     -esEditable: Boolean
-     -esValido: boolean
-}
-
-class Coleccion {
-    -titulo: String
-    -descripcion: String
-    -fuentes: List<Fuente>
-    -categoria: String
-    -handle: Handle
-    -fechaInicio: LocalDate
-    -fechaFin: LocalDate
-    -criteriosDePertenencia: List<CriterioDePertenencia>
-    -algoritmoConsenso: IAlgoritmoDeConsenso
-    +navegarHechos(modoNavegacion: TipoModoNavegacion): List<Hecho>
-    +filtrarHechos(filtros: List<CriterioDePertenencia>)
-    +consensuarHechos():void
-    +agregarFuente(fuente: Fuente): void
-    +quitarFuente(fuente: Fuente): void
-}
-
-enum TipoModoNavegacion {
-    IRRESTRICTA
-    CURADA
-}
-
-
-interface IAlgoritmoDeConsenso {
-    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
-}
-
-class multiplesmenciones implements IAlgoritmoDeConsenso {
-    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
-}
-
-class mayoriaSimple implements IAlgoritmoDeConsenso {
-    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
-}
-
-class absoluta implements IAlgoritmoDeConsenso {
-    +consensuarhechos(hechos: List<Hecho>): List<Hecho>
-}
-
-
 
 
 
@@ -248,32 +103,52 @@ class CriterioPorUbicacion implements CriterioDePertenencia {
 
 
  class Ubicacion {
+   -id: Long
    -latitud: Double
    -longitud: Double
+   -localidad: Localidad
  }
 
+class Provincia {
+    -id: Long
+    -nombre: String
+
+}
+
+class Localidad {
+    -id: Long
+    -provincia: Provincia
+    -nombre: String
+
+}
 
 class SolicitudEliminacion{
-    -solicitante: Contribuyente
+
+    -id:Long
     -hecho: Hecho
+    -solicitante: Usuario
     -justificacion: String
-    -estado: EstadoSolicitudEliminacion
-    -historialDeEstados: List<EstadoSolicitudEliminacion>
-    +cambiarEstadoHecho(administrador, estado): void
-    -cambiarEstadoSolicitud(estado): void
-    -actualizarHistorial():void
-    +validarJustificacion(justificacion): string
-}
-
-class EstadoSolicitudEliminacion{
-    -evaluador: Administrador
-    -tiempoDeRespuesta: Integer
     -fechaDeCreacion: LocalDateTime
-    -fechaDeEvaluacion: LocalDateTime
-    -estado: PosibleEstadoSolicitudEliminacion
+    -justificacion: String
+    -estados: List<EstadoSolicitud>
+
+    +cambiarEstadoSolicitud(EstadoSolicitud): void
+    -marcarComoSpam(): void
 }
 
-enum PosibleEstadoSolicitudEliminacion {
+
+class EstadoSolicitud{
+    -id: Long
+    -evaluador: Usuario
+    -estado: PosibleEstadoSolicitud
+    -fechaDeCreacion: LocalDateTime
+    -fechaDeCambio: LocalDateTime
+    -spam: Boolean
+
+    -calcularTiempoRespuesta(LocalDateTime, LocalDateTime)
+}
+
+enum PosibleEstadoSolicitud {
       PENDIENTE
       ACEPTADA
       RECHAZADA
@@ -287,15 +162,8 @@ class Handle{
 }
 
 
-
-
 class Categoria{
 -nombre: String
-}
-
-class Ubicacion{
--latitud: Double
--longitud: Double
 }
 
 
@@ -339,9 +207,8 @@ class Contribuyente{
 }
 
 class Administrador{
-    -nombre: String
-   -apellido: String
-   -fechaDeNacimiento: LocalDate
+   -id: Long
+   -nombre: String
 }
 
 interface IDetectorSpam{
@@ -356,29 +223,26 @@ class DetectorSpam implements IDetectorSpam{
 
 
 
-
-
     Hecho --> Categoria
     Hecho --> Ubicacion
     Hecho -->"*" Multimedia
     Hecho --> OrigenHecho
     Hecho --> TipoFuente
     Hecho --> "*"Coleccion
+    Hecho -->"*" Handle
 
-  Coleccion --> Fuente
-  Coleccion -->"*" CriterioDePertenencia
-  SolicitudEliminacion --> Hecho
-  SolicitudEliminacion --> Contribuyente
-   Importador --> EstrategiaExtraccionHechos
-  SolicitudEliminacion --> "*"EstadoSolicitudEliminacion
-    EstadoSolicitudEliminacion --> PosibleEstadoSolicitudEliminacion
-    EstadoSolicitudEliminacion --> Administrador
+    Coleccion -->"*" Fuente
+    Coleccion -->"*" CriterioDePertenencia
+    SolicitudEliminacion --> Hecho
+    SolicitudEliminacion --> Contribuyente
+    Importador --> EstrategiaExtraccionHechos
+    SolicitudEliminacion --> "*"EstadoSolicitud
+    EstadoSolicitud --> PosibleEstadoSolicitud
+    EstadoSolicitud --> Administrador
     Coleccion --> Handle
     Coleccion --> IAlgoritmoDeConsenso
-
-
+    Ubicacion --> Localidad
+    Localidad --> Provincia
 
 
 @enduml
-message.txt
-5 KB
