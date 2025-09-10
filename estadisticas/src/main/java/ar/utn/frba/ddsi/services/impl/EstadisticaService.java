@@ -2,12 +2,14 @@ package ar.utn.frba.ddsi.services.impl;
 
 import ar.utn.frba.ddsi.dtos.StatDTO;
 import ar.utn.frba.ddsi.models.entities.AgregadorConnector;
+import ar.utn.frba.ddsi.models.entities.Estadistica;
 import ar.utn.frba.ddsi.models.repositories.IStatRepository;
 import ar.utn.frba.ddsi.services.IEstadisticaService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EstadisticaService implements IEstadisticaService {
@@ -33,31 +35,60 @@ public class EstadisticaService implements IEstadisticaService {
         if (spam != null) {
             stats.add(spam);
         }
-        this.statRepository.saveAll(stats);
+
+        List<Estadistica> estadisticas = stats.stream()
+                .map(Estadistica::fromDTO)
+                .collect(Collectors.toList());
+
+        this.statRepository.saveAll(estadisticas);
     }
 
-    public List<StatDTO> generateCSV(){
-        return statRepository.findAll();
+    public List<StatDTO> generateCSV() {
+        List<Estadistica> estadisticas = statRepository.findAll();
+
+        return estadisticas.stream()
+                .map(StatDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
 
     public List<StatDTO> calcularProvinciaPorHechos(Long idColeccion){
-        return this.statRepository.findAll();
+        List<Estadistica> estadisticas = statRepository.findAll();
+
+        return estadisticas.stream()
+                .map(StatDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public List<StatDTO> calcularCategoriaPorHechos(){
-        return this.statRepository.findAll();
+        List<Estadistica> estadisticas = statRepository.findAll();
+
+        return estadisticas.stream()
+                .map(StatDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public List<StatDTO> calcularMaxHechos(Long idCategoria){
-        return this.statRepository.findAll();
+        List<Estadistica> estadisticas = statRepository.findAll();
+
+        return estadisticas.stream()
+                .map(StatDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public List<StatDTO> calcularHoraPico(Long idCategoria){
-        return this.statRepository.findAll();
+        List<Estadistica> estadisticas = statRepository.findAll();
+
+        return estadisticas.stream()
+                .map(StatDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public List<StatDTO> calcularSolicitudesPorSpam(){
-        return this.statRepository.findAll();
+        List<Estadistica> estadisticas = statRepository.findAll();
+
+        return estadisticas.stream()
+                .map(StatDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 }

@@ -11,10 +11,14 @@ import java.util.List;
 
 public interface IHechoRepository extends JpaRepository<Hecho, Long> {
 
-    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO('', h.datosHechos.ubicacion.localidad.provincia.nombre, COUNT(h)) " +
-            "FROM Hecho h JOIN h.colecciones c " +
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO('', p.nombre, COUNT(h)) " +
+            "FROM Hecho h " +
+            "JOIN h.colecciones c " +
+            "JOIN h.datosHechos.ubicacion u " +
+            "JOIN u.localidad l " +
+            "JOIN l.provincia p " +
             "WHERE c.id = :idColeccion " +
-            "GROUP BY h.datosHechos.ubicacion.localidad.provincia.nombre " +
+            "GROUP BY p.nombre " +
             "ORDER BY COUNT(h) DESC")
     List<StatDTO> countHechosByProvinciaAndColeccion(@Param("idColeccion") Long idColeccion);
 

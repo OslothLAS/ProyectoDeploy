@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.models.entities;
 
+import ar.utn.frba.ddsi.dtos.StatDTO;
 import entities.colecciones.Coleccion;
 import entities.hechos.Categoria;
 import entities.hechos.Provincia;
@@ -16,26 +17,23 @@ import java.time.LocalDateTime;
 public class Estadistica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private TipoEstadistica tipo;
+    @Column(name = "tituloColeccion")
+    private String tituloColeccion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coleccion_id")
-    private Coleccion coleccion;
+    @Column(name = "descripcion")
+    private String descripcion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
+    @Column(name = "cantidad")
+    private Long cantidad;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "provincia_id")
-    private Provincia provincia;
-
-    @Column(name = "hechos_cantidad")
-    private Long cantHechos;
-
-    @Column(name = "fecha_generacion", nullable = false)
-    private LocalDateTime fechaGeneracion;
+    // Método estático para convertir desde DTO
+    public static Estadistica fromDTO(StatDTO dto) {
+        Estadistica estadistica = new Estadistica();
+        estadistica.setTituloColeccion(dto.getTituloColeccion());
+        estadistica.setDescripcion(dto.getDescripcion());
+        estadistica.setCantidad(dto.getCantidad());
+        return estadistica;
+    }
 }
