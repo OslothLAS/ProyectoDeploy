@@ -1,4 +1,4 @@
-package ar.utn.frba.ddsi.agregador.dtos.output;
+package ar.utn.frba.ddsi.dtos;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "estadistica")
 public class StatDTO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "descripcion")
     private String descripcion;
 
+    @Column(name = "cantidad")
     private Long cantidad;
 }
+

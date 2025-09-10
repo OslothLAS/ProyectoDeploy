@@ -31,15 +31,15 @@ public class StatController {
         return ResponseEntity.ok(stats);
     }
 
-    @GetMapping("/categorias/{idCategoria}/provincias-top")
-    public ResponseEntity<List<StatDTO>> getProviniciaCategoriaReportada(@PathVariable(name = "idCategoria") Long idCategoria){
-        List<StatDTO> stats = this.coleccionService.getProviniciaMasReportadaPorCategoria(idCategoria);
+    @GetMapping("/categorias/provincias-top")
+    public ResponseEntity<List<StatDTO>> getProviniciaCategoriaReportada(){
+        List<StatDTO> stats = this.coleccionService.getProviniciaMasReportadaPorCategoria();
         return ResponseEntity.ok(stats);
     }
 
-    @GetMapping("/categorias/{idCategoria}/horas-top")
-    public ResponseEntity<List<StatDTO>> getHoraMasReportada(@PathVariable(name = "idCategoria") Long idCategoria) {
-        List<StatDTO> stats = this.coleccionService.getHoraMasReportada(idCategoria);
+    @GetMapping("/categorias/horas-top")
+    public ResponseEntity<List<StatDTO>> getHoraMasReportada() {
+        List<StatDTO> stats = this.coleccionService.getHoraMasReportada();
         return ResponseEntity.ok(stats);
     }
 

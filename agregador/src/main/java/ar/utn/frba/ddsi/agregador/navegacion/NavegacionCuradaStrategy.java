@@ -14,6 +14,7 @@ public class NavegacionCuradaStrategy implements NavegacionStrategy {
     public List<Hecho> navegar(Coleccion coleccion, List<Hecho> hechos) {
         return hechos.stream()
                 .filter(hecho -> hecho.getEsConsensuado() != null && hecho.getEsConsensuado())
+                .filter(Hecho::getEsValido)
                 .collect(Collectors.toList());
     }
 }

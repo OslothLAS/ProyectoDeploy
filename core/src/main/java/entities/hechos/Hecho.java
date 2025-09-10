@@ -32,7 +32,7 @@ public class Hecho {
     @Embedded
     private DatosHechos datosHechos;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id")
     private List<Multimedia> multimedia;
 

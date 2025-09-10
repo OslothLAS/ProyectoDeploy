@@ -22,6 +22,6 @@ public interface IColeccionService {
     void eliminarFuente(Long idColeccion, Long idFuente);
     List<StatDTO> getProvinciaMasReportada(Long idColeccion);
     List<StatDTO> getCategoriaMasReportada();
-    List<StatDTO> getHoraMasReportada(Long idCategoria);
-    List<StatDTO> getProviniciaMasReportadaPorCategoria(Long idCategoria);
+    List<StatDTO> getHoraMasReportada();
+    List<StatDTO> getProviniciaMasReportadaPorCategoria();
 }

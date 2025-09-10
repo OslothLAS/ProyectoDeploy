@@ -24,7 +24,7 @@ public class SolicitudEliminacion {
     @JoinColumn(name = "hecho_id")
     private Hecho hecho;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario solicitante;
 

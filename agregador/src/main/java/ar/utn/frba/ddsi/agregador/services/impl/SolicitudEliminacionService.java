@@ -5,6 +5,7 @@ import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
 import entities.colecciones.Fuente;
 import entities.hechos.Hecho;
@@ -28,13 +29,16 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     private IHechoRepository hechoRepository;
     @Autowired
     private IColeccionRepository coleccionRepository;
+    @Autowired
+    private IUsuarioRepository usuarioRepository;
 
     @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
-        SolicitudEliminacion solicitudEliminacion =this.solicitudRepository.save(this.dtoToSolicitud(solicitud));
+        this.usuarioRepository.findById(solicitud.getIdSolicitante()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        SolicitudEliminacion solicitudEliminacion = this.solicitudRepository.save(this.dtoToSolicitud(solicitud));
         return solicitudEliminacion.getId();
     }
 
@@ -42,10 +46,12 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         Hecho hecho = this.hechoRepository.findById(solicitud.getIdHecho())
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + solicitud.getIdHecho()));
 
+        Usuario usuario = this.usuarioRepository.findById(solicitud.getIdSolicitante()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
                 hecho,
-                solicitud.getSolicitante());
+                usuario);
     }
 
     @Override
@@ -91,9 +97,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
         Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
-
+        this.usuarioRepository.save(administrador);
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
-
 
         Hecho hecho = solicitud.getHecho();
 

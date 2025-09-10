@@ -12,6 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SolicitudInputDTO {
     private Long idHecho;
-    private Usuario solicitante;
+    private Long idSolicitante;
     private String justificacion;
 }

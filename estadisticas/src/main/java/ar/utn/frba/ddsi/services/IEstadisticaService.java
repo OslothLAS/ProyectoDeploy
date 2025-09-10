@@ -1,12 +1,14 @@
 package ar.utn.frba.ddsi.services;
 
-import ar.utn.frba.ddsi.models.entities.Estadistica;
+import ar.utn.frba.ddsi.dtos.StatDTO;
 import java.util.List;
 
 public interface IEstadisticaService {
-    List<Estadistica> calcularProvinciaPorHechos(Long idColeccion);
-    List<Estadistica> calcularCategoriaPorHechos();
-    List<Estadistica> calcularMaxHechos(Long categoria);
-    List<Estadistica> calcularHoraPico(Long categoria);
-    List<Estadistica> calcularSolicitudesPorSpam();
+    void calcularEstadisticas();
+    List<StatDTO> calcularProvinciaPorHechos(Long idColeccion);
+    List<StatDTO> calcularCategoriaPorHechos();
+    List<StatDTO> calcularMaxHechos(Long categoria);
+    List<StatDTO> calcularHoraPico(Long categoria);
+    List<StatDTO> calcularSolicitudesPorSpam();
+    List<StatDTO> generateCSV();
 }

@@ -70,21 +70,8 @@ public class ColeccionService implements IColeccionService {
         nuevaColeccion.setCriteriosDePertenencia(criterios);
         coleccionRepository.save(nuevaColeccion);
 
-
         List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
-
-        for (Hecho hecho : todosLosHechos) {
-            hecho.normalizarHecho();
-            if(hecho.getDatosHechos().getUbicacion().getLocalidad() != null){
-                Provincia provincia = this.provinciaRepository.findByNombre(hecho.getDatosHechos().getUbicacion().getLocalidad().getProvincia().getNombre());
-                hecho.getDatosHechos().getUbicacion().getLocalidad().setProvincia(provincia);
-            }
-
-            String nombreCategoriaNormalizada = hecho.getDatosHechos().getCategoria().getCategoria();
-            Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoriaNormalizada);
-            hecho.getDatosHechos().setCategoria(categoriaExistente);
-        }
-
+        this.normalizarHechos(todosLosHechos);
         List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos, nuevaColeccion);
 
         hechoRepository.saveAll(hechos);
@@ -163,6 +150,20 @@ public class ColeccionService implements IColeccionService {
         coleccion.getImportadores().removeIf(fuente -> Objects.equals(fuente.getId(), idFuente));
     }
 
+    public void normalizarHechos(List<Hecho> hechos){
+        for (Hecho hecho : hechos) {
+            hecho.normalizarHecho();
+            if(hecho.getDatosHechos().getUbicacion().getLocalidad() != null){
+                Provincia provincia = this.provinciaRepository.findByNombre(hecho.getDatosHechos().getUbicacion().getLocalidad().getProvincia().getNombre());
+                hecho.getDatosHechos().getUbicacion().getLocalidad().setProvincia(provincia);
+            }
+
+            String nombreCategoriaNormalizada = hecho.getDatosHechos().getCategoria().getCategoria();
+            Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoriaNormalizada);
+            hecho.getDatosHechos().setCategoria(categoriaExistente);
+        }
+    }
+
     @Override
     public void actualizarHechos(){
         List<Coleccion> colecciones = this.coleccionRepository.findAll();
@@ -171,6 +172,9 @@ public class ColeccionService implements IColeccionService {
             List<CriterioDePertenencia> criterios = Optional.ofNullable(coleccion.getCriteriosDePertenencia())
                     .orElse(List.of());
             List<Hecho> hechos = tomarHechosFuentes(coleccion.getImportadores(), criterios);
+
+            this.normalizarHechos(hechos);
+
             asignarColeccionAHechos(hechos, coleccion);
             hechoRepository.saveAll(hechos);
             coleccionRepository.save(coleccion);
@@ -209,12 +213,12 @@ public class ColeccionService implements IColeccionService {
         return hechoRepository.findCategoriaWithMostHechos();
     }
 
-    public List<StatDTO> getHoraMasReportada(Long idCategoria){
-        return hechoRepository.findHoraWithMostHechosByCategoria(idCategoria);
+    public List<StatDTO> getHoraMasReportada(){
+        return hechoRepository.findHoraWithMostHechosByCategoria();
     }
 
-    public List<StatDTO> getProviniciaMasReportadaPorCategoria(Long idCategoria){
-        return hechoRepository.findProvinciaWithMostHechosByCategoria(idCategoria);
+    public List<StatDTO> getProviniciaMasReportadaPorCategoria(){
+        return hechoRepository.findProvinciaWithMostHechosByCategoria();
     }
 
 }

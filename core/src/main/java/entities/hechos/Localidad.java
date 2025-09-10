@@ -15,7 +15,7 @@ public class Localidad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "provincia_id")
     private Provincia provincia;
 

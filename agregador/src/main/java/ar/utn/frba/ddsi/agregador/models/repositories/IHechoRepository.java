@@ -28,17 +28,15 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
             "CONCAT('HORA: ', CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string)), " +
             "COUNT(h)) " +
             "FROM Hecho h " +
-            "WHERE h.datosHechos.categoria.id = :categoria_id " +
             "GROUP BY CONCAT('HORA: ', CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string)) " +
             "ORDER BY COUNT(h) DESC")
-    List<StatDTO> findHoraWithMostHechosByCategoria(@Param("categoria_id") Long idCategoria);
+    List<StatDTO> findHoraWithMostHechosByCategoria();
 
     @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(h.datosHechos.ubicacion.localidad.provincia.nombre, COUNT(h)) " +
             "FROM Hecho h " +
-            "WHERE h.datosHechos.categoria.id = :categoria_id " +
             "GROUP BY h.datosHechos.ubicacion.localidad.provincia.nombre " +
             "ORDER BY COUNT(h) DESC")
-    List<StatDTO> findProvinciaWithMostHechosByCategoria(@Param("categoria_id") Long idCategoria);
+    List<StatDTO> findProvinciaWithMostHechosByCategoria();
 
     @Modifying
     @Transactional
