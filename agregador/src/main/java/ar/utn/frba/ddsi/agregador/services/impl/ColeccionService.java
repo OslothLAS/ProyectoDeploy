@@ -46,68 +46,41 @@ public class ColeccionService implements IColeccionService {
                 .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
-   /* @Transactional
-    @Override
+
+    @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
         List<Fuente> importadores = coleccionDTO.getFuentes();
         List<CriterioDePertenencia> criterios = new ArrayList<>();
 
-        if (coleccionDTO.getCriterios() != null && !coleccionDTO.getCriterios().isEmpty()) {
+        if(coleccionDTO.getCriterios() != null && !coleccionDTO.getCriterios().isEmpty()) {
             criterios = coleccionDTO.getCriterios().stream().toList();
-        }
-        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
-        List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
-        List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos, nuevaColeccion);
-
-        this.coleccionRepository.save(nuevaColeccion);
-        this.hechoRepository.saveAll(hechos);
-    }
-*/
-    @Transactional
-    public void createColeccion(ColeccionInputDTO coleccionDTO) {
-        List<Fuente> importadores = coleccionDTO.getFuentes();
-
-        List<CriterioDePertenencia> criterios = Optional.ofNullable(coleccionDTO.getCriterios())
-                .orElseGet(ArrayList::new);
-        for (CriterioDePertenencia criterio : criterios) {
-            if (criterio instanceof CriterioPorCategoria catCriterio) { // Asumiendo que tienes una subclase como CriterioPorCategoria; ajusta si es diferente
-                String nombreCategoria = catCriterio.getCategoria().getCategoria();
-                Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
-                catCriterio.setCategoria(categoriaExistente);
+            for (CriterioDePertenencia criterio : criterios) {
+                if (criterio instanceof CriterioPorCategoria catCriterio) { // Asumiendo que tienes una subclase como CriterioPorCategoria; ajusta si es diferente
+                    String nombreCategoria = catCriterio.getCategoria().getCategoria();
+                    Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
+                    catCriterio.setCategoria(categoriaExistente);
+                }
             }
         }
-
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
-
-        // Persistir la colección primero para generar el ID
         coleccionRepository.save(nuevaColeccion);
 
-        // Obtener los hechos de las fuentes aplicando criterios
         List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
 
-        // Normalizar y deduplicar categorías para cada hecho
         for (Hecho hecho : todosLosHechos) {
             // Normalizar el hecho (incluye normalización de categoría y ubicación)
-           // hecho.normalizarHecho();
+           //hecho.normalizarHecho();
 
-            // Después de normalizar, obtener o crear la categoría para evitar duplicados
             String nombreCategoriaNormalizada = hecho.getDatosHechos().getCategoria().getCategoria();
             Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoriaNormalizada);
             hecho.getDatosHechos().setCategoria(categoriaExistente);
         }
 
-
-        // Asignar la colección a los hechos
         List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos, nuevaColeccion);
 
-        // Persistir los hechos (las composiciones como Ubicacion, Multimedia, etc., se persistirán vía cascade donde aplique)
         hechoRepository.saveAll(hechos);
-
-        // Guardar nuevamente la colección para asegurar que todas las relaciones se persistan
         coleccionRepository.save(nuevaColeccion);
-
-        //return nuevaColeccion;
     }
 
     public List<Coleccion> getColecciones(){

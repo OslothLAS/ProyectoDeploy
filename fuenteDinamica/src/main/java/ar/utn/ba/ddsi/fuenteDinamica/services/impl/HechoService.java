@@ -1,16 +1,19 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
 
+import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IUsuarioRepository;
 import config.HechoProperties;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.factories.CriterioDePertenenciaFactory;
+import entities.hechos.Categoria;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.usuarios.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 import java.time.Duration;
@@ -26,14 +29,28 @@ public class HechoService implements IHechoService {
     private HechoProperties hechoProperties;
     private final IHechoRepository hechoRepository;
     private final IUsuarioRepository usuarioRepository;
+    private final ICategoriaRepository categoriaRepository;
 
-    public HechoService(IHechoRepository hechoRepository,IUsuarioRepository usuarioRepository) {
+    public HechoService(IHechoRepository hechoRepository,IUsuarioRepository usuarioRepository, ICategoriaRepository categoriaRepository) {
         this.hechoRepository = hechoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.categoriaRepository = categoriaRepository;
     }
     @Override
     public void crearHecho(HechoInputDTO hechoDTO) {
         DatosHechos datos = hechoDTO.getDatosHechos();
+
+        Categoria categoria = datos.getCategoria();
+        Categoria categoriaPersistida = categoriaRepository.findByCategoriaNormalizada(categoria.getCategoriaNormalizada())
+                .orElseGet(() -> {
+                    try {
+                        return categoriaRepository.save(categoria);
+                    } catch (DataIntegrityViolationException e) {
+                        return categoriaRepository.findByCategoriaNormalizada(categoria.getCategoriaNormalizada())
+                                .orElseThrow(() -> new IllegalStateException("Error al recuperar categoría existente", e));
+                    }
+                });
+        datos.setCategoria(categoriaPersistida);
 
         if(hechoDTO.getId() != null) { //si tiene ID => es contribuyente
             Usuario usuario = usuarioRepository.findById(hechoDTO.getId())

@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 public class HechoUtil {
     public static HechoOutputDTO hechoToDTO(Hecho hecho) {
-        AutorDTO autorDTO = new AutorDTO(hecho.getAutor().getNombre(),hecho.getAutor().getApellido(),hecho.getAutor().getFechaNacimiento(),hecho.getAutor().getTipo());
         HechoOutputDTO dto = new HechoOutputDTO();
 
         if (hecho.getAutor() != null) {
+            AutorDTO autorDTO = new AutorDTO(hecho.getAutor().getNombre(),hecho.getAutor().getApellido(),hecho.getAutor().getFechaNacimiento(),hecho.getAutor().getTipo());
             dto.setAutor(autorDTO);
         }
 
@@ -78,8 +78,11 @@ public class HechoUtil {
     public static Hecho hechoDTOtoHecho(HechoOutputDTO dto){
         DatosHechos datos = getDatosHechos(dto);
 
-        Usuario autor = new Usuario(dto.getAutor().getNombre(),dto.getAutor().getApellido(),dto.getAutor().getFechaNacimiento(),dto.getAutor().getTipo());
+        Usuario autor = null;
 
+        if(dto.getAutor() != null) {
+            autor = new Usuario(dto.getAutor().getNombre(), dto.getAutor().getApellido(), dto.getAutor().getFechaNacimiento(), dto.getAutor().getTipo());
+        }
         return new Hecho(null, autor, dto.getEsValido(), datos, dto.getMultimedia(), dto.getEtiquetas(),
                 dto.getColecciones(), dto.getHandles(), dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
                 dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
@@ -87,8 +90,16 @@ public class HechoUtil {
     }
 
     private static DatosHechos getDatosHechos(HechoOutputDTO dto) {
-        Provincia provincia = new Provincia(dto.getUbicacion().getLocalidad().getProvincia().getNombre());
-        Localidad localidad = new Localidad(provincia, dto.getUbicacion().getLocalidad().getNombre());
+        Provincia provincia = null;
+        Localidad localidad = null;
+
+        if (dto.getUbicacion().getLocalidad() != null) {
+            if (dto.getUbicacion().getLocalidad().getProvincia() != null) {
+                provincia = new Provincia(dto.getUbicacion().getLocalidad().getProvincia().getNombre());
+            }
+            localidad = new Localidad(provincia, dto.getUbicacion().getLocalidad().getNombre());
+        }
+
         Ubicacion ubi = new Ubicacion(dto.getUbicacion().getLatitud(), dto.getUbicacion().getLongitud(),localidad);
 
         Categoria cat = new Categoria(dto.getCategoria().getCategoria());

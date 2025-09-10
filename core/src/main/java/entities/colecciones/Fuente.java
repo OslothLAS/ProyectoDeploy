@@ -77,7 +77,8 @@ public class Fuente{
             return requestSpec
                     .uri("/api/hechos")
                     .retrieve()
-                    .bodyToFlux(Hecho.class)
+                    .bodyToFlux(HechoOutputDTO.class)
+                    .map(HechoUtil::hechoDTOtoHecho)
                     .collectList()
                     .block();
         }
@@ -96,9 +97,7 @@ public class Fuente{
                 .block();
 
         assert hechos != null;
-        hechos.forEach(h -> {
-                h.setFuenteOrigen(this.origenHechos);
-            });
+        hechos.forEach(h -> h.setFuenteOrigen(this.origenHechos));
         return hechos;
     }
 

@@ -76,17 +76,31 @@ public class DatosHechos {
         Ubicacion ubicacion = this.getUbicacion();
         double latitud = Double.parseDouble(ubicacion.getLatitud());
         double longitud =  Double.parseDouble(ubicacion.getLongitud());
-        Provincia provincia = this.getUbicacion().getLocalidad().getProvincia();
+        Provincia provincia = null;
+        Localidad localidad = null;
+
+        if (ubicacion.getLocalidad() != null) {
+            localidad = ubicacion.getLocalidad();
+            if (localidad.getProvincia() != null) {
+                provincia = localidad.getProvincia();
+            }
+        }
+        if (provincia == null) {
+            provincia = new Provincia();
+        }
 
         provincia.setNombre(NormalizadorHecho.normalizarUbicacion(latitud,longitud).get(0));
 
+        if (localidad == null) {
+            localidad = new Localidad();
+            localidad.setProvincia(provincia);
+            ubicacion.setLocalidad(localidad);
+        } else {
+            localidad.setProvincia(provincia);
+        }
     }
-
-
      /*LocalDate fechaHecho = this.getDatosHechos().getFechaHecho();
 
      this.getDatosHechos().setFechaHecho(NormalizadorHecho.normalizarFecha(fechaHecho));
      */
-
-
 }

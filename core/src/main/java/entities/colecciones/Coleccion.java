@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -36,7 +37,7 @@ public class Coleccion {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "coleccion_id")
-    private List<CriterioDePertenencia> criteriosDePertenencia;
+    private List<CriterioDePertenencia> criteriosDePertenencia = new ArrayList<>();
 
     @Embedded
     private Handle handle;
@@ -79,7 +80,10 @@ public class Coleccion {
     }
 
     public void setCriteriosDePertenencia(List<CriterioDePertenencia> criterios) {
-        criteriosDePertenencia.addAll(criterios);
+        this.criteriosDePertenencia = new ArrayList<>();
+        if (criterios != null) {
+            criteriosDePertenencia.addAll(criterios);
+        }
         /*List<Hecho> todosLosHechos = importadores.stream()
                 .flatMap(importador -> importador.obtenerHechos().stream())
                 .toList();
