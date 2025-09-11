@@ -21,7 +21,7 @@ import java.util.List;
 public class HechoOutputDTO {
     private AutorDTO autor;
     private Boolean esValido;
-    private List<Multimedia> multimedia;
+    private List<MultimediaDTO> multimedia;
     private List<String> etiquetas = new ArrayList<>();
     private List<Coleccion> colecciones = new ArrayList<>();
     private List<Handle> handles = new ArrayList<>();

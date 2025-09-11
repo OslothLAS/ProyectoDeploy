@@ -11,9 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import static utils.NormalizadorTexto.normalizarTexto;
-
 
 public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 
@@ -77,7 +75,10 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
         String fecha = fila[indices.get("fecha del hecho")].trim();
 
         LocalDateTime fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA).atStartOfDay();
-        Ubicacion nuevaUbi = new Ubicacion(latitud, longitud, null);
+        Ubicacion nuevaUbi = new Ubicacion();
+        nuevaUbi.setLatitud(latitud);
+        nuevaUbi.setLongitud(longitud);
+
         Categoria cat =  new Categoria(categoria);
         DatosHechos data = new DatosHechos(titulo,descripcion, cat, nuevaUbi, fechaHecho);
         return Hecho.create(data);

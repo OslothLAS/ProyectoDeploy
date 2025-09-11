@@ -4,6 +4,7 @@ import entities.dtos.*;
 import entities.hechos.*;
 import entities.usuarios.Usuario;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,8 +17,19 @@ public class HechoUtil {
             dto.setAutor(autorDTO);
         }
 
+        List<MultimediaDTO> multimediaNueva = null;
+        if(hecho.getMultimedia() != null) {
+            multimediaNueva = new ArrayList<>();
+            for (Multimedia m : hecho.getMultimedia()) {
+                MultimediaDTO nuevo = new MultimediaDTO();
+                nuevo.setUrl(m.getUrl());
+                multimediaNueva.add(nuevo);
+            }
+        }
+
+
         dto.setEsValido(hecho.getEsValido());
-        dto.setMultimedia(hecho.getMultimedia());
+        dto.setMultimedia(multimediaNueva);
         dto.setEtiquetas(hecho.getEtiquetas());
         dto.setColecciones(hecho.getColecciones());
         dto.setHandles(hecho.getHandles());
@@ -83,7 +95,19 @@ public class HechoUtil {
         if(dto.getAutor() != null) {
             autor = new Usuario(dto.getAutor().getNombre(), dto.getAutor().getApellido(), dto.getAutor().getFechaNacimiento(), dto.getAutor().getTipo());
         }
-        return new Hecho(null, autor, dto.getEsValido(), datos, dto.getMultimedia(), dto.getEtiquetas(),
+
+        List<Multimedia> multimediaNueva = null;
+        if(dto.getMultimedia() != null){
+            multimediaNueva = new ArrayList<>();
+            for (MultimediaDTO m : dto.getMultimedia()) {
+                Multimedia nuevo = new Multimedia();
+                nuevo.setUrl(m.getUrl());
+                multimediaNueva.add(nuevo);
+            }
+        }
+
+
+        return new Hecho(null, autor, dto.getEsValido(), datos, multimediaNueva, dto.getEtiquetas(),
                 dto.getColecciones(), dto.getHandles(), dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
                 dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
         );

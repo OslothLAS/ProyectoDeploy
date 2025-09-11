@@ -6,7 +6,7 @@ import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ICategoriaRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IProvinciaRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IUbicacionRepository;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import entities.colecciones.Coleccion;
@@ -17,9 +17,7 @@ import entities.colecciones.consenso.strategies.MultipleMencion;
 import entities.colecciones.consenso.strategies.TipoConsenso;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.criteriosDePertenencia.CriterioPorCategoria;
-import entities.hechos.Categoria;
-import entities.hechos.Hecho;
-import entities.hechos.Provincia;
+import entities.hechos.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
@@ -35,13 +33,13 @@ public class ColeccionService implements IColeccionService {
     private final IHechoRepository hechoRepository;
     private final IColeccionRepository coleccionRepository;
     private final ICategoriaRepository categoriaRepository;
-    private final IProvinciaRepository provinciaRepository;
+    private final IUbicacionRepository ubicacionRepository;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository,IProvinciaRepository provinciaRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository provinciaRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
         this.categoriaRepository = categoriaRepository;
-        this.provinciaRepository = provinciaRepository;
+        this.ubicacionRepository = provinciaRepository;
     }
 
     public Categoria obtenerOCrearCategoria(String nombre) {
@@ -151,11 +149,20 @@ public class ColeccionService implements IColeccionService {
     }
 
     public void normalizarHechos(List<Hecho> hechos){
+
         for (Hecho hecho : hechos) {
             hecho.normalizarHecho();
-            if(hecho.getDatosHechos().getUbicacion().getLocalidad() != null){
-                Provincia provincia = this.provinciaRepository.findByNombre(hecho.getDatosHechos().getUbicacion().getLocalidad().getProvincia().getNombre());
-                hecho.getDatosHechos().getUbicacion().getLocalidad().setProvincia(provincia);
+            if(hecho.getDatosHechos().getUbicacion() != null){
+                Ubicacion ubicacion = ubicacionRepository
+                        .findByLatitudAndLongitud(
+                                hecho.getDatosHechos().getUbicacion().getLatitud(),
+                                hecho.getDatosHechos().getUbicacion().getLongitud()
+                        )
+                        .orElseGet(() -> {
+                            Ubicacion nuevaUbicacion = hecho.getDatosHechos().getUbicacion();
+                            return ubicacionRepository.save(nuevaUbicacion);
+                        });
+                hecho.getDatosHechos().setUbicacion(ubicacion);
             }
 
             String nombreCategoriaNormalizada = hecho.getDatosHechos().getCategoria().getCategoria();
@@ -206,20 +213,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
-        List<Coleccion> colecciones = coleccionRepository.findAll();
-        List<StatDTO> resultados = new ArrayList<>();
-
-        for (Coleccion coleccion : colecciones) {
-            List<StatDTO> statsColeccion = this.hechoRepository.countHechosByProvinciaAndColeccion(coleccion.getId());
-
-            // Agregar el nombre de la colección a cada StatDTO
-            for (StatDTO stat : statsColeccion) {
-                stat.setTituloColeccion(coleccion.getTitulo()); // Asumiendo que Coleccion tiene un campo 'nombre'
-                resultados.add(stat);
-            }
-        }
-
-        return resultados;
+        return this.hechoRepository.countHechosByProvinciaAndColeccion();
     }
 
     public List<StatDTO> getCategoriaMasReportada(){
