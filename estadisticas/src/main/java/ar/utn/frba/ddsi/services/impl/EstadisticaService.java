@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,6 +83,7 @@ public class EstadisticaService implements IEstadisticaService {
     public List<StatDTO> calcularHoraPico(Long idCategoria){
         List<Estadistica> estadisticas = statRepository.findAll();
 
+
         return estadisticas.stream()
                 .map(StatDTO::fromEntity)
                 .collect(Collectors.toList());
@@ -93,5 +95,26 @@ public class EstadisticaService implements IEstadisticaService {
         return estadisticas.stream()
                 .map(StatDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public StatDTO calcularProvinciaMasReportadaPorColeccion(String nombreColeccion) {
+        List<Estadistica> estadisticas = statRepository.findAll();
+
+        return estadisticas.stream()
+                .filter(est -> est.getTituloColeccion().equalsIgnoreCase(nombreColeccion))
+                .collect(Collectors.groupingBy(
+                        Estadistica::getDescripcion,
+                        Collectors.summingLong(Estadistica::getCantidad)
+                ))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(entry -> {
+                    StatDTO dto = new StatDTO();
+                    dto.setTituloColeccion(nombreColeccion);
+                    dto.setDescripcion(entry.getKey());
+                    dto.setCantidad(entry.getValue());
+                    return dto;
+                })
+                .orElse(null); // o puedes lanzar una excepción si prefieres
     }
 }

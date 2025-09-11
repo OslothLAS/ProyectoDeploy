@@ -11,4 +11,5 @@ public interface IEstadisticaService {
     List<StatDTO> calcularHoraPico(Long categoria);
     List<StatDTO> calcularSolicitudesPorSpam();
     List<StatDTO> generateCSV();
+    StatDTO calcularProvinciaMasReportadaPorColeccion(String nombreColeccion);
 }
