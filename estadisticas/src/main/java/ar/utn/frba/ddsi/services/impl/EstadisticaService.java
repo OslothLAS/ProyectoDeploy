@@ -8,6 +8,7 @@ import ar.utn.frba.ddsi.services.IEstadisticaService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,12 +61,14 @@ public class EstadisticaService implements IEstadisticaService {
                 .collect(Collectors.toList());
     }
 
-    public List<StatDTO> calcularCategoriaPorHechos(){
+    public StatDTO calcularCategoriaPorHechos() {
         List<Estadistica> estadisticas = statRepository.findAll();
 
         return estadisticas.stream()
+                .filter(e -> "CATEGORIA".equals(e.getTituloColeccion()))
+                .max(Comparator.comparingLong(Estadistica::getCantidad))
                 .map(StatDTO::fromEntity)
-                .collect(Collectors.toList());
+                .orElse(null); // o puedes lanzar una excepción si prefieres
     }
 
     public List<StatDTO> calcularMaxHechos(Long idCategoria){

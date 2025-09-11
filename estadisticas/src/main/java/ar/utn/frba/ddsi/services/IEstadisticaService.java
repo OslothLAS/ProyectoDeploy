@@ -6,7 +6,7 @@ import java.util.List;
 public interface IEstadisticaService {
     void calcularEstadisticas();
     List<StatDTO> calcularProvinciaPorHechos(Long idColeccion);
-    List<StatDTO> calcularCategoriaPorHechos();
+    StatDTO calcularCategoriaPorHechos();
     List<StatDTO> calcularMaxHechos(Long categoria);
     List<StatDTO> calcularHoraPico(Long categoria);
     List<StatDTO> calcularSolicitudesPorSpam();

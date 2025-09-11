@@ -25,7 +25,7 @@ public class EstadisticaController {
     }
 
     @GetMapping("/categoria-hechos")
-    public List<StatDTO> calcularCategoriaPorHechos(){
+    public StatDTO calcularCategoriaPorHechos(){
         return estadisticaService.calcularCategoriaPorHechos();
     }
 
