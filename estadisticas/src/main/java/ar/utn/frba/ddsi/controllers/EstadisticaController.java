@@ -18,14 +18,20 @@ public class EstadisticaController {
     public EstadisticaController(IEstadisticaService estadisticaService) {
         this.estadisticaService = estadisticaService;
     }
-
-    @GetMapping("/{idColeccion}")
-    public List<StatDTO> calcularProvinciaPorHechos(@PathVariable(name = "idColeccion") Long idColeccion){
-        return estadisticaService.calcularProvinciaPorHechos(idColeccion);
+/* DONE De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?*/
+    @GetMapping("/prov-top-reportada/{nombreColeccion}")
+    public StatDTO getProvinciaMasReportadaPorColeccion(@PathVariable(name = "nombreColeccion") String nombreColeccion){
+        return estadisticaService.calcularProvinciaMasReportadaPorColeccion(nombreColeccion);
     }
 
+    /*@GetMapping("/provinciasxcategorias")
+    public List<StatDTO> provinciasPorCategorias(){
+        return estadisticaService.calcularProvinciaPorCategorias();
+    }*/
+
+/* DONE ¿Cuál es la categoría con mayor cantidad de hechos reportados?*/
     @GetMapping("/categoria-hechos")
-    public List<StatDTO> calcularCategoriaPorHechos(){
+    public StatDTO calcularCategoriaPorHechos(){
         return estadisticaService.calcularCategoriaPorHechos();
     }
 
