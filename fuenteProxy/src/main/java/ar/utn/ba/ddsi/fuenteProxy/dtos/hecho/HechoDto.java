@@ -4,15 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import entities.colecciones.Handle;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Setter
 @Getter
 public class HechoDto {
-
-    // Getters
     private String titulo;
     private String descripcion;
     private String categoria;

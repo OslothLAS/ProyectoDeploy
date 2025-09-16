@@ -1,4 +1,3 @@
-
 @startuml
 
 class Hecho {
@@ -37,12 +36,6 @@ class Coleccion {
     +setCriteriosDePertenencia(List<CriterioDePertenencia>): void
     +agregarImportador(Fuente): void
 }
-
-enum TipoModoNavegacion {
-    IRRESTRICTA
-    CURADA
-}
-
 
 interface IAlgoritmoDeConsenso {
     +consensuarhechos(hechos: List<Hecho>): List<Hecho>

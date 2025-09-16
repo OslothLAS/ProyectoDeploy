@@ -1,34 +1,83 @@
 @startuml
-[Fuente Dinamica]
-[Fuente Estatica]
-[Servicio Agregador]
-[Fuente Proxy]
-[Detector de Spam]
+' =======================
+' Fuente de Datos Proxy
+' =======================
+package "Fuente de Datos Proxy" {
+  () "API Proxy" as apiProxy
 
+  package "Servicio de Fuentes Proxy" {
+    [Fuentes Proxy] as instancias
+  }
+      Database "Repositorio Metamapas" as repo
 
-
-database "Agregador Hecho Repository"
-database "Agregador Solicitudes Repository"
-database "Dinamica Hecho Repository"
-database "Dinamica Solicitudes Repository"
-database "Proxy Metamapa Repository"
-
-node "Externo" {
-  [Instancias Metamapa]
-  [Api de la Catedra]
-database "Hechos CSV"
 }
 
-[Servicio Agregador]--->"Consulta Hechos "[Fuente Dinamica]
-[Servicio Agregador]--->"Consulta Hechos "[Fuente Estatica]
-[Servicio Agregador]--->"Consulta Hechos "[Fuente Proxy]
-[Servicio Agregador] --->"Verifica Spam"[Detector de Spam]
-[Servicio Agregador] --->"Consulta Solicitudes"[Agregador Solicitudes Repository]
-[Servicio Agregador] --->"Consulta Hechos en tiempo real"[Agregador Hecho Repository]
-[Fuente Proxy] --->"Consulta los metamapas que tiene"[Proxy Metamapa Repository]
-[Fuente Dinamica]--->"Persiste en Memoria"[Dinamica Hecho Repository]
-[Fuente Dinamica] --->"Persiste en Memoria"[Dinamica Solicitudes Repository]
-[Fuente Estatica] ---> "Lee Hechos"[Hechos CSV]
-[Fuente Proxy] --(0- [Api de la Catedra]
-[Fuente Proxy] --(0- [Instancias Metamapa]
+apiProxy --> "Servicio de Fuentes Proxy"
+instancias --> repo
+instancias --> [Otros Metamapa]
+instancias --> [API Cátedra]
+
+' =======================
+' Fuente de Datos Estática
+' =======================
+package "Fuente de Datos Estática" {
+  () "API Estática" as apiEstatica
+
+  package "Servicio de Fuente Estática" {
+    [Fuentes Estática] as fuentesE
+  }
+
+  artifact "Dataset" as dataset
+}
+
+apiEstatica --> "Servicio de Fuente Estática"
+fuentesE --> dataset
+
+' =======================
+' Fuente de Datos Dinámica
+' =======================
+package "Fuente de Datos Dinámica" {
+  () "API Dinámica" as apiDinamica
+
+  package "Servicio de Fuente Dinámica" {
+    [Fuentes Dinámica] as fuentesD
+    [Solicitudes] as solicitudes
+  }
+
+  database "Repositorio Hechos y Solicitudes" as hechos
+}
+
+
+
+apiDinamica --> "Servicio de Fuente Dinámica"
+fuentesD --> hechos
+solicitudes --> fuentesD
+
+
+' =======================
+' Agregador
+' =======================
+package "Agregador" {
+  () "API Agregador" as apiAgregador
+
+  package "Servicio Agregación" {
+    [Agregación] as agregacion
+    [Fuentes] as fuentes
+    [Solicitudes] as solicitudesModelo
+  }
+  database HechosyColeccionesRepositorio
+  database SolicitudesRepositorio
+}
+
+apiAgregador --> agregacion
+agregacion --> fuentes
+agregacion --> solicitudesModelo
+solicitudesModelo --> SolicitudesRepositorio
+
+' Fuentes conectada a las 3 APIs
+fuentes --> apiProxy
+fuentes --> apiEstatica
+fuentes --> apiDinamica
+fuentes --> HechosyColeccionesRepositorio
+
 @enduml

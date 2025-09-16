@@ -211,7 +211,7 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
-        coleccion.agregarImportador(fuenteDTOtoFuente(fuenteDTO));
+        coleccion.agregarFuente(fuenteDTOtoFuente(fuenteDTO));
     }
 
     @Override
@@ -230,6 +230,7 @@ public class ColeccionService implements IColeccionService {
         colecciones.forEach(coleccion -> {
             List<CriterioDePertenencia> criterios = Optional.ofNullable(coleccion.getCriteriosDePertenencia())
                     .orElse(List.of());
+          
             List<Hecho> hechos = tomarHechosFuentes(coleccion.getImportadores(), criterios);
 
             this.normalizarHechos(hechos);
@@ -241,7 +242,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public void consensuarHechos(){
+    public void consensuarHechos() {
         List<Coleccion> colecciones =  this.coleccionRepository.findAll();
         List <Hecho> hechosAsignados = new ArrayList<>();
 
@@ -261,6 +262,7 @@ public class ColeccionService implements IColeccionService {
 
             hechosAsignados.addAll(hechosAsignadosPorColeccion);
         });
+
         hechoRepository.saveAll(hechosAsignados);
     }
 
@@ -279,5 +281,4 @@ public class ColeccionService implements IColeccionService {
     public List<StatDTO> getProviniciaMasReportadaPorCategoria(){
         return hechoRepository.findProvinciaWithMostHechosByCategoria();
     }
-
 }

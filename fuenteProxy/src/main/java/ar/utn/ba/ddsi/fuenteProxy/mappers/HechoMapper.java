@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import static java.time.LocalDateTime.parse;
 
+
 public class HechoMapper {
 
     public static Hecho mapHechoDtoToHecho(HechoDto dto) {
@@ -26,6 +27,7 @@ public class HechoMapper {
                 ))
                 .fechaHecho(parse(dto.getFechaHecho()))
                 .build();
+
         return Hecho.create(datosHechos,null ,handles, dto.getEsConsensuado());
     }
 

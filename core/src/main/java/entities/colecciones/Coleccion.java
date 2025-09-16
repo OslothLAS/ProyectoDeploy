@@ -43,37 +43,30 @@ public class Coleccion {
     private Handle handle;
 
     @Column(name = "fecha_actualizacion")
+
     private LocalDateTime fechaYHoraDeActualizacion;
 
     @Convert(converter = AlgoritmoConsensoConverter.class) //testear!!
     private IAlgoritmoConsenso consenso;
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia, IAlgoritmoConsenso consenso) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia, IAlgoritmoConsenso consenso) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.importadores = importadores;
+        this.fuentes = fuentes;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
         this.consenso = consenso;
     }
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.importadores = importadores;
+        this.fuentes = fuentes;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
     }
-
-
-
-    // el criterio de pertenencia es el encargado de saber si el hecho cumple o no el mismo criterio, esta bien??!
-   /* public void filtrarHechos(List <Hecho> listaHechos) {
-        List<Hecho> hechosFiltrados = listaHechos.stream().filter(this::cumpleCriterios).toList();
-        hechosFiltrados.forEach(hecho -> hecho.addColeccion(this.getHandle()));
-    }*/
 
     public Boolean cumpleCriterios(Hecho hecho){
         return this.criteriosDePertenencia.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho));
@@ -84,14 +77,14 @@ public class Coleccion {
         if (criterios != null) {
             criteriosDePertenencia.addAll(criterios);
         }
-        /*List<Hecho> todosLosHechos = importadores.stream()
-                .flatMap(importador -> importador.obtenerHechos().stream())
-                .toList();
-        this.filtrarHechos(todosLosHechos)*/
+
     }
 
-    public void agregarImportador(Fuente fuente) {
-        this.importadores.add(fuente);
+    public void agregarFuente(Fuente fuente) {
+        this.fuentes.add(fuente);
     }
 
+    public void quitarFuente(Fuente fuente) {
+        this.fuentes.remove(fuente);
+    }
 }
