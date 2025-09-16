@@ -1,8 +1,9 @@
 package entities.hechos;
 
+import entities.colecciones.Coleccion;
 import entities.colecciones.Handle;
 import entities.usuarios.Usuario;
-import entities.usuarios.Visualizador;
+import jakarta.persistence.*;
 import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,37 +17,68 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "hecho")
 public class Hecho {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private DatosHechos datosHechos;
-    /*borrar!! (mucho quilombo)
+    @ManyToOne(cascade =  CascadeType.ALL)
+    @JoinColumn(name = "autor_id")
+    private Usuario autor;
 
-    private String titulo;
-    private String descripcion;
-    private String categoria;
-    private Ubicacion ubicacion;
-    private LocalDate fechaHecho;
-    */
-
-
-    private String autor; //?
-    private Map<Handle,Boolean> colecciones;
-    private Usuario usuario;
-    private List<String> etiquetas = new ArrayList<>();
-    private Boolean mostrarDatos;
-    private Duration plazoEdicion;
-    private LocalDateTime fechaCarga;
-    private Origen origenCarga;
-    private FuenteOrigen fuenteOrigen;
-    private List<Multimedia> multimedia;
-    private Boolean esEditable;
+    @Column(name = "valido")
     private Boolean esValido;
+
+    @Embedded
+    private DatosHechos datosHechos;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hecho_id")
+    private List<Multimedia> multimedia;
+
+    @Builder.Default //falta el atributo en db
+    private List<String> etiquetas = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "hecho_coleccion",
+            joinColumns = @JoinColumn(name = "hecho_id"),
+            inverseJoinColumns = @JoinColumn(name = "coleccion_id")
+    )
+    private List<Coleccion> colecciones = new ArrayList<>();
+
+    @Transient
+    private List<Handle> handles = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origen_carga")
+    private Origen origen;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origen_fuente")
+    private FuenteOrigen fuenteOrigen;
+
+    @Transient
+    private Boolean mostrarDatos; //ver esto
+
+    @Column(name = "fecha_carga")
+    private LocalDateTime fechaCreacion;
+
+    @Transient //corregir
+    private Duration plazoEdicion;
+
+    @Column(name = "editable")
+    private Boolean esEditable;
+
+    @Transient
+    private Boolean esConsensuado;
+
 
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
                 .fechaCarga(LocalDateTime.now())
@@ -55,29 +87,29 @@ public class Hecho {
                 .build();
     }
 
-    public static Hecho create(DatosHechos datosHechos, Map<Handle,Boolean> colecciones,Long id) {
+
+    public static Hecho create(DatosHechos datosHechos,List<Coleccion> colecciones ,List<Handle> handles, Boolean esConsensuado) {
+
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .id(id)
-                .usuario(null)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .fechaCarga(LocalDateTime.now())
-                .origenCarga(Origen.EXTERNO)
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.EXTERNO)
+                .handles(handles)
                 .colecciones(colecciones)
                 .build();
     }
 
-
-    public static Hecho create(DatosHechos datosHechos, Visualizador visualizador) {
+    public static Hecho create(DatosHechos datosHechos, List<Coleccion> colecciones, Boolean esConsensuado) {
         return Hecho.builder()
                 .datosHechos(datosHechos)
-                .usuario(visualizador)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .fechaCarga(LocalDateTime.now())
-                .origenCarga(Origen.VISUALIZADOR)
-                .colecciones(new HashMap<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.EXTERNO)
+                .colecciones(colecciones)
+                .esConsensuado(esConsensuado)
                 .build();
     }
 
@@ -97,8 +129,7 @@ public class Hecho {
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
-                .autor(usuario.getNombre())
-                .usuario(usuario)
+                .autor(usuario)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
                 .mostrarDatos(mostrarDatos)
@@ -113,7 +144,7 @@ public class Hecho {
             this.etiquetas.add(etiqueta);
     }
 
-    public void addColeccion(Handle coleccion) {
+    public void addColeccion(Coleccion coleccion) {
         if (this.colecciones == null) {
             this.colecciones = new HashMap<>();
         }
@@ -136,5 +167,17 @@ public class Hecho {
         tituloYdesc.add(descripcion);
 
         return tituloYdesc;
+    }
+
+    public void normalizarHecho(){
+        this.getDatosHechos().normalizarHecho();
+    }
+
+    public String getTitulo() {
+        return this.getDatosHechos().getTitulo();
+    }
+
+    public String getDescripcion() {
+        return this.getDatosHechos().getDescripcion();
     }
 }

@@ -8,4 +8,12 @@ public class NormalizadorTexto {
         String textoSinTildes = Normalizer.normalize(texto, Normalizer.Form.NFD);
         return textoSinTildes.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
     }
+
+    public static String normalizarTrimTexto(String texto) {
+        String textoSinTildes = Normalizer.normalize(texto, Normalizer.Form.NFD).trim();
+        return textoSinTildes
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .replaceAll("\\s+", "")
+                .toLowerCase();
+    }
 }

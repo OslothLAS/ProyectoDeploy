@@ -1,13 +1,9 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories;
 
 import entities.hechos.Hecho;
-
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
-public interface IHechoRepository {
-    void save(Hecho hecho);
-    Optional<Hecho> findById(Long id);
-    Optional<Hecho> findByTituloyDescripcion(String titulo, String descripcion);
-    List<Hecho> findAll();
+public interface IHechoRepository extends JpaRepository<Hecho, Long> {
+    Optional<Hecho> findByDatosHechosTituloAndDatosHechosDescripcion(String titulo, String descripcion);
 }

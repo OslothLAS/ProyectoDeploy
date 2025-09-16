@@ -35,6 +35,7 @@ public class SolicitudService implements ISolicitudService {
         // Crear y guardar la solicitud
         SolicitudEliminacion nuevaSolicitud = new SolicitudEliminacion(
                 solicitud.getJustificacion(),
+                hecho,
                 solicitud.getSolicitante() // Reemplazar con contribuyente cuando se implemente
         );
 

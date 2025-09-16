@@ -1,17 +1,38 @@
 package entities.usuarios;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.time.LocalDate;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "registrado", visible = true)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = Contribuyente.class, name = "true"),
-        @JsonSubTypes.Type(value = Visualizador.class, name = "false")
-})
-public interface Usuario {
-        String getNombre();
-        Boolean getRegistrado();
-        Long getId();
-        void setId(Long id);
+@NoArgsConstructor
+@Setter
+@Getter
+@Entity
+@Table(name = "usuario")
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "nombre")
+    private String nombre;
+
+    @Column(name = "apellido")
+    private String apellido;
+
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
+
+    @Enumerated(EnumType.STRING)
+    private TipoUsuario tipo;
+
+
+    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, TipoUsuario tipo) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.fechaNacimiento = fechaNacimiento;
+        this.tipo = tipo;
+    }
 }
-

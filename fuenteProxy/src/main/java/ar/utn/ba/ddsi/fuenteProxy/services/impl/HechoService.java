@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static utils.NormalizadorTexto.normalizarTrimTexto;
+
 @Service
 public class HechoService implements IHechoService {
     private final WebClient webClient;
@@ -45,7 +47,7 @@ public class HechoService implements IHechoService {
         return getHechosXcoleccionXmetamapa(id_coleccion, metamapa).stream()
                 .filter(hecho -> hecho.getDatosHechos() != null)
                 .filter(hecho -> hecho.getDatosHechos().getCategoria() != null)
-                .filter(hecho -> hecho.getDatosHechos().getCategoria().equalsIgnoreCase(categoria.trim()))
+                .filter(hecho -> hecho.getDatosHechos().getCategoria().getCategoriaNormalizada().equalsIgnoreCase(normalizarTrimTexto(categoria)))
                 .toList();
     }
 

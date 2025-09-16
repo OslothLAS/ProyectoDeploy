@@ -3,6 +3,9 @@ package entities.criteriosDePertenencia;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import entities.hechos.Hecho;
+import jakarta.persistence.*;
+import lombok.Getter;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @JsonTypeInfo(
@@ -13,8 +16,21 @@ import org.springframework.util.MultiValueMap;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CriterioPorCategoria.class, name = "categoria")
 })
-public interface CriterioDePertenencia {
-    boolean cumpleCriterio(Hecho hecho);
+@Entity
+@Table(name = "criterio_pertenencia")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
+@Getter
+public abstract class CriterioDePertenencia {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    MultiValueMap<String, String> aQueryParam();
+    public boolean cumpleCriterio(Hecho hecho){
+        return true;
+    }
+
+    public MultiValueMap<String, String> aQueryParam(){
+        return new LinkedMultiValueMap<>();
+    }
 }

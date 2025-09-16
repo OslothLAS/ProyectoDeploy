@@ -3,6 +3,7 @@ package entities.colecciones.consenso.strategies;
 import entities.hechos.FuenteOrigen;
 import entities.hechos.Hecho;
 import entities.colecciones.Fuente;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -10,7 +11,6 @@ public class FiltroConsensuados {
 
     public static List<Hecho> obtenerHechos(List<Fuente> fuentes, List<Hecho> hechos, int cantidadDeFuentesQueCoinciden) {
 
-        // mapeo orígenes de las fuentes disponibles
         Set<FuenteOrigen> origenesDeFuentes = fuentes.stream()
                 .filter(Objects::nonNull)
                 .map(Fuente::getOrigenHechos)
@@ -41,6 +41,8 @@ public class FiltroConsensuados {
 
         return hechosFiltrados;
     }
+
+
 
 
 }

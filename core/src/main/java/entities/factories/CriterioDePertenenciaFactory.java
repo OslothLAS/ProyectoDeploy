@@ -1,11 +1,9 @@
 package entities.factories;
 
-
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.criteriosDePertenencia.CriterioPorCategoria;
 import entities.criteriosDePertenencia.CriterioPorFecha;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +16,8 @@ public class CriterioDePertenenciaFactory {
 
         if (filtros.containsKey("fechaInicio") && filtros.containsKey("fechaFin")) {
             try {
-                LocalDate fechaInicio = LocalDate.parse(filtros.get("fechaInicio"));
-                LocalDate fechaFin = LocalDate.parse(filtros.get("fechaFin"));
+                LocalDateTime fechaInicio = LocalDateTime.parse(filtros.get("fechaInicio"));
+                LocalDateTime fechaFin = LocalDateTime.parse(filtros.get("fechaFin"));
                 criterios.add(new CriterioPorFecha(fechaInicio, fechaFin));
             } catch (DateTimeParseException e) {
                 throw new IllegalArgumentException("Formato de fecha inválido. Use formato ISO (yyyy-MM-dd)");

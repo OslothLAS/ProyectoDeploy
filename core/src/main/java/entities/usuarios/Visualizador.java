@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
-public class Visualizador implements Usuario {
+public class Visualizador implements IUsuario {
     private final String nombre;
     private final String apellido;
     private final LocalDate fechaDeNacimiento;

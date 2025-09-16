@@ -1,10 +1,11 @@
 package ar.utn.ba.ddsi.fuenteEstatica.controllers;
 
-import entities.hechos.Hecho;
+import entities.dtos.HechoOutputDTO;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.ba.ddsi.fuenteEstatica.services.IExtractService;
 import java.util.List;
 import java.util.Map;
+import static utils.HechoUtil.hechosToDTO;
 
 @RestController
 @RequestMapping("/api/hechos")
@@ -17,8 +18,8 @@ public class HechoController {
     }
 
     @GetMapping
-    public List<Hecho> obtenerHechos(@RequestParam Map<String, String> filtros) {
-        return hechoService.getHechos(filtros);
+    public List<HechoOutputDTO> obtenerHechos(@RequestParam Map<String, String> filtros) {
+        return hechosToDTO(hechoService.getHechos(filtros));
     }
 
     @GetMapping("/origen")

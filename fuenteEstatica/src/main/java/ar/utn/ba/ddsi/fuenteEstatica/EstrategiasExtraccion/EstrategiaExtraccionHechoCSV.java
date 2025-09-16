@@ -2,17 +2,16 @@ package ar.utn.ba.ddsi.fuenteEstatica.EstrategiasExtraccion;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import entities.hechos.Categoria;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
 import entities.hechos.Ubicacion;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
-
 import static utils.NormalizadorTexto.normalizarTexto;
-
 
 public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 
@@ -40,17 +39,18 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
 
     private Map<String, Integer> obtenerIndicesColumnas(String[] encabezado) {
         Map<String, Integer> indices = new HashMap<>();
+        Set<String> columnasValidas = Set.of(
+                "titulo", "descripcion", "categoria", "latitud", "longitud", "fecha del hecho"
+        );
+
         for (int i = 0; i < encabezado.length; i++) {
-            String columna = normalizarTexto(encabezado[i].trim());
-            switch (columna) {
-                case "titulo":
-                case "descripcion":
-                case "categoria":
-                case "latitud":
-                case "longitud":
-                case "fecha del hecho":
-                    indices.put(columna, i);
-                    break;
+            String columna = normalizarTexto(encabezado[i])
+                    .replace("\uFEFF", "")   // elimina BOM si está
+                    .toLowerCase()
+                    .trim();
+
+            if (columnasValidas.contains(columna)) {
+                indices.put(columna, i);
             }
         }
         return indices;
@@ -74,10 +74,13 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
         String longitud = fila[indices.get("longitud")].trim();
         String fecha = fila[indices.get("fecha del hecho")].trim();
 
-        LocalDate fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA);
-        Ubicacion nuevaUbi = new Ubicacion(latitud, longitud);
+        LocalDateTime fechaHecho = LocalDate.parse(fecha, FORMATO_FECHA).atStartOfDay();
+        Ubicacion nuevaUbi = new Ubicacion();
+        nuevaUbi.setLatitud(latitud);
+        nuevaUbi.setLongitud(longitud);
 
-        DatosHechos data = new DatosHechos(titulo,descripcion, categoria, nuevaUbi, fechaHecho);
+        Categoria cat =  new Categoria(categoria);
+        DatosHechos data = new DatosHechos(titulo,descripcion, cat, nuevaUbi, fechaHecho);
         return Hecho.create(data);
     }
 

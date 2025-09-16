@@ -1,6 +1,8 @@
 package entities.solicitudes;
 
-import entities.usuarios.Contribuyente;
+import entities.hechos.Hecho;
+import entities.usuarios.Usuario;
+import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,25 +13,39 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
+@Entity
+@Table( name ="solicitud_eliminacion")
 public class SolicitudEliminacion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long idHecho;
-    private Contribuyente solicitante;
 
+    @ManyToOne
+    @JoinColumn(name = "hecho_id")
+    private Hecho hecho;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario solicitante;
+
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaDeCreacion;
-    private LocalDateTime fechaDeEvaluacion;
 
+    @Column(name = "justificacion")
     private String justificacion;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "solicitud_id")
     private List<EstadoSolicitud> estados;
 
-    public SolicitudEliminacion(String justificacion,Long idHecho, Contribuyente solicitante) {
+    public SolicitudEliminacion(String justificacion,Hecho hecho, Usuario solicitante) {
         this.justificacion = justificacion;
-        this.idHecho = idHecho;
+        this.hecho = hecho;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estados = new ArrayList<>();
         if(DetectorDeSpam.getInstance().isSpam(justificacion)) {
-            this.estados.add(new EstadoSolicitud(null, PosibleEstadoSolicitud.RECHAZADA));
+            this.marcarComoSpam();
         }else{
             this.estados.add(new EstadoSolicitud(null,PosibleEstadoSolicitud.PENDIENTE));
         }
@@ -42,7 +58,8 @@ public class SolicitudEliminacion {
         this.estados.add(estado);
     }
 
-    public PosibleEstadoSolicitud getEstado() {
-        return this.estados.get(estados.size() - 1).getEstado();
+    public void marcarComoSpam() {
+        this.estados.add(new EstadoSolicitud(null, PosibleEstadoSolicitud.RECHAZADA));
+        this.estados.get(this.estados.size() - 1).setSpam(true);
     }
 }

@@ -1,12 +1,16 @@
 package entities.colecciones;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @Getter
+@Embeddable
 public class Handle {
-    private final String value;
+    @Column(name = "handle")
+    private String value;
 
     public Handle() {
         // Genera un UUID y lo convierte a un string alfanumérico (sin guiones)

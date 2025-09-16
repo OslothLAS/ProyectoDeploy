@@ -1,21 +1,10 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
-import entities.solicitudes.PosibleEstadoSolicitud;
 import entities.solicitudes.SolicitudEliminacion;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface ISolicitudEliminacionRepository {
-
-    Long save(SolicitudEliminacion solicitud);
-
-    Optional<SolicitudEliminacion> findById(Long id);
-
-    List<SolicitudEliminacion> findAll();
-
-    List<SolicitudEliminacion> findByEstado(PosibleEstadoSolicitud estado);
-
-    void deleteSolicitud(SolicitudEliminacion solicitud);
-
+public interface ISolicitudEliminacionRepository extends JpaRepository<SolicitudEliminacion, Long> {
+    @Query("SELECT COUNT(s) FROM SolicitudEliminacion s JOIN s.estados e WHERE e.estado = 'RECHAZADA' AND e.spam = TRUE")
+    Long countSolicitudesSpam();
 }

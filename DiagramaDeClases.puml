@@ -1,71 +1,73 @@
 @startuml
 
 class Hecho {
-     -titulo: String
-     -descripcion: String
-     -autor: String
-     -colecciones: Map<Coleccion, Boolean>
-     -categoria: Categoria
-     -fechaHecho: LocalDate
-     -fechaCarga: LocalDate
-     -ubicacion: Ubicacion
-     -origenCarga: OrigenHecho
-     -origenFuente: TipoFuente
+     -id: Long
+     -autor: Usuario
+     -esValido: Boolean
+     -datosHechos: DatosHechos
      -multimedia: List<Multimedia>
+     -etiquetas: List<String>
+     -colecciones: List<Coleccion>
+     -handles: List<Handle>
+     -origen: Origen
+     -fuenteOrigen: FuenteOrigen
+     -mostrarDatos: Boolean
+     -fechaCreacion: LocalDateTime
+     -plazoEdicion: Duration
      -esEditable: Boolean
-     -esValido: boolean
-}
+     -esConsensuado: Boolean
 
+     +normalizarHecho(): void
+     +addColeccion(Coleccion): void
+
+
+}
 class Coleccion {
+    -id: Long
     -titulo: String
     -descripcion: String
-    -fuentes: List<Fuente>
-    -categoria: String
-    -handle: Handle
-    -fechaInicio: LocalDate
-    -fechaFin: LocalDate
+    -importadores: List<Fuente>
     -criteriosDePertenencia: List<CriterioDePertenencia>
-    -algoritmoConsenso: IAlgoritmoDeConsenso
-    +navegarHechos(modoNavegacion: TipoModoNavegacion): List<Hecho>
-    +filtrarHechos(filtros: List<CriterioDePertenencia>)
-    +consensuarHechos():void
-    +agregarFuente(fuente: Fuente): void
-    +quitarFuente(fuente: Fuente): void
-}
+    -handle: Handle
+    -fechaYHoraDeActualizacion: LocalDateTime
+    -consenso: IAlgoritmoDeConsenso
 
-enum TipoModoNavegacion {
-    IRRESTRICTA
-    CURADA
+    +cumpleCriterios(Hecho): boolean
+    +setCriteriosDePertenencia(List<CriterioDePertenencia>): void
+    +agregarImportador(Fuente): void
 }
-
 
 interface IAlgoritmoDeConsenso {
     +consensuarhechos(hechos: List<Hecho>): List<Hecho>
 }
 
-class Multiplesmenciones implements IAlgoritmoDeConsenso {
+class multiplesmenciones implements IAlgoritmoDeConsenso {
     +consensuarhechos(hechos: List<Hecho>): List<Hecho>
 }
 
-class MayoriaSimple implements IAlgoritmoDeConsenso {
+class mayoriaSimple implements IAlgoritmoDeConsenso {
     +consensuarhechos(hechos: List<Hecho>): List<Hecho>
 }
 
-class Absoluta implements IAlgoritmoDeConsenso {
+class absoluta implements IAlgoritmoDeConsenso {
     +consensuarhechos(hechos: List<Hecho>): List<Hecho>
 }
+
+
+
+
+
 
 class Fuente{
     -webClient: WebClient
-    -tipoFuente: TipoFuente
     +obtenerHechos(criterios: List<CriterioDePertenencia>)
 }
 
 class Importador{
     -pathArchivos: List<String>;
-    -estrategiasPorExtension: Map<String, EstrategiaExtraccionHecho>
-    +obtenerHechos(): List<Hecho>
-    +procesarArchivo(pathArchivo, extension): List<Hecho>
+    -EstrategiaExtraccionHechos: EstrategiaExtraccionHechos
+    +obtenerHechos(): map<String,Hecho>
+    +csvExtractor(hechos, pathArchivos): FuenteEstatica
 }
 
 
@@ -94,26 +96,49 @@ class CriterioPorUbicacion implements CriterioDePertenencia {
 
 
  class Ubicacion {
-    -latitud: Double
-    -longitud: Double
+   -id: Long
+   -latitud: Double
+   -longitud: Double
+   -localidad: Localidad
+ }
+
+class Provincia {
+    -id: Long
+    -nombre: String
+
 }
 
+class Localidad {
+    -id: Long
+    -provincia: Provincia
+    -nombre: String
+
+}
 
 class SolicitudEliminacion{
-    -solicitante: Contribuyente
+
+    -id:Long
     -hecho: Hecho
+    -solicitante: Usuario
+    -justificacion: String
+    -fechaDeCreacion: LocalDateTime
     -justificacion: String
     -estados: List<EstadoSolicitud>
-    +cambiarEstadoSolicitud(estado): void
-    +validarJustificacion(justificacion): string
+
+    +cambiarEstadoSolicitud(EstadoSolicitud): void
+    -marcarComoSpam(): void
 }
 
+
 class EstadoSolicitud{
-    -evaluador: Administrador
-    -fechaDeCreacion: LocalDateTime
-    -fechaDeEvaluacion: LocalDateTime
+    -id: Long
+    -evaluador: Usuario
     -estado: PosibleEstadoSolicitud
-    +calcularTiempoDeRespuesta(fechaDeCreacion,fechaDeEvaluacion): Long
+    -fechaDeCreacion: LocalDateTime
+    -fechaDeCambio: LocalDateTime
+    -spam: Boolean
+
+    -calcularTiempoRespuesta(LocalDateTime, LocalDateTime)
 }
 
 enum PosibleEstadoSolicitud {
@@ -123,16 +148,18 @@ enum PosibleEstadoSolicitud {
 }
 
 class Handle{
-    -value: String
-    +equals()
-    +hashCode()
-    +toString(): String
+-value: String
++equals()
++hashCode()
++toString(): String
 }
 
 
 class Categoria{
-    -nombre: String
+-nombre: String
 }
+
+
 
 class Multimedia{
     -urlImagen: string
@@ -146,18 +173,24 @@ enum OrigenHecho {
 }
 
 enum TipoFuente{
-    PROXY
-    DINAMICA
-    ESTATICA
+PROXY,
+DINAMICA,
+ESTATICA
 }
+
+
+
+
 
 interface EstrategiaExtraccionHechos{
-    +obtenerHechosDesde(pathArchivo): List<Hecho>
+    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
 }
 
+
 class EstrategiaExtraccionHechosCSV implements EstrategiaExtraccionHechos{
-    +obtenerHechosDesde(pathArchivo): List<Hecho>
+    +obtenerHechosDesde(pathArchivo): map<String,Hecho>
 }
+
 
 class Contribuyente{
    -nombre: String
@@ -167,19 +200,17 @@ class Contribuyente{
 }
 
 class Administrador{
+   -id: Long
    -nombre: String
-   -apellido: String
-   -fechaDeNacimiento: LocalDate
 }
 
 interface IDetectorSpam{
-    +isSpam(justificacion: String)
++detectarSpam(justificacion: String)
 }
 
 class DetectorSpam implements IDetectorSpam{
-    +isSpam(justificacion: String)
++detectarSpam(justificacion: String)
 }
-
 
 
 
@@ -191,11 +222,10 @@ class DetectorSpam implements IDetectorSpam{
     Hecho --> OrigenHecho
     Hecho --> TipoFuente
     Hecho --> "*"Coleccion
+    Hecho -->"*" Handle
 
-    Coleccion --> TipoModoNavegacion
-    Coleccion --> Fuente
+    Coleccion -->"*" Fuente
     Coleccion -->"*" CriterioDePertenencia
-    Fuente --> TipoFuente
     SolicitudEliminacion --> Hecho
     SolicitudEliminacion --> Contribuyente
     Importador --> EstrategiaExtraccionHechos
@@ -204,8 +234,8 @@ class DetectorSpam implements IDetectorSpam{
     EstadoSolicitud --> Administrador
     Coleccion --> Handle
     Coleccion --> IAlgoritmoDeConsenso
-
-
+    Ubicacion --> Localidad
+    Localidad --> Provincia
 
 
 @enduml

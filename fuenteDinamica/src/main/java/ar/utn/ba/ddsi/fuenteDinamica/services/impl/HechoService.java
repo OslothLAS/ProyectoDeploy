@@ -1,17 +1,22 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
 
+import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ICategoriaRepository;
+import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IProvinciaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IUsuarioRepository;
 import config.HechoProperties;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
 import entities.factories.CriterioDePertenenciaFactory;
+import entities.hechos.Categoria;
 import entities.hechos.DatosHechos;
 import entities.hechos.Hecho;
+import entities.hechos.Provincia;
 import entities.usuarios.Usuario;
-import entities.usuarios.Visualizador;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 import java.time.Duration;
@@ -27,28 +32,47 @@ public class HechoService implements IHechoService {
     private HechoProperties hechoProperties;
     private final IHechoRepository hechoRepository;
     private final IUsuarioRepository usuarioRepository;
-
-    public HechoService(IHechoRepository hechoRepository,IUsuarioRepository usuarioRepository) {
+    private final ICategoriaRepository categoriaRepository;
+    private final IProvinciaRepository provinciaRepository;
+    public HechoService(IHechoRepository hechoRepository,IUsuarioRepository usuarioRepository, ICategoriaRepository categoriaRepository,IProvinciaRepository provinciaRepository) {
         this.hechoRepository = hechoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.provinciaRepository = provinciaRepository;
     }
+
+    @Transactional
     @Override
     public void crearHecho(HechoInputDTO hechoDTO) {
         DatosHechos datos = hechoDTO.getDatosHechos();
 
-        if(hechoDTO.getIdUsuario() != null) { //si tiene ID => es contribuyente
-            Usuario usuario = usuarioRepository.findById(hechoDTO.getIdUsuario())
-                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el usuario con ID: " + hechoDTO.getIdUsuario()));
+        Categoria categoria = datos.getCategoria();
+        Categoria categoriaPersistida = categoriaRepository.findByCategoriaNormalizada(categoria.getCategoriaNormalizada())
+                .orElseGet(() -> {
+                    try {
+                        return categoriaRepository.save(categoria);
+                    } catch (DataIntegrityViolationException e) {
+                        return categoriaRepository.findByCategoriaNormalizada(categoria.getCategoriaNormalizada())
+                                .orElseThrow(() -> new IllegalStateException("Error al recuperar categoría existente", e));
+                    }
+                });
+        datos.setCategoria(categoriaPersistida);
+
+        Provincia provincia = this.provinciaRepository.findById(hechoDTO.getDatosHechos().getUbicacion().getLocalidad().getProvincia().getId())
+                .orElseThrow(() -> new RuntimeException("No se encontró la provincia"));
+
+        datos.getUbicacion().getLocalidad().setProvincia(provincia);
+
+        if(hechoDTO.getId() != null) { //si tiene ID => es contribuyente
+            Usuario usuario = usuarioRepository.findById(hechoDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el usuario con ID: " + hechoDTO.getId()));
             Hecho hecho = Hecho.create(datos, usuario,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
             hecho.setEsEditable(true);
             hecho.setPlazoEdicion(Duration.ofDays(hechoProperties.getPlazoEdicionDias()));
             this.hechoRepository.save(hecho);
         } else{
-            if(hechoDTO.getNombre() == null) {// si la request no tiene ID => es visualizador
-                throw new IllegalArgumentException("El campo 'nombre' es obligatorio para usuarios anónimos");
-            }
-            Visualizador visualizador = new Visualizador(hechoDTO.getNombre(),hechoDTO.getApellido(),hechoDTO.getFechaDeNacimiento());
-            Hecho hecho = Hecho.create(datos,visualizador);
+//          Visualizador visualizador = new Visualizador(hechoDTO.getNombre(),hechoDTO.getApellido(),hechoDTO.getFechaDeNacimiento());
+            Hecho hecho = Hecho.create(datos);
             hecho.setEsEditable(false);
             this.hechoRepository.save(hecho);
         }
@@ -58,12 +82,12 @@ public class HechoService implements IHechoService {
     public void editarHecho(Long idHecho, HechoInputDTO dto) throws Exception {
         Hecho hecho = hechoRepository.findById(idHecho)
                 .orElseThrow(Exception::new);
-
-        if (!hecho.getUsuario().getRegistrado()) {
+/*
+        if (!hecho.getAutor().getRegistrado()) {
             throw new Exception("Usuarios anonimos no pueden editar hechos");
         }
-
-        if(!hecho.getUsuario().getId().equals(dto.getIdUsuario())) {
+*/
+        if(!hecho.getAutor().getId().equals(dto.getId())) {
             throw new Exception("Solo el autor del hecho puede modificarlo");
         }
 
@@ -118,13 +142,10 @@ public class HechoService implements IHechoService {
                 .collect(Collectors.toList());
     }
     public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
-        Optional<Hecho> hechoInvalido = hechoRepository.findByTituloyDescripcion(titulo, descripcion);
+        Optional<Hecho> hechoInvalido = hechoRepository.findByDatosHechosTituloAndDatosHechosDescripcion(titulo, descripcion);
         hechoInvalido.ifPresent(hecho -> {
             hecho.setEsValido(false);
             hechoRepository.save(hecho);
         });
     }
-
-
-
 }

@@ -3,36 +3,56 @@ package entities.colecciones;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import entities.criteriosDePertenencia.CriterioDePertenencia;
+import entities.dtos.HechoOutputDTO;
 import entities.hechos.FuenteOrigen;
 import entities.hechos.Hecho;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-
-
+import utils.HechoUtil;
 import java.util.List;
 import java.util.Map;
 
+@NoArgsConstructor(force = true)
+@Getter
+@Entity
+@Table(name = "fuente")
 public class Fuente{
-    private final WebClient webClient;
-    @Getter
-    private final FuenteOrigen origenHechos;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Getter
-    private final long id;
+    @Column(name = "ip")
+    private String ip;
+
+    @Column(name = "puerto")
+    private String puerto;
+
+    public WebClient webClient() {
+        return WebClient.builder()
+                .baseUrl("http://" + ip + ":" + puerto)
+                .build();
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nombre")
+    private FuenteOrigen origenHechos;
 
     @JsonCreator
     public Fuente(@JsonProperty("ip") String ip, @JsonProperty("puerto") String puerto,@JsonProperty("id") Long id) { // el id no va
         this.id = id;
-        this.webClient = WebClient.builder().baseUrl("http://" +ip+ ":" +puerto).build();
+        this.ip = ip;
+        this.puerto = puerto;
         this.origenHechos = this.determinarOrigen();
     }
 
     private FuenteOrigen determinarOrigen() {
         try {
-            assert webClient != null;
-            String tipoServicio = webClient.get()
+            assert this.webClient() != null;
+            String tipoServicio = this.webClient().get()
                     .uri("/api/hechos/origen") // Endpoint que debe existir en cada servicio
                     .retrieve()
                     .bodyToMono(String.class)
@@ -51,13 +71,14 @@ public class Fuente{
     }
 
     public List<Hecho> obtenerHechos(List<CriterioDePertenencia> criterios) {
-        WebClient.RequestHeadersUriSpec<?> requestSpec = webClient.get();
+        WebClient.RequestHeadersUriSpec<?> requestSpec = this.webClient().get();
 
         if (criterios == null || criterios.isEmpty()) {
             return requestSpec
                     .uri("/api/hechos")
                     .retrieve()
-                    .bodyToFlux(Hecho.class)
+                    .bodyToFlux(HechoOutputDTO.class)
+                    .map(HechoUtil::hechoDTOtoHecho)
                     .collectList()
                     .block();
         }
@@ -70,7 +91,8 @@ public class Fuente{
                             .build();
                 })
                 .retrieve()
-                .bodyToFlux(Hecho.class)
+                .bodyToFlux(HechoOutputDTO.class)
+                .map(HechoUtil::hechoDTOtoHecho)
                 .collectList()
                 .block();
 
@@ -94,7 +116,7 @@ public class Fuente{
 
     public void invalidarHecho(String titulo, String descripcion) {
         try {
-            this.webClient
+            this.webClient()
                     .put()
                     .uri(uriBuilder -> uriBuilder
                             .path("/api/hechos/invalidar")

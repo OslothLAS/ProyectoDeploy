@@ -1,10 +1,8 @@
 package ar.utn.frba.ddsi.agregador.dtos.output;
 
 import entities.solicitudes.EstadoSolicitud;
-import entities.solicitudes.PosibleEstadoSolicitud;
-import entities.usuarios.Contribuyente;
+import entities.usuarios.Usuario;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,7 +10,7 @@ import java.util.List;
 public class SolicitudOutputDTO {
 
     private Long id;
-    private Contribuyente solicitante;
+    private Usuario solicitante;
     private LocalDateTime fechaDeCreacion;
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;

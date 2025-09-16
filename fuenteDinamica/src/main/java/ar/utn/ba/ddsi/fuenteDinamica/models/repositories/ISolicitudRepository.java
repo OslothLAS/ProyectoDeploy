@@ -1,15 +1,8 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories;
 
 
-import entities.solicitudes.PosibleEstadoSolicitud;
 import entities.solicitudes.SolicitudEliminacion;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface ISolicitudRepository {
-    void save(SolicitudEliminacion solicitud);
-    Optional<SolicitudEliminacion> findById(Long id);
-    List<SolicitudEliminacion> findAll();
-    List<SolicitudEliminacion> findByEstado(PosibleEstadoSolicitud estado);
+public interface ISolicitudRepository extends JpaRepository<SolicitudEliminacion, Long>{
 }

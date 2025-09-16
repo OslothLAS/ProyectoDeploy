@@ -10,16 +10,14 @@ import java.util.Map;
 @Setter
 @Getter
 public class HechoDto {
-
-    // Getters
-    private Long id;
     private String titulo;
     private String descripcion;
     private String categoria;
     private Double latitud;
     private Double longitud;
     private Boolean esValido;
-    private Map<Handle,Boolean> colecciones = new HashMap<>();
+    private Boolean esConsensuado;
+    private List<Handle> colecciones = new ArrayList<>();
 
     @JsonProperty("fecha_hecho")
     private String fechaHecho;
