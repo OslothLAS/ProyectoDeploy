@@ -8,9 +8,7 @@ import lombok.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -75,21 +73,19 @@ public class Hecho {
     @Transient
     private Boolean esConsensuado;
 
-
     public static Hecho create(DatosHechos datosHechos){
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
                 .etiquetas(new ArrayList<>())
-                .fechaCarga(LocalDateTime.now())
-                .origenCarga(Origen.DATASET)
-                .colecciones(new HashMap<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.DATASET)
+                .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
 
-
     public static Hecho create(DatosHechos datosHechos,List<Coleccion> colecciones ,List<Handle> handles, Boolean esConsensuado) {
-
         return Hecho.builder()
                 .datosHechos(datosHechos)
                 .esValido(true)
@@ -98,6 +94,7 @@ public class Hecho {
                 .origen(Origen.EXTERNO)
                 .handles(handles)
                 .colecciones(colecciones)
+                .esConsensuado(esConsensuado)
                 .build();
     }
 
@@ -120,8 +117,9 @@ public class Hecho {
                 .esValido(true)
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
-                .fechaCarga(LocalDateTime.now())
-                .colecciones(new HashMap<>())
+                .fechaCreacion(LocalDateTime.now())
+                .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
     //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
@@ -133,29 +131,30 @@ public class Hecho {
                 .multimedia(multimedia)
                 .etiquetas(new ArrayList<>())
                 .mostrarDatos(mostrarDatos)
-                .fechaCarga(LocalDateTime.now())
-                .origenCarga(Origen.CONTRIBUYENTE)
-                .colecciones(new HashMap<>())
+                .fechaCreacion(LocalDateTime.now())
+                .origen(Origen.CONTRIBUYENTE)
+                .colecciones(new ArrayList<>())
+                .esConsensuado(false)
                 .build();
     }
 
 
     public void addEtiqueta(String etiqueta) {
-            this.etiquetas.add(etiqueta);
+        this.etiquetas.add(etiqueta);
     }
 
     public void addColeccion(Coleccion coleccion) {
         if (this.colecciones == null) {
-            this.colecciones = new HashMap<>();
+            this.colecciones = new ArrayList<>();
         }
-        this.colecciones.put(coleccion, Boolean.TRUE);
+        this.colecciones.add(coleccion);
     }
 
     public Boolean esEditable() {
         if (!this.esEditable) {
             return false;
         }
-        LocalDateTime fechaLimite = this.fechaCarga.plus(this.plazoEdicion);
+        LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 

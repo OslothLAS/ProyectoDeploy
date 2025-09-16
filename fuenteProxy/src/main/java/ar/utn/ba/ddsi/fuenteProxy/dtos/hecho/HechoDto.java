@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import entities.colecciones.Handle;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter

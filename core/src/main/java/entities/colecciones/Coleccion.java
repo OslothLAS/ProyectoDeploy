@@ -30,8 +30,8 @@ public class Coleccion {
 
     @ManyToMany(cascade =  CascadeType.ALL)
     @JoinTable(name = "fuentes_coleccion",
-        joinColumns = @JoinColumn(name = "coleccion_id"),
-        inverseJoinColumns = @JoinColumn(name = "fuente_id")
+            joinColumns = @JoinColumn(name = "coleccion_id"),
+            inverseJoinColumns = @JoinColumn(name = "fuente_id")
     )
     private List<Fuente> importadores;
 
@@ -43,26 +43,25 @@ public class Coleccion {
     private Handle handle;
 
     @Column(name = "fecha_actualizacion")
-
     private LocalDateTime fechaYHoraDeActualizacion;
 
     @Convert(converter = AlgoritmoConsensoConverter.class) //testear!!
     private IAlgoritmoConsenso consenso;
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia, IAlgoritmoConsenso consenso) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia, IAlgoritmoConsenso consenso) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.fuentes = fuentes;
+        this.importadores = importadores;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
         this.consenso = consenso;
     }
 
-    public Coleccion(String titulo, String descripcion, List<Fuente> fuentes, List<CriterioDePertenencia> criteriosDePertenencia) {
+    public Coleccion(String titulo, String descripcion, List<Fuente> importadores, List<CriterioDePertenencia> criteriosDePertenencia) {
         this.titulo = titulo;
         this.descripcion = descripcion;
-        this.fuentes = fuentes;
+        this.importadores = importadores;
         this.criteriosDePertenencia = criteriosDePertenencia;
         this.handle = new Handle();
         this.fechaYHoraDeActualizacion = LocalDateTime.now();
@@ -77,14 +76,9 @@ public class Coleccion {
         if (criterios != null) {
             criteriosDePertenencia.addAll(criterios);
         }
-
     }
 
-    public void agregarFuente(Fuente fuente) {
-        this.fuentes.add(fuente);
-    }
-
-    public void quitarFuente(Fuente fuente) {
-        this.fuentes.remove(fuente);
+    public void agregarImportador(Fuente fuente) {
+        this.importadores.add(fuente);
     }
 }

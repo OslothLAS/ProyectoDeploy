@@ -211,7 +211,7 @@ public class ColeccionService implements IColeccionService {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
             .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
-        coleccion.agregarFuente(fuenteDTOtoFuente(fuenteDTO));
+        coleccion.agregarImportador(fuenteDTOtoFuente(fuenteDTO));
     }
 
     @Override
