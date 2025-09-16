@@ -52,28 +52,102 @@ public class ColeccionService implements IColeccionService {
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
         List<Fuente> importadores = coleccionDTO.getFuentes();
-        List<CriterioDePertenencia> criterios = new ArrayList<>();
+        List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
 
-        if(coleccionDTO.getCriterios() != null && !coleccionDTO.getCriterios().isEmpty()) {
-            criterios = coleccionDTO.getCriterios().stream().toList();
-            for (CriterioDePertenencia criterio : criterios) {
-                if (criterio instanceof CriterioPorCategoria catCriterio) { // Asumiendo que tienes una subclase como CriterioPorCategoria; ajusta si es diferente
-                    String nombreCategoria = catCriterio.getCategoria().getCategoria();
-                    Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
-                    catCriterio.setCategoria(categoriaExistente);
+        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
+        nuevaColeccion.setCriteriosDePertenencia(criterios);
+        this.coleccionRepository.save(nuevaColeccion);
+
+        List<Hecho> hechos = this.procesarHechos(importadores, criterios, nuevaColeccion);
+
+        this.hechoRepository.saveAll(hechos); //ver si con null se puede, supongo que si
+    }
+
+    private List<CriterioDePertenencia> obtenerCriterios(List<CriterioDePertenencia> criteriosOriginal) {
+        if (criteriosOriginal == null || criteriosOriginal.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<CriterioDePertenencia> criteriosProcesados = new ArrayList<>();
+
+        for (CriterioDePertenencia criterio : criteriosOriginal) {
+            if (criterio instanceof CriterioPorCategoria catCriterio) {
+                String nombreCategoria = catCriterio.getCategoria().getCategoria();
+                Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
+                catCriterio.setCategoria(categoriaExistente);
+            }
+            criteriosProcesados.add(criterio);
+        }
+
+        return criteriosProcesados;
+    }
+
+    private List<Hecho> procesarHechos(List<Fuente> fuentes, List<CriterioDePertenencia> criterios, Coleccion coleccion) {
+        List<Hecho> todosLosHechos = fuentes.parallelStream()
+                .flatMap(fuente ->
+                        fuente.obtenerHechos(criterios).stream()
+                                .peek(hecho -> hecho.setFuenteOrigen(fuente.getOrigenHechos()))
+                )
+                .collect(Collectors.toList());
+
+        if (todosLosHechos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        normalizarHechos(todosLosHechos);
+        return todosLosHechos.stream()
+                .peek(h -> h.addColeccion(coleccion))
+                .collect(Collectors.toList());
+    }
+
+    public void normalizarHechos(List<Hecho> hechos){
+        Map<String, Ubicacion> ubicacionesPorClave = new HashMap<>();
+
+        hechos.parallelStream().forEach(Hecho::normalizarHecho);
+
+        Set<String> clavesUbicacion = new HashSet<>();
+        for (Hecho hecho : hechos) {
+            if (hecho.getDatosHechos().getUbicacion() != null) {
+                Ubicacion ub = hecho.getDatosHechos().getUbicacion();
+                String clave = ub.getLatitud() + "," + ub.getLongitud();
+                clavesUbicacion.add(clave);
+                ubicacionesPorClave.put(clave, ub);
+            }
+        }
+
+        if (!clavesUbicacion.isEmpty()) {
+            List<Ubicacion> ubicacionesExistentes = ubicacionRepository.findByLatitudAndLongitudIn(clavesUbicacion);
+
+            for (Ubicacion ubi : ubicacionesExistentes) {
+                String clave = ubi.getLatitud() + "," + ubi.getLongitud();
+                ubicacionesPorClave.put(clave, ubi);
+            }
+
+            List<Ubicacion> nuevasUbicaciones = ubicacionesPorClave.values().stream()
+                    .filter(ub -> ub.getId() == null)
+                    .collect(Collectors.toList());
+
+            if (!nuevasUbicaciones.isEmpty()) {
+                List<Ubicacion> guardadas = ubicacionRepository.saveAll(nuevasUbicaciones);
+
+                for (Ubicacion guardada : guardadas) {
+                    String clave = guardada.getLatitud() + "," + guardada.getLongitud();
+                    ubicacionesPorClave.put(clave, guardada);
                 }
             }
         }
-        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
-        nuevaColeccion.setCriteriosDePertenencia(criterios);
-        coleccionRepository.save(nuevaColeccion);
 
-        List<Hecho> todosLosHechos = this.tomarHechosFuentes(importadores, criterios);
-        this.normalizarHechos(todosLosHechos);
-        List<Hecho> hechos = asignarColeccionAHechos(todosLosHechos, nuevaColeccion);
+        for (Hecho hecho : hechos) {
+            if (hecho.getDatosHechos().getUbicacion() != null) {
+                Ubicacion ub = hecho.getDatosHechos().getUbicacion();
+                String clave = ub.getLatitud() + "," + ub.getLongitud();
+                hecho.getDatosHechos().setUbicacion(ubicacionesPorClave.get(clave));
+            }
 
-        hechoRepository.saveAll(hechos);
-        coleccionRepository.save(nuevaColeccion);
+            String nombreCategoria = hecho.getDatosHechos().getCategoria().getCategoria();
+            Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
+            hecho.getDatosHechos().setCategoria(categoriaExistente);
+        }
     }
 
     public List<Coleccion> getColecciones(){
@@ -148,28 +222,6 @@ public class ColeccionService implements IColeccionService {
         coleccion.getImportadores().removeIf(fuente -> Objects.equals(fuente.getId(), idFuente));
     }
 
-    public void normalizarHechos(List<Hecho> hechos){
-
-        for (Hecho hecho : hechos) {
-            hecho.normalizarHecho();
-            if(hecho.getDatosHechos().getUbicacion() != null){
-                Ubicacion ubicacion = ubicacionRepository
-                        .findByLatitudAndLongitud(
-                                hecho.getDatosHechos().getUbicacion().getLatitud(),
-                                hecho.getDatosHechos().getUbicacion().getLongitud()
-                        )
-                        .orElseGet(() -> {
-                            Ubicacion nuevaUbicacion = hecho.getDatosHechos().getUbicacion();
-                            return ubicacionRepository.save(nuevaUbicacion);
-                        });
-                hecho.getDatosHechos().setUbicacion(ubicacion);
-            }
-
-            String nombreCategoriaNormalizada = hecho.getDatosHechos().getCategoria().getCategoria();
-            Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoriaNormalizada);
-            hecho.getDatosHechos().setCategoria(categoriaExistente);
-        }
-    }
 
     @Override
     public void actualizarHechos(){
