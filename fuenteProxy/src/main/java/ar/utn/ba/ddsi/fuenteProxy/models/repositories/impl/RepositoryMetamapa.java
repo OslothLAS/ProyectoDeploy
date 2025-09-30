@@ -1,10 +1,8 @@
-package ar.utn.ba.ddsi.fuenteProxy.repositories.impl;
+package ar.utn.ba.ddsi.fuenteProxy.models.repositories.impl;
 
-import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
-import entities.Metamapa;
-import entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.Metamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.repositories.IRepositoryMetamapa;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

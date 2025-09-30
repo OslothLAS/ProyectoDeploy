@@ -1,13 +1,11 @@
 package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
-
 import ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion.ColeccionDto;
-import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.Metamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.repositories.IRepositoryMetamapa;
 import ar.utn.ba.ddsi.fuenteProxy.services.IColeccionService;
-import entities.Metamapa;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.net.URI;
 import java.util.List;
 

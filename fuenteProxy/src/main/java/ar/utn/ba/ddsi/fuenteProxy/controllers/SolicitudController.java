@@ -2,13 +2,9 @@ package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudesInputDto;
-import ar.utn.ba.ddsi.fuenteProxy.services.IColeccionService;
 import ar.utn.ba.ddsi.fuenteProxy.services.ISolicitudService;
-import ar.utn.ba.ddsi.fuenteProxy.services.impl.ColeccionService;
 import ar.utn.ba.ddsi.fuenteProxy.services.impl.SolicitudService;
-import entities.colecciones.Coleccion;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

@@ -1,16 +1,14 @@
 package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
-
 import ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion.ColeccionDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion.ColeccionInputDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudesInputDto;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.hechos.Handle;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaAdminService;
 import ar.utn.ba.ddsi.fuenteProxy.services.impl.MetamapaAdminService;
-import entities.colecciones.Handle;
-import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
