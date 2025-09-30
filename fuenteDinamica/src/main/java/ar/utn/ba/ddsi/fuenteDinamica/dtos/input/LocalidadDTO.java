@@ -12,4 +12,5 @@ import lombok.Setter;
 public class LocalidadDTO {
     private String nombre;
     private ProvinciaDTO provincia;
+    
 }
