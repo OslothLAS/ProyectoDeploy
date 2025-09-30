@@ -1,10 +1,9 @@
 package ar.utn.ba.ddsi.fuenteProxy.controllers;
 
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.hechos.Handle;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
-import entities.colecciones.Handle;
-import entities.hechos.Hecho;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
