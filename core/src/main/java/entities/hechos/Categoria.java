@@ -10,11 +10,12 @@ import lombok.Setter;
 import static utils.NormalizadorTexto.normalizarTrimTexto;
 
 @NoArgsConstructor
-@Entity
-@Table(name = "categoria")
+
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "categoria")
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

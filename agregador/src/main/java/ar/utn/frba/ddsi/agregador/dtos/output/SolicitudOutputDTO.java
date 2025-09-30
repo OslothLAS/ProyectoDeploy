@@ -1,7 +1,8 @@
 package ar.utn.frba.ddsi.agregador.dtos.output;
 
-import entities.solicitudes.EstadoSolicitud;
-import entities.usuarios.Usuario;
+
+import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitud;
+import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;

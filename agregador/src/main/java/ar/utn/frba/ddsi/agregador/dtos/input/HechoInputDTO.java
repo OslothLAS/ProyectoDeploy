@@ -1,10 +1,11 @@
 package ar.utn.frba.ddsi.agregador.dtos.input;
 
-import entities.colecciones.Coleccion;
-import entities.colecciones.Handle;
-import entities.hechos.FuenteOrigen;
-import entities.hechos.Multimedia;
-import entities.hechos.Origen;
+
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Handle;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.FuenteOrigen;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Multimedia;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Origen;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

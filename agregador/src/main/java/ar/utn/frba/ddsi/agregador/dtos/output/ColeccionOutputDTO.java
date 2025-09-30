@@ -1,7 +1,8 @@
 package ar.utn.frba.ddsi.agregador.dtos.output;
 
-import entities.criteriosDePertenencia.CriterioDePertenencia;
-import entities.colecciones.Fuente;
+
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
+import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import lombok.Data;
 import lombok.Setter;
 

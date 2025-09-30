@@ -2,10 +2,10 @@ package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
-import entities.colecciones.Coleccion;
-import entities.colecciones.consenso.strategies.TipoConsenso;
-import entities.dtos.HechoOutputDTO;
-import entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.dtos.input.HechoOutputDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;

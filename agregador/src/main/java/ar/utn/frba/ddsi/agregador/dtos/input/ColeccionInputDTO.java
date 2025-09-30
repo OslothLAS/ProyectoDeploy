@@ -1,8 +1,8 @@
 package ar.utn.frba.ddsi.agregador.dtos.input;
 
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
+import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import entities.colecciones.Fuente;
-import entities.criteriosDePertenencia.CriterioDePertenencia;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;

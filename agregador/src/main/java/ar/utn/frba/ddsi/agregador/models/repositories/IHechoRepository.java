@@ -1,7 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
-import entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
