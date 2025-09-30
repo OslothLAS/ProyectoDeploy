@@ -1,8 +1,8 @@
 package ar.utn.ba.ddsi.fuenteEstatica.entities;
 
 import ar.utn.ba.ddsi.fuenteEstatica.EstrategiasExtraccion.EstrategiaExtraccionHecho;
-import entities.Importador;
-import entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteEstatica.entities.hechos.Hecho;
+
 import ar.utn.ba.ddsi.fuenteEstatica.EstrategiasExtraccion.EstrategiaExtraccionHechoCSV;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Getter
 @Component
-public class ImportadorHechos implements Importador {
+public class ImportadorHechos {
     private final ConfigReader config;
     private final String[] pathArchivos;
     private final Map<String, EstrategiaExtraccionHecho> estrategiasPorExtension;
@@ -34,7 +34,7 @@ public class ImportadorHechos implements Importador {
                 String extension = utils.ExtensionReader.getFileExtension(pathArchivo);
                 List<Hecho> hechosDelArchivo = this.procesarArchivo(pathArchivo, extension);
                 for (Hecho hecho : hechosDelArchivo) {
-                    boolean valido = !clavesHechosInvalidos.contains(claveHecho(hecho.getDatosHechos().getTitulo(), hecho.getDatosHechos().getDescripcion()));
+                    boolean valido = !clavesHechosInvalidos.contains(claveHecho(hecho.getTitulo(), hecho.getDescripcion()));
                     hecho.setEsValido(valido);
                 }
                 hechos.addAll(hechosDelArchivo);

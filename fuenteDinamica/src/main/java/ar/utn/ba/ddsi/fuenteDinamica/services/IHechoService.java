@@ -1,7 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
-import entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
 
 import java.util.List;
 import java.util.Map;

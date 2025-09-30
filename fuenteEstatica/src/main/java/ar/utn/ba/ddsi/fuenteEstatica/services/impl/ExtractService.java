@@ -1,9 +1,9 @@
 package ar.utn.ba.ddsi.fuenteEstatica.services.impl;
 
+import ar.utn.ba.ddsi.fuenteEstatica.entities.criteriosDePertenencia.CriterioDePertenencia;
+import ar.utn.ba.ddsi.fuenteEstatica.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
+import ar.utn.ba.ddsi.fuenteEstatica.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteEstatica.entities.ImportadorHechos;
-import entities.criteriosDePertenencia.CriterioDePertenencia;
-import entities.factories.CriterioDePertenenciaFactory;
-import entities.hechos.Hecho;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.fuenteEstatica.services.IExtractService;
 import java.util.List;

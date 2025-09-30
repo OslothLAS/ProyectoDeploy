@@ -1,11 +1,8 @@
 package ar.utn.ba.ddsi.fuenteEstatica.EstrategiasExtraccion;
 
+import ar.utn.ba.ddsi.fuenteEstatica.entities.hechos.*;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import entities.hechos.Categoria;
-import entities.hechos.DatosHechos;
-import entities.hechos.Hecho;
-import entities.hechos.Ubicacion;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -80,9 +77,6 @@ public class EstrategiaExtraccionHechoCSV implements EstrategiaExtraccionHecho {
         nuevaUbi.setLongitud(longitud);
 
         Categoria cat =  new Categoria(categoria);
-        DatosHechos data = new DatosHechos(titulo,descripcion, cat, nuevaUbi, fechaHecho);
-        return Hecho.create(data);
+        return new Hecho(titulo,descripcion,cat,nuevaUbi,fechaHecho,null,Origen.DATASET,FuenteOrigen.ESTATICO,LocalDateTime.now(),true);
     }
-
-
 }

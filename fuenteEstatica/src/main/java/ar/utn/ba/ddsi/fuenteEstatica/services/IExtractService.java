@@ -1,7 +1,6 @@
 package ar.utn.ba.ddsi.fuenteEstatica.services;
 
-import entities.hechos.Hecho;
-
+import ar.utn.ba.ddsi.fuenteEstatica.entities.hechos.Hecho;
 import java.util.List;
 import java.util.Map;
 

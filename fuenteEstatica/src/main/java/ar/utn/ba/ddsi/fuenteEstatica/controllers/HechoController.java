@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.fuenteEstatica.controllers;
 
-import entities.dtos.HechoOutputDTO;
+import ar.utn.ba.ddsi.fuenteEstatica.entities.dtos.HechoOutputDTO;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.ba.ddsi.fuenteEstatica.services.IExtractService;
 import java.util.List;

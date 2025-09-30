@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.repositories;
 
-import entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
