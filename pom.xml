@@ -13,11 +13,13 @@
 
   <!-- futuros módulos van acá -->
   <modules>
-    <module>fuenteDinamica</module>
-    <module>fuenteEstatica</module>
-    <module>fuenteProxy</module>
-    <module>agregador</module>
+      <module>fuenteDinamica</module>
+      <module>fuenteEstatica</module>
+      <module>fuenteProxy</module>
+      <module>agregador</module>
       <module>estadisticas</module>
+      <module>servicioDeUsuarios</module>
+      <module>frontMetaMapa</module>
   </modules>
 
   <properties>

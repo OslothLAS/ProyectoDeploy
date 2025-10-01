@@ -11,7 +11,7 @@ import org.springframework.util.MultiValueMap;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        property = "tipo",
+        property = "rol",
         visible = true
 )
 @JsonSubTypes({
@@ -20,7 +20,7 @@ import org.springframework.util.MultiValueMap;
 @Entity
 @Table(name = "criterio_pertenencia")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "rol", discriminatorType = DiscriminatorType.STRING)
 @Getter
 public abstract class CriterioDePertenencia {
     @Id

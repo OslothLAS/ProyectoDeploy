@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
-import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Categoria;
@@ -34,7 +34,7 @@ public class HechoService implements IHechoService {
 
     @Transactional
     @Override
-    public void crearHecho(HechoInputDTO hechoDTO) {
+    public void crearHecho(HechoDTO hechoDTO) {
 
 
        /* Categoria categoria = new Categoria(hechoDTO.getCategoria());
@@ -71,7 +71,7 @@ public class HechoService implements IHechoService {
 }
 
 @Override
-public void editarHecho(Long idHecho, HechoInputDTO dto) throws Exception {
+public void editarHecho(Long idHecho, HechoDTO dto) throws Exception {
     Hecho hecho = hechoRepository.findById(idHecho)
             .orElseThrow(Exception::new);
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "tipo"
+        property = "rol"
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CriterioPorCategoriaDTO.class, name = "CriterioPorCategoria"),
