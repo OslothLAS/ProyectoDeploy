@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarse - MetaMapa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --primary-color: #0891b2;
+          --primary-hover: #0e7490;
+          --secondary-color: #f59e0b;
+          --text-color: #4b5563;
+          --text-light: #6b7280;
+          --background: #ffffff;
+          --surface: #f9fafb;
+          --border: #e5e7eb;
+          --shadow: 0 4px 6px rgba(0,0,0,0.05);
+          --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+          --error-color: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: var(--background);
+          color: var(--text-color);
+          line-height: 1.6;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        nav {
+          background: var(--background);
+          border-bottom: 1px solid var(--border);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          box-shadow: var(--shadow);
+        }
+
+        .nav-container {
+          max-width: 1200px;
+          margin: auto;
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .logo {
+          display: flex; align-items: center; gap: 0.5rem;
+          color: var(--primary-color); font-weight: 700;
+          font-size: 1.5rem; text-decoration: none;
+        }
+
+        .nav-links { display: flex; gap: 2rem; }
+
+        .nav-links a {
+          text-decoration: none; padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          color: var(--text-color); font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover { background: var(--primary-color); color: white; }
+
+        .register-container {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem;
+          background: linear-gradient(135deg, var(--surface) 0%, var(--background) 100%);
+        }
+
+        .register-card {
+          background: var(--background);
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          padding: 3rem;
+          box-shadow: var(--shadow-lg);
+          width: 100%;
+          max-width: 500px;
+        }
+
+        .register-header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .register-header h1 {
+          font-size: 2rem;
+          font-weight: 700;
+          color: var(--text-color);
+        }
+
+        .register-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.2rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.3rem;
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        .form-group input {
+          width: 100%;
+          padding: 0.875rem 1rem;
+          border: 1px solid var(--border);
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          background: var(--background);
+          transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(8,145,178,0.1);
+        }
+
+        .register-btn {
+          width: 100%;
+          padding: 1rem;
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          margin-top: 0.5rem;
+        }
+
+        .register-btn:hover { background: var(--primary-hover); }
+
+        .login-link {
+          text-align: center;
+          margin-top: 2rem;
+          border-top: 1px solid var(--border);
+          padding-top: 1.5rem;
+        }
+
+        .login-link a {
+          color: var(--primary-color);
+          text-decoration: none;
+          font-weight: 500;
+        }
+
+        footer {
+          background: var(--text-color);
+          color: white;
+          text-align: center;
+          padding: 2rem;
+          margin-top: auto;
+        }
+
+        .footer-links {
+          display: flex;
+          justify-content: center;
+          gap: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        footer a { color: var(--secondary-color); text-decoration: none; }
+        footer a:hover { color: white; }
+
+        @media(max-width: 600px) {
+          .register-card { padding: 2rem; }
+          .footer-links { flex-direction: column; gap: 1rem; }
+          .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <i data-lucide="map"></i> MetaMapa
+        </a>
+        <div class="nav-links">
+            <a href="v1.html">Inicio</a>
+            <a href="v1.html#nosotros">Nosotros</a>
+            <a href="v1.html#hechos">Explorar</a>
+            <a href="login.html">Acceso</a>
+        </div>
+    </div>
+</nav>
+
+<main class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h1>Crear Cuenta</h1>
+        </div>
+
+        <form class="register-form" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="apellido">Apellido</label>
+                <input type="text" id="apellido" name="apellido" placeholder="Tu apellido" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+            </div>
+
+            <div class="form-group">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" name="usuario" placeholder="Nombre de usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" name="email" placeholder="ejemplo@mail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required minlength="6">
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Contraseña</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repite la contraseña" required>
+            </div>
+
+            <button type="submit" class="register-btn">Registrarse</button>
+        </form>
+
+        <div class="login-link">
+            <p>¿Ya tienes una cuenta?</p>
+            <a href="login.html">Iniciar Sesión</a>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-links">
+        <a href="index.html#hechos">Explorar Hechos</a>
+        <a href="#">Política de Privacidad</a>
+        <a href="#">Términos de Uso</a>
+        <a href="#">Contacto</a>
+    </div>
+    <p>&copy; 2025 MetaMapa. Sistema de código abierto para el bien común.</p>
+</footer>
+
+<script>
+    lucide.createIcons();
+
+    function handleRegister(event) {
+      event.preventDefault();
+
+      const nombre = document.getElementById("nombre").value;
+      const apellido = document.getElementById("apellido").value;
+      const fechaNacimiento = document.getElementById("fechaNacimiento").value;
+      const usuario = document.getElementById("usuario").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (password !== confirmPassword) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+
+      console.log("Registro:", { nombre, apellido, fechaNacimiento, usuario, email, password });
+      alert("Registro en desarrollo. Datos enviados a la consola.");
+    }
+</script>
+</body>
+</html>

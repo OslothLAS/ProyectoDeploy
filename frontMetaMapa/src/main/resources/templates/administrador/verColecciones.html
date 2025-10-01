@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador - Colecciones | MetaMapa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --primary-color: #0891b2;
+          --primary-hover: #0e7490;
+          --danger: #dc2626;
+          --text-light: #6b7280;
+          --border: #e5e7eb;
+        }
+        body { font-family:'DM Sans', sans-serif; margin:0; background:#f9fafb; }
+        nav { background:white; border-bottom:1px solid var(--border); padding:1rem 2rem; position:sticky; top:0; z-index:100; }
+        .nav-container { max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-weight:700; font-size:1.5rem; color:var(--primary-color); text-decoration:none; }
+        main { max-width:1200px; margin:2rem auto; padding:1rem; }
+        h1 { font-size:2rem; margin-bottom:1.5rem; }
+        .btn { padding:0.5rem 1rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
+        .btn-primary { background:var(--primary-color); color:white; }
+        .btn-danger { background:var(--danger); color:white; }
+        .btn-secondary { background:#6b7280; color:white; }
+        .collections-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1rem; }
+        .collection-card { background:white; border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.05); transition:all 0.3s ease; }
+        .collection-card:hover { transform:translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,0.1); }
+        .card-header { background:linear-gradient(135deg, var(--primary-color), var(--primary-hover)); color:white; padding:1rem; }
+        .card-title { font-size:1.2rem; font-weight:700; }
+        .card-category { font-size:0.9rem; opacity:0.8; }
+        .card-body { padding:1rem; }
+        .card-footer { display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding:0.75rem 1rem; }
+        .actions { display:flex; gap:0.5rem; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <a href="index-administrador.html" class="logo">
+            <i data-lucide="map"></i>
+            MetaMapa
+        </a>
+        <button class="btn btn-primary" onclick="window.location.href='coleccion-editar.html'">➕ Crear Colección</button>
+    </div>
+</nav>
+
+<main>
+    <h1>Administrador de Colecciones</h1>
+    <div class="collections-grid" id="collectionsGrid"></div>
+</main>
+
+<script>
+    // --- colecciones en memoria (simulación) ---
+    let colecciones = JSON.parse(localStorage.getItem("colecciones")) || [
+      {id:"1", nombre:"Incendios Forestales 2024", categoria:"ambiental", region:"Argentina", anio:"2024", descripcion:"Registro de incendios forestales en Argentina durante 2024."},
+      {id:"2", nombre:"Crisis Hídrica", categoria:"ambiental", region:"Latinoamérica", anio:"2023", descripcion:"Eventos relacionados a la escasez de agua."}
+    ];
+
+    function saveLocal() { localStorage.setItem("colecciones", JSON.stringify(colecciones)); }
+
+    function renderCollections(){
+      const grid = document.getElementById("collectionsGrid");
+      grid.innerHTML = colecciones.map(c=>`
+        <div class="collection-card">
+          <div class="card-header">
+            <div class="card-title">${c.nombre}</div>
+            <div class="card-category">${c.categoria} | ${c.region} | ${c.anio}</div>
+          </div>
+          <div class="card-body">
+            <p>${c.descripcion}</p>
+          </div>
+          <div class="card-footer">
+            <span class="small">#${c.id}</span>
+            <div class="actions">
+              <button class="btn btn-secondary" onclick="window.location.href='coleccion-editar.html?id=${c.id}'">✏️ Editar</button>
+              <button class="btn btn-danger" onclick="deleteCollection('${c.id}')">🗑️</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function deleteCollection(id){
+      if(!confirm("¿Seguro que quieres eliminar esta colección?")) return;
+      colecciones = colecciones.filter(c=>c.id!==id);
+      saveLocal();
+      renderCollections();
+    }
+
+    renderCollections();
+    lucide.createIcons();
+</script>
+</body>
+</html>

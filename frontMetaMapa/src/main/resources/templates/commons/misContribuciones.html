@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMapa - Mis Contribuciones</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --primary-color: #0891b2;
+          --primary-hover: #0e7490;
+          --secondary-color: #f59e0b;
+          --text-color: #4b5563;
+          --text-light: #6b7280;
+          --background: #ffffff;
+          --surface: #f9fafb;
+          --border: #e5e7eb;
+          --shadow: 0 4px 6px rgba(0,0,0,0.05);
+          --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+          --success: #10b981;
+          --warning: #f59e0b;
+          --danger: #ef4444;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: var(--background);
+          color: var(--text-color);
+          line-height: 1.6;
+        }
+
+        nav {
+          background: var(--background);
+          border-bottom: 1px solid var(--border);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          box-shadow: var(--shadow);
+          backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+          max-width: 1200px;
+          margin: auto;
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--primary-color);
+          font-weight: 700;
+          font-size: 1.5rem;
+          text-decoration: none;
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .nav-links a {
+          text-decoration: none;
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          color: var(--text-color);
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+          background: var(--primary-color);
+          color: white;
+          transform: translateY(-1px);
+        }
+
+        /* Modified hero section for contributions page */
+        .hero {
+          text-align: center;
+          padding: 3rem 2rem;
+          background: linear-gradient(135deg, var(--primary-color) 0%, #0e7490 100%);
+          color: white;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: url('/placeholder.svg?height=300&width=1200') center/cover;
+          opacity: 0.1;
+          z-index: 0;
+        }
+
+        .hero-content {
+          position: relative;
+          z-index: 1;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        .hero h1 {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          line-height: 1.2;
+        }
+
+        .hero p {
+          font-size: 1.1rem;
+          opacity: 0.95;
+          margin-bottom: 2rem;
+          max-width: 600px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        /* Added stats section for user contributions */
+        .stats-section {
+          background: var(--surface);
+          padding: 2rem;
+          margin: -2rem 2rem 2rem;
+          border-radius: 1rem;
+          box-shadow: var(--shadow-lg);
+          position: relative;
+          z-index: 10;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 2rem;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .stat-card {
+          text-align: center;
+          padding: 1.5rem;
+          background: white;
+          border-radius: 0.75rem;
+          border: 1px solid var(--border);
+        }
+
+        .stat-number {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: var(--primary-color);
+          margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+          color: var(--text-light);
+          font-weight: 500;
+        }
+
+        section {
+          padding: 4rem 2rem;
+          max-width: 1200px;
+          margin: auto;
+        }
+
+        section h2 {
+          font-size: 2.2rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          color: var(--text-color);
+        }
+
+        .section-subtitle {
+          font-size: 1.1rem;
+          color: var(--text-light);
+          margin-bottom: 3rem;
+          max-width: 600px;
+        }
+
+        /* Added contribution card styling */
+        .contribution-card {
+          background: white;
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          padding: 2rem;
+          margin-bottom: 1.5rem;
+          box-shadow: var(--shadow);
+          transition: all 0.3s ease;
+          position: relative;
+        }
+
+        .contribution-card:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .contribution-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 1rem;
+        }
+
+        .contribution-title {
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: var(--text-color);
+          margin-bottom: 0.5rem;
+        }
+
+        .contribution-meta {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+          font-size: 0.9rem;
+          color: var(--text-light);
+        }
+
+        .contribution-meta span {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .contribution-description {
+          color: var(--text-light);
+          margin-bottom: 1.5rem;
+          line-height: 1.6;
+        }
+
+        .contribution-tags {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+        }
+
+        .tag {
+          background: var(--primary-color);
+          color: white;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        .tag.category {
+          background: var(--secondary-color);
+        }
+
+        .contribution-actions {
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+        }
+
+        .btn-primary {
+          background: var(--primary-color);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background: var(--primary-hover);
+          transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+          background: var(--surface);
+          color: var(--text-color);
+          border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+          background: var(--border);
+        }
+
+        .btn-danger {
+          background: var(--danger);
+          color: white;
+        }
+
+        .btn-danger:hover {
+          background: #dc2626;
+        }
+
+        /* Added status badges */
+        .status-badge {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        .status-editable {
+          background: var(--success);
+          color: white;
+        }
+
+        .status-expired {
+          background: var(--warning);
+          color: white;
+        }
+
+        .status-pending {
+          background: var(--text-light);
+          color: white;
+        }
+
+        /* Added empty state styling */
+        .empty-state {
+          text-align: center;
+          padding: 4rem 2rem;
+          color: var(--text-light);
+        }
+
+        .empty-state-icon {
+          width: 80px;
+          height: 80px;
+          background: var(--surface);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 2rem;
+          color: var(--text-light);
+        }
+
+        .empty-state h3 {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          color: var(--text-color);
+        }
+
+        .empty-state p {
+          margin-bottom: 2rem;
+          max-width: 400px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        footer {
+          background: var(--text-color);
+          color: white;
+          text-align: center;
+          padding: 3rem 2rem 2rem;
+        }
+
+        .footer-content {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .footer-links {
+          display: flex;
+          justify-content: center;
+          gap: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        footer a {
+          color: var(--secondary-color);
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+          color: white;
+        }
+
+        .footer-bottom {
+          border-top: 1px solid #6b7280;
+          padding-top: 2rem;
+          margin-top: 2rem;
+          color: #9ca3af;
+        }
+
+        @media(max-width: 768px) {
+          .hero h1 {
+            font-size: 2rem;
+          }
+
+          .nav-container {
+            padding: 1rem;
+          }
+
+          .nav-links {
+            gap: 1rem;
+          }
+
+          section {
+            padding: 3rem 1rem;
+          }
+
+          .stats-section {
+            margin: -1rem 1rem 1rem;
+          }
+
+          .contribution-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+          }
+
+          .contribution-actions {
+            flex-wrap: wrap;
+          }
+
+          .footer-links {
+            flex-direction: column;
+            gap: 1rem;
+          }
+        }
+
+        @media(max-width: 600px) {
+          .nav-links {
+            display: none;
+          }
+
+          .stats-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <i data-lucide="map"></i>
+            MetaMapa
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Inicio</a>
+            <a href="explorar-hechos.html">Explorar</a>
+            <a href="index-contribuyente.html">Mi Panel</a>
+            <a href="login.html">Cerrar Sesión</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Modified hero for contributions page -->
+<header class="hero">
+    <div class="hero-content">
+        <h1>Mis Contribuciones</h1>
+        <p>Gestiona y edita los hechos que has compartido con la comunidad</p>
+    </div>
+</header>
+
+<!-- Added statistics section -->
+<div class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Hechos Publicados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Editables</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Verificados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">1,247</div>
+            <div class="stat-label">Visualizaciones</div>
+        </div>
+    </div>
+</div>
+
+<!-- Added main contributions section -->
+<section>
+    <h2>Tus Hechos Publicados</h2>
+    <p class="section-subtitle">
+        Puedes editar tus hechos durante los primeros 7 días después de publicarlos
+    </p>
+
+    <!-- Sample contribution cards -->
+    <div class="contribution-card">
+        <div class="status-badge status-editable">Editable</div>
+        <div class="contribution-header">
+            <div>
+                <h3 class="contribution-title">Incendio Forestal en Parque Nacional</h3>
+                <div class="contribution-meta">
+                    <span><i data-lucide="calendar"></i> 15 Ene 2025</span>
+                    <span><i data-lucide="map-pin"></i> Parque Nacional Torres del Paine</span>
+                    <span><i data-lucide="eye"></i> 234 vistas</span>
+                </div>
+            </div>
+        </div>
+        <p class="contribution-description">
+            Incendio forestal detectado en el sector norte del parque. Se observan columnas de humo y focos activos. Bomberos y brigadistas se encuentran trabajando en el área.
+        </p>
+        <div class="contribution-tags">
+            <span class="tag category">Incendios Forestales</span>
+            <span class="tag">Emergencia</span>
+            <span class="tag">Verificado</span>
+        </div>
+        <div class="contribution-actions">
+            <a href="editar-hecho.html" class="btn btn-primary">
+                <i data-lucide="edit-3"></i>
+                Editar Hecho
+            </a>
+            <a href="detalle-hecho.html" class="btn btn-secondary">
+                <i data-lucide="eye"></i>
+                Ver Detalles
+            </a>
+            <button class="btn btn-danger">
+                <i data-lucide="trash-2"></i>
+                Eliminar
+            </button>
+        </div>
+    </div>
+
+    <div class="contribution-card">
+        <div class="status-badge status-editable">Editable</div>
+        <div class="contribution-header">
+            <div>
+                <h3 class="contribution-title">Accidente Vehicular Ruta 5 Norte</h3>
+                <div class="contribution-meta">
+                    <span><i data-lucide="calendar"></i> 18 Ene 2025</span>
+                    <span><i data-lucide="map-pin"></i> Km 245, Ruta 5 Norte</span>
+                    <span><i data-lucide="eye"></i> 89 vistas</span>
+                </div>
+            </div>
+        </div>
+        <p class="contribution-description">
+            Colisión múltiple entre 3 vehículos en horario de alta congestión. Carabineros y ambulancias en el lugar. Tráfico desviado por pista auxiliar.
+        </p>
+        <div class="contribution-tags">
+            <span class="tag category">Accidentes Viales</span>
+            <span class="tag">En Proceso</span>
+        </div>
+        <div class="contribution-actions">
+            <a href="editar-hecho.html?id=2" class="btn btn-primary">
+                <i data-lucide="edit-3"></i>
+                Editar Hecho
+            </a>
+            <a href="ver-hecho.html?id=2" class="btn btn-secondary">
+                <i data-lucide="eye"></i>
+                Ver Detalles
+            </a>
+            <button class="btn btn-danger">
+                <i data-lucide="trash-2"></i>
+                Eliminar
+            </button>
+        </div>
+    </div>
+
+    <div class="contribution-card">
+        <div class="status-badge status-expired">No Editable</div>
+        <div class="contribution-header">
+            <div>
+                <h3 class="contribution-title">Tormenta Eléctrica Región Metropolitana</h3>
+                <div class="contribution-meta">
+                    <span><i data-lucide="calendar"></i> 8 Ene 2025</span>
+                    <span><i data-lucide="map-pin"></i> Santiago Centro</span>
+                    <span><i data-lucide="eye"></i> 456 vistas</span>
+                </div>
+            </div>
+        </div>
+        <p class="contribution-description">
+            Intensa tormenta eléctrica con granizo y vientos fuertes. Cortes de energía reportados en varios sectores. Árboles caídos en Providencia y Las Condes.
+        </p>
+        <div class="contribution-tags">
+            <span class="tag category">Eventos Climáticos</span>
+            <span class="tag">Verificado</span>
+            <span class="tag">Finalizado</span>
+        </div>
+        <div class="contribution-actions">
+            <a href="ver-hecho.html?id=3" class="btn btn-secondary">
+                <i data-lucide="eye"></i>
+                Ver Detalles
+            </a>
+            <span style="color: var(--text-light); font-size: 0.9rem;">
+          <i data-lucide="clock"></i>
+          Período de edición expirado
+        </span>
+        </div>
+    </div>
+
+    <!-- Added action buttons -->
+    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 3rem;">
+        <a href="subir-hecho.html" class="btn btn-primary">
+            <i data-lucide="plus-circle"></i>
+            Subir Nuevo Hecho
+        </a>
+        <a href="explorar-hechos.html" class="btn btn-secondary">
+            <i data-lucide="search"></i>
+            Explorar Otros Hechos
+        </a>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href="explorar-hechos.html">Explorar Hechos</a>
+            <a href="subir-hecho.html">Subir Hecho</a>
+            <a href="mis-contribuciones.html">Mis Contribuciones</a>
+            <a href="#">Ayuda</a>
+            <a href="#">Contacto</a>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MetaMapa. Sistema de código abierto para el bien común.</p>
+            <p>Desarrollado con ❤️ para organizaciones que buscan generar impacto social positivo.</p>
+        </div>
+    </div>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

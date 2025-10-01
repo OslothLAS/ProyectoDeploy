@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Hechos | MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family:'DM Sans', sans-serif; margin:0; background:#f9fafb; }
+        nav { background:white; border-bottom:1px solid #ddd; padding:1rem 2rem; }
+        .nav-container { max-width:900px; margin:auto; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-weight:700; font-size:1.5rem; color:#0891b2; text-decoration:none; }
+        main { max-width:900px; margin:2rem auto; padding:2rem; background:white; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+        h1 { margin-bottom:1.5rem; }
+        input[type="file"] { margin:1rem 0; }
+        table { width:100%; border-collapse:collapse; margin-top:1rem; font-size:0.9rem; }
+        th, td { border:1px solid #ddd; padding:0.5rem; text-align:left; }
+        th { background:#f3f4f6; }
+        .btn { padding:0.7rem 1.2rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; margin-top:1.5rem; }
+        .btn-primary { background:#0891b2; color:white; }
+        .btn-secondary { background:#6b7280; color:white; }
+        .status { margin-top:1rem; font-weight:600; }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <a href="index-administrador.html" class="logo">
+            <i data-lucide="map"></i>
+            MetaMapa
+        </a>
+    </div>
+</nav>
+
+<main>
+    <h1>Importar Hechos desde CSV</h1>
+    <p>Seleccione un archivo CSV (puede contener más de <b>10.000 entradas</b>). Se mostrarán las primeras 20 filas para verificación.</p>
+
+    <input type="file" id="csvFile" accept=".csv">
+    <div id="preview"></div>
+    <button id="importBtn" class="btn btn-primary" disabled>📥 Importar</button>
+    <p id="status" class="status"></p>
+</main>
+
+<!-- PapaParse para manejar CSV grandes -->
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+    const fileInput = document.getElementById("csvFile");
+    const preview = document.getElementById("preview");
+    const statusEl = document.getElementById("status");
+    const importBtn = document.getElementById("importBtn");
+
+    let parsedData = [];
+
+    fileInput.addEventListener("change", (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+
+      statusEl.textContent = "Procesando archivo...";
+
+      Papa.parse(file, {
+        header: true, // primera fila son nombres de columnas
+        skipEmptyLines: true,
+        worker: true, // usa web worker → no se congela el navegador
+        step: function(row) {
+          parsedData.push(row.data);
+        },
+        complete: function() {
+          statusEl.textContent = `Archivo procesado correctamente. Total registros: ${parsedData.length}`;
+          mostrarPreview();
+          importBtn.disabled = false;
+        }
+      });
+    });
+
+    function mostrarPreview(){
+      const primeras = parsedData.slice(0,20);
+      if(primeras.length === 0) return;
+
+      let html = "<table><thead><tr>";
+      Object.keys(primeras[0]).forEach(key=>{
+        html += `<th>${key}</th>`;
+      });
+      html += "</tr></thead><tbody>";
+      primeras.forEach(row=>{
+        html += "<tr>";
+        Object.values(row).forEach(val=>{
+          html += `<td>${val}</td>`;
+        });
+        html += "</tr>";
+      });
+      html += "</tbody></table>";
+      preview.innerHTML = html;
+    }
+
+    importBtn.addEventListener("click", ()=>{
+      // Guardamos en localStorage (puede cambiarse por POST al backend)
+      localStorage.setItem("hechos", JSON.stringify(parsedData));
+      statusEl.textContent = `✅ ${parsedData.length} hechos importados con éxito.`;
+      importBtn.disabled = true;
+    });
+</script>
+</body>
+</html>

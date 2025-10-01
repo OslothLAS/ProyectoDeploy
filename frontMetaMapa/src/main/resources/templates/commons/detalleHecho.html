@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Hecho - MetaMapa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --primary-color: #0891b2;
+          --primary-hover: #0e7490;
+          --secondary-color: #f59e0b;
+          --danger-color: #b91c1c;
+          --success-color: #10b981;
+          --text-color: #374151;
+          --text-light: #6b7280;
+          --background: #ffffff;
+          --surface: #f9fafb;
+          --border: #e5e7eb;
+          --shadow: 0 4px 6px rgba(0,0,0,0.05);
+          --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: var(--background);
+          color: var(--text-color);
+          line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+          background: var(--background);
+          border-bottom: 1px solid var(--border);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          box-shadow: var(--shadow);
+          backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+          max-width: 1200px;
+          margin: auto;
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--primary-color);
+          font-weight: 700;
+          font-size: 1.5rem;
+          text-decoration: none;
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .nav-links a {
+          text-decoration: none;
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          color: var(--text-color);
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+          background: var(--primary-color);
+          color: white;
+          transform: translateY(-1px);
+        }
+
+        /* Contenido */
+        .container {
+          max-width: 1000px;
+          margin: 2rem auto;
+          padding: 0 2rem;
+        }
+
+        /* Mejorado el header del hecho con mejor espaciado y tipografía */
+        .hecho-header {
+          background: var(--surface);
+          padding: 2rem;
+          border-radius: 1rem;
+          border: 1px solid var(--border);
+          margin-bottom: 2rem;
+          box-shadow: var(--shadow);
+        }
+
+        .hecho-header h1 {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          line-height: 1.2;
+        }
+
+        .categoria-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: var(--danger-color);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 2rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          box-shadow: var(--shadow);
+          margin-bottom: 1rem;
+        }
+
+        .hecho-meta {
+          color: var(--text-light);
+          font-size: 0.95rem;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem;
+          background: white;
+          border-radius: 0.5rem;
+          border: 1px solid var(--border);
+        }
+
+        .autor {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          background: white;
+          border-radius: 0.75rem;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow);
+        }
+
+        .autor img {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid var(--primary-color);
+        }
+
+        .ubicacion {
+          background: white;
+          padding: 0.75rem 1rem;
+          border-left: 4px solid var(--primary-color);
+          border-radius: 0.5rem;
+          font-size: 0.95rem;
+          box-shadow: var(--shadow);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        /* Agregado sistema de etiquetas */
+        .etiquetas-section {
+          margin-top: 1.5rem;
+        }
+
+        .etiquetas-title {
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--text-color);
+          margin-bottom: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .etiquetas-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .etiqueta {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          background: var(--primary-color);
+          color: white;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .etiqueta:hover {
+          background: var(--primary-hover);
+          transform: translateY(-1px);
+        }
+
+        .etiqueta.secundaria {
+          background: var(--secondary-color);
+        }
+
+        .etiqueta.success {
+          background: var(--success-color);
+        }
+
+        .descripcion {
+          background: white;
+          padding: 2rem;
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          margin-bottom: 2rem;
+          box-shadow: var(--shadow);
+          font-size: 1.1rem;
+          line-height: 1.7;
+        }
+
+        /* Implementado carrusel profesional para las imágenes */
+        .galeria-section {
+          background: white;
+          padding: 2rem;
+          border-radius: 1rem;
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow);
+          margin-bottom: 2rem;
+        }
+
+        .galeria-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1.5rem;
+          margin-top: 1rem;
+        }
+
+        .imagen-item {
+          position: relative;
+          border-radius: 1rem;
+          overflow: hidden;
+          box-shadow: var(--shadow);
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+
+        .imagen-item:hover {
+          box-shadow: var(--shadow-lg);
+        }
+
+        .imagen-item img {
+          width: 100%;
+          height: 250px;
+          object-fit: cover;
+          display: block;
+          transition: all 0.3s ease;
+        }
+
+        .imagen-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(transparent, rgba(0,0,0,0.8));
+          color: white;
+          padding: 1.5rem 1rem 1rem;
+          transform: translateY(100%);
+          transition: all 0.3s ease;
+        }
+
+        .imagen-item:hover .imagen-overlay {
+          transform: translateY(0);
+        }
+
+        .imagen-overlay span {
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+
+        footer {
+          background: var(--text-color);
+          color: white;
+          text-align: center;
+          padding: 2rem;
+          margin-top: 3rem;
+        }
+
+        footer a {
+          color: var(--secondary-color);
+          text-decoration: none;
+          font-weight: 500;
+        }
+
+        footer a:hover {
+          color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .nav-container {
+            padding: 1rem;
+          }
+
+          .nav-links {
+            gap: 1rem;
+          }
+
+          .nav-links a {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+          }
+
+          .container {
+            padding: 0 1rem;
+            margin: 1rem auto;
+          }
+
+          .hecho-header {
+            padding: 1.5rem;
+          }
+
+          .hecho-header h1 {
+            font-size: 1.8rem;
+            line-height: 1.3;
+          }
+
+          .hecho-meta {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+          }
+
+          .autor {
+            padding: 0.5rem;
+          }
+
+          .autor img {
+            width: 35px;
+            height: 35px;
+          }
+
+          .ubicacion {
+            padding: 0.5rem 0.75rem;
+          }
+
+          .etiquetas-container {
+            gap: 0.4rem;
+          }
+
+          .etiqueta {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+          }
+
+          .galeria-section {
+            padding: 1.5rem;
+          }
+
+          .galeria-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+
+          .imagen-item img {
+            height: 200px;
+          }
+
+          .descripcion {
+            padding: 1.5rem;
+            font-size: 1rem;
+          }
+
+          footer {
+            padding: 1.5rem 1rem;
+          }
+        }
+
+        /* Added tablet responsive styles */
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .nav-container {
+            padding: 1rem 1.5rem;
+          }
+
+          .container {
+            padding: 0 1.5rem;
+          }
+
+          .hecho-header h1 {
+            font-size: 2.2rem;
+          }
+
+          .galeria-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        /* Added extra small mobile styles */
+        @media (max-width: 480px) {
+          .logo {
+            font-size: 1.2rem;
+          }
+
+          .nav-links {
+            gap: 0.5rem;
+          }
+
+          .nav-links a {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.85rem;
+          }
+
+          .hecho-header {
+            padding: 1rem;
+          }
+
+          .hecho-header h1 {
+            font-size: 1.5rem;
+          }
+
+          .categoria-badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+          }
+
+          .autor {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+          }
+
+          .meta-item {
+            padding: 0.4rem;
+            font-size: 0.85rem;
+          }
+
+          .ubicacion {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.3rem;
+          }
+
+          .etiquetas-title {
+            font-size: 0.9rem;
+          }
+
+          .etiqueta {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+          }
+
+          .galeria-section {
+            padding: 1rem;
+          }
+
+          .imagen-item img {
+            height: 180px;
+          }
+
+          .descripcion {
+            padding: 1rem;
+            font-size: 0.95rem;
+          }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav>
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <i data-lucide="map"></i> MetaMapa
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Inicio</a>
+            <a href="explorar-hechos.html">Explorar</a>
+            <a href="login.html">Acceso</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Encabezado del hecho -->
+    <div class="hecho-header">
+        <h1>Incendio en el Bosque Central</h1>
+        <div class="categoria-badge" style="margin-bottom: 1rem;">
+            <i data-lucide="alert-triangle"></i>
+            Desastre Natural
+        </div>
+        <div class="hecho-meta">
+            <div class="autor">
+                <img src="images/foto de perfil.jpg" alt="Foto del autor">
+                <div>
+                    <div style="font-weight: 600; color: var(--text-color);">Juan Pérez</div>
+                </div>
+            </div>
+            <div class="meta-item">
+                <i data-lucide="calendar"></i>
+                <div>
+                    <div style="font-weight: 500;">Publicado</div>
+                    <div>27/08/2025</div>
+                </div>
+            </div>
+            <div class="meta-item">
+                <i data-lucide="calendar-days"></i>
+                <div>
+                    <div style="font-weight: 500;">Fecha del hecho</div>
+                    <div>25/08/2025</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ubicacion">
+            <i data-lucide="map-pin"></i>
+            <div>
+                <div style="font-weight: 500;">Ubicación</div>
+                <div>Bosque Central, Córdoba</div>
+            </div>
+        </div>
+
+        <!-- Agregada sección de etiquetas -->
+        <div class="etiquetas-section">
+            <div class="etiquetas-title">
+                <i data-lucide="tags"></i>
+                Etiquetas
+            </div>
+            <div class="etiquetas-container">
+          <span class="etiqueta">
+            <i data-lucide="flame"></i>
+            Incendio
+          </span>
+                <span class="etiqueta secundaria">
+            <i data-lucide="trees"></i>
+            Forestal
+          </span>
+                <span class="etiqueta">
+            <i data-lucide="alert-circle"></i>
+            Emergencia
+          </span>
+                <span class="etiqueta success">
+            <i data-lucide="users"></i>
+            Bomberos
+          </span>
+                <span class="etiqueta secundaria">
+            <i data-lucide="leaf"></i>
+            Medio Ambiente
+          </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Galería convertida a carrusel profesional -->
+    <div class="galeria-section">
+        <div class="galeria-grid">
+            <div class="imagen-item">
+                <img src="images/Incendio_Forestal.jpg" alt="Vista general del incendio forestal">
+                <div class="imagen-overlay">
+                    <span>Vista general del incendio</span>
+                </div>
+            </div>
+            <div class="imagen-item">
+                <img src="images/Incendios-2.jpg" alt="Bomberos combatiendo las llamas">
+                <div class="imagen-overlay">
+                    <span>Bomberos en acción</span>
+                </div>
+            </div>
+            <div class="imagen-item">
+                <img src="images/Incendio-3.jpeg" alt="Área afectada por el incendio">
+                <div class="imagen-overlay">
+                    <span>Área afectada</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Descripción -->
+    <div class="descripcion">
+        <p>
+            Un gran incendio forestal se desató en el Bosque Central afectando a más de 300 hectáreas.
+            Bomberos de distintas localidades trabajaron durante horas para controlar las llamas.
+            El siniestro comenzó aproximadamente a las 14:30 horas y requirió la intervención de múltiples
+            cuarteles de bomberos voluntarios de la región.
+        </p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2025 MetaMapa. Todos los derechos reservados.</p>
+    <p><a href="#">Política de Privacidad</a> | <a href="#">Términos de Uso</a></p>
+</footer>
+
+<script>
+    lucide.createIcons();
+
+    // Efecto hover para las imágenes de la galería
+    document.addEventListener('DOMContentLoaded', () => {
+      const imagenes = document.querySelectorAll('.imagen-item');
+
+      imagenes.forEach(imagen => {
+        imagen.addEventListener('mouseenter', () => {
+          imagen.style.transform = 'scale(1.02)';
+        });
+
+        imagen.addEventListener('mouseleave', () => {
+          imagen.style.transform = 'scale(1)';
+        });
+      });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Colecciones - MetaMapa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Using the same CSS variables and styling from the main landing page */
+        :root {
+          --primary-color: #0891b2;
+          --primary-hover: #0e7490;
+          --secondary-color: #f59e0b;
+          --text-color: #4b5563;
+          --text-light: #6b7280;
+          --background: #ffffff;
+          --surface: #f9fafb;
+          --border: #e5e7eb;
+          --shadow: 0 4px 6px rgba(0,0,0,0.05);
+          --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'DM Sans', sans-serif;
+          background: var(--background);
+          color: var(--text-color);
+          line-height: 1.6;
+        }
+
+        /* Same navbar styling as main page */
+        nav {
+          background: var(--background);
+          border-bottom: 1px solid var(--border);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          box-shadow: var(--shadow);
+          backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+          max-width: 1200px;
+          margin: auto;
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--primary-color);
+          font-weight: 700;
+          font-size: 1.5rem;
+          text-decoration: none;
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .nav-links a {
+          text-decoration: none;
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          color: var(--text-color);
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+          background: var(--primary-color);
+          color: white;
+          transform: translateY(-1px);
+        }
+
+        /* Main content styling */
+        main {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2rem;
+        }
+
+        .page-header {
+          text-align: center;
+          margin-bottom: 3rem;
+          padding: 2rem 0;
+        }
+
+        .page-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: var(--text-color);
+          margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+          font-size: 1.2rem;
+          color: var(--text-light);
+          max-width: 600px;
+          margin: 0 auto;
+        }
+
+        /* Search and filters section */
+        .search-filters {
+          background: var(--surface);
+          padding: 2rem;
+          border-radius: 1rem;
+          margin-bottom: 3rem;
+          box-shadow: var(--shadow);
+          border: 1px solid var(--border);
+        }
+
+        .search-bar {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+        }
+
+        .search-input {
+          flex: 1;
+          min-width: 300px;
+          padding: 0.75rem 1rem;
+          border: 2px solid var(--border);
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          font-family: 'DM Sans', sans-serif;
+          transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
+
+        .search-btn {
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .search-btn:hover {
+          background: var(--primary-hover);
+          transform: translateY(-1px);
+        }
+
+        .filters {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+
+        .filter-group {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .filter-group label {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        .filter-select {
+          padding: 0.5rem;
+          border: 2px solid var(--border);
+          border-radius: 0.5rem;
+          background: white;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          transition: border-color 0.3s ease;
+        }
+
+        .filter-select:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
+
+        /* Results info */
+        .results-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+          padding: 1rem 0;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .results-count {
+          color: var(--text-light);
+          font-weight: 500;
+        }
+
+        .sort-options {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .sort-options label {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        /* Collections grid */
+        .collections-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 2rem;
+          margin-bottom: 3rem;
+        }
+
+        .collection-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          overflow: hidden;
+          box-shadow: var(--shadow);
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+
+        .collection-card:hover {
+          transform: translateY(-5px);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+          background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+          color: white;
+          padding: 1.5rem;
+        }
+
+        .card-title {
+          font-size: 1.3rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+        }
+
+        .card-category {
+          background: rgba(255,255,255,0.2);
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          display: inline-block;
+          font-weight: 500;
+        }
+
+        .card-content {
+          padding: 1.5rem;
+        }
+
+        .card-description {
+          color: var(--text-light);
+          margin-bottom: 1rem;
+          line-height: 1.6;
+        }
+
+        .card-stats {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+          font-size: 0.9rem;
+        }
+
+        .stat {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          color: var(--text-light);
+        }
+
+        .card-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .tag {
+          background: var(--background);
+          color: var(--text-color);
+          padding: 0.25rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          border: 1px solid var(--border);
+        }
+
+        .card-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 1rem;
+          border-top: 1px solid var(--border);
+        }
+
+        .card-date {
+          color: var(--text-light);
+          font-size: 0.9rem;
+        }
+
+        .view-btn {
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+          background: var(--primary-hover);
+          transform: translateY(-1px);
+        }
+
+        /* Footer styling - same as main page */
+        footer {
+          background: var(--text-color);
+          color: white;
+          text-align: center;
+          padding: 3rem 2rem 2rem;
+          margin-top: 4rem;
+        }
+
+        .footer-content {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .footer-links {
+          display: flex;
+          justify-content: center;
+          gap: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        footer a {
+          color: var(--secondary-color);
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+          color: white;
+        }
+
+        .footer-bottom {
+          border-top: 1px solid #6b7280;
+          padding-top: 2rem;
+          margin-top: 2rem;
+          color: #9ca3af;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+          .nav-links {
+            display: none;
+          }
+
+          .page-title {
+            font-size: 2rem;
+          }
+
+          .search-bar {
+            flex-direction: column;
+          }
+
+          .search-input {
+            min-width: auto;
+          }
+
+          .filters {
+            justify-content: center;
+          }
+
+          .collections-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .results-info {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+          }
+
+          .footer-links {
+            flex-direction: column;
+            gap: 1rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          main {
+            padding: 1rem;
+          }
+
+          .search-filters {
+            padding: 1rem;
+          }
+
+          .card-stats {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+        }
+    </style>
+</head>
+<body>
+<!-- Same navbar as main page -->
+<nav>
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <i data-lucide="map"></i>
+            MetaMapa
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Inicio</a>
+            <a href="index.html#nosotros">Nosotros</a>
+            <a href="explorar-hechos.html">Explorar</a>
+            <a href="buscador-colecciones.html">Colecciones</a>
+            <a href="login.html">Acceso</a>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <div class="page-header">
+        <h1 class="page-title">Buscador de Colecciones</h1>
+        <p class="page-subtitle">Explora y descubre colecciones de hechos verificados organizados por temática, región y período temporal</p>
+    </div>
+
+    <div class="search-filters">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Buscar colecciones por nombre, descripción" id="searchInput">
+            <button class="search-btn" onclick="filterCollections()">
+                <i data-lucide="search"></i> Buscar
+            </button>
+        </div>
+
+
+
+        <div class="results-info">
+            <div class="results-count" id="resultsCount">Mostrando 24 colecciones</div>
+            <div class="sort-options">
+                <label for="sortSelect">Ordenar por:</label>
+                <select id="sortSelect" class="filter-select" onchange="sortCollections()">
+                    <option value="recent">Más recientes</option>
+                    <option value="alphabetical">Alfabético</option>
+                    <option value="facts">Más hechos</option>
+                    <option value="contributors">Más contribuyentes</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="collections-grid" id="collectionsGrid">
+            <!-- Collection cards with varied data -->
+            <div class="collection-card" data-category="ambiental" data-region="argentina" data-year="2024" onclick="window.location.href='coleccion-incendio-forestal.html'" style="cursor:pointer;">
+                <div class="card-header">
+                    <h3 class="card-title">Incendios Forestales Argentina 2024</h3>
+                    <span class="card-category">Ambiental</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Documentación completa de incendios forestales en Argentina durante 2024, incluyendo causas, impacto ambiental y respuesta gubernamental.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 156 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 23 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Argentina</span>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 15 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="social" data-region="brasil" data-year="2023">
+                <div class="card-header">
+                    <h3 class="card-title">Movimientos Sociales Brasil</h3>
+                    <span class="card-category">Social</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Análisis de movimientos sociales y protestas en Brasil, documentando demandas, participación y respuestas institucionales.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 89 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 31 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Brasil</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 28 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="economico" data-region="chile" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Crisis Económica Chile 2024</h3>
+                    <span class="card-category">Económico</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Seguimiento de indicadores económicos, políticas fiscales y impacto social de la crisis económica en Chile.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 124 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 18 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Chile</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 10 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="politico" data-region="colombia" data-year="2023">
+                <div class="card-header">
+                    <h3 class="card-title">Elecciones Regionales Colombia</h3>
+                    <span class="card-category">Político</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Cobertura completa de las elecciones regionales en Colombia, incluyendo candidatos, propuestas y resultados.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 203 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 45 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Colombia</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 5 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="salud" data-region="mexico" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Sistema de Salud México</h3>
+                    <span class="card-category">Salud</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Análisis del sistema de salud mexicano, reformas implementadas y acceso a servicios médicos en diferentes regiones.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 167 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 29 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> México</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 20 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="educacion" data-region="peru" data-year="2023">
+                <div class="card-header">
+                    <h3 class="card-title">Educación Rural Perú</h3>
+                    <span class="card-category">Educación</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Documentación de desafíos y avances en la educación rural peruana, incluyendo infraestructura y acceso tecnológico.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 98 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 22 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Perú</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 18 Oct 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="tecnologia" data-region="global" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Inteligencia Artificial Global</h3>
+                    <span class="card-category">Tecnología</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Seguimiento de desarrollos en IA, regulaciones internacionales y impacto en diferentes sectores económicos.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 245 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 67 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Global</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 12 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="ambiental" data-region="brasil" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Deforestación Amazonía</h3>
+                    <span class="card-category">Ambiental</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Monitoreo de la deforestación en la Amazonía brasileña, causas, consecuencias y medidas de conservación.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 189 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 34 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Brasil</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 8 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="social" data-region="argentina" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Violencia de Género Argentina</h3>
+                    <span class="card-category">Social</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Registro y análisis de casos de violencia de género, políticas públicas y programas de prevención en Argentina.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 134 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 41 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Argentina</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 25 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="economico" data-region="global" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Criptomonedas Latinoamérica</h3>
+                    <span class="card-category">Económico</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Adopción y regulación de criptomonedas en países latinoamericanos, impacto económico y marcos legales.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 112 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 26 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Global</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 3 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="politico" data-region="chile" data-year="2023">
+                <div class="card-header">
+                    <h3 class="card-title">Nueva Constitución Chile</h3>
+                    <span class="card-category">Político</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Proceso constituyente chileno, debates, propuestas y participación ciudadana en la redacción de la nueva constitución.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 178 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 52 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Chile</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 15 Sep 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="salud" data-region="global" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Salud Mental Post-Pandemia</h3>
+                    <span class="card-category">Salud</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Impacto de la pandemia en la salud mental global, programas de apoyo y nuevas políticas de salud mental.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 156 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 38 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Global</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 30 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="educacion" data-region="colombia" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Educación Digital Colombia</h3>
+                    <span class="card-category">Educación</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Transformación digital en el sistema educativo colombiano, herramientas tecnológicas y brecha digital.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 143 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 33 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Colombia</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 22 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="ambiental" data-region="mexico" data-year="2023">
+                <div class="card-header">
+                    <h3 class="card-title">Contaminación Aire CDMX</h3>
+                    <span class="card-category">Ambiental</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Monitoreo de la calidad del aire en Ciudad de México, fuentes de contaminación y medidas de mitigación.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 167 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 28 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> México</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 14 Oct 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="tecnologia" data-region="argentina" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Startups Tech Argentina</h3>
+                    <span class="card-category">Tecnología</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Ecosistema de startups tecnológicas en Argentina, inversiones, unicornios y políticas de fomento.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 198 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 44 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Argentina</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 6 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="social" data-region="peru" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Migración Venezolana Perú</h3>
+                    <span class="card-category">Social</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Análisis de la migración venezolana en Perú, integración social, políticas migratorias y desafíos.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 145 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 36 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Perú</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 1 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="economico" data-region="brasil" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Agronegocio Brasil</h3>
+                    <span class="card-category">Económico</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Sector agropecuario brasileño, exportaciones, sostenibilidad y impacto en la economía nacional.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 176 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 31 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Brasil</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 18 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="politico" data-region="mexico" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Elecciones Presidenciales México</h3>
+                    <span class="card-category">Político</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Cobertura completa de las elecciones presidenciales mexicanas 2024, candidatos, campañas y resultados.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 234 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 58 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> México</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 10 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="salud" data-region="chile" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Reforma Salud Chile</h3>
+                    <span class="card-category">Salud</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Proceso de reforma del sistema de salud chileno, propuestas, debates y implementación de cambios.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 123 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 27 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Chile</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 28 Oct 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="educacion" data-region="global" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Educación Superior Global</h3>
+                    <span class="card-category">Educación</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Tendencias en educación superior mundial, internacionalización, calidad académica y acceso equitativo.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 189 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 42 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Global</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 5 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="ambiental" data-region="colombia" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Biodiversidad Colombia</h3>
+                    <span class="card-category">Ambiental</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Conservación de la biodiversidad en Colombia, especies endémicas, áreas protegidas y amenazas ambientales.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 167 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 39 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Colombia</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 12 Nov 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collection-card" data-category="tecnologia" data-region="global" data-year="2024">
+                <div class="card-header">
+                    <h3 class="card-title">Ciberseguridad Global</h3>
+                    <span class="card-category">Tecnología</span>
+                </div>
+                <div class="card-content">
+                    <p class="card-description">Amenazas cibernéticas globales, ataques a infraestructuras críticas y medidas de protección implementadas.</p>
+                    <div class="card-stats">
+                        <span class="stat"><i data-lucide="bar-chart-3"></i> 201 hechos</span>
+                        <span class="stat"><i data-lucide="users"></i> 48 contribuyentes</span>
+                        <span class="stat"><i data-lucide="map-pin"></i> Global</span>
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="card-date">Actualizado: 9 Dic 2024</span>
+                        <button class="view-btn">Ver Colección</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</main>
+
+<!-- Same footer as main page -->
+<footer>
+    <div class="footer-content">
+        <p>&copy; 2024 MetaMapa. Todos los derechos reservados.</p>
+        <div class="footer-links">
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Términos de Servicio</a>
+            <a href="#">Contacto</a>
+        </div>
+    </div>
+</footer>
