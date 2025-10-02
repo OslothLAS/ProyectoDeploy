@@ -19,6 +19,7 @@
     <module>agregador</module>
     <module>core</module>
       <module>estadisticas</module>
+    <module> frontMetaMapa</module>
   </modules>
 
   <properties>
