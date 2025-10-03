@@ -1,7 +1,10 @@
 package ar.utn.ba.ddsi.fuenteDinamica.controllers;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
+import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +25,21 @@ public class HechoController {
     }
 
     @PostMapping
-    public void crearHecho(@RequestBody HechoDTO hecho) {
-        this.hechoService.crearHecho(hecho);
+    public void crearHecho(@RequestBody HechoDTO hecho, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        TokenInfo tokenInfo = JwtUtil.validarToken(token);
+
+        this.hechoService.crearHecho(hecho, tokenInfo);
+    }
+
+    @PostMapping("/prueba")
+    public ResponseEntity<TokenInfo> crearHecho2(@RequestHeader("Authorization") String authHeader) {
+        System.out.println("Token: " + authHeader);
+
+        String token = authHeader.replace("Bearer ", "");
+        TokenInfo tokenInfo = JwtUtil.validarToken(token);
+
+        return ResponseEntity.ok(tokenInfo);
     }
 
     @PutMapping("/{idHecho}")

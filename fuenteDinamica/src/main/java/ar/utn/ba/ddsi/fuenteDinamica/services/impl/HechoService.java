@@ -1,17 +1,21 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Categoria;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Provincia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IProvinciaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
+import ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil;
 import config.HechoProperties;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +38,8 @@ public class HechoService implements IHechoService {
 
     @Transactional
     @Override
-    public void crearHecho(HechoDTO hechoDTO) {
-
-
-       /* Categoria categoria = new Categoria(hechoDTO.getCategoria());
+    public void crearHecho(HechoDTO hechoDTO, TokenInfo token) {
+        Categoria categoria = new Categoria(hechoDTO.getCategoria());
 
         Categoria categoriaPersistida = categoriaRepository.findByCategoriaNormalizada(categoria.getCategoriaNormalizada())
                 .orElseGet(() -> {
@@ -48,26 +50,16 @@ public class HechoService implements IHechoService {
                                 .orElseThrow(() -> new IllegalStateException("Error al recuperar categoría existente", e));
                     }
                 });
-        datos.setCategoria(categoriaPersistida);
 
-        Provincia provincia = this.provinciaRepository.findById(hechoDTO.getUbicacion().getLocalidad().getProvincia().getId())
+
+        Provincia provincia = this.provinciaRepository.findByNombre(hechoDTO.getUbicacion().getLocalidad().getProvincia().getNombre())
                 .orElseThrow(() -> new RuntimeException("No se encontró la provincia"));
 
-        datos.getUbicacion().getLocalidad().setProvincia(provincia);
+        Hecho hecho = HechoUtil.hechoDTOtoHecho(hechoDTO);
 
-        if(hechoDTO.getId() != null) { //si tiene ID => es contribuyente
-            Usuario usuario = usuarioRepository.findById(hechoDTO.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el usuario con ID: " + hechoDTO.getId()));
-        Hecho hecho = Hecho.create(datos, usuario,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
-        hecho.setEsEditable(true);
-        hecho.setPlazoEdicion(Duration.ofDays(hechoProperties.getPlazoEdicionDias()));
-        this.hechoRepository.save(hecho);
-    } else{
-//          Visualizador visualizador = new Visualizador(hechoDTO.getNombre(),hechoDTO.getApellido(),hechoDTO.getFechaDeNacimiento());
-        Hecho hecho = Hecho.create(datos);
-        hecho.setEsEditable(false);
-        this.hechoRepository.save(hecho);
-    }*/
+        hecho.setCategoria(categoriaPersistida);
+        hecho.getUbicacion().getLocalidad().setProvincia(provincia);
+
 }
 
 @Override
@@ -130,7 +122,7 @@ public List<Hecho> obtenerTodos(Map<String, String> filtros){
             .collect(Collectors.toList());
 }
 public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
-    Optional<Hecho> hechoInvalido = hechoRepository.findByDatosHechosTituloAndDatosHechosDescripcion(titulo, descripcion);
+    Optional<Hecho> hechoInvalido = hechoRepository.findByTituloAndDescripcion(titulo, descripcion);
     hechoInvalido.ifPresent(hecho -> {
         hecho.setEsValido(false);
         hechoRepository.save(hecho);

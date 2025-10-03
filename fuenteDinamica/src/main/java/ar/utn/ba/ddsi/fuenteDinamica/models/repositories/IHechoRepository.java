@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface IHechoRepository extends JpaRepository<Hecho, Long> {
-    Optional<Hecho> findByDatosHechosTituloAndDatosHechosDescripcion(String titulo, String descripcion);
+    Optional<Hecho> findByTituloAndDescripcion(String titulo, String descripcion);
 }

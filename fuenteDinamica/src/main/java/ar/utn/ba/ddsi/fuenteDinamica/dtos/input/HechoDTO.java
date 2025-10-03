@@ -1,5 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.dtos.input;
 
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Multimedia;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Origen;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
@@ -13,8 +15,8 @@ public class HechoDTO {
     private String categoria;
     private UbicacionDTO ubicacion;
     private LocalDateTime fechaHecho;
+    private List<Multimedia> multimedia;
 
-    private List<MultimediaDTO> multimedia;
-    //private Long id; //esto lo vemos despues (id del usuario)
+    private Origen origen;
     private Boolean mostrarDatos;
 }

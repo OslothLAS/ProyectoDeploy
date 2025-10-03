@@ -1,4 +1,28 @@
-C:\Users\ivnbo\OneDrive\Desktop\UTN\DDS\2025-tpa-mi-no-grupo-23\fuenteEstatica\src\main\java\EstrategiasExtraccion\EstrategiaExtraccionHechoCSV.java
-C:\Users\ivnbo\OneDrive\Desktop\UTN\DDS\2025-tpa-mi-no-grupo-23\fuenteEstatica\src\main\java\entities\ImportadorHechos.java
-C:\Users\ivnbo\OneDrive\Desktop\UTN\DDS\2025-tpa-mi-no-grupo-23\fuenteEstatica\src\main\java\EstrategiasExtraccion\EstrategiaExtraccionHecho.java
-C:\Users\ivnbo\OneDrive\Desktop\UTN\DDS\2025-tpa-mi-no-grupo-23\fuenteEstatica\src\main\java\utils\ExtensionReader.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/dtos/MultimediaDTO.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/EstrategiasExtraccion/EstrategiaExtraccionHechoCSV.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/controllers/HechoController.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/services/impl/ExtractService.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/EstaticaApplication.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/EstrategiasExtraccion/EstrategiaExtraccionHecho.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/services/IExtractService.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Origen.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/ImportadorHechos.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/criteriosDePertenencia/CriterioDePertenenciaFactory.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/dtos/ProvinciaDTO.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/utils/NormalizadorTexto.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/criteriosDePertenencia/CriterioPorCategoria.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Provincia.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Localidad.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/dtos/HechoOutputDTO.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/FuenteOrigen.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/utils/HechoUtil.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/criteriosDePertenencia/CriterioPorFecha.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/utils/ExtensionReader.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Ubicacion.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Hecho.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Categoria.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/dtos/LocalidadDTO.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/dtos/UbicacionDTO.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/utils/ConfigReader.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Multimedia.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/fuenteEstatica/src/main/java/ar/utn/ba/ddsi/fuenteEstatica/entities/criteriosDePertenencia/CriterioDePertenencia.java

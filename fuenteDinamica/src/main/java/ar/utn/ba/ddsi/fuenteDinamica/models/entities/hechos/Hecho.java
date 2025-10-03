@@ -46,11 +46,7 @@ public class Hecho {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id")
-    private List<Multimedia> multimedia;
-
-    @Builder.Default //falta el atributo en db
-    private List<String> etiquetas = new ArrayList<>();
-
+    private List<Multimedia> multimedia = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "origen_carga")
@@ -72,10 +68,6 @@ public class Hecho {
     @Column(name = "editable")
     private Boolean esEditable;
 
-    public void addEtiqueta(String etiqueta) {
-        this.etiquetas.add(etiqueta);
-    }
-
     public Boolean esEditable() {
         if (!this.esEditable) {
             return false;
@@ -84,5 +76,18 @@ public class Hecho {
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 
-
+    public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubi, LocalDateTime fechaHecho,
+                 List <Multimedia> multimedia, Origen origen, Boolean mostrarDatos, Boolean esEditable) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.categoria = categoria;
+        this.ubicacion = ubi;
+        this.fechaHecho = fechaHecho;
+        this.multimedia = multimedia;
+        this.origen = origen;
+        this.fuenteOrigen = FuenteOrigen.DINAMICO;
+        this.mostrarDatos = mostrarDatos;
+        this.fechaCreacion = LocalDateTime.now();
+        this.esEditable = esEditable;
+    }
 }

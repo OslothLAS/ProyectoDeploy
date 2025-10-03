@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.dtos;
 
+import ar.utn.frba.ddsi.models.entities.Estadistica;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,5 +26,9 @@ public class StatDTO {
 
     @Column(name = "cantidad")
     private Long cantidad;
+
+    public static StatDTO fromEntity(Estadistica estadistica) {
+        return null;
+    }
 }
 

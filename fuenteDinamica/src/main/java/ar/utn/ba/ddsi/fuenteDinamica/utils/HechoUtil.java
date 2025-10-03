@@ -1,9 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.utils;
 
-import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
-import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.MultimediaDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.*;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,30 +10,25 @@ public class HechoUtil {
     public static HechoDTO hechoToDTO(Hecho hecho) {
         HechoDTO dto = new HechoDTO();
 
-        List<MultimediaDTO> multimediaNueva = null;
+        List<Multimedia> multimediaNueva = new  ArrayList<>();
 
         if(hecho.getMultimedia() != null) {
-            multimediaNueva = new ArrayList<>();
-            for (Multimedia m : hecho.getMultimedia()) {
-                MultimediaDTO nuevo = new MultimediaDTO();
-                nuevo.setUrl(m.getUrl());
-                multimediaNueva.add(nuevo);
-            }
+            multimediaNueva.addAll(hecho.getMultimedia());
         }
 
-        dto.setEsValido(hecho.getEsValido());
-        dto.setMultimedia(multimediaNueva);
-        dto.setOrigen(hecho.getOrigen());
-        dto.setFuenteOrigen(hecho.getFuenteOrigen());
-        dto.setFechaCreacion(hecho.getFechaCreacion());
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
-        dto.setFechaHecho(hecho.getFechaHecho());
         dto.setCategoria(hecho.getCategoria().getCategoria());
+        dto.setFechaHecho(hecho.getFechaHecho());
+        dto.setMultimedia(multimediaNueva);
 
         if (hecho.getUbicacion() != null) {
             dto.setUbicacion(ubicacionToDTO(hecho.getUbicacion()));
         }
+
+        dto.setMostrarDatos(hecho.getMostrarDatos());
+        dto.setOrigen(hecho.getOrigen());
+        dto.setMostrarDatos(hecho.getMostrarDatos());
 
         return dto;
     }
@@ -72,21 +65,17 @@ public class HechoUtil {
     }
 
     public static Hecho hechoDTOtoHecho(HechoDTO dto){
-        List<Multimedia> multimediaNueva = null;
-        if(dto.getMultimedia() != null){
-            multimediaNueva = new ArrayList<>();
-            for (MultimediaDTO m : dto.getMultimedia()) {
-                Multimedia nuevo = new Multimedia();
-                nuevo.setUrl(m.getUrl());
-                multimediaNueva.add(nuevo);
-            }
+        List<Multimedia> multimediaNueva = new  ArrayList<>();
+
+        if(dto.getMultimedia() != null) {
+            multimediaNueva.addAll(dto.getMultimedia());
         }
 
         Ubicacion ubi = getUbicacion(dto);
         Categoria cat = new Categoria(dto.getCategoria());
         
         return new Hecho(dto.getTitulo(), dto.getDescripcion(),cat,ubi,dto.getFechaHecho(),multimediaNueva
-                ,dto.getOrigen(),dto.getFuenteOrigen(),dto.getFechaCreacion(),dto.getEsValido());
+                ,dto.getOrigen(),dto.getMostrarDatos(),null);
     }
 
 
