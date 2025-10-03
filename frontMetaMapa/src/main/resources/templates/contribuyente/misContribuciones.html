@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMapa - Mis Contribuciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+
+<!-- Modified hero for contributions page -->
+<header class="hero">
+    <div class="hero-content">
+        <h1>Mis Contribuciones</h1>
+        <p>Gestiona y edita los hechos que has compartido con la comunidad</p>
+    </div>
+</header>
+
+<!-- Added statistics section -->
+<div class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Hechos Publicados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Editables</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Verificados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">1,247</div>
+            <div class="stat-label">Visualizaciones</div>
+        </div>
+    </div>
+</div>
+
+<!-- Added main contributions section -->
+<section>
+    <h2>Tus Hechos Publicados</h2>
+    <p class="section-subtitle">
+        Puedes editar tus hechos durante los primeros 7 días después de publicarlos
+    </p>
+
+    <!-- Sample contribution cards -->
+    <div class="contribution-card">
+        <div class="status-badge status-editable">Editable</div>
+        <div class="contribution-header">
+            <div>
+                <h3 class="contribution-title">Incendio Forestal en Parque Nacional</h3>
+                <div class="contribution-meta">
+                    <span><i data-lucide="calendar"></i> 15 Ene 2025</span>
+                    <span><i data-lucide="map-pin"></i> Parque Nacional Torres del Paine</span>
+                    <span><i data-lucide="eye"></i> 234 vistas</span>
+                </div>
+            </div>
+        </div>
+        <p class="contribution-description">
+            Incendio forestal detectado en el sector norte del parque. Se observan columnas de humo y focos activos. Bomberos y brigadistas se encuentran trabajando en el área.
+        </p>
+        <div class="contribution-tags">
+            <span class="tag category">Incendios Forestales</span>
+            <span class="tag">Emergencia</span>
+            <span class="tag">Verificado</span>
+        </div>
+        <div class="contribution-actions">
+            <a href="editar-hecho.html" class="btn btn-primary">
+                <i data-lucide="edit-3"></i>
+                Editar Hecho
+            </a>
+            <a href="detalle-hecho.html" class="btn btn-secondary">
+                <i data-lucide="eye"></i>
+                Ver Detalles
+            </a>
+            <button class="btn btn-danger">
+                <i data-lucide="trash-2"></i>
+                Eliminar
+            </button>
+        </div>
+    </div>
+
+    <!-- Added action buttons -->
+    <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 3rem;">
+        <a href="subir-hecho.html" class="btn btn-primary">
+            <i data-lucide="plus-circle"></i>
+            Subir Nuevo Hecho
+        </a>
+        <a href="explorar-hechos.html" class="btn btn-secondary">
+            <i data-lucide="search"></i>
+            Explorar Otros Hechos
+        </a>
+    </div>
+</section>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

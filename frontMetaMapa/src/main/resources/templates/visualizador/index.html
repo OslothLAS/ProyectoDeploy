@@ -404,20 +404,7 @@
 </head>
 <body>
 <!-- Enhanced navbar with better structure -->
-<nav>
-    <div class="nav-container">
-        <a href="#" class="logo">
-            <i data-lucide="map"></i>
-            MetaMapa
-        </a>
-        <div class="nav-links">
-            <a href="#inicio">Inicio</a>
-            <a href="#nosotros">Nosotros</a>
-            <a href="#hechos">Explorar</a>
-            <a href="/login">Acceso</a>
-        </div>
-    </div>
-</nav>
+<div th:replace="~{layout/navbar :: navbar(false)}"></div>
 
 <!-- Enhanced hero section with better content and imagery -->
 <header class="hero" id="inicio">
@@ -544,21 +531,8 @@
 
 
 <!-- Enhanced footer with better organization -->
-<footer id="legal">
-    <div class="footer-content">
-        <div class="footer-links">
-            <a href="#hechos">Explorar Hechos</a>
-            <a href="#login">Registro / Iniciar Sesión</a>
-            <a href="#">Política de Privacidad</a>
-            <a href="#">Términos de Uso</a>
-            <a href="#">Contacto</a>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 MetaMapa. Sistema de código abierto para el bien común.</p>
-            <p>Desarrollado con ❤️ para organizaciones que buscan generar impacto social positivo.</p>
-        </div>
-    </div>
-</footer>
+<div th:replace="~{layout/footer :: footer}"></div>
+
 
 <script>lucide.createIcons();</script>
 </body>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Hecho - MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+
+<div class="container">
+    <!-- Page header -->
+    <div class="page-header">
+        <h1>Crear Nuevo Hecho</h1>
+        <p>Contribuye con información valiosa para nuestra comunidad. Todos los campos marcados con * son obligatorios.</p>
+    </div>
+
+    <!-- Success message -->
+    <div class="success-message" id="successMessage">
+        <i data-lucide="check-circle"></i>
+        ¡Hecho creado exitosamente! Tu contribución ha sido registrada.
+    </div>
+
+    <!-- Main form -->
+    <div class="form-container">
+        <form id="crearHechoForm">
+            <div class="form-grid">
+                <!-- Título -->
+                <div class="form-group full-width">
+                    <label for="titulo">Título del Hecho *</label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ingresa un título descriptivo">
+                </div>
+
+                <!-- Categoría -->
+                <div class="form-group">
+                    <label for="categoria">Categoría *</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="incendio-forestal">Incendio Forestal</option>
+                        <option value="accidente-vial">Accidente Vial</option>
+                        <option value="fenomeno-natural">Fenómeno Natural</option>
+                        <option value="evento-social">Evento Social</option>
+                        <option value="infraestructura">Infraestructura</option>
+                        <option value="medio-ambiente">Medio Ambiente</option>
+                        <option value="seguridad">Seguridad</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+
+                <!-- Fecha -->
+                <div class="form-group">
+                    <label for="fecha">Fecha del Hecho *</label>
+                    <input type="datetime-local" id="fecha" name="fecha" required>
+                </div>
+
+                <!-- Ubicación -->
+                <div class="form-group full-width">
+                    <label for="ubicacion">Ubicación *</label>
+                    <input type="text" id="ubicacion" name="ubicacion" required placeholder="Dirección, coordenadas o descripción del lugar">
+                </div>
+
+                <!-- Descripción -->
+                <div class="form-group full-width">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" name="descripcion" required placeholder="Describe detalladamente el hecho ocurrido..."></textarea>
+                </div>
+
+                <!-- Multimedia -->
+                <div class="form-group full-width">
+                    <label for="multimedia">Multimedia (Opcional)</label>
+                    <div class="file-upload">
+                        <input type="file" id="multimedia" name="multimedia" multiple accept="image/*,video/*,audio/*">
+                        <div class="file-upload-label">
+                            <i data-lucide="upload"></i>
+                            <span>Arrastra archivos aquí o haz clic para seleccionar</span>
+                        </div>
+                    </div>
+                    <small style="color: var(--text-light); margin-top: 0.5rem; display: block;">
+                        Formatos soportados: JPG, PNG, MP4, MP3. Máximo 10MB por archivo.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Opción anónima -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="anonimo" name="anonimo">
+                <label for="anonimo">Publicar como contribución anónima</label>
+            </div>
+
+            <!-- Form actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                    <i data-lucide="arrow-left"></i>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn">
+                    <i data-lucide="save"></i>
+                    Crear Hecho
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Information about editing -->
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-top: 2rem;">
+        <h3 style="color: var(--text-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="info"></i>
+            Información importante
+        </h3>
+        <p style="color: var(--text-light); margin-bottom: 0.5rem;">
+            • Los usuarios registrados pueden editar sus hechos durante los primeros 7 días después de la publicación.
+        </p>
+        <p style="color: var(--text-light); margin-bottom: 0.5rem;">
+            • Las contribuciones anónimas no pueden ser editadas posteriormente.
+        </p>
+        <p style="color: var(--text-light);">
+            • Toda la información será revisada por moderadores antes de su publicación final.
+        </p>
+    </div>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+
+    // Form submission handling
+    document.getElementById('crearHechoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        console.log('Datos del hecho:', data);
+        document.getElementById('successMessage').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            this.reset();
+            document.getElementById('successMessage').style.display = 'none';
+        }, 3000);
+    });
+
+    // File upload feedback
+    document.getElementById('multimedia').addEventListener('change', function(e) {
+        const files = e.target.files;
+        const label = document.querySelector('.file-upload-label span');
+        if (files.length > 0) {
+            label.textContent = `${files.length} archivo(s) seleccionado(s)`;
+        } else {
+            label.textContent = 'Arrastra archivos aquí o haz clic para seleccionar';
+        }
+    });
+
+    // Set current date as default
+    document.getElementById('fecha').valueAsDate = new Date();
+</script>
+</body>
+</html>
