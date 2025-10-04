@@ -11,7 +11,7 @@ import lombok.Setter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static utils.NormalizadorTexto.normalizarTexto;
+import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTexto;
 
 @Setter
 @Getter
@@ -31,7 +31,7 @@ public class CriterioPorCategoria extends CriterioDePertenencia {
 
     @Override
     public boolean cumpleCriterio(Hecho hecho) {
-        return normalizarTexto(hecho.getDatosHechos().getCategoria().getCategoria()).contains(normalizarTexto(this.categoria.getCategoria()));
+        return normalizarTexto(hecho.getCategoria().getCategoria()).contains(normalizarTexto(this.categoria.getCategoria()));
     }
 
     @Override

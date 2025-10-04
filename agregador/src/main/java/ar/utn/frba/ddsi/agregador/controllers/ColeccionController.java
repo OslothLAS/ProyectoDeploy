@@ -12,7 +12,7 @@ import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
 import java.util.List;
 
-import static utils.HechoUtil.hechosToDTO;
+import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
 
 @RestController
 @RequestMapping("/colecciones")

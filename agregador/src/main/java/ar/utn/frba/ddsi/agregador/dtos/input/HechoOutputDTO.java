@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoOutputDTO {
-    private AutorDTO autor;
+    private String username;
     private Boolean esValido;
     private List<MultimediaDTO> multimedia;
     private List<String> etiquetas = new ArrayList<>();

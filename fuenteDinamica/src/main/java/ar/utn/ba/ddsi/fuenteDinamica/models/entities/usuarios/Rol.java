@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios;
 
-public enum TipoUsuario {
+public enum Rol {
     ADMIN,
     CONTRIBUYENTE
 }

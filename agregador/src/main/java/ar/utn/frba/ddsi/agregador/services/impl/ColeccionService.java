@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
-import static utils.NormalizadorTexto.normalizarTrimTexto;
+import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
 public class ColeccionService implements IColeccionService {
@@ -107,8 +107,8 @@ public class ColeccionService implements IColeccionService {
 
         Set<String> clavesUbicacion = new HashSet<>();
         for (Hecho hecho : hechos) {
-            if (hecho.getDatosHechos().getUbicacion() != null) {
-                Ubicacion ub = hecho.getDatosHechos().getUbicacion();
+            if (hecho.getUbicacion() != null) {
+                Ubicacion ub = hecho.getUbicacion();
                 String clave = ub.getLatitud() + "," + ub.getLongitud();
                 clavesUbicacion.add(clave);
                 ubicacionesPorClave.put(clave, ub);
@@ -138,15 +138,15 @@ public class ColeccionService implements IColeccionService {
         }
 
         for (Hecho hecho : hechos) {
-            if (hecho.getDatosHechos().getUbicacion() != null) {
-                Ubicacion ub = hecho.getDatosHechos().getUbicacion();
+            if (hecho.getUbicacion() != null) {
+                Ubicacion ub = hecho.getUbicacion();
                 String clave = ub.getLatitud() + "," + ub.getLongitud();
-                hecho.getDatosHechos().setUbicacion(ubicacionesPorClave.get(clave));
+                hecho.setUbicacion(ubicacionesPorClave.get(clave));
             }
 
-            String nombreCategoria = hecho.getDatosHechos().getCategoria().getCategoria();
+            String nombreCategoria = hecho.getCategoria().getCategoria();
             Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
-            hecho.getDatosHechos().setCategoria(categoriaExistente);
+            hecho.setCategoria(categoriaExistente);
         }
     }
 

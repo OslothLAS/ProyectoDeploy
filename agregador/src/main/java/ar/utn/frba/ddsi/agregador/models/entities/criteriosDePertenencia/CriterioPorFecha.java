@@ -29,7 +29,7 @@ public class CriterioPorFecha extends CriterioDePertenencia {
 
     @Override
     public boolean cumpleCriterio(Hecho hecho) {
-        LocalDateTime fechaHecho = hecho.getDatosHechos().getFechaHecho();
+        LocalDateTime fechaHecho = hecho.getFechaHecho();
         return !fechaHecho.isBefore(fechaInicio) && !fechaHecho.isAfter(fechaFin);
     }
 

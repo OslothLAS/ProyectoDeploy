@@ -6,7 +6,9 @@ import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.Crit
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Categoria;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Origen;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Provincia;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Rol;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IProvinciaRepository;
@@ -19,6 +21,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,7 +55,7 @@ public class HechoService implements IHechoService {
                 });
 
 
-        Provincia provincia = this.provinciaRepository.findByNombre(hechoDTO.getUbicacion().getLocalidad().getProvincia().getNombre())
+        Provincia provincia = this.provinciaRepository.findById(hechoDTO.getUbicacion().getLocalidad().getProvincia().getId())
                 .orElseThrow(() -> new RuntimeException("No se encontró la provincia"));
 
         Hecho hecho = HechoUtil.hechoDTOtoHecho(hechoDTO);
@@ -60,6 +63,18 @@ public class HechoService implements IHechoService {
         hecho.setCategoria(categoriaPersistida);
         hecho.getUbicacion().getLocalidad().setProvincia(provincia);
 
+        if(token != null) {
+            if (Objects.equals(token.getRol(), Rol.ADMIN.name()) || Objects.equals(token.getRol(), Rol.CONTRIBUYENTE.name())) {
+                hecho.setEsEditable(true);
+                hecho.setMostrarDatos(hecho.getMostrarDatos());
+                hecho.setUsername(token.getUsername());
+                hecho.setOrigen(Origen.CONTRIBUYENTE);
+            }
+        }else{
+            hecho.setOrigen(Origen.VISUALIZADOR);
+        }
+
+        hechoRepository.save(hecho);
 }
 
 @Override

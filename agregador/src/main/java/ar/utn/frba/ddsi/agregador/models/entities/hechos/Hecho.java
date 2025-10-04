@@ -2,7 +2,9 @@ package ar.utn.frba.ddsi.agregador.models.entities.hechos;
 
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Handle;
+import ar.utn.frba.ddsi.agregador.models.entities.normalizador.NormalizadorHecho;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,15 +25,29 @@ public class Hecho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade =  CascadeType.ALL)
-    @JoinColumn(name = "autor_id")
-    private Usuario autor;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "valido")
     private Boolean esValido;
 
-    @Embedded
-    private DatosHechos datosHechos;
+    @Column(name = "titulo")
+    private String titulo;
+
+    @Column(name = "descripcion")
+    private String descripcion;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ubicacion_id")
+    private Ubicacion ubicacion;
+
+    @Column(name = "fecha")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime fechaHecho;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id")
@@ -74,71 +90,6 @@ public class Hecho {
     @Transient
     private Boolean esConsensuado;
 
-    public static Hecho create(DatosHechos datosHechos){
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.DATASET)
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
-                .build();
-    }
-
-    public static Hecho create(DatosHechos datosHechos, List<Coleccion> colecciones , List<Handle> handles, Boolean esConsensuado) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.EXTERNO)
-                .handles(handles)
-                .colecciones(colecciones)
-                .esConsensuado(esConsensuado)
-                .build();
-    }
-
-    public static Hecho create(DatosHechos datosHechos, List<Coleccion> colecciones, Boolean esConsensuado) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.EXTERNO)
-                .colecciones(colecciones)
-                .esConsensuado(esConsensuado)
-                .build();
-    }
-
-    //creacion con multimedia anonima
-    public static Hecho create(DatosHechos datosHechos, List<Multimedia> multimedia) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .multimedia(multimedia)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
-                .build();
-    }
-    //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
-    public static Hecho create(DatosHechos datosHechos, Usuario usuario, List<Multimedia> multimedia, Boolean mostrarDatos) {
-        return Hecho.builder()
-                .datosHechos(datosHechos)
-                .esValido(true)
-                .autor(usuario)
-                .multimedia(multimedia)
-                .etiquetas(new ArrayList<>())
-                .mostrarDatos(mostrarDatos)
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.CONTRIBUYENTE)
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
-                .build();
-    }
-
 
     public void addEtiqueta(String etiqueta) {
         this.etiquetas.add(etiqueta);
@@ -159,25 +110,37 @@ public class Hecho {
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 
-    public List<String> getTituloYDescripcion(){
-        String titulo = this.getDatosHechos().getTitulo();
-        String descripcion = this.getDatosHechos().getDescripcion();
-        List<String> tituloYdesc = new ArrayList<>();
-        tituloYdesc.add(titulo);
-        tituloYdesc.add(descripcion);
-
-        return tituloYdesc;
-    }
-
     public void normalizarHecho(){
-        this.getDatosHechos().normalizarHecho();
-    }
+        Categoria categoria = this.getCategoria();
+        categoria.setCategoria(NormalizadorHecho.
+                normalizarCategoria(this.getCategoria().getCategoria()));
 
-    public String getTitulo() {
-        return this.getDatosHechos().getTitulo();
-    }
+        Ubicacion ubicacion = this.getUbicacion();
+        double latitud = Double.parseDouble(ubicacion.getLatitud());
+        double longitud =  Double.parseDouble(ubicacion.getLongitud());
+        Provincia provincia = null;
+        Localidad localidad = null;
 
-    public String getDescripcion() {
-        return this.getDatosHechos().getDescripcion();
+        if (ubicacion.getLocalidad() != null) {
+            localidad = ubicacion.getLocalidad();
+            if (localidad.getProvincia() != null) {
+                provincia = localidad.getProvincia();
+            }
+        }
+        if (provincia == null) {
+            provincia = new Provincia();
+        }
+
+        List<String> resultados = NormalizadorHecho.normalizarUbicacion(latitud,longitud);
+        provincia.setNombre(resultados.get(0));
+
+        if (localidad == null) {
+            localidad = new Localidad();
+            localidad.setProvincia(provincia);
+            ubicacion.setLocalidad(localidad);
+        } else {
+            localidad.setNombre(resultados.get(1));
+            localidad.setProvincia(provincia);
+        }
     }
 }

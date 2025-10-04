@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica;
 
+import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
 import config.HechoProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,8 +14,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class FuenteDinamicaApplication {
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(FuenteDinamicaApplication.class, args);
-		System.out.println("hola mundo ");
-	}
+        System.out.println("hola mundo ");
+        JwtUtil.init();
+    }
 }

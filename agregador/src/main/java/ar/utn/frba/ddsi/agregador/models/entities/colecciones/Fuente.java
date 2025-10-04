@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import utils.HechoUtil;
+import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 
 import java.util.List;
 import java.util.Map;

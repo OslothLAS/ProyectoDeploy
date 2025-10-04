@@ -19,7 +19,7 @@ public class FiltroConsensuados {
         // agrupo los hechos iguales por DatosHechos (uso como ID los DatosHechos)
         Map<List<String>, List<Hecho>> hechosPorDatos = hechos.stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.groupingBy(Hecho::getTituloYDescripcion));
+                .collect(Collectors.groupingBy(h -> List.of(h.getTitulo(), h.getDescripcion())));
 
         // filtro los hechos presentes en múltiples orígenes
         List<Hecho> hechosFiltrados = new ArrayList<>();

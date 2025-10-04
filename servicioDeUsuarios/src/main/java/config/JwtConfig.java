@@ -1,4 +1,4 @@
-package config;
+/*package config;
 
 import com.usuarios.servicioDeUsuarios.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,4 +15,4 @@ public class JwtConfig {
     public void init() {
         JwtUtil.init(jwtSecret); // Inicializa la clave en el JwtUtil estático
     }
-}
+}*/
