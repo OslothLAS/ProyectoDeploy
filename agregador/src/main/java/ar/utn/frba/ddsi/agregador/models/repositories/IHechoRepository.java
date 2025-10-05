@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IHechoRepository extends JpaRepository<Hecho, Long> {
 
-    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO( " +
+    /*@Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO( " +
             "       c.titulo, " +
             "       h.datosHechos.ubicacion.localidad.provincia.nombre, " +
             "       COUNT(h)) " +
@@ -41,13 +41,13 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
             "GROUP BY h.datosHechos.ubicacion.localidad.provincia.nombre " +
             "ORDER BY COUNT(h) DESC")
     List<StatDTO> findProvinciaWithMostHechosByCategoria();
-
+*/
     @Modifying
     @Transactional
     @Query("UPDATE Hecho h " +
             "SET h.esValido = false " +
-            "WHERE h.datosHechos.titulo = :titulo " +
-            "AND h.datosHechos.descripcion = :descripcion")
+            "WHERE h.titulo = :titulo " +
+            "AND h.descripcion = :descripcion")
     int invalidateByTituloAndDescripcion(@Param("titulo") String titulo,
                                          @Param("descripcion") String descripcion);
 }

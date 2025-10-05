@@ -20,8 +20,8 @@ public interface IColeccionService {
     void cambiarConsenso(Long idColeccion, TipoConsenso tipo);
     void agregarFuente(Long idColeccion, FuenteInputDTO fuente);
     void eliminarFuente(Long idColeccion, Long idFuente);
-    List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones();
+    /*List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones();
     List<StatDTO> getCategoriaMasReportada();
     List<StatDTO> getHoraMasReportada();
-    List<StatDTO> getProviniciaMasReportadaPorCategoria();
+    List<StatDTO> getProviniciaMasReportadaPorCategoria();*/
 }

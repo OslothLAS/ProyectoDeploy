@@ -1,8 +1,8 @@
 package ar.utn.frba.ddsi.agregador.utils;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.*;
+import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +23,12 @@ public class HechoUtil {
             }
         }
 
+        dto.setId(hecho.getId());
         dto.setUsername(hecho.getUsername());
         dto.setEsValido(hecho.getEsValido());
         dto.setMultimedia(multimediaNueva);
         dto.setEtiquetas(hecho.getEtiquetas());
-        dto.setColecciones(hecho.getColecciones());
+        //dto.setColecciones(hecho.getColecciones());
         dto.setHandles(hecho.getHandles());
         dto.setOrigen(hecho.getOrigen());
         dto.setFuenteOrigen(hecho.getFuenteOrigen());
@@ -39,11 +40,7 @@ public class HechoUtil {
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
         dto.setFechaHecho(hecho.getFechaHecho());
-
-        if (hecho.getCategoria() != null) {
-            CategoriaDTO cat = new CategoriaDTO(hecho.getCategoria().getCategoria());
-            dto.setCategoria(cat);
-        }
+        dto.setCategoria(hecho.getCategoria().getCategoria());
 
         if (hecho.getUbicacion() != null) {
             dto.setUbicacion(ubicacionToDTO(hecho.getUbicacion()));
@@ -106,9 +103,9 @@ public class HechoUtil {
         }
         Ubicacion ubi = new Ubicacion(dto.getUbicacion().getLatitud(), dto.getUbicacion().getLongitud(),localidad);
 
-        return new Hecho(null, dto.getUsername(), dto.getEsValido(), dto.getTitulo(),dto.getDescripcion(),new Categoria(dto.getCategoria().getCategoria()),
-                ubi,dto.getFechaHecho(),multimediaNueva, dto.getEtiquetas(),
-                dto.getColecciones(), dto.getHandles(), dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
+        return new Hecho(null, dto.getUsername(), dto.getEsValido(), dto.getTitulo(),dto.getDescripcion(),new Categoria(dto.getCategoria()),
+                ubi,dto.getFechaHecho(),multimediaNueva, dto.getEtiquetas(),null,
+                dto.getHandles(), dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
                 dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
         );
     }

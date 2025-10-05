@@ -1,7 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.entities.colecciones;
 
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
-import ar.utn.frba.ddsi.agregador.dtos.input.HechoOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.FuenteOrigen;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import com.fasterxml.jackson.annotation.JsonCreator;

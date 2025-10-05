@@ -266,7 +266,7 @@ public class ColeccionService implements IColeccionService {
         hechoRepository.saveAll(hechosAsignados);
     }
 
-    public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
+    /*public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
         return this.hechoRepository.countHechosByProvinciaAndColeccion();
     }
 
@@ -280,5 +280,5 @@ public class ColeccionService implements IColeccionService {
 
     public List<StatDTO> getProviniciaMasReportadaPorCategoria(){
         return hechoRepository.findProvinciaWithMostHechosByCategoria();
-    }
+    }*/
 }
