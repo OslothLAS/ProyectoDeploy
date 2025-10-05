@@ -44,32 +44,4 @@ public class Usuario {
         this.fechaNacimiento = fechaNacimiento;
         this.rol = rol;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getContrasenia() {
-        return contrasenia;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
 }

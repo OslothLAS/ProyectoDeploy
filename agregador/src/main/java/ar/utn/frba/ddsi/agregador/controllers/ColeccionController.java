@@ -2,8 +2,8 @@ package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +23,14 @@ public class ColeccionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Coleccion>> getColecciones(){
+    public ResponseEntity<List<ColeccionOutputDTO>> getColecciones(){
         return ResponseEntity.ok(this.coleccionService.getColecciones());
     }
 
     @PostMapping
-    public void createColeccion(@RequestBody ColeccionInputDTO coleccion){
+    public ResponseEntity<Void> createColeccion(@RequestBody ColeccionInputDTO coleccion){
         this.coleccionService.createColeccion(coleccion);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{idColeccion}/hechos")
@@ -47,18 +48,21 @@ public class ColeccionController {
     }
 
     @PutMapping("/{idColeccion}/cambiarConsenso")
-    public void cambiarConsenso(@PathVariable("idColeccion") Long idColeccion, @RequestBody TipoConsenso tipo) {
+    public ResponseEntity<Void> cambiarConsenso(@PathVariable("idColeccion") Long idColeccion, @RequestBody TipoConsenso tipo) {
         this.coleccionService.cambiarConsenso(idColeccion, tipo);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping ("/{idColeccion}/fuentes/")
-    public void agregarFuente(@PathVariable("idColeccion") Long idColeccion, @RequestBody FuenteInputDTO fuente) {
+    public ResponseEntity<Void> agregarFuente(@PathVariable("idColeccion") Long idColeccion, @RequestBody FuenteInputDTO fuente) {
         this.coleccionService.agregarFuente(idColeccion, fuente);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping ("/{idColeccion}/fuentes/{idFuente}")
-    public void deleteFuente(@PathVariable("idColeccion") Long idColeccion, @PathVariable("idFuente") Long idFuente) {
+    public ResponseEntity<Void> deleteFuente(@PathVariable("idColeccion") Long idColeccion, @PathVariable("idFuente") Long idFuente) {
         this.coleccionService.eliminarFuente(idColeccion, idFuente);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/cronConsensuar")

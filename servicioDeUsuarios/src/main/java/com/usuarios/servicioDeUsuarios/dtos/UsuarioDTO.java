@@ -1,5 +1,6 @@
 package com.usuarios.servicioDeUsuarios.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.usuarios.servicioDeUsuarios.models.entities.Rol;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class UsuarioDTO {
     private String contrasenia;
     private String nombre;
     private String apellido;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yy")
     private LocalDate fechaNacimiento;
-    private Rol tipo;
+    private Rol rol;
 }

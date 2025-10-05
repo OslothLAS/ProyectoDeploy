@@ -2,7 +2,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ICategoriaRepository;
@@ -18,6 +18,7 @@ import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategie
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioPorCategoria;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
+import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
@@ -150,8 +151,8 @@ public class ColeccionService implements IColeccionService {
         }
     }
 
-    public List<Coleccion> getColecciones(){
-        return this.coleccionRepository.findAll();
+    public List<ColeccionOutputDTO> getColecciones(){
+        return this.coleccionRepository.findAll().stream().map(ColeccionUtil::coleccionToDto).collect(Collectors.toList());
     }
 
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {

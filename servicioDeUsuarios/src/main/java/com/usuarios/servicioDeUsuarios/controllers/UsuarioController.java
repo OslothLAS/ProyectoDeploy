@@ -1,10 +1,11 @@
 package com.usuarios.servicioDeUsuarios.controllers;
 
-import com.usuarios.servicioDeUsuarios.models.entities.Usuario;
+import com.usuarios.servicioDeUsuarios.dtos.UsuarioDTO;
 import com.usuarios.servicioDeUsuarios.services.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -13,19 +14,18 @@ import java.util.List;
 public class UsuarioController {
     private final UsuarioService usuarioService;
 
-
     @PostMapping
-    public void crearUsuario(Usuario usuario) {
-
+    public ResponseEntity<Long> crearUsuario(@RequestBody UsuarioDTO user) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.crearUsuario(user));
     }
 
     @GetMapping
-    public List<Usuario> listarUsuarios() {
-        return new ArrayList<>();
+    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
+        return ResponseEntity.ok(usuarioService.findAll());
     }
 
     @GetMapping("/{username}")
-    public Usuario obtenerUsuarioPorUsername(@PathVariable String username) {
-        return null;
+    public ResponseEntity<UsuarioDTO> obtenerUsuarioPorUsername(@PathVariable String username) {
+        return ResponseEntity.ok(usuarioService.findByUsername(username));
     }
 }
