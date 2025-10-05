@@ -1,12 +1,19 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
+    private final ColeccionService coleccionService;
     @GetMapping("/")
     public String home() {
         return "redirect:/visualizador";
@@ -23,9 +30,12 @@ public class HomeController {
     }
 
     @GetMapping("/buscador-colecciones")
-    public String buscadorColecciones() {
+    public String buscadorColecciones(Model model) {
+        List<ColeccionOutputDTO> colecciones = coleccionService.obtenerTodasLasColecciones();
+        model.addAttribute("colecciones", colecciones);
         return "commons/buscadorColecciones";
     }
+
 
     @GetMapping("/buscador-hechos")
     public String buscadorHechos() {

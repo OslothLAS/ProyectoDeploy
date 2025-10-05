@@ -1,438 +1,91 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de Colecciones - MetaMapa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Using the same CSS variables and styling from the main landing page */
-        :root {
-            --primary-color: #0891b2;
-            --primary-hover: #0e7490;
-            --secondary-color: #f59e0b;
-            --text-color: #4b5563;
-            --text-light: #6b7280;
-            --background: #ffffff;
-            --surface: #f9fafb;
-            --border: #e5e7eb;
-            --shadow: 0 4px 6px rgba(0,0,0,0.05);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-        }
+    <link rel="stylesheet" th:href="@{/css/colecciones.css}">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const regionFilter = document.getElementById('regionFilter');
+            const yearFilter = document.getElementById('yearFilter');
+            const sortSelect = document.getElementById('sortSelect');
+            const grid = document.getElementById('collectionsGrid');
+            const count = document.getElementById('resultsCount');
 
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--background);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+            function filterCollections() {
+                const search = searchInput.value.toLowerCase();
+                const category = categoryFilter.value;
+                const region = regionFilter.value;
+                const year = yearFilter.value;
+                const cards = grid.querySelectorAll('.collection-card');
+                let visible = 0;
 
-        /* Same navbar styling as main page */
-        nav {
-            background: var(--background);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-        }
+                cards.forEach(card => {
+                    const cardTitle = card.querySelector('.card-title').textContent.toLowerCase();
+                    const cardDesc = card.querySelector('.card-description').textContent.toLowerCase();
+                    const cardTags = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent.toLowerCase());
+                    const cardCategory = card.dataset.category.toLowerCase();
+                    const cardRegion = card.dataset.region.toLowerCase();
+                    const cardYear = card.dataset.year;
 
-        .nav-container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+                    const matchesSearch = cardTitle.includes(search) || cardDesc.includes(search) || cardTags.some(t => t.includes(search));
+                    const matchesCategory = !category || category === cardCategory;
+                    const matchesRegion = !region || region === cardRegion;
+                    const matchesYear = !year || year === cardYear;
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 1.5rem;
-            text-decoration: none;
-        }
+                    if (matchesSearch && matchesCategory && matchesRegion && matchesYear) {
+                        card.style.display = '';
+                        visible++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .nav-links a:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        /* Main content styling */
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
-        }
-
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 1rem;
-        }
-
-        .page-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Search and filters section */
-        .search-filters {
-            background: var(--surface);
-            padding: 2rem;
-            border-radius: 1rem;
-            margin-bottom: 3rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            flex: 1;
-            min-width: 300px;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-family: 'DM Sans', sans-serif;
-            transition: border-color 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .search-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .search-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .filters {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .filter-group label {
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .filter-select {
-            padding: 0.5rem;
-            border: 2px solid var(--border);
-            border-radius: 0.5rem;
-            background: white;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        /* Results info */
-        .results-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .results-count {
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        .sort-options {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .sort-options label {
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        /* Collections grid */
-        .collections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .collection-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .collection-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            color: white;
-            padding: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .card-category {
-            background: rgba(255,255,255,0.2);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: inline-block;
-            font-weight: 500;
-        }
-
-        .card-content {
-            padding: 1.5rem;
-        }
-
-        .card-description {
-            color: var(--text-light);
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        .card-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            color: var(--text-light);
-        }
-
-        .card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .tag {
-            background: var(--background);
-            color: var(--text-color);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            border: 1px solid var(--border);
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .card-date {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
-
-        .view-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .view-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        /* Footer styling - same as main page */
-        footer {
-            background: var(--text-color);
-            color: white;
-            text-align: center;
-            padding: 3rem 2rem 2rem;
-            margin-top: 4rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        footer a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        footer a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #6b7280;
-            padding-top: 2rem;
-            margin-top: 2rem;
-            color: #9ca3af;
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
+                count.textContent = `Mostrando ${visible} colecciones`;
             }
 
-            .page-title {
-                font-size: 2rem;
+            function sortCollections() {
+                const criteria = sortSelect.value;
+                const cards = Array.from(grid.querySelectorAll('.collection-card'));
+                let sorted;
+
+                switch(criteria) {
+                    case 'recent':
+                        sorted = cards.sort((a, b) => new Date(b.dataset.year) - new Date(a.dataset.year));
+                        break;
+                    case 'alphabetical':
+                        sorted = cards.sort((a, b) => a.querySelector('.card-title').textContent.localeCompare(b.querySelector('.card-title').textContent));
+                        break;
+                    case 'facts':
+                        sorted = cards.sort((a, b) => parseInt(b.querySelector('.stat').textContent) - parseInt(a.querySelector('.stat').textContent));
+                        break;
+                    case 'contributors':
+                        sorted = cards.sort((a, b) => parseInt(b.querySelectorAll('.stat')[1].textContent) - parseInt(a.querySelectorAll('.stat')[1].textContent));
+                        break;
+                }
+
+                sorted.forEach(card => grid.appendChild(card));
             }
 
-            .search-bar {
-                flex-direction: column;
-            }
+            searchInput.addEventListener('input', filterCollections);
+            categoryFilter.addEventListener('change', filterCollections);
+            regionFilter.addEventListener('change', filterCollections);
+            yearFilter.addEventListener('change', filterCollections);
+            sortSelect.addEventListener('change', sortCollections);
 
-            .search-input {
-                min-width: auto;
-            }
-
-            .filters {
-                justify-content: center;
-            }
-
-            .collections-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .results-info {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .footer-links {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            main {
-                padding: 1rem;
-            }
-
-            .search-filters {
-                padding: 1rem;
-            }
-
-            .card-stats {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-        }
-    </style>
+            // Inicializa Lucide icons
+            lucide.replace();
+        });
+    </script>
 </head>
 <body>
 <div th:replace="~{layout/navbar :: navbar(false)}"></div>
-
 
 <main>
     <div class="page-header">
@@ -451,7 +104,7 @@
         <div class="filters">
             <div class="filter-group">
                 <label for="categoryFilter">Categoría:</label>
-                <select id="categoryFilter" class="filter-select" onchange="filterCollections()">
+                <select id="categoryFilter" class="filter-select">
                     <option value="">Todas</option>
                     <option value="ambiental">Ambiental</option>
                     <option value="social">Social</option>
@@ -465,7 +118,7 @@
 
             <div class="filter-group">
                 <label for="regionFilter">Región:</label>
-                <select id="regionFilter" class="filter-select" onchange="filterCollections()">
+                <select id="regionFilter" class="filter-select">
                     <option value="">Todas</option>
                     <option value="argentina">Argentina</option>
                     <option value="brasil">Brasil</option>
@@ -479,23 +132,19 @@
 
             <div class="filter-group">
                 <label for="yearFilter">Año:</label>
-                <select id="yearFilter" class="filter-select" onchange="filterCollections()">
+                <select id="yearFilter" class="filter-select">
                     <option value="">Todos</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                    <option value="2021">2021</option>
-                    <option value="2020">2020</option>
+                    <option th:each="c : ${#numbers.sequence(2020, 2024)}" th:value="${c}" th:text="${c}">2024</option>
                 </select>
             </div>
         </div>
     </div>
 
     <div class="results-info">
-        <div class="results-count" id="resultsCount">Mostrando 24 colecciones</div>
+        <div class="results-count" id="resultsCount" th:text="'Mostrando ' + ${colecciones.size()} + ' colecciones'">Mostrando 0 colecciones</div>
         <div class="sort-options">
             <label for="sortSelect">Ordenar por:</label>
-            <select id="sortSelect" class="filter-select" onchange="sortCollections()">
+            <select id="sortSelect" class="filter-select">
                 <option value="recent">Más recientes</option>
                 <option value="alphabetical">Alfabético</option>
                 <option value="facts">Más hechos</option>
@@ -505,99 +154,30 @@
     </div>
 
     <div class="collections-grid" id="collectionsGrid">
-        <!-- Collection cards with varied data -->
-        <div class="collection-card" data-category="ambiental" data-region="argentina" data-year="2024" onclick="window.location.href='coleccion-incendio-forestal.html'" style="cursor:pointer;">
-            <div class="card-header">
-                <h3 class="card-title">Incendios Forestales Argentina 2024</h3>
-                <span class="card-category">Ambiental</span>
-            </div>
-            <div class="card-content">
-                <p class="card-description">Documentación completa de incendios forestales en Argentina durante 2024, incluyendo causas, impacto ambiental y respuesta gubernamental.</p>
-                <div class="card-stats">
-                    <span class="stat"><i data-lucide="bar-chart-3"></i> 156 hechos</span>
-                    <span class="stat"><i data-lucide="users"></i> 23 contribuyentes</span>
-                    <span class="stat"><i data-lucide="map-pin"></i> Argentina</span>
-                </div>
-                <div class="card-tags">
-                    <span class="tag">incendios</span>
-                    <span class="tag">bosques</span>
-                    <span class="tag">emergencia</span>
-                    <span class="tag">clima</span>
-                </div>
-                <div class="card-footer">
-                    <span class="card-date">Actualizado: 15 Dic 2024</span>
-                    <button class="view-btn">Ver Colección</button>
-                </div>
-            </div>
-        </div>
+        <div class="collection-card"
+             th:each="coleccion : ${colecciones}"
+             th:data-category="${coleccion.categoria}"
+             th:data-region="${coleccion.region}"
+             th:data-year="${#dates.format(coleccion.fechaYHoraDeActualizacion,'yyyy')}"
+             th:onclick="'window.location.href=\'/colecciones/' + ${coleccion.handle} + '\'''">
 
-        <div class="collection-card" data-category="social" data-region="brasil" data-year="2023">
             <div class="card-header">
-                <h3 class="card-title">Movimientos Sociales Brasil</h3>
-                <span class="card-category">Social</span>
+                <h3 class="card-title" th:text="${coleccion.titulo}">Título</h3>
+                <span class="card-category" th:text="${coleccion.categoria}">Categoría</span>
             </div>
-            <div class="card-content">
-                <p class="card-description">Análisis de movimientos sociales y protestas en Brasil, documentando demandas, participación y respuestas institucionales.</p>
-                <div class="card-stats">
-                    <span class="stat"><i data-lucide="bar-chart-3"></i> 89 hechos</span>
-                    <span class="stat"><i data-lucide="users"></i> 31 contribuyentes</span>
-                    <span class="stat"><i data-lucide="map-pin"></i> Brasil</span>
-                </div>
-                <div class="card-tags">
-                    <span class="tag">protestas</span>
-                    <span class="tag">derechos</span>
-                    <span class="tag">sociedad</span>
-                </div>
-                <div class="card-footer">
-                    <span class="card-date">Actualizado: 28 Nov 2024</span>
-                    <button class="view-btn">Ver Colección</button>
-                </div>
-            </div>
-        </div>
 
-        <div class="collection-card" data-category="economico" data-region="chile" data-year="2024">
-            <div class="card-header">
-                <h3 class="card-title">Crisis Económica Chile 2024</h3>
-                <span class="card-category">Económico</span>
-            </div>
             <div class="card-content">
-                <p class="card-description">Seguimiento de indicadores económicos, políticas fiscales y impacto social de la crisis económica en Chile.</p>
+                <p class="card-description" th:text="${coleccion.descripcion}">Descripción</p>
                 <div class="card-stats">
-                    <span class="stat"><i data-lucide="bar-chart-3"></i> 124 hechos</span>
-                    <span class="stat"><i data-lucide="users"></i> 18 contribuyentes</span>
-                    <span class="stat"><i data-lucide="map-pin"></i> Chile</span>
+                    <span class="stat"><i data-lucide="bar-chart-3"></i> <span th:text="${coleccion.numeroDeHechos}">0</span> hechos</span>
+                    <span class="stat"><i data-lucide="users"></i> <span th:text="${coleccion.numeroDeContribuyentes}">0</span> contribuyentes</span>
+                    <span class="stat"><i data-lucide="map-pin"></i> <span th:text="${coleccion.region}">Región</span></span>
                 </div>
                 <div class="card-tags">
-                    <span class="tag">inflación</span>
-                    <span class="tag">empleo</span>
-                    <span class="tag">políticas</span>
+                    <span class="tag" th:each="tag : ${coleccion.tags}" th:text="${tag}">Etiqueta</span>
                 </div>
                 <div class="card-footer">
-                    <span class="card-date">Actualizado: 10 Dic 2024</span>
-                    <button class="view-btn">Ver Colección</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="collection-card" data-category="politico" data-region="colombia" data-year="2023">
-            <div class="card-header">
-                <h3 class="card-title">Elecciones Regionales Colombia</h3>
-                <span class="card-category">Político</span>
-            </div>
-            <div class="card-content">
-                <p class="card-description">Cobertura completa de las elecciones regionales en Colombia, incluyendo candidatos, propuestas y resultados.</p>
-                <div class="card-stats">
-                    <span class="stat"><i data-lucide="bar-chart-3"></i> 203 hechos</span>
-                    <span class="stat"><i data-lucide="users"></i> 45 contribuyentes</span>
-                    <span class="stat"><i data-lucide="map-pin"></i> Colombia</span>
-                </div>
-                <div class="card-tags">
-                    <span class="tag">elecciones</span>
-                    <span class="tag">democracia</span>
-                    <span class="tag">candidatos</span>
-                </div>
-                <div class="card-footer">
-                    <span class="card-date">Actualizado: 5 Nov 2024</span>
+                    <span class="card-date" th:text="'Actualizado: ' + ${#dates.format(coleccion.fechaYHoraDeActualizacion,'dd MMM yyyy')}">Fecha</span>
                     <button class="view-btn">Ver Colección</button>
                 </div>
             </div>
@@ -606,4 +186,5 @@
 </main>
 
 <div th:replace="~{layout/footer :: footer}"></div>
-
+</body>
+</html>

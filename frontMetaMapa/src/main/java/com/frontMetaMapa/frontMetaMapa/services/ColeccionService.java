@@ -1,8 +1,11 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
-import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+
+import com.frontMetaMapa.frontMetaMapa.exceptions.DuplicateColeccionException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.ColeccionInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,50 +31,61 @@ public class ColeccionService {
     }
 
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
-        //validarDatosBasicos(coleccionDTO);
-        //validarContactos(coleccionDTO);
+        validarDatosBasicos(coleccionDTO);
         validarDuplicidadDeColeccion(coleccionDTO);
-
         return coleccionApiService.crearColeccion(coleccionDTO);
     }
 
     public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO coleccionDTO) {
-        // Verificar que el alumno existe
+        // Verificar que existe
         coleccionApiService.obtenerColeccionPorId(id);
 
-        //validarDatosBasicos(coleccionDTO);
-        //validarContactos(coleccionDTO);
+        validarDatosBasicos(coleccionDTO);
 
-        // Si el id cambió, verificar que no exista otro con el nuevo id
-        if (!id.equals(coleccionDTO.getLegajo().trim())) {
+        // Si cambia el id, validar duplicidad
+        if (!id.equals(coleccionDTO.getId().trim())) {
             validarDuplicidadDeColeccion(coleccionDTO);
         }
 
         return coleccionApiService.actualizarColeccion(id, coleccionDTO);
     }
 
+
     public void eliminarColeccion(String id) {
         coleccionApiService.obtenerColeccionPorId(id); // Verificar que existe
         coleccionApiService.eliminarColeccion(id);
     }
-//Hay que aca validar campo por campo
-    /*
-    private void validarDatosBasicos(ColeccionOutputDTO coleccionDTO) {
+    private void validarDatosBasicos(ColeccionInputDTO coleccionDTO) {
         ValidationException validationException = new ValidationException("Errores de validación");
         boolean tieneErrores = false;
 
-        if (coleccionDTO.getLegajo() == null || coleccionDTO.getLegajo().trim().isEmpty()) {
+        if (coleccionDTO.getId() == null || coleccionDTO.getId().trim().isEmpty()) {
             validationException.addFieldError("id", "El id es obligatorio");
             tieneErrores = true;
         }
 
-        if (coleccionDTO.getNombre() == null || coleccionDTO.getNombre().trim().isEmpty()) {
-            validationException.addFieldError("nombre", "El nombre es obligatorio");
+        if (coleccionDTO.getTitulo() == null || coleccionDTO.getTitulo().trim().isEmpty()) {
+            validationException.addFieldError("titulo", "El título es obligatorio");
             tieneErrores = true;
         }
 
-        if (coleccionDTO.getApellido() == null || coleccionDTO.getApellido().trim().isEmpty()) {
-            validationException.addFieldError("apellido", "El apellido es obligatorio");
+        if (coleccionDTO.getDescripcion() == null || coleccionDTO.getDescripcion().trim().isEmpty()) {
+            validationException.addFieldError("descripcion", "La descripción es obligatoria");
+            tieneErrores = true;
+        }
+
+        if (coleccionDTO.getFuentes() == null || coleccionDTO.getFuentes().isEmpty()) {
+            validationException.addFieldError("fuentes", "Debe tener al menos una fuente");
+            tieneErrores = true;
+        }
+
+        if (coleccionDTO.getCriterios() == null || coleccionDTO.getCriterios().isEmpty()) {
+            validationException.addFieldError("criterios", "Debe especificar criterios de pertenencia");
+            tieneErrores = true;
+        }
+
+        if (coleccionDTO.getEstrategiaConsenso() == null || coleccionDTO.getEstrategiaConsenso().trim().isEmpty()) {
+            validationException.addFieldError("estrategiaConsenso", "La estrategia de consenso es obligatoria");
             tieneErrores = true;
         }
 
@@ -79,11 +93,14 @@ public class ColeccionService {
             throw validationException;
         }
     }
-*/
 
-    private void validarDuplicidadDeColeccion(ColeccionOutputDTO coleccionDTO) {
-        if (coleccionApiService.existeColeccion(coleccionDTO.getLegajo().trim())) {
-            throw new DuplicateLegajoException(coleccionDTO.getLegajo().trim());
+
+    private void validarDuplicidadDeColeccion(ColeccionInputDTO coleccionDTO) {
+        String id = coleccionDTO.getId().trim();
+
+        if (coleccionApiService.existeColeccion(id)) {
+            throw new DuplicateColeccionException(id);
         }
     }
+
 }
