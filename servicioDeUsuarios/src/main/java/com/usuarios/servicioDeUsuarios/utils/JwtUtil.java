@@ -5,16 +5,20 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 
+@Component
 public class JwtUtil {
     @Getter
+    @Setter //para test
     private static Key key;
 
-    public static void init() {
-        key = Keys.hmacShaKeyFor(Decoders.BASE64.decode("0C44BmsWJnuBF+jBfXPfyn6SL/6KCf/6KILHM6NgByGhgjvRQWW6Fjr8hMR2S087wjOPSSKE3lyRoKd/azokSg==")); // Puedes necesitar Decoders.BASE64.decode() dependiendo de cómo la generes
+    public JwtUtil(@Value("${jwt.secret.key}") String secretBase64) {
+        key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64)); // Puedes necesitar Decoders.BASE64.decode() dependiendo de cómo la generes
     }
 
     private static final long ACCESS_TOKEN_VALIDITY = 15 * 60 * 1000; // 15 min

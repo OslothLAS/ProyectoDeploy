@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface IHechoService {
     void crearHecho(HechoDTO hecho, TokenInfo token);
-    void editarHecho(Long idHecho, HechoDTO dto) throws Exception;
+    void editarHecho(Long idHecho, HechoDTO dto, TokenInfo tokenInfo) throws Exception;
     List<Hecho> obtenerTodos(Map<String, String> filtros);
     void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion);
 }

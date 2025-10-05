@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
+import ar.utn.ba.ddsi.fuenteDinamica.exceptions.UnauthorizedActionException;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Categoria;
@@ -73,21 +74,27 @@ public class HechoService implements IHechoService {
         }else{
             hecho.setOrigen(Origen.VISUALIZADOR);
         }
-
+        hecho.setEsValido(true);
         hechoRepository.save(hecho);
 }
 
 @Override
-public void editarHecho(Long idHecho, HechoDTO dto) throws Exception {
+public void editarHecho(Long idHecho, HechoDTO dto, TokenInfo tokenInfo) throws Exception {
     Hecho hecho = hechoRepository.findById(idHecho)
             .orElseThrow(Exception::new);
 
-    /*if(!hecho.getAutor().getId().equals(dto.getId())) {
-        throw new Exception("Solo el autor del hecho puede modificarlo");
-    }*/
+    if(hecho.getUsername() != null){
+        if(!hecho.getUsername().equals(tokenInfo.getUsername())) {
+            throw new UnauthorizedActionException("Solo el autor del hecho puede modificarlo");
+        }
+    }else{
+        if(tokenInfo != null) {
+            throw new UnauthorizedActionException("Solo el autor del hecho puede modificarlo");
+        }
+    }
 
     if (!hecho.esEditable()) {
-        throw new Exception("El plazo de edicion ha expirado");
+        throw new UnauthorizedActionException("El plazo de edicion ha expirado");
     }
 
     if (dto.getTitulo() != null) {
@@ -102,9 +109,25 @@ public void editarHecho(Long idHecho, HechoDTO dto) throws Exception {
         hecho.setCategoria(new Categoria(dto.getCategoria()));
     }
 
-//        if (dto.getLatitud() != null) {
-//            //hecho.getDatosHechos().setUbicacion(dto.getUbicacion());
-//TODO        }
+    if (dto.getUbicacion() != null) {
+        var dtoUbic = dto.getUbicacion();
+
+        if (dtoUbic.getLatitud() != null)
+            hecho.getUbicacion().setLatitud(dtoUbic.getLatitud());
+
+        if (dtoUbic.getLongitud() != null)
+            hecho.getUbicacion().setLongitud(dtoUbic.getLongitud());
+
+        if (dtoUbic.getLocalidad() != null) {
+            var dtoLoc = dtoUbic.getLocalidad();
+
+            if (dtoLoc.getNombre() != null)
+                hecho.getUbicacion().getLocalidad().setNombre(dtoLoc.getNombre());
+
+            if (dtoLoc.getProvincia() != null && dtoLoc.getProvincia().getId() != null)
+                hecho.getUbicacion().getLocalidad().getProvincia().setId(dtoLoc.getProvincia().getId());
+        }
+    }
 
     if (dto.getFechaHecho() != null) {
         hecho.setFechaHecho(dto.getFechaHecho());
