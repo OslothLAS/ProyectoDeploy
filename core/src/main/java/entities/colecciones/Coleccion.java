@@ -33,7 +33,7 @@ public class Coleccion {
             joinColumns = @JoinColumn(name = "coleccion_id"),
             inverseJoinColumns = @JoinColumn(name = "fuente_id")
     )
-    private List<Fuente> importadores;
+    private List<Fuente> fuentes;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "coleccion_id")
