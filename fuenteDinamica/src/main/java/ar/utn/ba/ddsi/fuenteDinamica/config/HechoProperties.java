@@ -1,4 +1,4 @@
-package config;
+package ar.utn.ba.ddsi.fuenteDinamica.config;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -35,7 +35,7 @@ public class ColeccionController {
     }
 
     @PostMapping
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void createColeccion(@RequestBody ColeccionInputDTO coleccion) {
 
         this.coleccionService.createColeccion(coleccion);

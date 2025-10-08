@@ -1,6 +1,5 @@
-package config;
+package ar.utn.ba.ddsi.fuenteDinamica.config;
 
-import ar.utn.ba.ddsi.fuenteDinamica.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

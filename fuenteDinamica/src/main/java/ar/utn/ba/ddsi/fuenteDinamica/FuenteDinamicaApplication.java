@@ -1,10 +1,8 @@
 package ar.utn.ba.ddsi.fuenteDinamica;
 
-import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
-import config.HechoProperties;
+import ar.utn.ba.ddsi.fuenteDinamica.config.HechoProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication(exclude = {
