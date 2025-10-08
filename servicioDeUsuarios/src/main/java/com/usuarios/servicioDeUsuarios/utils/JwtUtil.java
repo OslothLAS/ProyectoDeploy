@@ -1,19 +1,28 @@
 package com.usuarios.servicioDeUsuarios.utils;
 
 import com.usuarios.servicioDeUsuarios.filters.TokenInfo;
+import com.usuarios.servicioDeUsuarios.models.repositories.IUsuarioRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 
+@Component
 public class JwtUtil {
+
+
     @Getter
+    @Setter //para test
     private static Key key;
 
-    public static void init(String secretBase64) {
+
+
+    public JwtUtil(@Value("${jwt.secret.key}") String secretBase64) {
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64)); // Puedes necesitar Decoders.BASE64.decode() dependiendo de cómo la generes
     }
 
@@ -26,7 +35,7 @@ public class JwtUtil {
                 .setIssuer("servicio-de-usuarios")
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
                 .claim("rol", rol)
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -37,7 +46,7 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
                 .claim("type", "refresh") // diferenciamos refresh del access
                 .claim("rol", rol)
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 

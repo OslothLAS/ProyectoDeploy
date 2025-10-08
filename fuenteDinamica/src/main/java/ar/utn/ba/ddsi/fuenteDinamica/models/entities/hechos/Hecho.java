@@ -20,8 +20,8 @@ public class Hecho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "autor_id", nullable = false)
-    private Long autorId;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "valido")
     private Boolean esValido;
@@ -63,7 +63,7 @@ public class Hecho {
     private LocalDateTime fechaCreacion;
 
     @Transient //corregir
-    private Duration plazoEdicion;
+    private Duration plazoEdicion = Duration.ofDays(7);
 
     @Column(name = "editable")
     private Boolean esEditable;
@@ -77,14 +77,13 @@ public class Hecho {
     }
 
     public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubi, LocalDateTime fechaHecho,
-                 List <Multimedia> multimedia, Origen origen, Boolean mostrarDatos, Boolean esEditable) {
+                 List <Multimedia> multimedia, Boolean mostrarDatos, Boolean esEditable) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.ubicacion = ubi;
         this.fechaHecho = fechaHecho;
         this.multimedia = multimedia;
-        this.origen = origen;
         this.fuenteOrigen = FuenteOrigen.DINAMICO;
         this.mostrarDatos = mostrarDatos;
         this.fechaCreacion = LocalDateTime.now();

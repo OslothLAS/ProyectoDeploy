@@ -1,4 +1,4 @@
-package config;
+/*package config;
 
 import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
 import jakarta.annotation.PostConstruct;
@@ -16,3 +16,4 @@ public class JwtConfig {
         JwtUtil.init(jwtSecret); // Inicializa la clave en el JwtUtil estático
     }
 }
+*/

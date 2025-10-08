@@ -1,7 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.entities.colecciones;
 
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
-import ar.utn.frba.ddsi.agregador.dtos.input.HechoOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.FuenteOrigen;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import utils.HechoUtil;
+import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 
 import java.util.List;
 import java.util.Map;

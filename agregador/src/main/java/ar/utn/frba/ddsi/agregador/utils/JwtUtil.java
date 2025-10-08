@@ -1,6 +1,7 @@
-package ar.utn.ba.ddsi.fuenteDinamica.utils;
+package ar.utn.frba.ddsi.agregador.utils;
 
-import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
+
+import ar.utn.frba.ddsi.agregador.dtos.input.TokenInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

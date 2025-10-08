@@ -1,7 +1,7 @@
-package ar.utn.frba.ddsi.agregador.dtos.input;
+package ar.utn.frba.ddsi.agregador.dtos.output;
 
-
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.dtos.input.MultimediaDTO;
+import ar.utn.frba.ddsi.agregador.dtos.input.UbicacionDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Handle;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.FuenteOrigen;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Origen;
@@ -19,11 +19,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoOutputDTO {
-    private AutorDTO autor;
+    private Long id;
+    private String username;
     private Boolean esValido;
     private List<MultimediaDTO> multimedia;
     private List<String> etiquetas = new ArrayList<>();
-    private List<Coleccion> colecciones = new ArrayList<>();
+    //private List<Coleccion> colecciones = new ArrayList<>();
     private List<Handle> handles = new ArrayList<>();
     private Origen origen;
     private FuenteOrigen fuenteOrigen;
@@ -35,7 +36,7 @@ public class HechoOutputDTO {
     //datos
     private String titulo;
     private String descripcion;
-    private CategoriaDTO categoria;
+    private String categoria;
     private UbicacionDTO ubicacion;
     private LocalDateTime fechaHecho;
 }

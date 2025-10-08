@@ -25,9 +25,13 @@ public class HechoController {
     }
 
     @PostMapping
-    public void crearHecho(@RequestBody HechoDTO hecho, @RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        TokenInfo tokenInfo = JwtUtil.validarToken(token);
+    public void crearHecho(@RequestBody HechoDTO hecho, @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        TokenInfo tokenInfo = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.replace("Bearer ", "");
+            tokenInfo = JwtUtil.validarToken(token);
+        }
 
         this.hechoService.crearHecho(hecho, tokenInfo);
     }
@@ -43,8 +47,15 @@ public class HechoController {
     }
 
     @PutMapping("/{idHecho}")
-    public void editarHecho(@PathVariable Long idHecho, @RequestBody HechoDTO hecho) throws Exception {
-        this.hechoService.editarHecho(idHecho, hecho);
+    public ResponseEntity<Void> editarHecho(@PathVariable("idHecho") Long idHecho,
+                                            @RequestBody HechoDTO hecho,
+                                            @RequestHeader("Authorization") String authHeader) throws Exception {
+
+        String token = authHeader.replace("Bearer ", "");
+        TokenInfo tokenInfo = JwtUtil.validarToken(token);
+        this.hechoService.editarHecho(idHecho, hecho,tokenInfo);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/origen")

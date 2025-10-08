@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -26,19 +25,11 @@ public class Hecho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade =  CascadeType.ALL)
-    @JoinColumn(name = "autor_id")
-    private Usuario autor;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "valido")
     private Boolean esValido;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "hecho_id")
-    private List<Multimedia> multimedia;
-
-    @Builder.Default //falta el atributo en db
-    private List<String> etiquetas = new ArrayList<>();
 
     @Column(name = "titulo")
     private String titulo;
@@ -57,6 +48,13 @@ public class Hecho {
     @Column(name = "fecha")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaHecho;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hecho_id")
+    private List<Multimedia> multimedia;
+
+    @Builder.Default //falta el atributo en db
+    private List<String> etiquetas = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -92,66 +90,6 @@ public class Hecho {
     @Transient
     private Boolean esConsensuado;
 
-    public static Hecho create(){
-        return Hecho.builder()
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.DATASET)
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
-                .build();
-    }
-
-    public static Hecho create(List<Coleccion> colecciones , List<Handle> handles, Boolean esConsensuado) {
-        return Hecho.builder()
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.EXTERNO)
-                .handles(handles)
-                .colecciones(colecciones)
-                .esConsensuado(esConsensuado)
-                .build();
-    }
-
-    public static Hecho create(List<Coleccion> colecciones, Boolean esConsensuado) {
-        return Hecho.builder()
-                .esValido(true)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.EXTERNO)
-                .colecciones(colecciones)
-                .esConsensuado(esConsensuado)
-                .build();
-    }
-
-    //creacion con multimedia anonima
-    public static Hecho create(List<Multimedia> multimedia) {
-        return Hecho.builder()
-                .esValido(true)
-                .multimedia(multimedia)
-                .etiquetas(new ArrayList<>())
-                .fechaCreacion(LocalDateTime.now())
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
-                .build();
-    }
-    //creacion con multimedia registrado (multimedia puede ser null tranquilamente)
-    public static Hecho create(Usuario usuario, List<Multimedia> multimedia, Boolean mostrarDatos) {
-        return Hecho.builder()
-                .esValido(true)
-                .autor(usuario)
-                .multimedia(multimedia)
-                .etiquetas(new ArrayList<>())
-                .mostrarDatos(mostrarDatos)
-                .fechaCreacion(LocalDateTime.now())
-                .origen(Origen.CONTRIBUYENTE)
-                .colecciones(new ArrayList<>())
-                .esConsensuado(false)
-                .build();
-    }
-
 
     public void addEtiqueta(String etiqueta) {
         this.etiquetas.add(etiqueta);
@@ -170,43 +108,6 @@ public class Hecho {
         }
         LocalDateTime fechaLimite = this.fechaCreacion.plus(this.plazoEdicion);
         return LocalDateTime.now().isBefore(fechaLimite);
-    }
-
-    public List<String> getTituloYDescripcion(){
-        String titulo = this.getTitulo();
-        String descripcion = this.getDescripcion();
-        List<String> tituloYdesc = new ArrayList<>();
-        tituloYdesc.add(titulo);
-        tituloYdesc.add(descripcion);
-
-        return tituloYdesc;
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Hecho that = (Hecho) o;
-
-        return Objects.equals(titulo, that.getTitulo()) &&
-                Objects.equals(descripcion, that.descripcion) &&
-                Objects.equals(categoria, that.categoria) &&
-                Objects.equals(ubicacion, that.ubicacion) &&
-                Objects.equals(fechaHecho, that.fechaHecho);
-    }
-    @Override
-    public int hashCode() {
-        return Objects.hash(titulo, descripcion, categoria, ubicacion, fechaHecho);
-    }
-
-    public String toString() {
-        return "DatosHechos{" +
-                "titulo='" + titulo + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                ", categoria='" + categoria + '\'' +
-                ", ubicacion=" + ubicacion +
-                ", fechaHecho=" + fechaHecho +
-                '}';
     }
 
     public void normalizarHecho(){
@@ -242,5 +143,4 @@ public class Hecho {
             localidad.setProvincia(provincia);
         }
     }
-
 }

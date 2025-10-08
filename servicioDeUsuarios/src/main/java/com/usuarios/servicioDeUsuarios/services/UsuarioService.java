@@ -2,9 +2,11 @@ package com.usuarios.servicioDeUsuarios.services;
 
 import com.usuarios.servicioDeUsuarios.dtos.UsuarioDTO;
 import com.usuarios.servicioDeUsuarios.exceptions.ValidationException;
+import com.usuarios.servicioDeUsuarios.models.entities.Usuario;
 import com.usuarios.servicioDeUsuarios.models.repositories.IUsuarioRepository;
 import com.usuarios.servicioDeUsuarios.utils.UsuarioUtil;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -14,17 +16,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService implements UserDetailsService {
     private final IUsuarioRepository usuarioRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public UsuarioService(IUsuarioRepository usuariosRepository) {
         this.usuarioRepository = usuariosRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
@@ -49,14 +51,23 @@ public class UsuarioService implements UserDetailsService {
                 .toList();
     }
 
-    public Optional<UsuarioDTO> findByUsername(String username) {
-        return usuarioRepository.findByUsername(username).map(UsuarioUtil::usuarioToDTO);
+    public UsuarioDTO findByUsername(String username) {
+        return usuarioRepository.findByUsername(username)
+                .map(UsuarioUtil::usuarioToDTO)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Usuario no encontrado"));
     }
 
-    public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
+    public Long crearUsuario(UsuarioDTO usuarioDTO) {
         validarDatosBasicos(usuarioDTO);
-        //TODO
-        return usuarioDTO;
+        Usuario usuario = UsuarioUtil.usuarioDTOToEntity(usuarioDTO);
+
+        String contraseniaEncriptada = passwordEncoder.encode(usuario.getContrasenia());
+        usuario.setContrasenia(contraseniaEncriptada);
+
+        usuarioRepository.save(usuario);
+
+        return usuario.getId();
     }
 
     private void validarDatosBasicos(UsuarioDTO dto) {

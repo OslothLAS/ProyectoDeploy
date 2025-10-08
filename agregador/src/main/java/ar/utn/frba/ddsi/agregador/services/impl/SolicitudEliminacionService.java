@@ -108,7 +108,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .toList();
 
         for (Fuente fuente : fuentesUnicas) {
-            fuente.invalidarHecho(hecho.getDatosHechos().getTitulo(),hecho.getDatosHechos().getDescripcion());
+            fuente.invalidarHecho(hecho.getTitulo(),hecho.getDescripcion());
         }
     }
 

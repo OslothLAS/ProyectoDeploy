@@ -37,7 +37,6 @@ public class LoginService {
     }
 
     public String generarAccessToken(String username, String rol) {
-
         return JwtUtil.generarAccessToken(username, rol);
     }
 

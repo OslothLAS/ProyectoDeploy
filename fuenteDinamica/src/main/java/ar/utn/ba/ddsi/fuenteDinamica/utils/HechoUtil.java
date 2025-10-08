@@ -48,7 +48,7 @@ public class HechoUtil {
 
             if (ubicacion.getLocalidad().getProvincia() != null) {
                 ProvinciaDTO provinciaDTO = new ProvinciaDTO();
-                provinciaDTO.setNombre(ubicacion.getLocalidad().getProvincia().getNombre());
+                provinciaDTO.setId(ubicacion.getLocalidad().getProvincia().getId());
                 localidadDTO.setProvincia(provinciaDTO);
             }
 
@@ -75,7 +75,7 @@ public class HechoUtil {
         Categoria cat = new Categoria(dto.getCategoria());
         
         return new Hecho(dto.getTitulo(), dto.getDescripcion(),cat,ubi,dto.getFechaHecho(),multimediaNueva
-                ,dto.getOrigen(),dto.getMostrarDatos(),null);
+                ,dto.getMostrarDatos(),null);
     }
 
 
@@ -85,7 +85,7 @@ public class HechoUtil {
 
         if (dto.getUbicacion().getLocalidad() != null) {
             if (dto.getUbicacion().getLocalidad().getProvincia() != null) {
-                provincia.setNombre(dto.getUbicacion().getLocalidad().getProvincia().getNombre());
+                provincia.setId(dto.getUbicacion().getLocalidad().getProvincia().getId());
             }
             localidad.setNombre(dto.getUbicacion().getLocalidad().getNombre());
             localidad.setProvincia(provincia);

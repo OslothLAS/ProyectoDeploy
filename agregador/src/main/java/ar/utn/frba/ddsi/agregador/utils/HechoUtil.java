@@ -1,9 +1,8 @@
-package utils;
+package ar.utn.frba.ddsi.agregador.utils;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.*;
-import ar.utn.frba.ddsi.agregador.dtos.output.*;
+import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +12,6 @@ public class HechoUtil {
     public static HechoOutputDTO hechoToDTO(Hecho hecho) {
         HechoOutputDTO dto = new HechoOutputDTO();
 
-        if (hecho.getAutor() != null) {
-            AutorDTO autorDTO = new AutorDTO(hecho.getAutor().getNombre(),hecho.getAutor().getApellido(),hecho.getAutor().getFechaNacimiento(),hecho.getAutor().getTipo());
-            dto.setAutor(autorDTO);
-        }
 
         List<MultimediaDTO> multimediaNueva = null;
         if(hecho.getMultimedia() != null) {
@@ -28,11 +23,12 @@ public class HechoUtil {
             }
         }
 
-
+        dto.setId(hecho.getId());
+        dto.setUsername(hecho.getUsername());
         dto.setEsValido(hecho.getEsValido());
         dto.setMultimedia(multimediaNueva);
         dto.setEtiquetas(hecho.getEtiquetas());
-        dto.setColecciones(hecho.getColecciones());
+        //dto.setColecciones(hecho.getColecciones());
         dto.setHandles(hecho.getHandles());
         dto.setOrigen(hecho.getOrigen());
         dto.setFuenteOrigen(hecho.getFuenteOrigen());
@@ -44,11 +40,7 @@ public class HechoUtil {
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
         dto.setFechaHecho(hecho.getFechaHecho());
-
-        if (hecho.getCategoria() != null) {
-            CategoriaDTO cat = new CategoriaDTO(hecho.getCategoria().getCategoria());
-            dto.setCategoria(cat);
-        }
+        dto.setCategoria(hecho.getCategoria().getCategoria());
 
         if (hecho.getUbicacion() != null) {
             dto.setUbicacion(ubicacionToDTO(hecho.getUbicacion()));
@@ -89,13 +81,6 @@ public class HechoUtil {
     }
 
     public static Hecho hechoDTOtoHecho(HechoOutputDTO dto){
-
-        Usuario autor = null;
-
-        if(dto.getAutor() != null) {
-            autor = new Usuario(dto.getAutor().getNombre(), dto.getAutor().getApellido(), dto.getAutor().getFechaNacimiento(), dto.getAutor().getTipo());
-        }
-
         List<Multimedia> multimediaNueva = null;
         if(dto.getMultimedia() != null){
             multimediaNueva = new ArrayList<>();
@@ -106,25 +91,6 @@ public class HechoUtil {
             }
         }
 
-        Categoria categoria = new Categoria(dto.getCategoria().getCategoria());
-        Provincia provincia = new Provincia(dto.getUbicacion().getLocalidad().getProvincia().getNombre());
-        Localidad localidad = new Localidad(
-                provincia,
-                dto.getUbicacion().getLocalidad().getNombre());
-
-        Ubicacion ubicacion = new Ubicacion(
-                dto.getUbicacion().getLatitud(),
-                dto.getUbicacion().getLongitud(),
-                localidad);
-
-        return new Hecho(null, autor, dto.getEsValido(), multimediaNueva, dto.getEtiquetas(),dto.getTitulo(),
-                dto.getDescripcion(),categoria, ubicacion,dto.getFechaHecho(),
-                dto.getColecciones(), dto.getHandles(), dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
-                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
-        );
-    }
-/*
-    private static DatosHechos getDatosHechos(HechoOutputDTO dto) {
         Provincia provincia = new Provincia(null);
         Localidad localidad = new Localidad(provincia,null);
 
@@ -136,8 +102,11 @@ public class HechoUtil {
             localidad.setProvincia(provincia);
         }
         Ubicacion ubi = new Ubicacion(dto.getUbicacion().getLatitud(), dto.getUbicacion().getLongitud(),localidad);
-        Categoria cat = new Categoria(dto.getCategoria().getCategoria());
 
-        return new DatosHechos(dto.getTitulo(), dto.getDescripcion(),cat,ubi, dto.getFechaHecho());
-    }*/
+        return new Hecho(null, dto.getUsername(), dto.getEsValido(), dto.getTitulo(),dto.getDescripcion(),new Categoria(dto.getCategoria()),
+                ubi,dto.getFechaHecho(),multimediaNueva, dto.getEtiquetas(),null,
+                dto.getHandles(), dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
+                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
+        );
+    }
 }

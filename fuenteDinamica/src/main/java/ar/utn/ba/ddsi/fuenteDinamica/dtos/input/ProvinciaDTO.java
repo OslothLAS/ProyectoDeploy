@@ -9,5 +9,5 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ProvinciaDTO {
-    private String nombre;
+    private Long id;
 }
