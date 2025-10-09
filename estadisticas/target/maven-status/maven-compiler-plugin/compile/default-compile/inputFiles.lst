@@ -1,0 +1,11 @@
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/models/entities/TipoEstadistica.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/services/IEstadisticaService.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/dtos/StatDTO.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/Main.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/models/entities/Estadistica.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/services/impl/EstadisticaService.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/models/entities/ExportadorCSV.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/controllers/EstadisticaController.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/models/repositories/IStatRepository.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/models/entities/AgregadorConnector.java
+/mnt/datos/3er año/diseño/2025-tpa-mi-no-grupo-23/estadisticas/src/main/java/ar/utn/frba/ddsi/schedullers/StatScheduller.java
