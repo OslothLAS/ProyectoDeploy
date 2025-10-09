@@ -1,4 +1,4 @@
-package config;
+package ar.utn.frba.ddsi.agregador.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;

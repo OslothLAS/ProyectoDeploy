@@ -15,7 +15,7 @@ import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IProvinciaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 import ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil;
-import config.HechoProperties;
+import ar.utn.ba.ddsi.fuenteDinamica.config.HechoProperties;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

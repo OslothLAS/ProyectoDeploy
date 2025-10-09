@@ -3,6 +3,7 @@ package ar.utn.frba.ddsi.agregador.services;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 public interface IColeccionService {
     void createColeccion(ColeccionInputDTO coleccion);
     List<ColeccionOutputDTO> getColecciones();
+    List<Coleccion> getColeccionesClass();
     List<Hecho> getHechosDeColeccion(Long idColeccion, String modoNavegacion);
     void actualizarHechos();
     void consensuarHechos();

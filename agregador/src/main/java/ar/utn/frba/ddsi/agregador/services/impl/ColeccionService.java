@@ -49,9 +49,12 @@ public class ColeccionService implements IColeccionService {
                 .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
-
+   public List<Coleccion> getColeccionesClass(){
+        return this.coleccionRepository.findAll();
+   }
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
+
         List<Fuente> importadores = coleccionDTO.getFuentes();
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
 

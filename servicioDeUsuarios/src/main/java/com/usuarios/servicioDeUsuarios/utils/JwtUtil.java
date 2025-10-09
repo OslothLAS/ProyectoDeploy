@@ -1,6 +1,7 @@
 package com.usuarios.servicioDeUsuarios.utils;
 
 import com.usuarios.servicioDeUsuarios.filters.TokenInfo;
+import com.usuarios.servicioDeUsuarios.models.repositories.IUsuarioRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -13,9 +14,13 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
+
+
     @Getter
     @Setter //para test
     private static Key key;
+
+
 
     public JwtUtil(@Value("${jwt.secret.key}") String secretBase64) {
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64)); // Puedes necesitar Decoders.BASE64.decode() dependiendo de cómo la generes
