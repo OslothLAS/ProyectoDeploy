@@ -9,9 +9,7 @@ import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
-
 import java.util.List;
-
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
 
 @RestController

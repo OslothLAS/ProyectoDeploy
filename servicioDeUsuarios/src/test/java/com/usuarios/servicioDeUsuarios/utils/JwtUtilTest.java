@@ -17,7 +17,7 @@ class JwtUtilTest {
 
     @Test
     void generarAccessTokenTest() {
-        String accessToken = JwtUtil.generarAccessToken("fran456", "CONTRIBUYENTE");
+        String accessToken = JwtUtil.generarAccessToken("fran456", "ADMIN");
         System.out.println(accessToken);
         Assertions.assertNotNull(accessToken);
     }

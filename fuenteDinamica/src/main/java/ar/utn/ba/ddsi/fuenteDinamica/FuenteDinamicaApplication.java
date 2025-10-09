@@ -16,6 +16,5 @@ public class FuenteDinamicaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FuenteDinamicaApplication.class, args);
         System.out.println("hola mundo ");
-        JwtUtil.init();
     }
 }
