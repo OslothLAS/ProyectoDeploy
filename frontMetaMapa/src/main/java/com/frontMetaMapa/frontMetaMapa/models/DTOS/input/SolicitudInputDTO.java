@@ -1,6 +1,6 @@
-package ar.utn.frba.ddsi.agregador.dtos.input;
+package com.frontMetaMapa.frontMetaMapa.models.DTOS.input;
 
-import entities.usuarios.Usuario;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

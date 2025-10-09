@@ -1,4 +1,4 @@
-package ar.utn.frba.ddsi.agregador.dtos.output;
+package com.frontMetaMapa.frontMetaMapa.models.DTOS.output;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

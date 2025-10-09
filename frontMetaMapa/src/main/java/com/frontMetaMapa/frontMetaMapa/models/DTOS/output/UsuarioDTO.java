@@ -1,19 +1,16 @@
-package com.frontMetaMapa.frontMetaMapa.models.DTOS.input;
+package com.frontMetaMapa.frontMetaMapa.models.DTOS.output;
 
-
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.TipoUsuario;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-public class AutorDTO {
+@AllArgsConstructor
+public class UsuarioDTO {
+    private Long id;
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;
