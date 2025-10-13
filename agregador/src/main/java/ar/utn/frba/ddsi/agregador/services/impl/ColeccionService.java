@@ -3,6 +3,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.*;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
+import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
 import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
@@ -290,6 +292,10 @@ public class ColeccionService implements IColeccionService {
         });
 
         hechoRepository.saveAll(hechosAsignados);
+    }
+
+    public List<HechoOutputDTO> obtenerTodosLosHechos(){
+        return hechosToDTO(hechoRepository.findAll());
     }
 
     /*public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {

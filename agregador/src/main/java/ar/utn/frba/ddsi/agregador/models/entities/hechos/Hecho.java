@@ -3,11 +3,11 @@ package ar.utn.frba.ddsi.agregador.models.entities.hechos;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Handle;
 import ar.utn.frba.ddsi.agregador.models.entities.normalizador.NormalizadorHecho;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
-
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,6 +62,7 @@ public class Hecho {
             joinColumns = @JoinColumn(name = "hecho_id"),
             inverseJoinColumns = @JoinColumn(name = "coleccion_id")
     )
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Coleccion> colecciones = new ArrayList<>();
 
     @Transient

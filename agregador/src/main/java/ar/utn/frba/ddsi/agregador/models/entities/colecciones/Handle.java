@@ -2,12 +2,14 @@ package ar.utn.frba.ddsi.agregador.models.entities.colecciones;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @Getter
 @Embeddable
+@AllArgsConstructor
 public class Handle {
     @Column(name = "handle")
     private String value;

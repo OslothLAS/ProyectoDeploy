@@ -2,7 +2,6 @@ package ar.utn.frba.ddsi.agregador.dtos.output;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.MultimediaDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.UbicacionDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Handle;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.FuenteOrigen;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Origen;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ public class HechoOutputDTO {
     private List<MultimediaDTO> multimedia;
     private List<String> etiquetas = new ArrayList<>();
     //private List<Coleccion> colecciones = new ArrayList<>();
-    private List<Handle> handles = new ArrayList<>();
+    private List<String> handles = new ArrayList<>();
     private Origen origen;
     private FuenteOrigen fuenteOrigen;
     private Boolean mostrarDatos; //ver esto

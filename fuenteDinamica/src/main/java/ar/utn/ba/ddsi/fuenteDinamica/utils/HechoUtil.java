@@ -29,6 +29,8 @@ public class HechoUtil {
         dto.setMostrarDatos(hecho.getMostrarDatos());
         dto.setOrigen(hecho.getOrigen());
         dto.setMostrarDatos(hecho.getMostrarDatos());
+        dto.setEsValido(hecho.getEsValido());
+        dto.setFechaCreacion(hecho.getFechaCreacion());
 
         return dto;
     }
@@ -74,8 +76,8 @@ public class HechoUtil {
         Ubicacion ubi = getUbicacion(dto);
         Categoria cat = new Categoria(dto.getCategoria());
         
-        return new Hecho(dto.getTitulo(), dto.getDescripcion(),cat,ubi,dto.getFechaHecho(),multimediaNueva
-                ,dto.getMostrarDatos(),null);
+        return new Hecho(dto.getEsValido(), dto.getTitulo(), dto.getDescripcion(),cat,ubi,dto.getFechaHecho(),
+                multimediaNueva, dto.getMostrarDatos(),null);
     }
 
 

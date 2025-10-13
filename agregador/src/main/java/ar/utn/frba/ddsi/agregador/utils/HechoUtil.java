@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.utils;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.*;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Handle;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
 
 import java.util.ArrayList;
@@ -23,13 +24,22 @@ public class HechoUtil {
             }
         }
 
+        List<String> handles = null;
+        if(dto.getHandles() != null){
+            handles = new ArrayList<>();
+            for (Handle h : hecho.getHandles()) {
+                String nuevo = h.getValue();
+                handles.add(nuevo);
+            }
+        }
+
         dto.setId(hecho.getId());
         dto.setUsername(hecho.getUsername());
         dto.setEsValido(hecho.getEsValido());
         dto.setMultimedia(multimediaNueva);
         dto.setEtiquetas(hecho.getEtiquetas());
         //dto.setColecciones(hecho.getColecciones());
-        dto.setHandles(hecho.getHandles());
+        dto.setHandles(handles);
         dto.setOrigen(hecho.getOrigen());
         dto.setFuenteOrigen(hecho.getFuenteOrigen());
         dto.setMostrarDatos(hecho.getMostrarDatos());
@@ -91,6 +101,15 @@ public class HechoUtil {
             }
         }
 
+        List<Handle> handles = null;
+        if(dto.getHandles() != null){
+            handles = new ArrayList<>();
+            for (String m : dto.getHandles()) {
+                Handle nuevo = new Handle(m);
+                handles.add(nuevo);
+            }
+        }
+
         Provincia provincia = new Provincia(null);
         Localidad localidad = new Localidad(provincia,null);
 
@@ -105,7 +124,7 @@ public class HechoUtil {
 
         return new Hecho(null, dto.getUsername(), dto.getEsValido(), dto.getTitulo(),dto.getDescripcion(),new Categoria(dto.getCategoria()),
                 ubi,dto.getFechaHecho(),multimediaNueva, dto.getEtiquetas(),null,
-                dto.getHandles(), dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
+                handles, dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
                 dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
         );
     }

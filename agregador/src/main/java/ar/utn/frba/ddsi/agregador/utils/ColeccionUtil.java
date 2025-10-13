@@ -37,7 +37,7 @@ public class ColeccionUtil {
                 .stream()
                 .map(ColeccionUtil::fuenteToFuenteDTO)
                 .collect(Collectors.toList()));
-        dto.setHandle(coleccion.getHandle());
+        dto.setHandle(coleccion.getHandle().getValue());
         dto.setFechaYHoraDeActualizacion(coleccion.getFechaYHoraDeActualizacion());
         dto.setConsenso(coleccion.getConsenso().getNombre());
         return dto;

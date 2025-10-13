@@ -23,4 +23,6 @@ public class HechoDTO {
 
     private Origen origen;
     private Boolean mostrarDatos;
+    private Boolean esValido;
+    private LocalDateTime fechaCreacion;
 }
