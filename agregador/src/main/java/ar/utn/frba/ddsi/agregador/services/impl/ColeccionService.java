@@ -3,10 +3,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
-import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.ICategoriaRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IUbicacionRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.*;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
@@ -35,12 +32,16 @@ public class ColeccionService implements IColeccionService {
     private final IColeccionRepository coleccionRepository;
     private final ICategoriaRepository categoriaRepository;
     private final IUbicacionRepository ubicacionRepository;
+    private final IProvinciaRepository provinciaRepository;
+    private final ILocalidadRepository localidadRepository;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository provinciaRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository, IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
         this.categoriaRepository = categoriaRepository;
-        this.ubicacionRepository = provinciaRepository;
+        this.ubicacionRepository = ubicacionRepository;
+        this.provinciaRepository = provinciaRepository;
+        this.localidadRepository = localidadRepository;
     }
 
     public Categoria obtenerOCrearCategoria(String nombre) {
@@ -132,6 +133,27 @@ public class ColeccionService implements IColeccionService {
                     .collect(Collectors.toList());
 
             if (!nuevasUbicaciones.isEmpty()) {
+                for (Ubicacion ub : nuevasUbicaciones) {
+                    if (ub.getLocalidad() != null) {
+                        Localidad loc = ub.getLocalidad();
+                        Provincia prov = loc.getProvincia();
+
+                        if (prov != null) {
+                            String nombreProvincia = prov.getNombre();
+                            Provincia provinciaExistente = provinciaRepository.findByNombre(nombreProvincia)
+                                    .orElseGet(() -> provinciaRepository.save(new Provincia(nombreProvincia)));
+                            loc.setProvincia(provinciaExistente);
+                        }
+
+                        // Buscar localidad existente (por nombre y provincia)
+                        String nombreLocalidad = loc.getNombre();
+                        Localidad localidadExistente = localidadRepository
+                                .findByNombreAndProvinciaNombre(nombreLocalidad, loc.getProvincia().getNombre())
+                                .orElseGet(() -> localidadRepository.save(new Localidad(loc.getProvincia(), nombreLocalidad)));
+
+                        ub.setLocalidad(localidadExistente);
+                    }
+                }
                 List<Ubicacion> guardadas = ubicacionRepository.saveAll(nuevasUbicaciones);
 
                 for (Ubicacion guardada : guardadas) {

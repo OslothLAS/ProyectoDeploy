@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class ProvinciaDTO {
-    private String nombre;
+    private Long id;
 }

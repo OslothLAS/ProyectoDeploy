@@ -28,8 +28,8 @@ public class OpenStreetMap {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("User-Agent", "MiApp/1.0 osilveroruiz@frba.utn.edu.ar");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(15000);
 
             if (connection.getResponseCode() == 200) {
 
