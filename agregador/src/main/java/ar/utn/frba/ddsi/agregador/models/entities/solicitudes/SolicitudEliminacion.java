@@ -21,13 +21,11 @@ public class SolicitudEliminacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id")
-    private Hecho hecho;
+    private Long hecho;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "usuario_id")
-    private Usuario solicitante;
+    private Long solicitante;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaDeCreacion;
@@ -39,9 +37,9 @@ public class SolicitudEliminacion {
     @JoinColumn(name = "solicitud_id")
     private List<EstadoSolicitud> estados;
 
-    public SolicitudEliminacion(String justificacion,Hecho hecho, Usuario solicitante) {
+    public SolicitudEliminacion(String justificacion,Long hechoId, Long solicitante) {
         this.justificacion = justificacion;
-        this.hecho = hecho;
+        this.hecho = hechoId;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estados = new ArrayList<>();

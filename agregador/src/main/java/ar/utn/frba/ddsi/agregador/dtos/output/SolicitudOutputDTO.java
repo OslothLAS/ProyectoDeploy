@@ -11,7 +11,7 @@ import java.util.List;
 public class SolicitudOutputDTO {
 
     private Long id;
-    private Usuario solicitante;
+    private Long solicitante;
     private LocalDateTime fechaDeCreacion;
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;

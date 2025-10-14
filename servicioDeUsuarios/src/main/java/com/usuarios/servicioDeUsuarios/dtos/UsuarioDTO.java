@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class UsuarioDTO {
+    private Long id;
     private String username;
     private String contrasenia;
     private String nombre;

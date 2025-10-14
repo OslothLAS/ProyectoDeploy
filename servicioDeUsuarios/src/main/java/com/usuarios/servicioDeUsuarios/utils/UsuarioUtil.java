@@ -5,7 +5,7 @@ import com.usuarios.servicioDeUsuarios.models.entities.Usuario;
 
 public class UsuarioUtil {
     public static UsuarioDTO usuarioToDTO(Usuario usuario) {
-        return new UsuarioDTO(usuario.getUsername(), usuario.getContrasenia(), usuario.getNombre(), usuario.getApellido()
+        return new UsuarioDTO(usuario.getId(), usuario.getUsername(), usuario.getContrasenia(), usuario.getNombre(), usuario.getApellido()
                 , usuario.getFechaNacimiento(), usuario.getRol());
     }
 
