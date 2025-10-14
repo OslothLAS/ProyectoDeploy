@@ -66,4 +66,5 @@ public class LoginApiService {
             throw new RuntimeException("Error al obtener roles y permisos: " + e.getMessage(), e);
         }
     }
+
 }

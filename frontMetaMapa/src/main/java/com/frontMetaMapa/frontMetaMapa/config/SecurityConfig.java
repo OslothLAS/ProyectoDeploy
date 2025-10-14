@@ -20,34 +20,46 @@ public class SecurityConfig {
                 .build();
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Recursos estáticos y login público
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        // Ejemplo: Acceso a alumnos: ADMIN y DOCENTE
-                        //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")
-                        // Lo demás requiere autenticación
+                        // 🔓 Rutas públicas
+                        .requestMatchers(
+                                "/login",
+                                "/register",
+                                "/visualizador",     // ✅ ahora es pública
+                                "/visualizador/**",  // (opcional) por si hay subrutas
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/buscador-hechos",
+                                "/buscador-colecciones"
+                        ).permitAll()
+
+                        // 🔒 Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
+
+                // Configuración del formulario de login
                 .formLogin(form -> form
-                        .loginPage("/login")    // tu template de login
+                        .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/alumnos", true) // redirigir tras login exitoso
+                        .defaultSuccessUrl("/visualizador", true) // redirigir tras login exitoso
                 )
+
+                // Configuración del logout
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout") // redirigir tras logout
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
+
+                // Manejo de excepciones
                 .exceptionHandling(ex -> ex
-                        // Usuario no autenticado → redirigir a login
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login?unauthorized")
                         )
-                        // Usuario autenticado pero sin permisos → redirigir a página de error
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 response.sendRedirect("/403")
                         )

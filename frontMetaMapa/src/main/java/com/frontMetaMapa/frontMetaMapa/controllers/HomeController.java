@@ -1,13 +1,17 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.UsuarioDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
+import com.frontMetaMapa.frontMetaMapa.services.RegisterApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -15,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
     private final ColeccionService coleccionService;
+    private final RegisterApiService registerApiService;
 
     @GetMapping("/")
     public String home() {
@@ -26,9 +31,25 @@ public class HomeController {
         return "register";
     }
 
+    @PostMapping("/register")
+    public String handleRegister(@ModelAttribute UsuarioDTO request) {
+        System.out.println("POST /register recibido!");
+        System.out.println("UsuarioDTO: " + request);
+        boolean success = registerApiService.registerUser(request);
+        if (success) {
+            return "login"; // redirigís al login u otra vista
+        } else {
+            return "register"; // mostrás el error en el mismo formulario
+        }
+    }
+
     @GetMapping("/login")
     public String login(Model model, Authentication authentication) {
-        model.addAttribute("usuario", authentication.getName());
+        if (authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("usuario", authentication.getName());
+        } else {
+            model.addAttribute("usuario", null);
+        }
         return "login";
     }
 
