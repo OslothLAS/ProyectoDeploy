@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.DescripcionStat;
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
@@ -12,7 +13,6 @@ import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
 import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import jakarta.transaction.Transactional;
@@ -147,6 +147,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     public StatDTO getCantidadSpam(){
         Long cantSpam = this.solicitudRepository.countSolicitudesSpam();
-        return new StatDTO("rachazo","Solicitudes rechazadas por spam",cantSpam);
+        return new StatDTO(null,null,null,null, DescripcionStat.solicitudes_spam,cantSpam,LocalDateTime.now());
     }
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "ubicacion")
 public class Ubicacion {
     @Id
-   // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "latitud")

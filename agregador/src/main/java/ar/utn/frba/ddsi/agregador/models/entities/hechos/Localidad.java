@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "localidad")
 public class Localidad {
     @Id
-   // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
