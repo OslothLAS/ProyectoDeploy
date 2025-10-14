@@ -1,5 +1,5 @@
-package ar.utn.frba.ddsi.agregador.dtos.output;
-import ar.utn.frba.ddsi.agregador.models.entities.hechos.FuenteOrigen;
+package com.frontMetaMapa.frontMetaMapa.models.DTOS.output;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

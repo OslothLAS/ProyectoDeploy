@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Eliminación - MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+
+<!-- Contenido principal -->
+<div class="container">
+    <h1><i data-lucide="trash-2"></i> Solicitud de Eliminación</h1>
+    <p>Si consideras que un hecho debe ser eliminado del sistema, completa este formulario. La justificación debe tener al menos <strong>500 caracteres</strong>.</p>
+
+    <form id="form-eliminacion">
+        <label for="tituloHecho">Título del Hecho</label>
+        <input type="text" id="tituloHecho" name="tituloHecho" placeholder="Ejemplo: Corrupción en la obra pública" required>
+
+        <label for="descripcionHecho">Descripción del Hecho</label>
+        <textarea id="descripcionHecho" name="descripcionHecho" placeholder="Escribe aquí la descripción del hecho..." required></textarea>
+
+        <label for="justificacion">Justificación de la Solicitud</label>
+        <textarea id="justificacion" name="justificacion" minlength="500" placeholder="Escribe aquí los fundamentos para la eliminación..." required></textarea>
+        <span class="note">Tu justificación debe tener al menos 500 caracteres.</span>
+
+        <button type="submit" class="btn-primary">Enviar Solicitud</button>
+    </form>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+    document.getElementById("form-eliminacion").addEventListener("submit", function(e) {
+        const justificacion = document.getElementById("justificacion").value.trim();
+        if (justificacion.length < 500) {
+            e.preventDefault();
+            alert("La justificación debe tener al menos 500 caracteres.");
+        }
+    });
+</script>
+</body>
+</html>

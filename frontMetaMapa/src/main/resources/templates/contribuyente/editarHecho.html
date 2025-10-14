@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Hecho - MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+
+<div class="container">
+    <!-- Converted header to editable form -->
+    <form class="hecho-header" id="editForm">
+        <div class="form-group">
+            <label class="form-label" for="titulo">Título del Hecho</label>
+            <input type="text" id="titulo" class="form-input" value="Incendio en el Bosque Central" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="categoria">Categoría</label>
+            <select id="categoria" class="form-select" required>
+                <option value="desastre-natural" selected>Desastre Natural</option>
+                <option value="accidente">Accidente</option>
+                <option value="evento-social">Evento Social</option>
+                <option value="construccion">Construcción</option>
+                <option value="transporte">Transporte</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="fechaHecho">Fecha del Hecho</label>
+                <input type="date" id="fechaHecho" class="form-input" value="2025-08-25" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="fechaPublicacion">Fecha de Publicación</label>
+                <input type="date" id="fechaPublicacion" class="form-input" value="2025-08-27" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="ubicacion">Ubicación</label>
+            <input type="text" id="ubicacion" class="form-input" value="Bosque Central, Córdoba" required>
+        </div>
+
+        <!-- Converted gallery to image upload section -->
+        <div class="galeria-section">
+            <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="images"></i>
+                Imágenes del Hecho
+            </h3>
+
+            <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                <i data-lucide="upload" style="font-size: 2rem; color: var(--text-light); margin-bottom: 0.5rem;"></i>
+                <p style="color: var(--text-light); margin: 0;">
+                    Haz clic aquí o arrastra imágenes para subir
+                </p>
+                <small style="color: var(--text-light);">
+                    Formatos soportados: JPG, PNG, GIF (máx. 5MB cada una)
+                </small>
+            </div>
+
+            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+
+            <div class="uploaded-images" id="uploadedImages">
+                <!-- Existing images as editable items -->
+                <div class="uploaded-image">
+                    <img src="images/Incendio_Forestal.jpg" alt="Vista general del incendio forestal">
+                    <button type="button" class="remove-image" onclick="removeImage(this)">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Converted description to editable textarea -->
+        <div class="descripcion">
+            <label class="form-label" for="descripcion">Descripción del Hecho</label>
+            <textarea id="descripcion" class="form-textarea" required>Un gran incendio forestal se desató en el Bosque Central afectando a más de 300 hectáreas.</textarea>
+        </div>
+
+        <!-- Added form action buttons -->
+        <div class="form-actions">
+            <a href="detalle-hecho.html" class="btn btn-secondary">
+                <i data-lucide="x"></i>
+                Cancelar
+            </a>
+            <button type="button" class="btn btn-danger">
+                <i data-lucide="trash-2"></i>
+                Eliminar
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <i data-lucide="save"></i>
+                Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+
+    function handleImageUpload(event) {
+      const files = event.target.files;
+      const uploadedImages = document.getElementById('uploadedImages');
+
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const imageDiv = document.createElement('div');
+            imageDiv.className = 'uploaded-image';
+            imageDiv.innerHTML = `
+              <img src="${e.target.result}" alt="Imagen subida">
+              <button type="button" class="remove-image" onclick="removeImage(this)">
+                <i data-lucide="x"></i>
+              </button>
+            `;
+            uploadedImages.appendChild(imageDiv);
+            lucide.createIcons();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    function removeImage(button) {
+      button.parentElement.remove();
+    }
+
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Cambios guardados exitosamente!');
+    });
+</script>
+</body>
+</html>

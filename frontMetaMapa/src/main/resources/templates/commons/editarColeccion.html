@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Colección | MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<!-- Importing navbar from layout -->
+<div th:replace="~{layout/navbar :: navbar(false)}"></div>
+
+<main>
+    <div class="container">
+        <h1 id="formTitle">Nueva Colección</h1>
+        <form id="collectionForm">
+            <label>Título</label>
+            <input type="text" name="titulo" required>
+
+            <label>Descripción</label>
+            <textarea name="descripcion" required></textarea>
+
+            <label>Fuentes</label>
+            <div class="fuente-group">
+                <input type="text" name="fuente_ip" placeholder="IP" required>
+                <input type="number" name="fuente_puerto" placeholder="Puerto" required>
+                <select name="fuente_tipo" required>
+                    <option value="estatica">Estática</option>
+                    <option value="dinamica">Dinámica</option>
+                    <option value="proxy">Proxy</option>
+                </select>
+            </div>
+
+            <label>Estrategia de Consenso</label>
+            <select name="estrategia" required>
+                <option value="multiples">Múltiples menciones</option>
+                <option value="absoluta">Absoluta</option>
+                <option value="mayoria">Mayoría simple</option>
+            </select>
+
+            <label>Categoría</label>
+            <select name="categoria" required>
+                <option value="ambiental">Ambiental</option>
+                <option value="social">Social</option>
+                <option value="economico">Económico</option>
+                <option value="politico">Político</option>
+            </select>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='buscador-colecciones.html'">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Importing footer from layout -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    let colecciones = JSON.parse(localStorage.getItem("colecciones")) || [];
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const form = document.getElementById("collectionForm");
+    const title = document.getElementById("formTitle");
+
+    if(id){
+      title.textContent = "Editar Colección";
+      const col = colecciones.find(c=>c.id===id);
+      if(col){
+        form.titulo.value = col.titulo;
+        form.descripcion.value = col.descripcion;
+        form.fuente_ip.value = col.fuente_ip;
+        form.fuente_puerto.value = col.fuente_puerto;
+        form.fuente_tipo.value = col.fuente_tipo;
+        form.estrategia.value = col.estrategia;
+        form.categoria.value = col.categoria;
+      }
+    }
+
+    form.addEventListener("submit", e=>{
+      e.preventDefault();
+      const data = {
+        id: id || Date.now().toString(),
+        titulo: form.titulo.value,
+        descripcion: form.descripcion.value,
+        fuente_ip: form.fuente_ip.value,
+        fuente_puerto: form.fuente_puerto.value,
+        fuente_tipo: form.fuente_tipo.value,
+        estrategia: form.estrategia.value,
+        categoria: form.categoria.value
+      };
+      if(id){
+        colecciones = colecciones.map(c=>c.id===id? data:c);
+      } else {
+        colecciones.push(data);
+      }
+      localStorage.setItem("colecciones", JSON.stringify(colecciones));
+      window.location.href = "buscador-colecciones.html";
+    });
+</script>
+</body>
+</html>

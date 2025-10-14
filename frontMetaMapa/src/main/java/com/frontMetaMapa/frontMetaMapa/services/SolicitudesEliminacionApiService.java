@@ -1,0 +1,110 @@
+package com.frontMetaMapa.frontMetaMapa.services;
+
+import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.SolicitudInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+
+import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.SolicitudOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.util.Map;
+
+public class SolicitudesEliminacionApiService {
+    private static final Logger log = LoggerFactory.getLogger(SolicitudesEliminacionApiService.class);
+    private final WebClient webClient;
+    private final WebApiCallerService webApiCallerService;
+    private final String authServiceUrl;
+    private final String solicitudesServiceUrl;
+
+    @Autowired
+    public SolicitudesEliminacionApiService(WebApiCallerService webApiCallerService,
+                                            @Value("${auth.service.url}") String authServiceUrl,
+                                            @Value("${solicitudes.service.url}")String solicitudesServiceUrl) {
+        this.webClient = WebClient.builder().build();
+        this.webApiCallerService = webApiCallerService;
+        this.authServiceUrl = authServiceUrl;
+        this.solicitudesServiceUrl = solicitudesServiceUrl;
+    }
+    public AuthResponseDTO login(String username, String password) {
+        try {
+            AuthResponseDTO response = webClient
+                    .post()
+                    .uri(authServiceUrl + "/auth")
+                    .bodyValue(Map.of(
+                            "username", username,
+                            "password", password
+                    ))
+                    .retrieve()
+                    .bodyToMono(AuthResponseDTO.class)
+                    .block();
+            return response;
+        } catch (WebClientResponseException e) {
+            log.error(e.getMessage());
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                // Login fallido - credenciales incorrectas
+                return null;
+            }
+            // Otros errores HTTP
+            throw new RuntimeException("Error en el servicio de autenticación: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error de conexión con el servicio de autenticación: " + e.getMessage(), e);
+        }
+    }
+
+    public RolesPermisosDTO getRolesPermisos(String accessToken) {
+        try {
+            RolesPermisosDTO response = webApiCallerService.getWithAuth(
+                    authServiceUrl + "/auth/user/roles-permisos",
+                    accessToken,
+                    RolesPermisosDTO.class
+            );
+            return response;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RuntimeException("Error al obtener roles y permisos: " + e.getMessage(), e);
+        }
+    }
+    public SolicitudOutputDTO createSolicitud(SolicitudInputDTO solicitudDTO){
+        SolicitudOutputDTO response = webApiCallerService.post(solicitudesServiceUrl + "/solicitudes", solicitudDTO, SolicitudOutputDTO.class);
+        if (response == null) {
+            throw new RuntimeException("Error al crear solicitud en el servicio externo");
+        }
+        return response;
+    }
+
+    public SolicitudOutputDTO obtenerSolicitudPorId(String id) {
+        SolicitudOutputDTO response = webApiCallerService.get(solicitudesServiceUrl + "/solicitudes/" + id, SolicitudOutputDTO.class);
+        if (response == null) {
+            throw new NotFoundException("Solicitud", id);
+        }
+        return response;
+    }
+
+    public SolicitudOutputDTO cambiarEstadoSolicitud(String id, String accion) {
+        SolicitudOutputDTO response = webApiCallerService.post(
+                solicitudesServiceUrl + "/solicitudes/" + id + "/" + accion,
+                null,
+                SolicitudOutputDTO.class
+        );
+
+        if (response == null) {
+            throw new NotFoundException("Solicitud", id);
+        }
+
+        return response;
+    }
+
+
+
+
+
+}
