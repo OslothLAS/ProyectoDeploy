@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
-import entities.solicitudes.SolicitudEliminacion;
+
+import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

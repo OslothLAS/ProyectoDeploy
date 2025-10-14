@@ -1,6 +1,6 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
-import entities.hechos.Categoria;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Categoria;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

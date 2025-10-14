@@ -1,7 +1,8 @@
 package ar.utn.frba.ddsi.agregador.navegacion;
 
-import entities.colecciones.Coleccion;
-import entities.hechos.Hecho;
+
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 
 import java.util.List;
 

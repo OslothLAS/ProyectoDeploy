@@ -11,23 +11,24 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "estadistica")
 public class StatDTO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Column(name = "tituloColeccion")
     private String tituloColeccion;
 
-
+    @Column(name = "descripcion")
     private String descripcion;
 
+    @Column(name = "cantidad")
     private Long cantidad;
 
     public static StatDTO fromEntity(Estadistica estadistica) {
-        StatDTO dto = new StatDTO();
-        dto.setTituloColeccion(estadistica.getTituloColeccion());
-        dto.setDescripcion(estadistica.getDescripcion());
-        dto.setCantidad(estadistica.getCantidad());
-        return dto;
+        return null;
     }
-
-
 }
 

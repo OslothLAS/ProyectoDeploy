@@ -13,13 +13,13 @@
 
   <!-- futuros módulos van acá -->
   <modules>
-    <module>fuenteDinamica</module>
-    <module>fuenteEstatica</module>
-    <module>fuenteProxy</module>
-    <module>agregador</module>
-    <module>core</module>
+      <module>fuenteDinamica</module>
+      <module>fuenteEstatica</module>
+      <module>fuenteProxy</module>
+      <module>agregador</module>
       <module>estadisticas</module>
-    <module> frontMetaMapa</module>
+      <module>servicioDeUsuarios</module>
+      <module>frontMetaMapa</module>
   </modules>
 
   <properties>
@@ -32,12 +32,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>ar.edu.utn.frba.dds</groupId>
-        <artifactId>core</artifactId>
-        <version>1.0.0</version>
-      </dependency>
-
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>

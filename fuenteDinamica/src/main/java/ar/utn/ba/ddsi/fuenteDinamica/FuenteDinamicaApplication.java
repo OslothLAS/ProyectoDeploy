@@ -1,19 +1,35 @@
 package ar.utn.ba.ddsi.fuenteDinamica;
 
-import config.HechoProperties;
+import ar.utn.ba.ddsi.fuenteDinamica.config.HechoProperties;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Provincia;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+        org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class
+})
 @EnableConfigurationProperties(HechoProperties.class)
-@EntityScan("entities")
 public class FuenteDinamicaApplication {
 
-	public static void main(String[] args) {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
+	public static void main(String[] args) {
 		SpringApplication.run(FuenteDinamicaApplication.class, args);
-		System.out.println("hola mundo ");
-	}
+        System.out.println("hola mundo ");
+    }
+
+    @PostConstruct
+    public void insertarProvincia() {
+        jdbcTemplate.execute("INSERT INTO provincia (nombre) VALUES ('Buenos Aires')");
+        System.out.println("✅ Provincia 'Buenos Aires' insertada");
+    }
+
 }

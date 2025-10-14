@@ -1,5 +1,5 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
-import entities.hechos.Ubicacion;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Ubicacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

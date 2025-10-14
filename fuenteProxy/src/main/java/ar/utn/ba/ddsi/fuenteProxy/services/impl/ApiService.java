@@ -3,18 +3,17 @@ package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.api.AuthRequest;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.api.AuthResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.api.DesastresResponse;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
-import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoOutputDTO;
+import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoUtil;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.criteriosDePertenencia.CriterioDePertenencia;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteProxy.services.IApiService;
-import entities.criteriosDePertenencia.CriterioDePertenencia;
-import entities.factories.CriterioDePertenenciaFactory;
-import entities.hechos.Hecho;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,11 +75,11 @@ public class ApiService implements IApiService {
                 .bodyToMono(DesastresResponse.class)
                 .block();
 
-        List<HechoDto> hechosDto = response != null ? response.getData() : List.of();
+        List<HechoOutputDTO> hechosDto = response != null ? response.getData() : List.of();
 
         // Mapear los HechoDto a Hecho
         List<Hecho> hechos = hechosDto.stream()
-                .map(HechoMapper::mapHechoDtoToHecho)
+                .map(HechoUtil::hechoDTOtoHecho)
                 .toList();
 
         List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);

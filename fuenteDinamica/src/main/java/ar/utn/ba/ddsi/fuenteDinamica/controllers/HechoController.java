@@ -1,13 +1,17 @@
 package ar.utn.ba.ddsi.fuenteDinamica.controllers;
 
-import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
-import entities.dtos.HechoOutputDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-import static utils.HechoUtil.hechosToDTO;
+import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.hechosToDTO;
+
 
 @RestController
 @RequestMapping("/api/hechos")
@@ -17,18 +21,49 @@ public class HechoController {
         this.hechoService = hechoService;
     }
     @GetMapping
-    public List<HechoOutputDTO> getHechos(@RequestParam Map<String, String> filtros){
+    public List<HechoDTO> getHechos(@RequestParam Map<String, String> filtros){
         return hechosToDTO(this.hechoService.obtenerTodos(filtros));
     }
 
+
+    @GetMapping("{id}")
+    public ResponseEntity<HechoDTO> obtenerUsuarioPorId(@PathVariable("id") Long id) {
+        HechoDTO hecho = this.hechoService.getHechoById(id);
+        return ResponseEntity.ok(hecho);
+    }
+
     @PostMapping
-    public void crearHecho(@RequestBody HechoInputDTO hecho) {
-        this.hechoService.crearHecho(hecho);
+    public void crearHecho(@RequestBody HechoDTO hecho, @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        TokenInfo tokenInfo = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.replace("Bearer ", "");
+            tokenInfo = JwtUtil.validarToken(token);
+        }
+
+        this.hechoService.crearHecho(hecho, tokenInfo);
+    }
+
+    @PostMapping("/prueba")
+    public ResponseEntity<TokenInfo> crearHecho2(@RequestHeader("Authorization") String authHeader) {
+        System.out.println("Token: " + authHeader);
+
+        String token = authHeader.replace("Bearer ", "");
+        TokenInfo tokenInfo = JwtUtil.validarToken(token);
+
+        return ResponseEntity.ok(tokenInfo);
     }
 
     @PutMapping("/{idHecho}")
-    public void editarHecho(@PathVariable Long idHecho, @RequestBody HechoInputDTO hecho) throws Exception {
-        this.hechoService.editarHecho(idHecho, hecho);
+    public ResponseEntity<Void> editarHecho(@PathVariable("idHecho") Long idHecho,
+                                            @RequestBody HechoDTO hecho,
+                                            @RequestHeader("Authorization") String authHeader) throws Exception {
+
+        String token = authHeader.replace("Bearer ", "");
+        TokenInfo tokenInfo = JwtUtil.validarToken(token);
+        this.hechoService.editarHecho(idHecho, hecho,tokenInfo);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/origen")

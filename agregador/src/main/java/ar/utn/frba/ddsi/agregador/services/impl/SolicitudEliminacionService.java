@@ -2,22 +2,28 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitud;
+import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.PosibleEstadoSolicitud;
+import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
+import ar.utn.frba.ddsi.agregador.models.entities.usuarios.TipoUsuario;
+import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
-import entities.colecciones.Fuente;
-import entities.hechos.Hecho;
-import entities.solicitudes.EstadoSolicitud;
-import entities.solicitudes.PosibleEstadoSolicitud;
-import entities.solicitudes.SolicitudEliminacion;
-import entities.usuarios.TipoUsuario;
-import entities.usuarios.Usuario;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,24 +35,51 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     private IHechoRepository hechoRepository;
     @Autowired
     private IColeccionRepository coleccionRepository;
+
     @Autowired
-    private IUsuarioRepository usuarioRepository;
+    @Qualifier("usuarioWebClient")
+    private WebClient usuarioWebClient;
+
+    @Autowired
+    @Qualifier("hechoWebClient")
+    private WebClient hechoWebClient;
 
     @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
-        this.usuarioRepository.findById(solicitud.getIdSolicitante()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        this.obtenerUserPorId(solicitud.getIdSolicitante());
         SolicitudEliminacion solicitudEliminacion = this.solicitudRepository.save(this.dtoToSolicitud(solicitud));
         return solicitudEliminacion.getId();
     }
 
-    private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
-        Hecho hecho = this.hechoRepository.findById(solicitud.getIdHecho())
-                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + solicitud.getIdHecho()));
+    public Usuario obtenerUserPorId(Long id) {
+        return usuarioWebClient.get()
+                .uri("/{id}", id)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
+                        error -> Mono.error(new RuntimeException("Usuario no encontrado")))
+                .bodyToMono(Usuario.class)
+                .block();
+    }
 
-        Usuario usuario = this.usuarioRepository.findById(solicitud.getIdSolicitante()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+    private Hecho obtenerHechoPorId(Long id){
+        return hechoWebClient.get()
+                .uri("/{id}", id)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
+                        error -> Mono.error(new RuntimeException("Hecho no encontrado")))
+                .bodyToMono(Hecho.class)
+                .block();
+    }
+
+
+
+    private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
+        Hecho hecho = obtenerHechoPorId(solicitud.getIdHecho());
+        Usuario usuario = this.obtenerUserPorId(solicitud.getIdSolicitante());
 
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
@@ -61,6 +94,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con id: " + idSolicitud));
         return solicitudRepository.findById(idSolicitud).orElse(null);
     }
+
+
 
     @Override
     public String validarJustificacion(String justificacionSolicitud) {
@@ -97,7 +132,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
         Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
-        this.usuarioRepository.save(administrador);
+        //this.usuarioRepository.save(administrador);
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
 
         Hecho hecho = solicitud.getHecho();
@@ -108,7 +143,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .toList();
 
         for (Fuente fuente : fuentesUnicas) {
-            fuente.invalidarHecho(hecho.getDatosHechos().getTitulo(),hecho.getDatosHechos().getDescripcion());
+            fuente.invalidarHecho(hecho.getTitulo(),hecho.getDescripcion());
         }
     }
 

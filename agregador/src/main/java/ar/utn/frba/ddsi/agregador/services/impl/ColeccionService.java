@@ -2,30 +2,36 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
-import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.ICategoriaRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IUbicacionRepository;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
+import ar.utn.frba.ddsi.agregador.models.repositories.*;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
-import entities.colecciones.Coleccion;
-import entities.colecciones.Fuente;
-import entities.colecciones.consenso.strategies.Absoluta;
-import entities.colecciones.consenso.strategies.Mayoria;
-import entities.colecciones.consenso.strategies.MultipleMencion;
-import entities.colecciones.consenso.strategies.TipoConsenso;
-import entities.criteriosDePertenencia.CriterioDePertenencia;
-import entities.criteriosDePertenencia.CriterioPorCategoria;
-import entities.hechos.*;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.Absoluta;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.Mayoria;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.MultipleMencion;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
+import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
+import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioPorCategoria;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
+import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
-import static utils.NormalizadorTexto.normalizarTrimTexto;
+import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
+import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
 public class ColeccionService implements IColeccionService {
@@ -34,13 +40,19 @@ public class ColeccionService implements IColeccionService {
     private final IColeccionRepository coleccionRepository;
     private final ICategoriaRepository categoriaRepository;
     private final IUbicacionRepository ubicacionRepository;
+    private final IProvinciaRepository provinciaRepository;
+    private final ILocalidadRepository localidadRepository;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository provinciaRepository) {
+
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository, IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
         this.categoriaRepository = categoriaRepository;
-        this.ubicacionRepository = provinciaRepository;
+        this.ubicacionRepository = ubicacionRepository;
+        this.provinciaRepository = provinciaRepository;
+        this.localidadRepository = localidadRepository;
     }
+
 
     public Categoria obtenerOCrearCategoria(String nombre) {
         String clave = normalizarTrimTexto(nombre);
@@ -48,9 +60,12 @@ public class ColeccionService implements IColeccionService {
                 .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
-
+   public List<Coleccion> getColeccionesClass(){
+        return this.coleccionRepository.findAll();
+   }
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
+
         List<Fuente> importadores = coleccionDTO.getFuentes();
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
 
@@ -107,8 +122,8 @@ public class ColeccionService implements IColeccionService {
 
         Set<String> clavesUbicacion = new HashSet<>();
         for (Hecho hecho : hechos) {
-            if (hecho.getDatosHechos().getUbicacion() != null) {
-                Ubicacion ub = hecho.getDatosHechos().getUbicacion();
+            if (hecho.getUbicacion() != null) {
+                Ubicacion ub = hecho.getUbicacion();
                 String clave = ub.getLatitud() + "," + ub.getLongitud();
                 clavesUbicacion.add(clave);
                 ubicacionesPorClave.put(clave, ub);
@@ -128,6 +143,27 @@ public class ColeccionService implements IColeccionService {
                     .collect(Collectors.toList());
 
             if (!nuevasUbicaciones.isEmpty()) {
+                for (Ubicacion ub : nuevasUbicaciones) {
+                    if (ub.getLocalidad() != null) {
+                        Localidad loc = ub.getLocalidad();
+                        Provincia prov = loc.getProvincia();
+
+                        if (prov != null) {
+                            String nombreProvincia = prov.getNombre();
+                            Provincia provinciaExistente = provinciaRepository.findByNombre(nombreProvincia)
+                                    .orElseGet(() -> provinciaRepository.save(new Provincia(nombreProvincia)));
+                            loc.setProvincia(provinciaExistente);
+                        }
+
+                        // Buscar localidad existente (por nombre y provincia)
+                        String nombreLocalidad = loc.getNombre();
+                        Localidad localidadExistente = localidadRepository
+                                .findByNombreAndProvinciaNombre(nombreLocalidad, loc.getProvincia().getNombre())
+                                .orElseGet(() -> localidadRepository.save(new Localidad(loc.getProvincia(), nombreLocalidad)));
+
+                        ub.setLocalidad(localidadExistente);
+                    }
+                }
                 List<Ubicacion> guardadas = ubicacionRepository.saveAll(nuevasUbicaciones);
 
                 for (Ubicacion guardada : guardadas) {
@@ -138,20 +174,20 @@ public class ColeccionService implements IColeccionService {
         }
 
         for (Hecho hecho : hechos) {
-            if (hecho.getDatosHechos().getUbicacion() != null) {
-                Ubicacion ub = hecho.getDatosHechos().getUbicacion();
+            if (hecho.getUbicacion() != null) {
+                Ubicacion ub = hecho.getUbicacion();
                 String clave = ub.getLatitud() + "," + ub.getLongitud();
-                hecho.getDatosHechos().setUbicacion(ubicacionesPorClave.get(clave));
+                hecho.setUbicacion(ubicacionesPorClave.get(clave));
             }
 
-            String nombreCategoria = hecho.getDatosHechos().getCategoria().getCategoria();
+            String nombreCategoria = hecho.getCategoria().getCategoria();
             Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
-            hecho.getDatosHechos().setCategoria(categoriaExistente);
+            hecho.setCategoria(categoriaExistente);
         }
     }
 
-    public List<Coleccion> getColecciones(){
-        return this.coleccionRepository.findAll();
+    public List<ColeccionOutputDTO> getColecciones(){
+        return this.coleccionRepository.findAll().stream().map(ColeccionUtil::coleccionToDto).collect(Collectors.toList());
     }
 
     private List<Hecho> asignarColeccionAHechos(List<Hecho> hechosValidos, Coleccion coleccion) {
@@ -266,7 +302,11 @@ public class ColeccionService implements IColeccionService {
         hechoRepository.saveAll(hechosAsignados);
     }
 
-    public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
+    public List<HechoOutputDTO> obtenerTodosLosHechos(){
+        return hechosToDTO(hechoRepository.findAll());
+    }
+
+    /*public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
         return this.hechoRepository.countHechosByProvinciaAndColeccion();
     }
 
@@ -280,5 +320,5 @@ public class ColeccionService implements IColeccionService {
 
     public List<StatDTO> getProviniciaMasReportadaPorCategoria(){
         return hechoRepository.findProvinciaWithMostHechosByCategoria();
-    }
+    }*/
 }

@@ -2,17 +2,23 @@ package ar.utn.frba.ddsi.agregador.controllers;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
-import entities.colecciones.Coleccion;
-import entities.colecciones.consenso.strategies.TipoConsenso;
-import entities.dtos.HechoOutputDTO;
-import entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+import org.apache.tomcat.util.http.parser.Authorization;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
 import java.util.List;
 
-import static utils.HechoUtil.hechosToDTO;
+import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
+import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 
 @RestController
 @RequestMapping("/colecciones")
@@ -23,13 +29,15 @@ public class ColeccionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Coleccion>> getColecciones(){
+    public ResponseEntity<List<ColeccionOutputDTO>> getColecciones(){
         return ResponseEntity.ok(this.coleccionService.getColecciones());
     }
 
     @PostMapping
-    public void createColeccion(@RequestBody ColeccionInputDTO coleccion){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> createColeccion(@RequestBody ColeccionInputDTO coleccion){
         this.coleccionService.createColeccion(coleccion);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{idColeccion}/hechos")
@@ -41,24 +49,31 @@ public class ColeccionController {
     }
 
     @DeleteMapping("/{idColeccion}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteColeccion(@PathVariable("idColeccion") Long idColeccion) {
         this.coleccionService.deleteColeccion(idColeccion);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{idColeccion}/cambiarConsenso")
-    public void cambiarConsenso(@PathVariable("idColeccion") Long idColeccion, @RequestBody TipoConsenso tipo) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> cambiarConsenso(@PathVariable("idColeccion") Long idColeccion, @RequestBody TipoConsenso tipo) {
         this.coleccionService.cambiarConsenso(idColeccion, tipo);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping ("/{idColeccion}/fuentes/")
-    public void agregarFuente(@PathVariable("idColeccion") Long idColeccion, @RequestBody FuenteInputDTO fuente) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> agregarFuente(@PathVariable("idColeccion") Long idColeccion, @RequestBody FuenteInputDTO fuente) {
         this.coleccionService.agregarFuente(idColeccion, fuente);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping ("/{idColeccion}/fuentes/{idFuente}")
-    public void deleteFuente(@PathVariable("idColeccion") Long idColeccion, @PathVariable("idFuente") Long idFuente) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteFuente(@PathVariable("idColeccion") Long idColeccion, @PathVariable("idFuente") Long idFuente) {
         this.coleccionService.eliminarFuente(idColeccion, idFuente);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/cronConsensuar")

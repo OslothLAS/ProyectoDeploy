@@ -67,10 +67,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>ar.edu.utn.frba.dds</groupId>
-            <artifactId>core</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
         </dependency>
-
 
     </dependencies>
 

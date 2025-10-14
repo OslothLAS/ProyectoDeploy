@@ -1,7 +1,7 @@
 package ar.utn.ba.ddsi.fuenteProxy;
 
-import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
-import entities.Metamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.Metamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.repositories.IRepositoryMetamapa;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

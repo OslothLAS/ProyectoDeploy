@@ -1,9 +1,6 @@
 package ar.utn.frba.ddsi.models.entities;
 
 import ar.utn.frba.ddsi.dtos.StatDTO;
-import entities.colecciones.Coleccion;
-import entities.hechos.Categoria;
-import entities.hechos.Provincia;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
