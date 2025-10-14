@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
@@ -28,33 +27,31 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login",
                                 "/register",
-                                "/visualizador",     // ✅ ahora es pública
-                                "/visualizador/**",  // (opcional) por si hay subrutas
+                                "/visualizador",
+                                "/visualizador/**",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
                                 "/buscador-hechos",
                                 "/buscador-colecciones"
                         ).permitAll()
-
                         // 🔒 Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
-
+                // 🔥 AGREGA ESTO: Deshabilitar CSRF para testing
+                .csrf(csrf -> csrf.disable())
                 // Configuración del formulario de login
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/visualizador", true) // redirigir tras login exitoso
+                        .defaultSuccessUrl("/visualizador", true)
                 )
-
                 // Configuración del logout
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
-
                 // Manejo de excepciones
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->

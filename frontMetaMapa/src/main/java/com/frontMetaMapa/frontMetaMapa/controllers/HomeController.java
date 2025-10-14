@@ -32,14 +32,31 @@ public class HomeController {
     }
 
     @PostMapping("/register")
-    public String handleRegister(@ModelAttribute UsuarioDTO request) {
-        System.out.println("POST /register recibido!");
-        System.out.println("UsuarioDTO: " + request);
-        boolean success = registerApiService.registerUser(request);
-        if (success) {
-            return "login"; // redirigís al login u otra vista
-        } else {
-            return "register"; // mostrás el error en el mismo formulario
+    public String handleRegister(@ModelAttribute UsuarioDTO request, Model model) {
+        System.out.println("🎯 === POST /register INICIADO ===");
+        System.out.println("📝 Datos recibidos:");
+        System.out.println("  Username: " + request.getUsername());
+        System.out.println("  Nombre: " + request.getNombre());
+        System.out.println("  Apellido: " + request.getApellido());
+        System.out.println("  Fecha: " + request.getFechaNacimiento());
+        System.out.println("  Rol: " + request.getRol());
+
+        try {
+            boolean success = registerApiService.registerUser(request);
+            System.out.println("✅ Resultado del servicio: " + success);
+
+            if (success) {
+                model.addAttribute("mensaje", "¡Registro exitoso!");
+                return "login";
+            } else {
+                model.addAttribute("error", "El usuario ya existe");
+                return "register";
+            }
+        } catch (Exception e) {
+            System.out.println("💥 ERROR: " + e.getMessage());
+            e.printStackTrace(); // ESTO ES IMPORTANTE
+            model.addAttribute("error", "Error: " + e.getMessage());
+            return "register";
         }
     }
 
