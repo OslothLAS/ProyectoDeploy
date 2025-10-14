@@ -31,7 +31,7 @@ public class LoginApiService {
         try {
             AuthResponseDTO response = webClient
                     .post()
-                    .uri(authServiceUrl + "/auth")
+                    .uri(authServiceUrl + "api/auth")
                     .bodyValue(Map.of(
                             "username", username,
                             "password", password

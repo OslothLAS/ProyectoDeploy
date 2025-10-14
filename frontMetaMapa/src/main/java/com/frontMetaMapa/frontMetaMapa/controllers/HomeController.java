@@ -1,17 +1,17 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.UsuarioDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
+import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import com.frontMetaMapa.frontMetaMapa.services.RegisterApiService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ import java.util.List;
 public class HomeController {
     private final ColeccionService coleccionService;
     private final RegisterApiService registerApiService;
+    private final LoginApiService loginApiService;
 
     @GetMapping("/")
     public String home() {
@@ -61,15 +62,50 @@ public class HomeController {
     }
 
     @GetMapping("/login")
-    public String login(Model model, Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            model.addAttribute("usuario", authentication.getName());
-        } else {
-            model.addAttribute("usuario", null);
+    public String loginPage(Model model, HttpServletRequest request) {
+        // Si ya hay token en sesión, mandarlo directo al visualizador
+        String token = (String) request.getSession().getAttribute("accessToken");
+        if (token != null) {
+            return "redirect:/visualizador";
         }
-        return "login";
+        return "login"; // tu template login.html
     }
 
+    // 👉 Procesar login
+    @PostMapping("/login")
+    public String handleLogin(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            HttpServletRequest request,
+            Model model
+    ) {
+        try {
+            AuthResponseDTO authResponse = loginApiService.login(username, password);
+
+            if (authResponse != null && authResponse.getAccessToken() != null) {
+                request.getSession().setAttribute("accessToken", authResponse.getAccessToken());
+                request.getSession().setAttribute("refreshToken", authResponse.getRefreshToken());
+
+                return "redirect:/visualizador";
+            } else {
+                model.addAttribute("error", "Credenciales inválidas");
+                return "login";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al iniciar sesión: " + e.getMessage());
+            return "login";
+        }
+    }
+
+    // 👉 Cerrar sesión
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+        return "redirect:/login?logout";
+    }
+}
+
+/*
     @GetMapping("/buscador-colecciones")
     public String buscadorColecciones(Model model) {
         List<ColeccionOutputDTO> colecciones = coleccionService.obtenerTodasLasColecciones();
@@ -106,10 +142,11 @@ public class HomeController {
     public String misContribuciones() {
         return "commons/misContribuciones";
     }
-     */
+
 
     @GetMapping("/coleccion/example")
     public String showColeccionExample() {
         return "commons/showColeccionExample";
     }
-}
+*/
+
