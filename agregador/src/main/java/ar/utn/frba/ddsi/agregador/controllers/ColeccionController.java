@@ -4,32 +4,37 @@ import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
-import org.apache.tomcat.util.http.parser.Authorization;
-import org.springframework.http.HttpStatus;
+import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
 import java.util.List;
-import java.util.Map;
 
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
-import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 
 @RestController
 @RequestMapping("/colecciones")
 public class ColeccionController {
     private final IColeccionService coleccionService;
+
+    @Autowired
+    private IHechoRepository hechoRepository;
+
     public ColeccionController(IColeccionService coleccionService) {
         this.coleccionService = coleccionService;
     }
 
-
+    @GetMapping("/actualizar")
+    @PreAuthorize("hasRole('CONTRIBUYENTE')")
+    public void actualizarLosHechos(){
+        this.hechoRepository.save(HechoFactory.crearHechoDePrueba());
+    }
 
     @GetMapping
     public ResponseEntity<List<ColeccionOutputDTO>> getColecciones(){

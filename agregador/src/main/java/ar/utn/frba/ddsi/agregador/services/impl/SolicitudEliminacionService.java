@@ -14,6 +14,7 @@ import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
+import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,6 +45,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
+        hechoRepository.save(HechoFactory.crearHechoDePrueba());
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
         this.obtenerUserPorId(solicitud.getIdSolicitante());

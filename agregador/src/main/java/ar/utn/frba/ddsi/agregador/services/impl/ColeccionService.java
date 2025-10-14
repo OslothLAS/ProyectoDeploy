@@ -2,7 +2,6 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.input.HechoDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.*;
@@ -18,15 +17,12 @@ import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.Criteri
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioPorCategoria;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
 import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
-import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
