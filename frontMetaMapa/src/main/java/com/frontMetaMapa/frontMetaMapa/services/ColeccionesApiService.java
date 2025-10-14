@@ -22,58 +22,17 @@ import java.util.Map;
 @Service
 public class ColeccionesApiService {
     private static final Logger log = LoggerFactory.getLogger(ColeccionesApiService.class);
-    private final WebClient webClient;
     private final WebApiCallerService webApiCallerService;
-    private final String authServiceUrl;
+
     private final String coleccionesServiceUrl;
     @Autowired
     public ColeccionesApiService(WebApiCallerService webApiCallerService,
-                                 @Value("${auth.service.url}") String authServiceUrl,
                                  @Value("${colecciones.service.url}") String coleccionesServiceUrl) {
-        this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
-        this.authServiceUrl = authServiceUrl;
+
         this.coleccionesServiceUrl = coleccionesServiceUrl;
     }
-    public AuthResponseDTO login(String username, String password) {
-        try {
-            AuthResponseDTO response = webClient
-                    .post()
-                    .uri(authServiceUrl + "/auth")
-                    .bodyValue(Map.of(
-                            "username", username,
-                            "password", password
-                    ))
-                    .retrieve()
-                    .bodyToMono(AuthResponseDTO.class)
-                    .block();
-            return response;
-        } catch (WebClientResponseException e) {
-            log.error(e.getMessage());
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                // Login fallido - credenciales incorrectas
-                return null;
-            }
-            // Otros errores HTTP
-            throw new RuntimeException("Error en el servicio de autenticación: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error de conexión con el servicio de autenticación: " + e.getMessage(), e);
-        }
-    }
 
-    public RolesPermisosDTO getRolesPermisos(String accessToken) {
-        try {
-            RolesPermisosDTO response = webApiCallerService.getWithAuth(
-                    authServiceUrl + "/auth/user/roles-permisos",
-                    accessToken,
-                    RolesPermisosDTO.class
-            );
-            return response;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("Error al obtener roles y permisos: " + e.getMessage(), e);
-        }
-    }
 
     public List<ColeccionOutputDTO> obtenerTodasLasColecciones() {
         List<ColeccionOutputDTO> response = webApiCallerService.getList(coleccionesServiceUrl + "/colecciones", ColeccionOutputDTO.class);

@@ -2,6 +2,7 @@ package com.frontMetaMapa.frontMetaMapa.providers;
 
 import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,9 @@ import java.util.List;
 @Component
 public class CustomAuthProvider implements AuthenticationProvider {
     private static final Logger log = LoggerFactory.getLogger(CustomAuthProvider.class);
-    private final GestionAlumnosApiService externalAuthService;
+    private final LoginApiService externalAuthService;
 
-    public CustomAuthProvider(GestionAlumnosApiService externalAuthService) {
+    public CustomAuthProvider(LoginApiService externalAuthService) {
         this.externalAuthService = externalAuthService;
     }
 
