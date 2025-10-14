@@ -49,8 +49,9 @@ public class HechoService implements IHechoService {
         return hechoToDTO(hecho.get());
     }
 
-    public List<Hecho> getAllHechos() {
-        return hechoRepository.findAll();
+    public List<HechoDTO> getAllHechos() {
+        List<Hecho> hecho = hechoRepository.findAll();
+        return hecho.stream().map(h -> hechoToDTO(h)).collect(Collectors.toList());
     }
 
     @Transactional

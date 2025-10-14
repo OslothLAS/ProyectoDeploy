@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.input.HechoDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.*;
@@ -17,6 +18,7 @@ import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.Criteri
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioPorCategoria;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
 import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
+import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +45,9 @@ public class ColeccionService implements IColeccionService {
     private final IProvinciaRepository provinciaRepository;
     private final ILocalidadRepository localidadRepository;
 
+    @Autowired
+    @Qualifier("hechoWebClient")
+    private WebClient hechoWebClient;
 
     public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository, IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository) {
         this.hechoRepository = hechoRepository;
@@ -60,7 +65,8 @@ public class ColeccionService implements IColeccionService {
                 .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
-   public List<Coleccion> getColeccionesClass(){
+
+    public List<Coleccion> getColeccionesClass(){
         return this.coleccionRepository.findAll();
    }
     @Transactional
@@ -257,6 +263,7 @@ public class ColeccionService implements IColeccionService {
 
         coleccion.getImportadores().removeIf(fuente -> Objects.equals(fuente.getId(), idFuente));
     }
+
 
 
     @Override

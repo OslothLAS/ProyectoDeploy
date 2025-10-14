@@ -40,9 +40,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Qualifier("usuarioWebClient")
     private WebClient usuarioWebClient;
 
-    @Autowired
-    @Qualifier("hechoWebClient")
-    private WebClient hechoWebClient;
 
     @Transactional
     @Override
@@ -65,25 +62,14 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
 
-    private Hecho obtenerHechoPorId(Long id){
-        return hechoWebClient.get()
-                .uri("/{id}", id)
-                .retrieve()
-                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
-                        error -> Mono.error(new RuntimeException("Hecho no encontrado")))
-                .bodyToMono(Hecho.class)
-                .block();
-    }
-
-
-
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
-        Hecho hecho = obtenerHechoPorId(solicitud.getIdHecho());
+        Hecho hecho = hechoRepository.findById(solicitud.getIdHecho()).orElse(null);
         Usuario usuario = this.obtenerUserPorId(solicitud.getIdSolicitante());
+        System.out.println("USUARIO ENCONTRADO POR API: " + usuario.getNombre());
 
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
-                hecho,
+                hecho,//FALTA ACTUALIZAR LOS HECHOS CON TODAS LAS FUENTES
                 usuario);
     }
 

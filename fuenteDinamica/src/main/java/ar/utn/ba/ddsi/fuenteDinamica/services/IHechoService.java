@@ -13,4 +13,5 @@ public interface IHechoService {
     List<Hecho> obtenerTodos(Map<String, String> filtros);
     void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion);
     HechoDTO getHechoById(Long id);
+    List<HechoDTO> getAllHechos();
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
 import java.util.List;
+import java.util.Map;
 
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
@@ -28,10 +29,13 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
 
+
+
     @GetMapping
     public ResponseEntity<List<ColeccionOutputDTO>> getColecciones(){
         return ResponseEntity.ok(this.coleccionService.getColecciones());
     }
+
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -39,6 +43,7 @@ public class ColeccionController {
         this.coleccionService.createColeccion(coleccion);
         return ResponseEntity.ok().build();
     }
+
 
     @GetMapping("/{idColeccion}/hechos")
     public ResponseEntity<List<HechoOutputDTO>> getHechosDeColeccion(

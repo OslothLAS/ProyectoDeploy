@@ -20,11 +20,17 @@ public class HechoController {
     public HechoController(IHechoService hechoService) {
         this.hechoService = hechoService;
     }
+
+    /*
     @GetMapping
     public List<HechoDTO> getHechos(@RequestParam Map<String, String> filtros){
         return hechosToDTO(this.hechoService.obtenerTodos(filtros));
-    }
+    }*/
 
+    @GetMapping
+    public ResponseEntity<List<HechoDTO>> obtenerTodosLosHechos(){
+        return ResponseEntity.ok(this.hechoService.getAllHechos());
+    }
 
     @GetMapping("{id}")
     public ResponseEntity<HechoDTO> obtenerUsuarioPorId(@PathVariable("id") Long id) {
