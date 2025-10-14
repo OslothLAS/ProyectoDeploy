@@ -1,12 +1,12 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.SolicitudInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.SolicitudInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UserRolesPermissionsDTO;
 
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.SolicitudOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.SolicitudOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +60,12 @@ public class SolicitudesEliminacionApiService {
         }
     }
 
-    public RolesPermisosDTO getRolesPermisos(String accessToken) {
+    public UserRolesPermissionsDTO getRolesPermisos(String accessToken) {
         try {
-            RolesPermisosDTO response = webApiCallerService.getWithAuth(
+            UserRolesPermissionsDTO response = webApiCallerService.getWithAuth(
                     authServiceUrl + "/auth/user/roles-permisos",
                     accessToken,
-                    RolesPermisosDTO.class
+                    UserRolesPermissionsDTO.class
             );
             return response;
         } catch (Exception e) {

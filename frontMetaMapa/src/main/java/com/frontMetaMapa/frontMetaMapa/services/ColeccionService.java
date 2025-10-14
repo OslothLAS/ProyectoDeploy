@@ -4,8 +4,8 @@ package com.frontMetaMapa.frontMetaMapa.services;
 import com.frontMetaMapa.frontMetaMapa.exceptions.DuplicateColeccionException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.ColeccionInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.ColeccionInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

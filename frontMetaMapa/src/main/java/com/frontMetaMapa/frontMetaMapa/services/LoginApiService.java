@@ -1,7 +1,7 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UserRolesPermissionsDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +51,12 @@ public class LoginApiService {
         }
     }
 
-    public RolesPermisosDTO getRolesPermisos(String accessToken) {
+    public UserRolesPermissionsDTO getRolesPermisos(String accessToken) {
         try {
-            RolesPermisosDTO response = webApiCallerService.getWithAuth(
+            UserRolesPermissionsDTO response = webApiCallerService.getWithAuth(
                     authServiceUrl + "/auth/user/roles-permisos",
                     accessToken,
-                    RolesPermisosDTO.class
+                    UserRolesPermissionsDTO.class
             );
             return response;
         } catch (Exception e) {

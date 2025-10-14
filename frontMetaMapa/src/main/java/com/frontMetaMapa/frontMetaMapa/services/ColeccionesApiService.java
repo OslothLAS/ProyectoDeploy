@@ -2,10 +2,10 @@ package com.frontMetaMapa.frontMetaMapa.services;
 
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.ColeccionInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.ColeccionInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UserRolesPermissionsDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package com.frontMetaMapa.frontMetaMapa.providers;
 
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UserRolesPermissionsDTO;
 import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -51,16 +51,14 @@ public class CustomAuthProvider implements AuthenticationProvider {
             request.getSession().setAttribute("username", username);
 
             log.info("Buscando roles y permisos del usuario");
-            RolesPermisosDTO rolesPermisos = externalAuthService.getRolesPermisos(authResponse.getAccessToken());
+            UserRolesPermissionsDTO rolesPermisos = externalAuthService.getRolesPermisos(authResponse.getAccessToken());
 
             log.info("Cargando roles y permisos del usuario en sesión");
             request.getSession().setAttribute("rol", rolesPermisos.getRol());
-            request.getSession().setAttribute("permisos", rolesPermisos.getPermisos());
+
 
             List<GrantedAuthority> authorities = new ArrayList<>();
-            rolesPermisos.getPermisos().forEach(permiso -> {
-                authorities.add(new SimpleGrantedAuthority(permiso.name()));
-            });
+
             authorities.add(new SimpleGrantedAuthority("ROLE_" + rolesPermisos.getRol().name()));
 
             return new UsernamePasswordAuthenticationToken(username, password, authorities);

@@ -1,8 +1,9 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
     private final ColeccionService coleccionService;
+
     @GetMapping("/")
     public String home() {
         return "redirect:/visualizador";
@@ -25,7 +27,8 @@ public class HomeController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model, Authentication authentication) {
+        model.addAttribute("usuario", authentication.getName());
         return "login";
     }
 
