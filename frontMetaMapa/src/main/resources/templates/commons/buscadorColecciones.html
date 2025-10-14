@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Colecciones - MetaMapa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/colecciones.css}">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const regionFilter = document.getElementById('regionFilter');
+            const yearFilter = document.getElementById('yearFilter');
+            const sortSelect = document.getElementById('sortSelect');
+            const grid = document.getElementById('collectionsGrid');
+            const count = document.getElementById('resultsCount');
+
+            function filterCollections() {
+                const search = searchInput.value.toLowerCase();
+                const category = categoryFilter.value;
+                const region = regionFilter.value;
+                const year = yearFilter.value;
+                const cards = grid.querySelectorAll('.collection-card');
+                let visible = 0;
+
+                cards.forEach(card => {
+                    const cardTitle = card.querySelector('.card-title').textContent.toLowerCase();
+                    const cardDesc = card.querySelector('.card-description').textContent.toLowerCase();
+                    const cardTags = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent.toLowerCase());
+                    const cardCategory = card.dataset.category.toLowerCase();
+                    const cardRegion = card.dataset.region.toLowerCase();
+                    const cardYear = card.dataset.year;
+
+                    const matchesSearch = cardTitle.includes(search) || cardDesc.includes(search) || cardTags.some(t => t.includes(search));
+                    const matchesCategory = !category || category === cardCategory;
+                    const matchesRegion = !region || region === cardRegion;
+                    const matchesYear = !year || year === cardYear;
+
+                    if (matchesSearch && matchesCategory && matchesRegion && matchesYear) {
+                        card.style.display = '';
+                        visible++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                count.textContent = `Mostrando ${visible} colecciones`;
+            }
+
+            function sortCollections() {
+                const criteria = sortSelect.value;
+                const cards = Array.from(grid.querySelectorAll('.collection-card'));
+                let sorted;
+
+                switch(criteria) {
+                    case 'recent':
+                        sorted = cards.sort((a, b) => new Date(b.dataset.year) - new Date(a.dataset.year));
+                        break;
+                    case 'alphabetical':
+                        sorted = cards.sort((a, b) => a.querySelector('.card-title').textContent.localeCompare(b.querySelector('.card-title').textContent));
+                        break;
+                    case 'facts':
+                        sorted = cards.sort((a, b) => parseInt(b.querySelector('.stat').textContent) - parseInt(a.querySelector('.stat').textContent));
+                        break;
+                    case 'contributors':
+                        sorted = cards.sort((a, b) => parseInt(b.querySelectorAll('.stat')[1].textContent) - parseInt(a.querySelectorAll('.stat')[1].textContent));
+                        break;
+                }
+
+                sorted.forEach(card => grid.appendChild(card));
+            }
+
+            searchInput.addEventListener('input', filterCollections);
+            categoryFilter.addEventListener('change', filterCollections);
+            regionFilter.addEventListener('change', filterCollections);
+            yearFilter.addEventListener('change', filterCollections);
+            sortSelect.addEventListener('change', sortCollections);
+
+            // Inicializa Lucide icons
+            lucide.replace();
+        });
+    </script>
+</head>
+<body>
+<div th:replace="~{layout/navbar :: navbar(false)}"></div>
+
+<main>
+    <div class="page-header">
+        <h1 class="page-title">Buscador de Colecciones</h1>
+        <p class="page-subtitle">Explora y descubre colecciones de hechos verificados organizados por temática, región y período temporal</p>
+    </div>
+
+    <div class="search-filters">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Buscar colecciones por nombre, descripción o etiquetas..." id="searchInput">
+            <button class="search-btn" onclick="filterCollections()">
+                <i data-lucide="search"></i> Buscar
+            </button>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="categoryFilter">Categoría:</label>
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">Todas</option>
+                    <option value="ambiental">Ambiental</option>
+                    <option value="social">Social</option>
+                    <option value="economico">Económico</option>
+                    <option value="politico">Político</option>
+                    <option value="salud">Salud</option>
+                    <option value="educacion">Educación</option>
+                    <option value="tecnologia">Tecnología</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="regionFilter">Región:</label>
+                <select id="regionFilter" class="filter-select">
+                    <option value="">Todas</option>
+                    <option value="argentina">Argentina</option>
+                    <option value="brasil">Brasil</option>
+                    <option value="chile">Chile</option>
+                    <option value="colombia">Colombia</option>
+                    <option value="mexico">México</option>
+                    <option value="peru">Perú</option>
+                    <option value="global">Global</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="yearFilter">Año:</label>
+                <select id="yearFilter" class="filter-select">
+                    <option value="">Todos</option>
+                    <option th:each="c : ${#numbers.sequence(2020, 2024)}" th:value="${c}" th:text="${c}">2024</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-info">
+        <div class="results-count" id="resultsCount" th:text="'Mostrando ' + ${colecciones.size()} + ' colecciones'">Mostrando 0 colecciones</div>
+        <div class="sort-options">
+            <label for="sortSelect">Ordenar por:</label>
+            <select id="sortSelect" class="filter-select">
+                <option value="recent">Más recientes</option>
+                <option value="alphabetical">Alfabético</option>
+                <option value="facts">Más hechos</option>
+                <option value="contributors">Más contribuyentes</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="collections-grid" id="collectionsGrid">
+        <div class="collection-card"
+             th:each="coleccion : ${colecciones}"
+             th:data-category="${coleccion.categoria}"
+             th:data-region="${coleccion.region}"
+             th:data-year="${#dates.format(coleccion.fechaYHoraDeActualizacion,'yyyy')}"
+             th:onclick="'window.location.href=\'/colecciones/' + ${coleccion.handle} + '\'''">
+
+            <div class="card-header">
+                <h3 class="card-title" th:text="${coleccion.titulo}">Título</h3>
+                <span class="card-category" th:text="${coleccion.categoria}">Categoría</span>
+            </div>
+
+            <div class="card-content">
+                <p class="card-description" th:text="${coleccion.descripcion}">Descripción</p>
+                <div class="card-stats">
+                    <span class="stat"><i data-lucide="bar-chart-3"></i> <span th:text="${coleccion.numeroDeHechos}">0</span> hechos</span>
+                    <span class="stat"><i data-lucide="users"></i> <span th:text="${coleccion.numeroDeContribuyentes}">0</span> contribuyentes</span>
+                    <span class="stat"><i data-lucide="map-pin"></i> <span th:text="${coleccion.region}">Región</span></span>
+                </div>
+                <div class="card-tags">
+                    <span class="tag" th:each="tag : ${coleccion.tags}" th:text="${tag}">Etiqueta</span>
+                </div>
+                <div class="card-footer">
+                    <span class="card-date" th:text="'Actualizado: ' + ${#dates.format(coleccion.fechaYHoraDeActualizacion,'dd MMM yyyy')}">Fecha</span>
+                    <button class="view-btn">Ver Colección</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+</body>
+</html>

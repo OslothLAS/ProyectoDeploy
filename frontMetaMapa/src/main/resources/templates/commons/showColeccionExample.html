@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incendios Forestales Argentina - MetaMapa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<!-- Importing navbar from layout -->
+<div th:replace="~{layout/navbar :: navbar(false)}"></div>
+
+<section class="collection-header">
+    <div class="collection-content">
+        <h1>🔥 Incendios Forestales Argentina</h1>
+        <p>Registro completo de incendios forestales ocurridos en Argentina, incluyendo ubicaciones, extensión afectada y fuentes oficiales verificadas.</p>
+        <div class="collection-meta">
+            <div class="meta-item">🌍 Argentina</div>
+            <div class="meta-item">🔥 12 hechos registrados</div>
+        </div>
+    </div>
+</section>
+
+<section class="search-section">
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Buscar por titulo, descripción o fuente..." id="searchInput">
+            <button class="search-btn" onclick="searchFacts()">
+                <i data-lucide="search"></i> Buscar
+            </button>
+        </div>
+        <div class="filters">
+            <div class="filters-row">
+                <select class="filter-select" id="countryFilter" onchange="filterFacts()">
+                    <option value="">Todos los países</option>
+                </select>
+                <select class="filter-select" id="provinceFilter" onchange="filterFacts()">
+                    <option value="">Todas las provincias</option>
+                </select>
+                <select class="filter-select" id="cityFilter" onchange="filterFacts()">
+                    <option value="">Todas las ciudades</option>
+                </select>
+            </div>
+            <div class="filters-row">
+                <select class="filter-select" id="categoryFilter" onchange="filterFacts()">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <input type="date" class="filter-select" id="startDateFilter" onchange="filterFacts()" placeholder="Fecha inicial">
+                <input type="date" class="filter-select" id="endDateFilter" onchange="filterFacts()" placeholder="Fecha final">
+                <select class="filter-select" id="veracidadFilter" onchange="filterFacts()">
+                    <option value="">Todas las veracidades</option>
+                </select>
+                <select class="filter-select" id="sourceFilter" onchange="filterFacts()">
+                    <option value="">Todas las fuentes</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="facts-section">
+    <div class="section-header">
+        <div>
+            <h2>Hechos Registrados</h2>
+            <p class="facts-count" id="factsCount">Mostrando 12 de 12 hechos</p>
+        </div>
+    </div>
+
+    <div class="facts-grid" id="factsGrid">
+        <!-- Facts will be populated by JavaScript -->
+    </div>
+</section>
+
+<div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Solicitar Eliminación de Hecho</h3>
+            <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <form id="deleteRequestForm" onsubmit="submitDeleteRequest(event)">
+            <div class="form-group">
+                <label class="form-label" for="factId">Hecho a Eliminar</label>
+                <input type="text" class="form-input" id="factId" name="factId" required readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="factTitle">Título del Hecho</label>
+                <input type="text" class="form-input" id="factTitle" name="factTitle" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="requestReason">Motivo de la Solicitud</label>
+                <select class="form-select" id="requestReason" name="requestReason" required>
+                    <option value="">Seleccionar motivo</option>
+                    <option value="informacion-incorrecta">Información Incorrecta</option>
+                    <option value="duplicado">Hecho Duplicado</option>
+                    <option value="fuente-no-confiable">Fuente No Confiable</option>
+                    <option value="datos-desactualizados">Datos Desactualizados</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="requestDescription">Descripción Detallada</label>
+                <textarea class="form-textarea" id="requestDescription" name="requestDescription" required placeholder="Explique detalladamente por qué considera que este hecho debe ser eliminado..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="requesterName">Su Nombre</label>
+                <input type="text" class="form-input" id="requesterName" name="requesterName" required placeholder="Nombre completo">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="requesterEmail">Su Email</label>
+                <input type="email" class="form-input" id="requesterEmail" name="requesterEmail" required placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="requesterOrganization">Organización (Opcional)</label>
+                <input type="text" class="form-input" id="requesterOrganization" name="requesterOrganization" placeholder="Nombre de su organización">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="submit" class="submit-btn">Enviar Solicitud</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Importing footer from layout -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    const factsData = [
+        {
+            id: "IF-2024-001",
+            title: "Gran Incendio en Parque Nacional Nahuel Huapi",
+            location: "San Carlos de Bariloche, Río Negro",
+            country: "Argentina",
+            province: "Río Negro",
+            city: "San Carlos de Bariloche",
+            category: "Incendio Forestal",
+            date: "15 de Enero, 2024",
+            dateISO: "2024-01-15",
+            month: "Enero",
+            description: "Incendio de gran magnitud que afectó 2,500 hectáreas del Parque Nacional Nahuel Huapi, destruyendo bosques de lenga y coihue.",
+            veracidad: "Alta",
+            area: "2,500 ha",
+            status: "Controlado",
+            source: "Contribuyentes Propios"
+        }
+    ];
+
+    let filteredFacts = [...factsData];
+
+    function populateFilterOptions() {
+        // Populate filter dropdowns
+    }
+
+    function renderFacts(facts) {
+        const factsGrid = document.getElementById('factsGrid');
+        const factsCount = document.getElementById('factsCount');
+
+        factsCount.textContent = `Mostrando ${facts.length} de ${factsData.length} hechos`;
+
+        factsGrid.innerHTML = facts.map(fact => `
+            <div class="fact-card">
+                <div class="fact-header">
+                    <div>
+                        <h3 class="fact-title">${fact.title}</h3>
+                        <div class="fact-location">
+                            <i data-lucide="map-pin"></i> ${fact.location}
+                        </div>
+                    </div>
+                    <div class="fact-date">${fact.date}</div>
+                </div>
+                <p class="fact-description">${fact.description}</p>
+                <div class="fact-source">
+                    <strong>Fuente:</strong> ${fact.source}
+                </div>
+                <div class="fact-actions">
+                    <a href="detalle-hecho.html" class="action-btn view-btn">
+                        <i data-lucide="eye"></i> Ver Detalles
+                    </a>
+                    <a href="solicitar-eliminacion.html?factId=${fact.id}&factTitle=${encodeURIComponent(fact.title)}" class="action-btn delete-request-btn">
+                        <i data-lucide="trash-2"></i> Eliminar
+                    </a>
+                </div>
+            </div>
+        `).join('');
+
+        lucide.createIcons();
+    }
+
+    function searchFacts() {
+        // Search logic
+    }
+
+    function filterFacts() {
+        // Filter logic
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    function submitDeleteRequest(event) {
+        event.preventDefault();
+        alert('Solicitud enviada');
+        closeDeleteModal();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        populateFilterOptions();
+        renderFacts(factsData);
+        lucide.createIcons();
+    });
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    }
+</script>
+</body>
+</html>

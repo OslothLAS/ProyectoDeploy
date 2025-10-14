@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMapa - Panel del Administrador</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+
+<!-- Enhanced hero section -->
+<header class="hero" id="inicio">
+    <div class="hero-content">
+        <h1>MetaMapa</h1>
+        <p>Sistema colaborativo de código abierto para la recopilación, visualización y mapeo de información institucional</p>
+
+        <div class="hero-actions">
+            <a href="/dashboard-solicitudes" class="btn-primary">
+                <i data-lucide="plus-circle"></i>
+                Gestionar Solicitudes
+            </a>
+            <a href="/buscador-colecciones" class="btn">
+                <i data-lucide="search"></i>
+                Explorar Colecciones
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- Added admin actions section -->
+<section>
+    <h2>Acciones Principales</h2>
+    <p class="section-subtitle">
+        Gestiona tus contribuciones y explora la información colaborativa
+    </p>
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="upload"></i>
+            </div>
+            <h3>Subir Nuevos Hechos</h3>
+            <p>Importa masivamente hechos mediante un archivo CSV</p>
+            <a href="/subirCsv" class="btn">Subir Hechos</a>
+        </div>
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="edit-3"></i>
+            </div>
+            <h3>Colecciones</h3>
+            <p>Revisa y edita las Colecciones de la plataforma</p>
+            <a href="/mis-colecciones" class="btn">Ver Mis Colecciones</a>
+        </div>
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="trash-2"></i>
+            </div>
+            <h3>Solicitudes Eliminación</h3>
+            <p>Gestionar las Solicitudes de eliminación de un hecho</p>
+            <a href="/dashboard-solicitudes" class="btn">Dashboard Solicitudes</a>
+        </div>
+    </div>
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="upload"></i>
+            </div>
+            <h3>Panel Control</h3>
+            <p>Información general sobre hechos, fuentes y Solicitudes</p>
+            <a href="/panel-control" class="btn">Ver Panel</a>
+        </div>
+    </div>
+</section>
+
+<!-- Modified examples section -->
+<section>
+    <h2>Categorías Populares</h2>
+    <p class="section-subtitle">
+        Explora las categorías más activas donde puedes contribuir con información
+    </p>
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="flame"></i>
+            </div>
+            <h3>Incendios Forestales</h3>
+            <p>Registro colaborativo de focos de incendios forestales y su impacto ambiental.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="car"></i>
+            </div>
+            <h3>Accidentes Viales</h3>
+            <p>Documentación de accidentes automovilísticos para identificar patrones de riesgo.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="cloud-rain"></i>
+            </div>
+            <h3>Eventos Climáticos</h3>
+            <p>Registro detallado de huracanes, tormentas y otros fenómenos meteorológicos.</p>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-top: 2rem;">
+        <a href="/buscador-hechos" class="btn">
+            Explorar Todos los Hechos
+        </a>
+    </div>
+</section>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>
