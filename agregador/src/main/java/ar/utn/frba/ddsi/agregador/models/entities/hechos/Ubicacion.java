@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "ubicacion")
 public class Ubicacion {
     @Id
-   // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "latitud")
@@ -21,7 +21,7 @@ public class Ubicacion {
     @Column(name = "longitud")
     private String longitud;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "localidad_id")
     private Localidad localidad;
 

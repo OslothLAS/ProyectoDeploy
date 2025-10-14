@@ -91,6 +91,17 @@ public class Hecho {
     @Transient
     private Boolean esConsensuado;
 
+    public Hecho(Boolean esValido,
+                 String titulo,
+                 String descripcion,
+                 Categoria cat,
+                 Ubicacion ubi,
+                 LocalDateTime fechaHecho,
+                 List<Multimedia> multimediaNueva,
+                 Boolean mostrarDatos,
+                 Object o) {
+    }
+
 
     public void addEtiqueta(String etiqueta) {
         this.etiquetas.add(etiqueta);

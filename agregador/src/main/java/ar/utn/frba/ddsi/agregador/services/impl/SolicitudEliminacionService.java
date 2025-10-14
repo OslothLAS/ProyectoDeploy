@@ -69,10 +69,11 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         Usuario usuario = this.obtenerUserPorId(solicitud.getIdSolicitante());
         System.out.println("USUARIO ENCONTRADO POR API: " + usuario.getNombre());
 
+        assert hecho != null;
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
-                hecho,//FALTA ACTUALIZAR LOS HECHOS CON TODAS LAS FUENTES
-                usuario);
+                hecho.getId(),
+                usuario.getId());
     }
 
     @Override
@@ -103,7 +104,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         else if(estado == PosibleEstadoSolicitud.ACEPTADA){
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
 
-            Hecho hecho = solicitud.getHecho();
+            Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
             if (hecho != null) {
                 int updated = this.hechoRepository.invalidateByTituloAndDescripcion(hecho.getTitulo(), hecho.getDescripcion());
@@ -123,7 +124,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         //this.usuarioRepository.save(administrador);
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
 
-        Hecho hecho = solicitud.getHecho();
+        Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
         List<Fuente> fuentesUnicas = coleccionRepository.findAll().stream()
                 .flatMap(coleccion -> coleccion.getImportadores().stream())

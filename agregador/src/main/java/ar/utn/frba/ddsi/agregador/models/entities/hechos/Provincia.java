@@ -12,8 +12,9 @@ import lombok.Setter;
 @Setter
 public class Provincia {
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @Column(name = "nombre", unique = true, nullable = false)
     private String nombre;
