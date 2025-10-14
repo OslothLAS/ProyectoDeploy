@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.fuenteDinamica.controllers;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,13 @@ public class HechoController {
     @GetMapping
     public List<HechoDTO> getHechos(@RequestParam Map<String, String> filtros){
         return hechosToDTO(this.hechoService.obtenerTodos(filtros));
+    }
+
+
+    @GetMapping("{id}")
+    public ResponseEntity<HechoDTO> obtenerUsuarioPorId(@PathVariable("id") Long id) {
+        HechoDTO hecho = this.hechoService.getHechoById(id);
+        return ResponseEntity.ok(hecho);
     }
 
     @PostMapping

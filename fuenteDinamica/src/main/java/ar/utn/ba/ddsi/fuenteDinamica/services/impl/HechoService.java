@@ -20,11 +20,15 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.hechoToDTO;
 
 @Service
 public class HechoService implements IHechoService {
@@ -38,6 +42,15 @@ public class HechoService implements IHechoService {
         this.hechoRepository = hechoRepository;
         this.categoriaRepository = categoriaRepository;
         this.provinciaRepository = provinciaRepository;
+    }
+
+    public HechoDTO getHechoById(Long id) {
+        Optional<Hecho> hecho = hechoRepository.findById(id);
+        return hechoToDTO(hecho.get());
+    }
+
+    public List<Hecho> getAllHechos() {
+        return hechoRepository.findAll();
     }
 
     @Transactional

@@ -19,19 +19,20 @@ import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimT
 @Table(name = "categoria")
 public class Categoria {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "categoria")
-        private String categoria;
+    private String categoria;
 
     @Column(name = "categoria_normalizada", unique = true)
     @EqualsAndHashCode.Include
     private String categoriaNormalizada;
 
     @JsonCreator
-    public Categoria(@JsonProperty("categoria") String categoria) {
+    public Categoria(String categoria) {
         this.categoria = categoria;
         this.categoriaNormalizada = normalizarTrimTexto(categoria);
     }
+
 }

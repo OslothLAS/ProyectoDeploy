@@ -2,6 +2,8 @@ package ar.utn.frba.ddsi.agregador;
 
 
 import ar.utn.frba.ddsi.agregador.models.entities.normalizador.OpenStreetMap;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -13,7 +15,6 @@ public class AgregadorApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AgregadorApplication.class, args);
-
 
 		OpenStreetMap osm = new OpenStreetMap();
 

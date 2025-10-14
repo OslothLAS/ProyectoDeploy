@@ -22,14 +22,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("=== CONFIGURANDO SECURITY ===");
+        System.out.println("=== CONFIGURANDO SECURITY (CORREGIDO) ===");
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(SWAGGER_WHITELIST).permitAll();
-                    auth.requestMatchers("/api/auth", "/api/auth/refresh", "/api/users").permitAll();
+
+                    // CAMBIO CLAVE: Se agregó "/**" para permitir el acceso a sub-rutas como /api/users/1
+                    auth.requestMatchers("/api/auth/**", "/api/auth/refresh", "/api/users/**").permitAll();
+
                     auth.requestMatchers("/api/auth/user/roles-permisos").authenticated();
                     auth.anyRequest().authenticated();
                 })

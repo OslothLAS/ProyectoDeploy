@@ -41,7 +41,7 @@ public class Hecho {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
 
@@ -49,7 +49,7 @@ public class Hecho {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaHecho;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.MERGE)
     @JoinColumn(name = "hecho_id")
     private List<Multimedia> multimedia;
 

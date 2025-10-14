@@ -17,7 +17,7 @@ public class UsuarioDTO {
     private String contrasenia;
     private String nombre;
     private String apellido;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
     private Rol rol;
 }

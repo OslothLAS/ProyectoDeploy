@@ -1,12 +1,14 @@
 package com.usuarios.servicioDeUsuarios.controllers;
 
 import com.usuarios.servicioDeUsuarios.dtos.UsuarioDTO;
+import com.usuarios.servicioDeUsuarios.models.entities.Usuario;
 import com.usuarios.servicioDeUsuarios.services.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import static com.usuarios.servicioDeUsuarios.utils.UsuarioUtil.usuarioToDTO;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,8 +26,14 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<UsuarioDTO> obtenerUsuarioPorUsername(@PathVariable String username) {
+    @GetMapping("/by-username/{username}")
+    public ResponseEntity<UsuarioDTO> obtenerUsuarioPorUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(usuarioService.findByUsername(username));
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<UsuarioDTO> obtenerUsuarioPorId(@PathVariable("id") Long id) {
+        Usuario usuario = usuarioService.findById(id);
+        return ResponseEntity.ok(usuarioToDTO(usuario));
     }
 }

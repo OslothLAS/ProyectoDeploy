@@ -21,11 +21,11 @@ public class SolicitudEliminacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id")
     private Hecho hecho;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "usuario_id")
     private Usuario solicitante;
 

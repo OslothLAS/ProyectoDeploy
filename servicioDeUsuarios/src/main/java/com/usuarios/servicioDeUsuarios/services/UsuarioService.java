@@ -44,6 +44,10 @@ public class UsuarioService implements UserDetailsService {
         return new BCryptPasswordEncoder();
     }
 
+    public Usuario findById(Long id) {
+        return usuarioRepository.findById(id).get();
+    }
+
     public List<UsuarioDTO> findAll() {
         return usuarioRepository.findAll()
                 .stream()
@@ -57,6 +61,7 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuario no encontrado"));
     }
+
 
     public Long crearUsuario(UsuarioDTO usuarioDTO) {
         validarDatosBasicos(usuarioDTO);
