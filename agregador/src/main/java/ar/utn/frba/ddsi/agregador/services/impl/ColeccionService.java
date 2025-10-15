@@ -78,11 +78,25 @@ public class ColeccionService implements IColeccionService {
 
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
+        List<String> puertos = coleccionDTO.getFuentes().stream().map(Fuente::getPuerto).toList();
 
-        List<Fuente> importadores = coleccionDTO.getFuentes();
+        List<Fuente> fuentesExistentes = fuenteRepository.findAllByPuertoIn(puertos);
+
+        Map<String, Fuente> fuentesMap = fuentesExistentes.stream()
+                .collect(Collectors.toMap(Fuente::getPuerto, f -> f));
+
+        List<Fuente> fuentesFinales = coleccionDTO.getFuentes().stream()
+                .map(fuenteDTO -> {
+                    if (fuentesMap.containsKey(fuenteDTO.getPuerto())) {
+                        return fuentesMap.get(fuenteDTO.getPuerto());
+                    }
+                    return fuenteRepository.save(fuenteDTO);
+                })
+                .toList();
+
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
 
-        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
+        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, fuentesFinales);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
 
         List<Coleccion> coleccionesExistentes = coleccionRepository.findAll();
@@ -93,7 +107,7 @@ public class ColeccionService implements IColeccionService {
 
         this.coleccionRepository.save(nuevaColeccion);
 
-        List<Hecho> hechos = this.procesarHechos(importadores, criterios, nuevaColeccion);
+        List<Hecho> hechos = this.procesarHechos(fuentesFinales, criterios, nuevaColeccion);
 
        this.sincronizarHechos(hechos, nuevaColeccion);
     }
