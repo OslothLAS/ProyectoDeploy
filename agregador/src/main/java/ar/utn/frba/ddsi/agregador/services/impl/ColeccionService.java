@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
+import ar.utn.frba.ddsi.agregador.controllers.ColeccionController;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.*;
@@ -20,9 +21,12 @@ import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -78,11 +82,25 @@ public class ColeccionService implements IColeccionService {
 
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
+        List<String> puertos = coleccionDTO.getFuentes().stream().map(Fuente::getPuerto).toList();
 
-        List<Fuente> importadores = coleccionDTO.getFuentes();
+        List<Fuente> fuentesExistentes = fuenteRepository.findAllByPuertoIn(puertos);
+
+        Map<String, Fuente> fuentesMap = fuentesExistentes.stream()
+                .collect(Collectors.toMap(Fuente::getPuerto, f -> f));
+
+        List<Fuente> fuentesFinales = coleccionDTO.getFuentes().stream()
+                .map(fuenteDTO -> {
+                    if (fuentesMap.containsKey(fuenteDTO.getPuerto())) {
+                        return fuentesMap.get(fuenteDTO.getPuerto());
+                    }
+                    return fuenteRepository.save(fuenteDTO);
+                })
+                .toList();
+
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
 
-        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
+        Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, fuentesFinales);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
 
         List<Coleccion> coleccionesExistentes = coleccionRepository.findAll();
@@ -93,10 +111,19 @@ public class ColeccionService implements IColeccionService {
 
         this.coleccionRepository.save(nuevaColeccion);
 
-        List<Hecho> hechos = this.procesarHechos(importadores, criterios, nuevaColeccion);
+        List<Hecho> hechos = this.procesarHechos(fuentesFinales, criterios, nuevaColeccion);
 
        this.sincronizarHechos(hechos, nuevaColeccion);
     }
+
+    @Override
+    public ColeccionOutputDTO getColeccionById(Long idColeccion) {
+        return this.coleccionRepository.findById(idColeccion)
+                .map(ColeccionUtil::coleccionToDto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con id " + idColeccion));
+    }
+
+
 
     private List<CriterioDePertenencia> obtenerCriterios(List<CriterioDePertenencia> criteriosOriginal) {
         if (criteriosOriginal == null || criteriosOriginal.isEmpty()) {

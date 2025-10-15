@@ -4,8 +4,9 @@ package com.frontMetaMapa.frontMetaMapa.services;
 import com.frontMetaMapa.frontMetaMapa.exceptions.DuplicateColeccionException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.ColeccionInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.ColeccionInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class ColeccionService {
         return coleccionApiService.obtenerTodasLasColecciones();
     }
 
-    public Optional<ColeccionOutputDTO> obtenerColeccionPorId(String id) {
+    public Optional<ColeccionOutputDTO> obtenerColeccionPorId(Long id) {
         try {
             ColeccionOutputDTO coleccion = coleccionApiService.obtenerColeccionPorId(id);
             return Optional.of(coleccion);
@@ -30,20 +31,24 @@ public class ColeccionService {
         }
     }
 
+    public List<HechoOutputDTO> obtenerHechosPorColeccionId (Long idColeccion) {
+        return coleccionApiService.obtenerHechosPorColeccionId(idColeccion);
+    }
+
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
         validarDatosBasicos(coleccionDTO);
         validarDuplicidadDeColeccion(coleccionDTO);
         return coleccionApiService.crearColeccion(coleccionDTO);
     }
 
-    public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO coleccionDTO) {
+    public ColeccionOutputDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionDTO) {
         // Verificar que existe
         coleccionApiService.obtenerColeccionPorId(id);
 
         validarDatosBasicos(coleccionDTO);
 
         // Si cambia el id, validar duplicidad
-        if (!id.equals(coleccionDTO.getId().trim())) {
+        if (!id.equals(coleccionDTO.getId())) {
             validarDuplicidadDeColeccion(coleccionDTO);
         }
 
@@ -51,7 +56,7 @@ public class ColeccionService {
     }
 
 
-    public void eliminarColeccion(String id) {
+    public void eliminarColeccion(Long id) {
         coleccionApiService.obtenerColeccionPorId(id); // Verificar que existe
         coleccionApiService.eliminarColeccion(id);
     }
@@ -59,7 +64,7 @@ public class ColeccionService {
         ValidationException validationException = new ValidationException("Errores de validación");
         boolean tieneErrores = false;
 
-        if (coleccionDTO.getId() == null || coleccionDTO.getId().trim().isEmpty()) {
+        if (coleccionDTO.getId() == null) {
             validationException.addFieldError("id", "El id es obligatorio");
             tieneErrores = true;
         }
@@ -96,11 +101,11 @@ public class ColeccionService {
 
 
     private void validarDuplicidadDeColeccion(ColeccionInputDTO coleccionDTO) {
-        String id = coleccionDTO.getId().trim();
-
+        Long id = coleccionDTO.getId();
+/*
         if (coleccionApiService.existeColeccion(id)) {
             throw new DuplicateColeccionException(id);
-        }
+        }*/
     }
 
 }

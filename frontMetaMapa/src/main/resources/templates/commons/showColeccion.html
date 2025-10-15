@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${tituloColeccion} + ' - MetaMapa'">Colección</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="~{layout/navbar :: navbar(false)}"></div>
+
+<section class="collection-header">
+    <div class="collection-content">
+        <h1 th:text="${tituloColeccion}">Título Colección</h1>
+        <p th:text="${descripcionColeccion}">Descripción de la colección</p>
+        <div class="collection-meta">
+            <div class="meta-item">🌍 Global</div>
+            <div class="meta-item" th:text="'🔥 ' + ${hechos.size()} + ' hechos registrados'">🔥 0 hechos registrados</div>
+        </div>
+    </div>
+</section>
+
+<section class="search-section">
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Buscar por titulo, descripción o fuente..." id="searchInput">
+            <button class="search-btn" onclick="searchFacts()">
+                <i data-lucide="search"></i> Buscar
+            </button>
+        </div>
+        <!-- Filtros opcionales -->
+    </div>
+</section>
+
+<section class="facts-section">
+    <div class="section-header">
+        <div>
+            <h2>Hechos Registrados</h2>
+            <p class="facts-count" th:text="'Mostrando ' + ${hechos.size()} + ' de ' + ${hechos.size()} + ' hechos'">Mostrando 0 de 0 hechos</p>
+        </div>
+    </div>
+
+    <div class="facts-grid" id="factsGrid">
+        <div class="fact-card" th:each="hecho : ${hechos}">
+            <div class="fact-header">
+                <div>
+                    <h3 class="fact-title" th:text="${hecho.titulo}">Título del hecho</h3>
+                    <div class="fact-location">
+                        <i data-lucide="map-pin"></i>
+                        <span th:text="${hecho.ubicacion != null && hecho.ubicacion.localidad != null ?
+               hecho.ubicacion.localidad.nombre + (hecho.ubicacion.localidad.provincia != null ? ', Provincia ID ' + hecho.ubicacion.localidad.provincia.id : '')
+               : 'Global'}">
+    Ubicación
+</span>
+
+
+
+                    </div>
+                </div>
+                <div class="fact-date" th:text="${#temporals.format(hecho.fechaHecho,'dd MMM yyyy')}">Fecha</div>
+            </div>
+            <p class="fact-description" th:text="${hecho.descripcion}">Descripción del hecho</p>
+            <div class="fact-source">
+                <strong>Fuente:</strong> <span th:text="${hecho.fuenteOrigen != null ? hecho.fuenteOrigen : 'Desconocida'}">Fuente</span>
+
+            </div>
+            <div class="fact-actions">
+                <a th:href="@{'/hechos/' + ${hecho.id}}" class="action-btn view-btn">
+                    <i data-lucide="eye"></i> Ver Detalles
+                </a>
+
+                <!-- Botón Eliminar solo para ADMIN o CONTRIBUYENTE -->
+                <a class="action-btn delete-request-btn"
+                   th:data-id="${hecho.id}"
+                   onclick="goToSolicitud(this)"
+                   th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''CONTRIBUYENTE'')')}">
+                    <i data-lucide="trash-2"></i> Eliminar
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Solicitar Eliminación de Hecho</h3>
+            <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <form id="deleteRequestForm" onsubmit="submitDeleteRequest(event)">
+            <input type="hidden" id="factId" name="factId">
+            <input type="hidden" id="factTitle" name="factTitle">
+            <div class="form-group">
+                <label class="form-label" for="requestReason">Motivo de la Solicitud</label>
+                <select class="form-select" id="requestReason" name="requestReason" required>
+                    <option value="">Seleccionar motivo</option>
+                    <option value="informacion-incorrecta">Información Incorrecta</option>
+                    <option value="duplicado">Hecho Duplicado</option>
+                    <option value="fuente-no-confiable">Fuente No Confiable</option>
+                    <option value="datos-desactualizados">Datos Desactualizados</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="submit" class="submit-btn">Enviar Solicitud</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+
+    function openDeleteModal(id, title) {
+        document.getElementById('factId').value = id;
+        document.getElementById('factTitle').value = title;
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    function submitDeleteRequest(event) {
+        event.preventDefault();
+        alert('Solicitud enviada para el hecho ' + document.getElementById('factTitle').value);
+        closeDeleteModal();
+    }
+    function openDeleteModalFromData(element) {
+    const id = element.getAttribute('data-id');
+    const title = element.getAttribute('data-title');
+    document.getElementById('factId').value = id;
+    document.getElementById('factTitle').value = title;
+    document.getElementById('deleteModal').style.display = 'block';
+}
+    function goToSolicitud(btn) {
+    const id = btn.dataset.id;
+    window.location.href = `/solicitar-eliminacion?id=${id}`;
+}
+
+</script>
+
+</body>
+</html>

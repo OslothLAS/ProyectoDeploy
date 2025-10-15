@@ -1,23 +1,25 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.SolicitudInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.SolicitudInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UserRolesPermissionsDTO;
 
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.SolicitudOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.SolicitudOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.Map;
 
+@Service
 public class SolicitudesEliminacionApiService {
     private static final Logger log = LoggerFactory.getLogger(SolicitudesEliminacionApiService.class);
     private final WebClient webClient;
@@ -34,51 +36,18 @@ public class SolicitudesEliminacionApiService {
         this.authServiceUrl = authServiceUrl;
         this.solicitudesServiceUrl = solicitudesServiceUrl;
     }
-    public AuthResponseDTO login(String username, String password) {
-        try {
-            AuthResponseDTO response = webClient
-                    .post()
-                    .uri(authServiceUrl + "/auth")
-                    .bodyValue(Map.of(
-                            "username", username,
-                            "password", password
-                    ))
-                    .retrieve()
-                    .bodyToMono(AuthResponseDTO.class)
-                    .block();
-            return response;
-        } catch (WebClientResponseException e) {
-            log.error(e.getMessage());
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                // Login fallido - credenciales incorrectas
-                return null;
-            }
-            // Otros errores HTTP
-            throw new RuntimeException("Error en el servicio de autenticación: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error de conexión con el servicio de autenticación: " + e.getMessage(), e);
-        }
-    }
 
-    public RolesPermisosDTO getRolesPermisos(String accessToken) {
-        try {
-            RolesPermisosDTO response = webApiCallerService.getWithAuth(
-                    authServiceUrl + "/auth/user/roles-permisos",
-                    accessToken,
-                    RolesPermisosDTO.class
-            );
-            return response;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("Error al obtener roles y permisos: " + e.getMessage(), e);
-        }
-    }
-    public SolicitudOutputDTO createSolicitud(SolicitudInputDTO solicitudDTO){
-        SolicitudOutputDTO response = webApiCallerService.post(solicitudesServiceUrl + "/solicitudes", solicitudDTO, SolicitudOutputDTO.class);
+    public void createSolicitud(SolicitudInputDTO solicitudDTO) {
+        Integer response = webApiCallerService.post(
+                solicitudesServiceUrl + "/solicitudes",
+                solicitudDTO,
+                Integer.class // sigue esperando el ID, pero no lo usamos
+        );
+
         if (response == null) {
             throw new RuntimeException("Error al crear solicitud en el servicio externo");
         }
-        return response;
+        // No devolvemos nada, solo verificamos que el POST salió bien
     }
 
     public SolicitudOutputDTO obtenerSolicitudPorId(String id) {

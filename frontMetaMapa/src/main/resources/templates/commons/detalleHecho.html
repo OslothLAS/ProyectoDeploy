@@ -12,106 +12,107 @@
 <!-- Importing navbar from layout -->
 <div th:replace="~{layout/navbar :: navbar(false)}"></div>
 
-<div class="container">
-    <!-- Encabezado del hecho -->
-    <div class="hecho-header">
-        <h1>Incendio en el Bosque Central</h1>
-        <div class="categoria-badge" style="margin-bottom: 1rem;">
-            <i data-lucide="alert-triangle"></i>
-            Desastre Natural
-        </div>
-        <div class="hecho-meta">
-            <div class="autor">
-                <img src="images/foto de perfil.jpg" alt="Foto del autor">
-                <div>
-                    <div style="font-weight: 600; color: var(--text-color);">Juan Pérez</div>
-                </div>
+<!-- Contenedor principal cuando existe el hecho -->
+<div class="container" th:if="${hecho}">
+    <article class="hecho-card">
+        <!-- Encabezado del hecho con badge -->
+        <header style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+            <!-- Badge de categoría arriba -->
+            <div th:if="${hecho.categoria}">
+        <span class="categoria-badge" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="tag"></i>
+            <span th:text="${hecho.categoria}">Categoría</span>
+        </span>
             </div>
-            <div class="meta-item">
-                <i data-lucide="calendar"></i>
-                <div>
-                    <div style="font-weight: 500;">Publicado</div>
-                    <div>27/08/2025</div>
-                </div>
-            </div>
-            <div class="meta-item">
-                <i data-lucide="calendar-days"></i>
-                <div>
-                    <div style="font-weight: 500;">Fecha del hecho</div>
-                    <div>25/08/2025</div>
-                </div>
-            </div>
-        </div>
 
-        <div class="ubicacion">
-            <i data-lucide="map-pin"></i>
-            <div>
-                <div style="font-weight: 500;">Ubicación</div>
-                <div>Bosque Central, Córdoba</div>
-            </div>
-        </div>
+            <!-- Título -->
+            <h1 th:text="${hecho.titulo}" class="hecho-title" style="margin: 0;">Título del hecho</h1>
 
-        <div class="etiquetas-section">
-            <div class="etiquetas-title">
-                <i data-lucide="tags"></i>
-                Etiquetas
-            </div>
-            <div class="etiquetas-container">
-                <span class="etiqueta">
-                    <i data-lucide="flame"></i>
-                    Incendio
-                </span>
-                <span class="etiqueta secundaria">
-                    <i data-lucide="trees"></i>
-                    Forestal
-                </span>
-                <span class="etiqueta">
-                    <i data-lucide="alert-circle"></i>
-                    Emergencia
-                </span>
-                <span class="etiqueta success">
-                    <i data-lucide="users"></i>
-                    Bomberos
-                </span>
-                <span class="etiqueta secundaria">
-                    <i data-lucide="leaf"></i>
-                    Medio Ambiente
-                </span>
-            </div>
-        </div>
-    </div>
+            <!-- Autor -->
+            <p style="margin: 0; color: var(--text-light); font-style: italic;">
+                AUTOR: <span th:text="${username}">nombre_usuario</span>
+            </p>
 
-    <div class="galeria-section">
-        <div class="galeria-grid">
-            <div class="imagen-item">
-                <img src="images/Incendio_Forestal.jpg" alt="Vista general del incendio forestal">
-                <div class="imagen-overlay">
-                    <span>Vista general del incendio</span>
+        </header>
+
+
+        <!-- Grid de información organizada -->
+        <section class="hecho-info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Estado -->
+            <div class="info-item" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <strong style="font-size: 0.875rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Estado</strong>
+                <span th:text="${hecho.esValido ? 'Verificado' : 'Pendiente'}" style="font-size: 1rem; color: var(--text-color);">Estado</span>
+            </div>
+
+            <!-- Fecha de publicación -->
+            <div class="info-item" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <strong style="font-size: 0.875rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Publicado</strong>
+                <span th:text="${#temporals.format(hecho.fechaCreacion, 'dd/MM/yyyy HH:mm')}" style="font-size: 1rem; color: var(--text-color);">Fecha</span>
+            </div>
+
+            <!-- Fecha del hecho -->
+            <div class="info-item" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <strong style="font-size: 0.875rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Fecha del hecho</strong>
+                <span th:text="${#temporals.format(hecho.fechaHecho, 'dd/MM/yyyy')}" style="font-size: 1rem; color: var(--text-color);">Fecha</span>
+            </div>
+
+            <!-- Ubicación -->
+            <div class="info-item" th:if="${hecho.ubicacion != null}" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <strong style="font-size: 0.875rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Ubicación</strong>
+                <div style="display: flex; flex-direction: column;">
+                    <span th:text="${hecho.ubicacion.localidad.nombre}" style="font-size: 1rem; color: var(--text-color);">Localidad</span>
                 </div>
             </div>
-            <div class="imagen-item">
-                <img src="images/Incendios-2.jpg" alt="Bomberos combatiendo las llamas">
-                <div class="imagen-overlay">
-                    <span>Bomberos en acción</span>
-                </div>
-            </div>
-            <div class="imagen-item">
-                <img src="images/Incendio-3.jpeg" alt="Área afectada por el incendio">
-                <div class="imagen-overlay">
-                    <span>Área afectada</span>
-                </div>
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <div class="descripcion">
-        <p>
-            Un gran incendio forestal se desató en el Bosque Central afectando a más de 300 hectáreas.
-            Bomberos de distintas localidades trabajaron durante horas para controlar las llamas.
-            El siniestro comenzó aproximadamente a las 14:30 horas y requirió la intervención de múltiples
-            cuarteles de bomberos voluntarios de la región.
+        <!-- Galería multimedia -->
+        <section class="galeria-section" th:if="${hecho.multimedia != null and !hecho.multimedia.isEmpty()}" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600;">Multimedia</h3>
+            <div class="galeria-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+                <figure class="imagen-item" th:each="media : ${hecho.multimedia}" style="margin: 0; border-radius: 0.5rem; overflow: hidden; background: var(--surface);">
+                    <img th:src="${media.url}" th:alt="'Imagen del hecho: ' + ${hecho.titulo}" style="width: 100%; height: auto; display: block;">
+                </figure>
+            </div>
+        </section>
+
+        <!-- Descripción -->
+        <section class="descripcion" th:if="${hecho.descripcion}" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600;">Descripción</h3>
+            <p th:text="${hecho.descripcion}" style="line-height: 1.6; color: var(--text-color);">Descripción del hecho...</p>
+        </section>
+
+        <!-- Mensaje si no hay descripción -->
+        <section class="descripcion" th:unless="${hecho.descripcion}" style="margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; background: var(--surface); border-radius: 0.5rem; color: var(--text-light); font-style: italic;">
+                <i data-lucide="info" style="width: 20px; height: 20px; flex-shrink: 0;"></i>
+                <span>Este hecho no tiene descripción disponible.</span>
+            </div>
+        </section>
+
+        <!-- Información de edición -->
+        <aside th:if="${hecho.editable}" style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: var(--surface); border-radius: 0.5rem; border-left: 3px solid var(--secondary-color);">
+            <i data-lucide="edit-3" style="width: 20px; height: 20px; color: var(--secondary-color); flex-shrink: 0; margin-top: 0.125rem;"></i>
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <strong style="font-weight: 600; color: var(--secondary-color);">Estado de edición</strong>
+                <span style="color: var(--text-color); font-size: 0.9375rem;">Este hecho aún puede ser editado (dentro del período de 7 días)</span>
+            </div>
+        </aside>
+    </article>
+</div>
+
+<!-- Mensaje si no se encuentra el hecho -->
+<div class="container" th:unless="${hecho}">
+    <section style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 4rem 2rem;">
+        <i data-lucide="alert-circle" style="width: 64px; height: 64px; color: var(--text-light); margin-bottom: 1.5rem;"></i>
+        <h2 style="color: var(--text-color); margin-bottom: 1rem; font-size: 1.5rem; font-weight: 600;">Hecho no encontrado</h2>
+        <p style="color: var(--text-light); margin-bottom: 2rem; max-width: 500px;">
+            El hecho que buscas no existe o no tienes permisos para verlo.
         </p>
-    </div>
+        <a href="/mis-contribuciones" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="arrow-left"></i>
+            <span>Volver a mis contribuciones</span>
+        </a>
+    </section>
 </div>
 
 <!-- Importing footer from layout -->
@@ -121,17 +122,17 @@
     lucide.createIcons();
 
     document.addEventListener('DOMContentLoaded', () => {
-      const imagenes = document.querySelectorAll('.imagen-item');
+        const imagenes = document.querySelectorAll('.imagen-item');
 
-      imagenes.forEach(imagen => {
-        imagen.addEventListener('mouseenter', () => {
-          imagen.style.transform = 'scale(1.02)';
-        });
+        imagenes.forEach(imagen => {
+            imagen.addEventListener('mouseenter', () => {
+                imagen.style.transform = 'scale(1.02)';
+            });
 
-        imagen.addEventListener('mouseleave', () => {
-          imagen.style.transform = 'scale(1)';
+            imagen.addEventListener('mouseleave', () => {
+                imagen.style.transform = 'scale(1)';
+            });
         });
-      });
     });
 </script>
 </body>

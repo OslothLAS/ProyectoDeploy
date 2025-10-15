@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
@@ -20,34 +19,48 @@ public class SecurityConfig {
                 .build();
     }
 
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   CustomSuccessHandler successHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Recursos estáticos y login público
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        // Ejemplo: Acceso a alumnos: ADMIN y DOCENTE
-                        //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")
-                        // Lo demás requiere autenticación
+                        .requestMatchers(
+                                "/login",
+                                "/",
+                                "/buscador-colecciones",
+                                "/register",
+                                "/visualizador",
+                                "/visualizador/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/buscador-hechos",
+                                "/buscador-hechos/**",
+                                "/buscador-colecciones/**",
+                                "/colecciones/**",
+                                "/error"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
+
+                .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form
-                        .loginPage("/login")    // tu template de login
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler(successHandler) // 👈 acá reemplazamos defaultSuccessUrl
+                        .failureUrl("/login?error=true")
                         .permitAll()
-                        .defaultSuccessUrl("/alumnos", true) // redirigir tras login exitoso
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout") // redirigir tras logout
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
-                        // Usuario no autenticado → redirigir a login
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendRedirect("/login?unauthorized")
-                        )
-                        // Usuario autenticado pero sin permisos → redirigir a página de error
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            System.out.println("❌ Acceso no autorizado a: " + request.getRequestURI());
+                            response.sendRedirect("/login?unauthorized");
+                        })
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 response.sendRedirect("/403")
                         )
