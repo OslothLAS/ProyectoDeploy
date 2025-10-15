@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/stats")
 public class StatController {
-   /* private final IColeccionService coleccionService;
+    private final IColeccionService coleccionService;
     private final ISolicitudEliminacionService solcitudService;
 
     public StatController(IColeccionService coleccionService,ISolicitudEliminacionService solcitudService){
@@ -46,5 +46,5 @@ public class StatController {
     @GetMapping("/solicitudes/spam")
     public ResponseEntity<StatDTO> getSpam() {
         return ResponseEntity.ok(this.solcitudService.getCantidadSpam());
-    }*/
+    }
 }

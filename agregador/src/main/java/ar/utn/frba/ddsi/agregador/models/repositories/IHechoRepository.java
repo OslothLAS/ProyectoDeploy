@@ -11,37 +11,38 @@ import java.util.List;
 
 public interface IHechoRepository extends JpaRepository<Hecho, Long> {
 
-    /*@Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO( " +
-            "       c.titulo, " +
-            "       h.datosHechos.ubicacion.localidad.provincia.nombre, " +
-            "       COUNT(h)) " +
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO( c.titulo, h.ubicacion.localidad.provincia.nombre,"+
+            "NULL, NULL, NULL, COUNT(h), NULL) " +
             "FROM Hecho h " +
             "JOIN h.colecciones c " +
-            "GROUP BY c.id, c.titulo, h.datosHechos.ubicacion.localidad.provincia.id, h.datosHechos.ubicacion.localidad.provincia.nombre " +
+            "GROUP BY c.id, c.titulo, h.ubicacion.localidad.provincia.id, h.ubicacion.localidad.provincia.nombre " +
             "ORDER BY c.titulo ASC, COUNT(h) DESC")
     List<StatDTO> countHechosByProvinciaAndColeccion();
 
-    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO('', h.datosHechos.categoria.categoria, COUNT(h)) " +
+
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(NULL, NULL,h.categoria.categoria, NULL, NULL, COUNT(h), NULL) " +
             "FROM Hecho h " +
-            "GROUP BY h.datosHechos.categoria.categoria " +
+            "GROUP BY h.categoria.categoria " +
             "ORDER BY COUNT(h) DESC")
     List<StatDTO> findCategoriaWithMostHechos();
 
-    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO( " +
-            "       h.datosHechos.categoria.categoria, " +
-            "       CONCAT('HORA: ', CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string)), " +
-            "       COUNT(h)) " +
+
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(NULL, NULL," +
+            "h.categoria.categoria, " +
+            "CAST(FUNCTION('HOUR', h.fechaHecho) AS integer), " +
+            "NULL, COUNT(h), NULL) " +
             "FROM Hecho h " +
-            "GROUP BY h.datosHechos.categoria.id, h.datosHechos.categoria.categoria, CONCAT('HORA: ', CAST(FUNCTION('HOUR', h.datosHechos.fechaHecho) AS string)) " +
-            "ORDER BY h.datosHechos.categoria.categoria ASC, COUNT(h) DESC")
+            "GROUP BY h.categoria.id, h.categoria.categoria, CAST(FUNCTION('HOUR', h.fechaHecho) AS integer) " +
+            "ORDER BY h.categoria.categoria ASC, COUNT(h) DESC")
     List<StatDTO> findHoraWithMostHechosByCategoria();
 
-    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO('PROVINCIA', h.datosHechos.ubicacion.localidad.provincia.nombre, COUNT(h)) " +
+    @Query("SELECT NEW ar.utn.frba.ddsi.agregador.dtos.output.StatDTO(NULL, h.ubicacion.localidad.provincia.nombre, " +
+            "h.categoria.categoria, NULL, NULL, COUNT(h), NULL) " +
             "FROM Hecho h " +
-            "GROUP BY h.datosHechos.ubicacion.localidad.provincia.nombre " +
-            "ORDER BY COUNT(h) DESC")
+            "GROUP BY h.ubicacion.localidad.provincia.nombre, h.categoria.categoria " +
+            "ORDER BY h.categoria.categoria ASC, COUNT(h) DESC")
     List<StatDTO> findProvinciaWithMostHechosByCategoria();
-*/
+
     @Modifying
     @Transactional
     @Query("UPDATE Hecho h " +

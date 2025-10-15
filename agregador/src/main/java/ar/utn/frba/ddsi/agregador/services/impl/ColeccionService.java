@@ -3,7 +3,9 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.DescripcionStat;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.repositories.*;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
@@ -20,12 +22,11 @@ import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
@@ -43,6 +44,9 @@ public class ColeccionService implements IColeccionService {
     private final IProvinciaRepository provinciaRepository;
     private final ILocalidadRepository localidadRepository;
 
+    @Autowired
+    @Qualifier("hechoWebClient")
+    private WebClient hechoWebClient;
 
     public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository, IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository) {
         this.hechoRepository = hechoRepository;
@@ -60,7 +64,8 @@ public class ColeccionService implements IColeccionService {
                 .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
-   public List<Coleccion> getColeccionesClass(){
+
+    public List<Coleccion> getColeccionesClass(){
         return this.coleccionRepository.findAll();
    }
     @Transactional
@@ -259,6 +264,7 @@ public class ColeccionService implements IColeccionService {
     }
 
 
+
     @Override
     public void actualizarHechos(){
         List<Coleccion> colecciones = this.coleccionRepository.findAll();
@@ -306,19 +312,39 @@ public class ColeccionService implements IColeccionService {
         return hechosToDTO(hechoRepository.findAll());
     }
 
-    /*public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
-        return this.hechoRepository.countHechosByProvinciaAndColeccion();
+    public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {
+        List<StatDTO> stats = this.hechoRepository.countHechosByProvinciaAndColeccion();
+        stats.forEach(s -> {
+            s.setDescripcion(DescripcionStat.hechos_provincia_coleccion);
+            s.setFechaStat(LocalDateTime.now());
+        });
+        return stats;
     }
 
     public List<StatDTO> getCategoriaMasReportada(){
-        return hechoRepository.findCategoriaWithMostHechos();
+        List<StatDTO> stats = hechoRepository.findCategoriaWithMostHechos();
+        stats.forEach(s -> {
+            s.setDescripcion(DescripcionStat.hechos_categoria);
+            s.setFechaStat(LocalDateTime.now());
+        });
+        return stats;
     }
 
     public List<StatDTO> getHoraMasReportada(){
-        return hechoRepository.findHoraWithMostHechosByCategoria();
+        List<StatDTO> stats = hechoRepository.findHoraWithMostHechosByCategoria();
+        stats.forEach(s -> {
+            s.setDescripcion(DescripcionStat.hechos_categoria_hora);
+            s.setFechaStat(LocalDateTime.now());
+        });
+        return stats;
     }
 
     public List<StatDTO> getProviniciaMasReportadaPorCategoria(){
-        return hechoRepository.findProvinciaWithMostHechosByCategoria();
-    }*/
+        List<StatDTO> stats = hechoRepository.findProvinciaWithMostHechosByCategoria();
+        stats.forEach(s -> {
+            s.setDescripcion(DescripcionStat.hechos_categoria_provincia);
+            s.setFechaStat(LocalDateTime.now());
+        });
+        return stats;
+    }
 }

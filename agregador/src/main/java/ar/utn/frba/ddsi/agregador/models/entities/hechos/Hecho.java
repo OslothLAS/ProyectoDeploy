@@ -37,11 +37,11 @@ public class Hecho {
     @Column(name = "descripcion")
     private String descripcion;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
 
@@ -49,7 +49,7 @@ public class Hecho {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaHecho;
 
-    @OneToMany(cascade = CascadeType.MERGE)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "hecho_id")
     private List<Multimedia> multimedia;
 
@@ -90,6 +90,17 @@ public class Hecho {
 
     @Transient
     private Boolean esConsensuado;
+
+    public Hecho(Boolean esValido,
+                 String titulo,
+                 String descripcion,
+                 Categoria cat,
+                 Ubicacion ubi,
+                 LocalDateTime fechaHecho,
+                 List<Multimedia> multimediaNueva,
+                 Boolean mostrarDatos,
+                 Object o) {
+    }
 
 
     public void addEtiqueta(String etiqueta) {

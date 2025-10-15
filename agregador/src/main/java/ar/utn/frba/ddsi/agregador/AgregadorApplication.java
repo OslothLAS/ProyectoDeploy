@@ -1,17 +1,27 @@
 package ar.utn.frba.ddsi.agregador;
 
 
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
 import ar.utn.frba.ddsi.agregador.models.entities.normalizador.OpenStreetMap;
+import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import ar.utn.frba.ddsi.agregador.services.IColeccionService;
+import ar.utn.frba.ddsi.agregador.services.impl.ColeccionService;
+import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
 public class AgregadorApplication {
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(AgregadorApplication.class, args);
@@ -27,8 +37,15 @@ public class AgregadorApplication {
 		System.out.println("Chivilcoy -> " + resultado1.get(1));
 
 
+
 	}
-
-
-
 }
+
+
+
+
+
+
+
+
+

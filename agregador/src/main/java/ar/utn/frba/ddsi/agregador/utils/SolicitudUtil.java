@@ -8,7 +8,7 @@ public class SolicitudUtil {
     public static SolicitudOutputDTO solicitudToDTO(SolicitudEliminacion solicitud) {
         SolicitudOutputDTO solicitudOutputDTO = new SolicitudOutputDTO();
         solicitudOutputDTO.setId(solicitud.getId());
-        solicitudOutputDTO.setSolicitante(solicitud.getSolicitante());
+        solicitudOutputDTO.setSolicitante(solicitud.getId());
         solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
         solicitudOutputDTO.setJustificacion(solicitud.getJustificacion());
         solicitudOutputDTO.setEstados(solicitud.getEstados());

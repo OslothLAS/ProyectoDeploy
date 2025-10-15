@@ -17,10 +17,10 @@ public class AgregadorConnector {
         this.webClient = WebClient.builder().baseUrl("http://" + ip + ":" + puerto).build();
     }
 
-    public List<StatDTO> getHechosDeColeccion(Long idColeccion) {
+    public List<StatDTO> getHechosDeColeccion() {
         try {
             return webClient.get()
-                    .uri("/stats/colecciones/provincias-top", idColeccion)
+                    .uri("/stats/colecciones/provincias-top")
                     .retrieve()
                     .bodyToFlux(StatDTO.class)
                     .collectList()

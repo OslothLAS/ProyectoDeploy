@@ -1,11 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica;
 
 import ar.utn.ba.ddsi.fuenteDinamica.config.HechoProperties;
-import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Provincia;
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,10 +21,10 @@ public class FuenteDinamicaApplication {
         System.out.println("hola mundo ");
     }
 
-    @PostConstruct
+    /*@PostConstruct
     public void insertarProvincia() {
         jdbcTemplate.execute("INSERT INTO provincia (nombre) VALUES ('Buenos Aires')");
         System.out.println("✅ Provincia 'Buenos Aires' insertada");
-    }
+    }*/
 
 }

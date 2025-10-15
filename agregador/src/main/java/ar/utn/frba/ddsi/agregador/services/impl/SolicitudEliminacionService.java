@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.DescripcionStat;
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
@@ -12,8 +13,8 @@ import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
+import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,13 +41,11 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Qualifier("usuarioWebClient")
     private WebClient usuarioWebClient;
 
-    @Autowired
-    @Qualifier("hechoWebClient")
-    private WebClient hechoWebClient;
 
     @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
+        hechoRepository.save(HechoFactory.crearHechoDePrueba());
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
         this.obtenerUserPorId(solicitud.getIdSolicitante());
@@ -65,26 +64,16 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
 
-    private Hecho obtenerHechoPorId(Long id){
-        return hechoWebClient.get()
-                .uri("/{id}", id)
-                .retrieve()
-                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
-                        error -> Mono.error(new RuntimeException("Hecho no encontrado")))
-                .bodyToMono(Hecho.class)
-                .block();
-    }
-
-
-
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
-        Hecho hecho = obtenerHechoPorId(solicitud.getIdHecho());
+        Hecho hecho = hechoRepository.findById(solicitud.getIdHecho()).orElse(null);
         Usuario usuario = this.obtenerUserPorId(solicitud.getIdSolicitante());
+        System.out.println("USUARIO ENCONTRADO POR API: " + usuario.getNombre());
 
+        assert hecho != null;
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
-                hecho,
-                usuario);
+                hecho.getId(),
+                usuario.getId());
     }
 
     @Override
@@ -115,7 +104,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         else if(estado == PosibleEstadoSolicitud.ACEPTADA){
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
 
-            Hecho hecho = solicitud.getHecho();
+            Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
             if (hecho != null) {
                 int updated = this.hechoRepository.invalidateByTituloAndDescripcion(hecho.getTitulo(), hecho.getDescripcion());
@@ -135,7 +124,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         //this.usuarioRepository.save(administrador);
         this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
 
-        Hecho hecho = solicitud.getHecho();
+        Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
         List<Fuente> fuentesUnicas = coleccionRepository.findAll().stream()
                 .flatMap(coleccion -> coleccion.getImportadores().stream())
@@ -159,6 +148,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     public StatDTO getCantidadSpam(){
         Long cantSpam = this.solicitudRepository.countSolicitudesSpam();
-        return new StatDTO("rachazo","Solicitudes rechazadas por spam",cantSpam);
+        return new StatDTO(null,null,null,null, DescripcionStat.solicitudes_spam,cantSpam,LocalDateTime.now());
     }
 }

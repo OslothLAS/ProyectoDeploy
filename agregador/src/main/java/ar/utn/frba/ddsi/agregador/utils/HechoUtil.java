@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class HechoUtil {
+
     public static HechoOutputDTO hechoToDTO(Hecho hecho) {
         HechoOutputDTO dto = new HechoOutputDTO();
 
@@ -128,4 +129,5 @@ public class HechoUtil {
                 dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
         );
     }
+
 }

@@ -7,6 +7,7 @@ import ar.utn.frba.ddsi.models.repositories.IStatRepository;
 import ar.utn.frba.ddsi.services.IEstadisticaService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,24 +23,46 @@ public class EstadisticaService implements IEstadisticaService {
 
     }
 
+    public Estadistica fromDTO(StatDTO dto) {
+        Estadistica e = new Estadistica();
+        e.setTituloColeccion(dto.getTituloColeccion());
+        e.setProvincia(dto.getProvincia());
+        e.setCategoria(dto.getCategoria());
+        e.setHora(dto.getHora());
+        e.setDescripcion(dto.getDescripcion());
+        e.setCantidad(dto.getCantidad());
+        e.setFechaStat(dto.getFechaStat() != null ? dto.getFechaStat() : LocalDateTime.now());
+        return e;
+    }
+
+    public StatDTO toDTO(Estadistica stat) {
+        return new StatDTO(
+                stat.getTituloColeccion(),
+                stat.getProvincia(),
+                stat.getCategoria(),
+                stat.getHora(),
+                stat.getDescripcion(),
+                stat.getCantidad(),
+                stat.getFechaStat()
+        );
+    }
+
     public void calcularEstadisticas() {
         List<StatDTO> stats = new ArrayList<>();
         AgregadorConnector agregadorConnector = new AgregadorConnector();
 
-        // Agrego todas las listas
         stats.addAll(agregadorConnector.getCategoriaPorHechos());
-        stats.addAll(agregadorConnector.getHechosDeColeccion(1L));
+        stats.addAll(agregadorConnector.getHechosDeColeccion());
         stats.addAll(agregadorConnector.getProviniciaCategoriaReportada());
         stats.addAll(agregadorConnector.getHoraMasReportada());
 
-        // Agrego el StatDTO individual
         StatDTO spam = agregadorConnector.getSpam();
         if (spam != null) {
             stats.add(spam);
         }
 
         List<Estadistica> estadisticas = stats.stream()
-                .map(Estadistica::fromDTO)
+                .map(this::fromDTO)
                 .collect(Collectors.toList());
 
         this.statRepository.saveAll(estadisticas);
@@ -49,7 +72,7 @@ public class EstadisticaService implements IEstadisticaService {
         List<Estadistica> estadisticas = statRepository.findAll();
 
         return estadisticas.stream()
-                .map(StatDTO::fromEntity)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -58,7 +81,7 @@ public class EstadisticaService implements IEstadisticaService {
         List<Estadistica> estadisticas = statRepository.findAll();
 
         return estadisticas.stream()
-                .map(StatDTO::fromEntity)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -68,7 +91,7 @@ public class EstadisticaService implements IEstadisticaService {
         return estadisticas.stream()
                 .filter(e -> "CATEGORIA".equals(e.getTituloColeccion()))
                 .max(Comparator.comparingLong(Estadistica::getCantidad))
-                .map(StatDTO::fromEntity)
+                .map(this::toDTO)
                 .orElse(null); // o puedes lanzar una excepción si prefieres
     }
 
@@ -76,7 +99,7 @@ public class EstadisticaService implements IEstadisticaService {
         List<Estadistica> estadisticas = statRepository.findAll();
 
         return estadisticas.stream()
-                .map(StatDTO::fromEntity)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -85,7 +108,7 @@ public class EstadisticaService implements IEstadisticaService {
 
 
         return estadisticas.stream()
-                .map(StatDTO::fromEntity)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +116,7 @@ public class EstadisticaService implements IEstadisticaService {
         List<Estadistica> estadisticas = statRepository.findAll();
 
         return estadisticas.stream()
-                .map(StatDTO::fromEntity)
+                .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 

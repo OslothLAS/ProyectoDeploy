@@ -1,7 +1,6 @@
 package ar.utn.frba.ddsi.agregador.models.entities.hechos;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,7 +18,7 @@ import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimT
 @Table(name = "categoria")
 public class Categoria {
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "categoria")
