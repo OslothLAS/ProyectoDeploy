@@ -91,7 +91,7 @@ public class ColeccionService implements IColeccionService {
 
         List<Hecho> hechos = this.procesarHechos(importadores, criterios, nuevaColeccion);
 
-       this.sincronizarHechos(hechos);
+       this.sincronizarHechos(hechos, nuevaColeccion);
     }
 
     private List<CriterioDePertenencia> obtenerCriterios(List<CriterioDePertenencia> criteriosOriginal) {
@@ -286,11 +286,11 @@ public class ColeccionService implements IColeccionService {
           
             List<Hecho> hechosDeFuentes = tomarHechosFuentes(coleccion.getImportadores(), criterios);
             List<Hecho> hechosRepository = hechoRepository.findAll();
-            List<Hecho> hechosSinRepetir = obtenerHechosValidos(filtrarHechosRepetidos(hechosDeFuentes, hechosRepository));
+            List<Hecho> hechosSinRepetir = obtenerHechosValidos(filtrarHechosRepetidos(hechosRepository, hechosDeFuentes));
             this.normalizarHechos(hechosDeFuentes);
 
-            asignarColeccionAHechos(hechosDeFuentes, coleccion);
             hechoRepository.saveAll(hechosSinRepetir);
+            asignarColeccionAHechos(hechosSinRepetir, coleccion);
             coleccionRepository.save(coleccion);
         });
     }
@@ -362,7 +362,7 @@ public class ColeccionService implements IColeccionService {
 
 
     @Transactional
-    public void sincronizarHechos(List<Hecho> hechosNuevos) {
+    public void sincronizarHechos(List<Hecho> hechosNuevos, Coleccion coleccion) {
         System.out.println("--- Iniciando proceso de sincronización de Hechos ---");
 
         if (hechosNuevos == null || hechosNuevos.isEmpty()) {
@@ -417,6 +417,7 @@ public class ColeccionService implements IColeccionService {
         //    JPA/Hibernate es lo suficientemente inteligente para saber cuáles son INSERT y cuáles UPDATE.
         if (!hechosParaGuardar.isEmpty()) {
             hechoRepository.saveAll(hechosParaGuardar);
+            hechosParaGuardar.forEach(h-> h.addColeccion(coleccion));
         }
 
         System.out.println("--- Sincronización finalizada ---");
