@@ -3,6 +3,7 @@ package com.usuarios.servicioDeUsuarios.controllers;
 import com.usuarios.servicioDeUsuarios.dtos.UsuarioDTO;
 import com.usuarios.servicioDeUsuarios.models.entities.Usuario;
 import com.usuarios.servicioDeUsuarios.services.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
+
 import static com.usuarios.servicioDeUsuarios.utils.UsuarioUtil.usuarioToDTO;
 
 @RestController
@@ -39,5 +42,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioToDTO(usuario));
     }
 
+    @GetMapping("/userName")
+    public ResponseEntity<?> quienSoyUsername(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String miUsername = usuarioService.obtenerUsernameDesdeToken(authHeader);
+
+        return ResponseEntity.ok(miUsername);
+    }
 
 }

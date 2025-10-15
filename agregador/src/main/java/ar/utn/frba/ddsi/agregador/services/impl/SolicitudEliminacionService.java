@@ -20,6 +20,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -43,6 +47,10 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Qualifier("usuarioWebClient")
     private WebClient usuarioWebClient;
 
+    @Autowired
+    @Qualifier("userNameWebClient")
+    private WebClient usuarioSesionWebClient;
+
 
     @Transactional
     @Override
@@ -64,6 +72,25 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .block();
     }
 
+    public String obtenerUsernamePorSesion() {
+        // 1. Obtener el objeto de autenticación del contexto.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 2. Validar que la autenticación sea válida.
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new IllegalStateException("No hay un usuario autenticado en la sesión actual.");
+        }
+
+        // 3. Obtener el USERNAME del Principal.
+        //    El método .getName() devuelve el identificador del usuario (generalmente el username).
+        String username = authentication.getName();
+        if (username == null) {
+            throw new IllegalStateException("El Principal de la autenticación no tiene un nombre de usuario.");
+        }
+
+        return username;
+
+    }
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
         Hecho hecho = hechoRepository.findById(solicitud.getIdHecho()).orElse(null);
@@ -97,10 +124,10 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         }
     }
 
-    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Usuario admin, PosibleEstadoSolicitud estado) {
-        Long idAdmin = admin.getId();
+    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, String usernameAdmin, PosibleEstadoSolicitud estado) {
+        String username = usernameAdmin;
 
-        EstadoSolicitud estadoSolicitud = new EstadoSolicitud(idAdmin,estado);
+        EstadoSolicitud estadoSolicitud = new EstadoSolicitud(username,estado);
         if(estado == PosibleEstadoSolicitud.RECHAZADA) {
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
         }
@@ -124,7 +151,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
 
-        this.cambiarEstadoHecho(solicitud,obtenerUserPorId(1L), PosibleEstadoSolicitud.ACEPTADA);
+        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.ACEPTADA);
 
         Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
@@ -144,7 +171,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
 
-        this.cambiarEstadoHecho(solicitud,obtenerUserPorId(1L), PosibleEstadoSolicitud.RECHAZADA);
+        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.RECHAZADA);
     }
 
 

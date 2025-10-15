@@ -19,7 +19,7 @@ public class EstadoSolicitud {
     private Long id;
 
     @JoinColumn(name = "evaluador_id")
-    private Long evaluador;
+    private String evaluador;
 
     @Enumerated(EnumType.STRING)
     private PosibleEstadoSolicitud estado;
@@ -33,7 +33,7 @@ public class EstadoSolicitud {
     @Column(name = "spam")
     private Boolean spam;
 
-    public EstadoSolicitud(Long administrador, PosibleEstadoSolicitud estado) {
+    public EstadoSolicitud(String administrador, PosibleEstadoSolicitud estado) {
         this.evaluador = administrador;
         this.estado = estado;
         this.fechaDeCreacion = LocalDateTime.now();

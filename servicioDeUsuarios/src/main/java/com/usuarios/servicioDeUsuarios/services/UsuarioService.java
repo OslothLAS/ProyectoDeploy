@@ -4,6 +4,7 @@ import com.usuarios.servicioDeUsuarios.dtos.UsuarioDTO;
 import com.usuarios.servicioDeUsuarios.exceptions.ValidationException;
 import com.usuarios.servicioDeUsuarios.models.entities.Usuario;
 import com.usuarios.servicioDeUsuarios.models.repositories.IUsuarioRepository;
+import com.usuarios.servicioDeUsuarios.utils.JwtUtil;
 import com.usuarios.servicioDeUsuarios.utils.UsuarioUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
@@ -97,5 +98,16 @@ public class UsuarioService implements UserDetailsService {
         }
     }
 
+    public String obtenerUsernameDesdeToken(String authHeader) {
+        // 1. Se recibe el header completo
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("...");
+        }
+
+        String token = authHeader.substring(7);
+
+        // 3. ¡AQUÍ ESTÁ LA LLAMADA! Se le pasa el token puro a JwtService.
+        return JwtUtil.extractUsername(token);
+    }
 
 }

@@ -16,6 +16,13 @@ public class WebClientConfig {
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
+    @Bean
+    public WebClient userNameWebClient() {
+        return WebClient.builder()
+                .baseUrl("http://localhost:8040/api/users/me") // URL base del servicio de usuarios
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
 
     @Bean
     public WebClient hechoWebClient() {
