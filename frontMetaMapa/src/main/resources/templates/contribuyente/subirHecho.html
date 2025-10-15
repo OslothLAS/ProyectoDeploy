@@ -9,67 +9,107 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
 </head>
 <body>
-<!-- Navbar -->
 <div th:replace="~{layout/navbar :: navbar(true)}"></div>
 
 <div class="container">
-    <!-- Page header -->
     <div class="page-header">
         <h1>Crear Nuevo Hecho</h1>
         <p>Contribuye con información valiosa para nuestra comunidad. Todos los campos marcados con * son obligatorios.</p>
     </div>
 
-    <!-- Success message -->
     <div class="success-message" id="successMessage">
         <i data-lucide="check-circle"></i>
         ¡Hecho creado exitosamente! Tu contribución ha sido registrada.
     </div>
 
-    <!-- Main form -->
     <div class="form-container">
         <form id="crearHechoForm">
             <div class="form-grid">
-                <!-- Título -->
+
                 <div class="form-group full-width">
                     <label for="titulo">Título del Hecho *</label>
                     <input type="text" id="titulo" name="titulo" required placeholder="Ingresa un título descriptivo">
                 </div>
 
-                <!-- Categoría -->
+
                 <div class="form-group">
                     <label for="categoria">Categoría *</label>
                     <select id="categoria" name="categoria" required>
                         <option value="">Selecciona una categoría</option>
-                        <option value="incendio-forestal">Incendio Forestal</option>
-                        <option value="accidente-vial">Accidente Vial</option>
-                        <option value="fenomeno-natural">Fenómeno Natural</option>
-                        <option value="evento-social">Evento Social</option>
-                        <option value="infraestructura">Infraestructura</option>
-                        <option value="medio-ambiente">Medio Ambiente</option>
-                        <option value="seguridad">Seguridad</option>
-                        <option value="otro">Otro</option>
+                        <option value="Incendio">Incendio</option>
+                        <option value="Accidente Vial">Accidente Vial</option>
+                        <option value="Fenómeno Natural">Fenómeno Natural</option>
+                        <option value="Evento Social">Evento Social</option>
+                        <option value="Infraestructura">Infraestructura</option>
+                        <option value="Medio Ambiente">Medio Ambiente</option>
+                        <option value="Seguridad">Seguridad</option>
+                        <option value="Otro">Otro</option>
                     </select>
                 </div>
 
-                <!-- Fecha -->
+
                 <div class="form-group">
                     <label for="fecha">Fecha del Hecho *</label>
-                    <input type="datetime-local" id="fecha" name="fecha" required>
+                    <input type="datetime-local" id="fecha" name="fechaHecho" required>
                 </div>
 
-                <!-- Ubicación -->
-                <div class="form-group full-width">
-                    <label for="ubicacion">Ubicación *</label>
-                    <input type="text" id="ubicacion" name="ubicacion" required placeholder="Dirección, coordenadas o descripción del lugar">
+
+                <div class="form-group">
+                    <label for="latitud">Latitud *</label>
+                    <input type="text" id="latitud" name="latitud" required placeholder="-26.072916">
                 </div>
 
-                <!-- Descripción -->
+
+                <div class="form-group">
+                    <label for="longitud">Longitud *</label>
+                    <input type="text" id="longitud" name="longitud" required placeholder="-65.976031">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="localidad">Localidad *</label>
+                    <input type="text" id="localidad" name="localidad" required placeholder="Cafayate">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="provincia">Provincia *</label>
+                    <select id="provincia" name="provincia" required>
+                        <option value="">Selecciona una provincia</option>
+                        <option value="1">Buenos Aires</option>
+                        <option value="2">Salta</option>
+                        <option value="3">Córdoba</option>
+                        <option value="4">Mendoza</option>
+                        <option value="5">Tucumán</option>
+                        <option value="6">Santa Fe</option>
+                        <option value="7">Entre Ríos</option>
+                        <option value="8">Corrientes</option>
+                        <option value="9">Misiones</option>
+                        <option value="10">Chaco</option>
+                        <option value="11">Formosa</option>
+                        <option value="12">Jujuy</option>
+                        <option value="13">Catamarca</option>
+                        <option value="14">La Rioja</option>
+                        <option value="15">San Juan</option>
+                        <option value="16">San Luis</option>
+                        <option value="17">Santiago del Estero</option>
+                        <option value="18">Neuquén</option>
+                        <option value="19">Río Negro</option>
+                        <option value="20">Chubut</option>
+                        <option value="21">Santa Cruz</option>
+                        <option value="22">Tierra del Fuego</option>
+                        <option value="23">La Pampa</option>
+                        <option value="24">CABA</option>
+                    </select>
+                </div>
+
+
                 <div class="form-group full-width">
                     <label for="descripcion">Descripción *</label>
                     <textarea id="descripcion" name="descripcion" required placeholder="Describe detalladamente el hecho ocurrido..."></textarea>
                 </div>
 
-                <!-- Multimedia -->
+
                 <div class="form-group full-width">
                     <label for="multimedia">Multimedia (Opcional)</label>
                     <div class="file-upload">
@@ -85,13 +125,11 @@
                 </div>
             </div>
 
-            <!-- Opción anónima -->
             <div class="checkbox-group">
-                <input type="checkbox" id="anonimo" name="anonimo">
-                <label for="anonimo">Publicar como contribución anónima</label>
+                <input type="checkbox" id="mostrarDatos" name="mostrarDatos" checked>
+                <label for="mostrarDatos">Mostrar mis datos públicamente</label>
             </div>
 
-            <!-- Form actions -->
             <div class="form-actions">
                 <button type="button" class="btn btn-secondary" onclick="window.history.back()">
                     <i data-lucide="arrow-left"></i>
@@ -105,7 +143,6 @@
         </form>
     </div>
 
-    <!-- Information about editing -->
     <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-top: 2rem;">
         <h3 style="color: var(--text-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
             <i data-lucide="info"></i>
@@ -123,18 +160,56 @@
     </div>
 </div>
 
-<!-- Footer -->
+
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
     lucide.createIcons();
 
-    // Form submission handling
-    document.getElementById('crearHechoForm').addEventListener('submit', function(e) {
+    document.getElementById('crearHechoForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+
         const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
-        console.log('Datos del hecho:', data);
+
+        // Build the data object matching backend structure
+        const data = {
+            titulo: formData.get('titulo'),
+            descripcion: formData.get('descripcion'),
+            categoria: formData.get('categoria'),
+            ubicacion: {
+                latitud: formData.get('latitud'),
+                longitud: formData.get('longitud'),
+                localidad: {
+                    nombre: formData.get('localidad'),
+                    provincia: {
+                        id: parseInt(formData.get('provincia'))
+                    }
+                }
+            },
+            fechaHecho: new Date(formData.get('fechaHecho')).toISOString(),
+            multimedia: [],
+            mostrarDatos: formData.get('mostrarDatos') === 'on'
+        };
+
+        // Handle multimedia files
+        const files = formData.getAll('multimedia');
+        if (files && files.length > 0 && files[0].size > 0) {
+            // Here you would upload files and get URLs
+            // For now, we'll create placeholder structure
+            data.multimedia = Array.from(files).map(file => ({
+                url: `~/uploads/${file.name}`
+            }));
+        }
+
+        console.log('[v0] Datos formateados para el backend:', JSON.stringify(data, null, 2));
+
+        // TODO: Replace with actual API call
+        // const response = await fetch('/api/hechos', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify(data)
+        // });
+
         document.getElementById('successMessage').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => {
