@@ -15,15 +15,14 @@
 <!-- Contenido principal -->
 <div class="container">
     <h1><i data-lucide="trash-2"></i> Solicitud de Eliminación</h1>
+
+    <!-- Mostrar título y descripción como texto -->
+    <p><strong>Título Colección:</strong> <span th:text="${tituloHecho}">Título de la colección</span></p>
+    <p><strong>Descripción Colección:</strong> <span th:text="${descripcionHecho}">Descripción de la colección</span></p>
+
     <p>Si consideras que un hecho debe ser eliminado del sistema, completa este formulario. La justificación debe tener al menos <strong>500 caracteres</strong>.</p>
 
     <form id="form-eliminacion">
-        <label for="tituloHecho">Título del Hecho</label>
-        <input type="text" id="tituloHecho" name="tituloHecho" placeholder="Ejemplo: Corrupción en la obra pública" required>
-
-        <label for="descripcionHecho">Descripción del Hecho</label>
-        <textarea id="descripcionHecho" name="descripcionHecho" placeholder="Escribe aquí la descripción del hecho..." required></textarea>
-
         <label for="justificacion">Justificación de la Solicitud</label>
         <textarea id="justificacion" name="justificacion" minlength="500" placeholder="Escribe aquí los fundamentos para la eliminación..." required></textarea>
         <span class="note">Tu justificación debe tener al menos 500 caracteres.</span>

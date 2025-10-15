@@ -26,6 +26,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login",
+                                "/",
+                                "/buscador-colecciones",
                                 "/register",
                                 "/visualizador",
                                 "/visualizador/**",
@@ -33,10 +35,14 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/images/**",
                                 "/buscador-hechos",
-                                "/buscador-colecciones"
+                                "/buscador-hechos/**",
+                                "/buscador-colecciones/**",
+                                "/colecciones/**",
+                                "/error"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -51,9 +57,10 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendRedirect("/login?unauthorized")
-                        )
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            System.out.println("❌ Acceso no autorizado a: " + request.getRequestURI());
+                            response.sendRedirect("/login?unauthorized");
+                        })
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 response.sendRedirect("/403")
                         )

@@ -58,6 +58,17 @@ public class HechosApiService {
         return response;
     }
 
+    public HechoOutputDTO obtenerHechoPorId(Long id) {
+        HechoOutputDTO response = webApiCallerService.getWithoutToken(
+                hechosServiceUrl + "api/hechos/hecho/" + id,
+                HechoOutputDTO.class
+        );
+        if (response == null) {
+            throw new NotFoundException("Hechos");
+        }
+        return response;
+    }
+
     // Actualizar un hecho por ID
     public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO hechoDTO) {
         HechoOutputDTO response = webApiCallerService.put(

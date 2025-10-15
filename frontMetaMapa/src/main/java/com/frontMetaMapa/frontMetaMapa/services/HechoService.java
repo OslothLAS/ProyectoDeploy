@@ -31,7 +31,7 @@ public class HechoService {
     // Obtener hecho por ID
     public Optional<HechoOutputDTO> obtenerHechoPorId(Long id) {
         try {
-            HechoOutputDTO hecho = hechoApiService.actualizarHecho(id, null); // Solo para verificar existencia
+            HechoOutputDTO hecho = hechoApiService.obtenerHechoPorId(id);
             return Optional.of(hecho);
         } catch (NotFoundException e) {
             return Optional.empty();
