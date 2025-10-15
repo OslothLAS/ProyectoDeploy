@@ -6,7 +6,9 @@ import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.Provincia;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IProvinciaRepository;
 import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,9 @@ public class ColeccionController {
 
     @Autowired
     private IHechoRepository hechoRepository;
+
+    @Autowired
+    private IProvinciaRepository provinciaRepository;
 
     public ColeccionController(IColeccionService coleccionService) {
         this.coleccionService = coleccionService;
@@ -98,5 +103,12 @@ public class ColeccionController {
     public ResponseEntity<Void> actualizarHechos(){
         this.coleccionService.actualizarHechos();
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/provincia/{id}")
+    public ResponseEntity<Provincia> obtenerProvinciaPorId(@PathVariable("id") Long id) {
+        return provinciaRepository.findById(id)
+                .map(provincia -> ResponseEntity.ok(provincia))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

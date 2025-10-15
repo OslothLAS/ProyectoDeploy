@@ -127,9 +127,10 @@ public class ColeccionService implements IColeccionService {
         }
 
         normalizarHechos(todosLosHechos);
-        return todosLosHechos.stream()
+        return todosLosHechos;
+        /*.stream()
                 .peek(h -> h.addColeccion(coleccion))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
     }
 
     public void normalizarHechos(List<Hecho> hechos){
@@ -405,52 +406,41 @@ public class ColeccionService implements IColeccionService {
             return;
         }
 
-        // 1. Obtenemos TODOS los hechos que ya existen en nuestra base de datos.
         List<Hecho> hechosEnDB = hechoRepository.findAll();
 
-        // 2. Creamos un Mapa para una búsqueda ultra-rápida.
-        //    La clave será "titulo|||descripcion" y el valor será la entidad Hecho completa.
         Function<Hecho, String> compositeKey = h -> (h.getTitulo() + "|||" + h.getDescripcion()).toLowerCase();
         Map<String, Hecho> mapaHechosEnDB = hechosEnDB.stream()
                 .collect(Collectors.toMap(compositeKey, Function.identity()));
 
-        // 3. Preparamos una lista final que contendrá tanto los hechos actualizados como los nuevos.
         List<Hecho> hechosParaGuardar = new ArrayList<>();
 
         int actualizados = 0;
         int insertados = 0;
 
-        // 4. Iteramos sobre cada hecho que viene de la fuente externa.
         for (Hecho hechoNuevo : hechosNuevos) {
             String key = compositeKey.apply(hechoNuevo);
             Hecho hechoExistente = mapaHechosEnDB.get(key);
 
             if (hechoExistente != null) {
-                // --- CASO 1: El hecho YA EXISTE. Lo actualizamos. ---
                 System.out.println("Actualizando hecho existente con título: " + hechoNuevo.getTitulo());
 
-                // Copiamos los campos del nuevo hecho al existente.
-                // IMPORTANTE: Actualizamos la instancia que vino de la DB, no la nueva.
+
                 hechoExistente.setEsValido(hechoNuevo.getEsValido());
                 hechoExistente.setFechaHecho(hechoNuevo.getFechaHecho());
                 hechoExistente.setUbicacion(hechoNuevo.getUbicacion()); // Asumiendo Cascade.MERGE
                 hechoExistente.setCategoria(hechoNuevo.getCategoria()); // Asumiendo Cascade.MERGE
-                // ... copia aquí cualquier otro campo que deba ser actualizado
 
                 hechosParaGuardar.add(hechoExistente);
                 actualizados++;
 
             } else {
-                // --- CASO 2: El hecho es NUEVO. Lo añadimos para ser insertado. ---
                 System.out.println("Añadiendo nuevo hecho con título: " + hechoNuevo.getTitulo());
                 hechosParaGuardar.add(hechoNuevo);
                 insertados++;
             }
         }
 
-        // 5. Guardamos todos los cambios en una sola operación.
-        //    JPA/Hibernate es lo suficientemente inteligente para saber cuáles son INSERT y cuáles UPDATE.
-        if (!hechosParaGuardar.isEmpty()) {
+    if (!hechosParaGuardar.isEmpty()) {
             hechoRepository.saveAll(hechosParaGuardar);
             hechosParaGuardar.forEach(h-> h.addColeccion(coleccion));
         }

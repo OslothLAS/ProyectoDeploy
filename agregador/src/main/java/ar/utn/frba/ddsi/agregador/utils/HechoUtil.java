@@ -12,34 +12,21 @@ public class HechoUtil {
 
 
     public static List<Hecho> obtenerHechosValidos(List<Hecho> todosLosHechos) {
-        System.out.println("Buscando todos los hechos en el repositorio para filtrarlos en memoria...");
-
-
         return todosLosHechos.stream()
-                // 3. El método filter() se queda solo con los hechos que cumplen la condición.
-                //    La condición es que el campo 'esValido' no sea nulo y sea 'true'.
                 .filter(hecho -> Boolean.TRUE.equals(hecho.getEsValido()))
-                // 4. Recolectamos los resultados en una nueva lista.
                 .collect(Collectors.toList());
     }
 
     public static List<Hecho> filtrarHechosRepetidos(List<Hecho> listaExistentes, List<Hecho> listaNuevos) {
         if (listaNuevos == null || listaNuevos.isEmpty()) {
-            return Collections.emptyList(); // No hay nada que filtrar
+            return Collections.emptyList();
         }
-
         if (listaExistentes == null || listaExistentes.isEmpty()) {
-            return listaNuevos; // Si no hay existentes, todos los nuevos son únicos
+            return listaNuevos;
         }
-
-        // 1. Convertimos la lista de existentes a un Set para una búsqueda ultra-rápida.
-        //    Gracias a @EqualsAndHashCode, el Set sabrá cómo comparar los hechos.
         Set<Hecho> hechosExistentesSet = Set.copyOf(listaExistentes);
-
-        // 2. Usamos Streams de Java para un código más limpio y declarativo.
         return listaNuevos.stream()
-                // 3. El método filter() se queda solo con los elementos que cumplen la condición.
-                //    La condición es que el hecho 'h' NO esté contenido en nuestro Set de existentes.
+
                 .filter(h -> !hechosExistentesSet.contains(h))
                 // 4. Recolectamos los resultados en una nueva lista.
                 .collect(Collectors.toList());
