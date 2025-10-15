@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
-    private final ColeccionService coleccionService;
+
     private final RegisterApiService registerApiService;
     private final LoginApiService loginApiService;
 
@@ -77,30 +77,16 @@ public class HomeController {
         return "redirect:/login?logout";
     }
 
-    @GetMapping("/buscador-hechos")
-    public String buscadorHechos() {
-        return "commons/buscadorHechos";
-    }
+
 }
 
-/*
-    @GetMapping("/buscador-colecciones")
-    public String buscadorColecciones(Model model) {
-        List<ColeccionOutputDTO> colecciones = coleccionService.obtenerTodasLasColecciones();
-        model.addAttribute("colecciones", colecciones);
-        return "commons/buscadorColecciones";
-    }
-*/
+
 
 
 
 
     /*
-    @GetMapping("/hecho/{id}")
-    public String detalleHecho(@PathVariable Long id, Model model) {
-        model.addAttribute("idHecho", id);
-        return "commons/detalleHecho";
-    }
+
 
     @GetMapping("/coleccion/{id}/editar")
     public String editarColeccion(@PathVariable Long id, Model model) {
@@ -108,11 +94,7 @@ public class HomeController {
         return "commons/editarColeccion";
     }
 
-    @GetMapping("/hecho/{id}/editar")
-    public String editarHecho(@PathVariable Long id, Model model) {
-        model.addAttribute("idHecho", id);
-        return "commons/editarHecho";
-    }
+
 
     @GetMapping("/mis-contribuciones")
     public String misContribuciones() {

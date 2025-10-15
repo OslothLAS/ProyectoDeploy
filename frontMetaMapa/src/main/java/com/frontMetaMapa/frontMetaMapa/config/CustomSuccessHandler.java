@@ -30,7 +30,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
                 response.sendRedirect("/contribuyente");
                 return;
             } else if (role.equalsIgnoreCase("ROLE_ADMIN") || role.equalsIgnoreCase("ADMIN")) {
-                response.sendRedirect("/admin/dashboard");
+                response.sendRedirect("/administrador");
                 return;
             }
         }

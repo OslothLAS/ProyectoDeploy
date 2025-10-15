@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ColeccionInputDTO {
-    private String id;
+    private Long id;
     private String titulo;
     private String descripcion;
     @JsonProperty("fuentes")

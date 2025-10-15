@@ -41,6 +41,12 @@ public class ColeccionController {
         return ResponseEntity.ok(this.coleccionService.getColecciones());
     }
 
+    @GetMapping("/{idColeccion}")
+    public ResponseEntity<ColeccionOutputDTO> getColeccionById(@PathVariable("idColeccion") Long idColeccion) {
+        ColeccionOutputDTO coleccion = this.coleccionService.getColeccionById(idColeccion);
+        return ResponseEntity.ok(coleccion);
+    }
+
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
