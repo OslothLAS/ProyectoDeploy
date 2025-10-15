@@ -5,7 +5,6 @@ import ar.utn.frba.ddsi.services.IEstadisticaService;
 import com.opencsv.CSVWriter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/estadisticas")
 public class EstadisticaController {
-    private IEstadisticaService estadisticaService;
+    private final IEstadisticaService estadisticaService;
 
     public EstadisticaController(IEstadisticaService estadisticaService) {
         this.estadisticaService = estadisticaService;
@@ -21,7 +20,7 @@ public class EstadisticaController {
 /* DONE De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?*/
     @GetMapping("/prov-top-reportada/{nombreColeccion}")
     public StatDTO getProvinciaMasReportadaPorColeccion(@PathVariable(name = "nombreColeccion") String nombreColeccion){
-        return estadisticaService.calcularProvinciaMasReportadaPorColeccion(nombreColeccion);
+        return estadisticaService.getProvinciaMasReportadaPorColeccion(nombreColeccion);
     }
 
     /*@GetMapping("/provinciasxcategorias")
@@ -32,22 +31,22 @@ public class EstadisticaController {
 /* DONE ¿Cuál es la categoría con mayor cantidad de hechos reportados?*/
     @GetMapping("/categoria-hechos")
     public StatDTO calcularCategoriaPorHechos(){
-        return estadisticaService.calcularCategoriaPorHechos();
+        return estadisticaService.getCategoriaConMasHechos();
     }
 
     @GetMapping("/{idCategoria}")
-    public List<StatDTO> calcularProvinciaMasReportada(@PathVariable(name = "idCategoria") Long idCategoria){
-        return this.estadisticaService.calcularMaxHechos(idCategoria);
+    public StatDTO calcularProvinciaMasReportada(@PathVariable(name = "idCategoria") String categoria){
+        return this.estadisticaService.getProvinciaConMasHechosDeCategoria(categoria);
     }
 
-    @GetMapping("/hora-top")
-    public List<StatDTO> calcularHoraPico(@PathVariable(name = "idCategoria") Long idCategoria){
-        return this.estadisticaService.calcularHoraPico(idCategoria);
+    @GetMapping("/hora-top/categoria")
+    public StatDTO calcularHoraPico(@PathVariable(name = "categoria") String categoria){
+        return this.estadisticaService.getHoraPicoDeCategoria(categoria);
     }
 
     @GetMapping("/solicitudes-spam")
-    public List<StatDTO> calcularSolicitudesPorSpam(){
-        return this.estadisticaService.calcularSolicitudesPorSpam();
+    public StatDTO calcularSolicitudesPorSpam(){
+        return this.estadisticaService.getCantidadDeSpam();
     }
 
     @GetMapping("/exportar-csv")
@@ -67,7 +66,7 @@ public class EstadisticaController {
             // Datos
             for (StatDTO stat : stats) {
                 String[] line = {
-                        stat.getDescripcion() != null ? stat.getDescripcion() : "",
+                        stat.getDescripcion() != null ? stat.getDescripcion().name() : "",
                         stat.getCantidad() != null ? stat.getCantidad().toString() : "",
                 };
                 csvWriter.writeNext(line);
@@ -76,7 +75,10 @@ public class EstadisticaController {
             csvWriter.flush();
         }
     }
-
+    @GetMapping
+    public List<StatDTO> findAll(){
+        return this.estadisticaService.findAll();
+    }
     @PutMapping
     public void calcular(){
         this.estadisticaService.calcularEstadisticas();

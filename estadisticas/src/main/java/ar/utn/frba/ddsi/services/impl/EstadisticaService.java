@@ -6,12 +6,9 @@ import ar.utn.frba.ddsi.models.entities.Estadistica;
 import ar.utn.frba.ddsi.models.repositories.IStatRepository;
 import ar.utn.frba.ddsi.services.IEstadisticaService;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +44,10 @@ public class EstadisticaService implements IEstadisticaService {
         );
     }
 
+    public List<StatDTO> findAll(){
+        return this.statRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
     public void calcularEstadisticas() {
         List<StatDTO> stats = new ArrayList<>();
         AgregadorConnector agregadorConnector = new AgregadorConnector();
@@ -77,67 +78,33 @@ public class EstadisticaService implements IEstadisticaService {
     }
 
 
-    public List<StatDTO> calcularProvinciaPorHechos(Long idColeccion){
-        List<Estadistica> estadisticas = statRepository.findAll();
-
-        return estadisticas.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    // Pregunta 1: De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos?
+    public StatDTO getProvinciaMasReportadaPorColeccion(String nombreColeccion) {
+        Estadistica est = statRepository.findTopProvinciaByColeccion(nombreColeccion);
+        return est != null ? this.toDTO(est) : null;
     }
 
-    public StatDTO calcularCategoriaPorHechos() {
-        List<Estadistica> estadisticas = statRepository.findAll();
-
-        return estadisticas.stream()
-                .filter(e -> "CATEGORIA".equals(e.getTituloColeccion()))
-                .max(Comparator.comparingLong(Estadistica::getCantidad))
-                .map(this::toDTO)
-                .orElse(null); // o puedes lanzar una excepción si prefieres
+    // Pregunta 2: ¿Cuál es la categoría con mayor cantidad de hechos reportados?
+    public StatDTO getCategoriaConMasHechos() {
+        Estadistica est = statRepository.findTopCategoria();
+        return est != null ? this.toDTO(est) : null;
     }
 
-    public List<StatDTO> calcularMaxHechos(Long idCategoria){
-        List<Estadistica> estadisticas = statRepository.findAll();
-
-        return estadisticas.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    // Pregunta 3: ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
+    public StatDTO getProvinciaConMasHechosDeCategoria(String categoria) {
+        Estadistica est = statRepository.findTopProvinciaByCategoria(categoria);
+        return est != null ? this.toDTO(est) : null;
     }
 
-    public List<StatDTO> calcularHoraPico(Long idCategoria){
-        List<Estadistica> estadisticas = statRepository.findAll();
-
-
-        return estadisticas.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    // Pregunta 4: ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
+    public StatDTO getHoraPicoDeCategoria(String categoria) {
+        Estadistica est = statRepository.findTopHoraByCategoria(categoria);
+        return est != null ? this.toDTO(est) : null;
     }
 
-    public List<StatDTO> calcularSolicitudesPorSpam(){
-        List<Estadistica> estadisticas = statRepository.findAll();
-
-        return estadisticas.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public StatDTO calcularProvinciaMasReportadaPorColeccion(String nombreColeccion) {
-        List<Estadistica> estadisticas = statRepository.findAll();
-
-        return estadisticas.stream()
-                .filter(est -> est.getTituloColeccion().equalsIgnoreCase(nombreColeccion))
-                .collect(Collectors.groupingBy(
-                        Estadistica::getDescripcion,
-                        Collectors.summingLong(Estadistica::getCantidad)
-                ))
-                .entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(entry -> {
-                    StatDTO dto = new StatDTO();
-                    dto.setTituloColeccion(nombreColeccion);
-                    dto.setDescripcion(entry.getKey());
-                    dto.setCantidad(entry.getValue());
-                    return dto;
-                })
-                .orElse(null); // o puedes lanzar una excepción si prefieres
+    // Pregunta 5: ¿Cuántas solicitudes de eliminación son spam?
+    public StatDTO getCantidadDeSpam() {
+        Estadistica est = statRepository.findLastSpamCount();
+        return est != null ? this.toDTO(est) : null;
     }
 }

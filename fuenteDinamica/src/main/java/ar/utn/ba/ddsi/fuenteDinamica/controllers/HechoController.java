@@ -8,10 +8,6 @@ import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
-
-import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.hechosToDTO;
-
 
 @RestController
 @RequestMapping("/api/hechos")
@@ -32,11 +28,11 @@ public class HechoController {
         return ResponseEntity.ok(this.hechoService.getAllHechos());
     }
 
-    @GetMapping("{id}")
+   /* @GetMapping("{id}")
     public ResponseEntity<HechoDTO> obtenerUsuarioPorId(@PathVariable("id") Long id) {
         HechoDTO hecho = this.hechoService.getHechoById(id);
         return ResponseEntity.ok(hecho);
-    }
+    }*/
 
     @PostMapping
     public void crearHecho(@RequestBody HechoDTO hecho, @RequestHeader(value = "Authorization", required = false) String authHeader) {
@@ -75,6 +71,12 @@ public class HechoController {
     @GetMapping("/origen")
     public String obtenerOrigen(){
         return "DINAMICO";
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<List<HechoDTO>> getHechosByUsername(@PathVariable("username") String username){
+        List <HechoDTO> hechos = this.hechoService.getHechosByUsername(username);
+        return ResponseEntity.ok(hechos);
     }
 
     @PutMapping("/invalidar")
