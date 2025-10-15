@@ -1,8 +1,8 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.SolicitudInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.SolicitudOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.SolicitudInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.SolicitudOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +15,9 @@ public class SolicitudEliminacionService {
     /**
      * Crea una nueva solicitud de eliminación.
      */
-    public SolicitudOutputDTO crearSolicitud(SolicitudInputDTO solicitudDTO) {
+    public void crearSolicitud(SolicitudInputDTO solicitudDTO) {
         validarDatosBasicos(solicitudDTO);
-        return solicitudesEliminacionApiService.createSolicitud(solicitudDTO);
+        solicitudesEliminacionApiService.createSolicitud(solicitudDTO);
     }
 
     /**

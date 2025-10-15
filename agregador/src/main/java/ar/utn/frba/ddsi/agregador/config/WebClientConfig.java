@@ -9,6 +9,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
+
+    @Bean
+    public WebClient usuarioPorSolicitudWebClient() {
+        return WebClient.builder()
+                .baseUrl("http://localhost:8040/api/users/username") // URL base del servicio de usuarios
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
+
     @Bean
     public WebClient usuarioWebClient() {
         return WebClient.builder()

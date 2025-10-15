@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.agregador.services;
 
+
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 public interface IColeccionService {
     void createColeccion(ColeccionInputDTO coleccion);
+    ColeccionOutputDTO getColeccionById(Long idColeccion);
     List<ColeccionOutputDTO> getColecciones();
     List<Coleccion> getColeccionesClass();
     List<Hecho> getHechosDeColeccion(Long idColeccion, String modoNavegacion, Map<String,String> filtros);

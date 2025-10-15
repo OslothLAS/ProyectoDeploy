@@ -31,7 +31,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
-    @GetMapping("/by-username/{username}")
+    @GetMapping("/username/{username}")
     public ResponseEntity<UsuarioDTO> obtenerUsuarioPorUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(usuarioService.findByUsername(username));
     }
@@ -49,5 +49,8 @@ public class UsuarioController {
 
         return ResponseEntity.ok(miUsername);
     }
+
+
+
 
 }

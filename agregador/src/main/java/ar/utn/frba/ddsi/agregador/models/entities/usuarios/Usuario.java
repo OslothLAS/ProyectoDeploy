@@ -24,11 +24,15 @@ public class Usuario {
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
+    @Column(name = "username")
+    private String username;
+
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipo;
 
 
-    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, TipoUsuario tipo) {
+    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, TipoUsuario tipo, String username) {
+        this.username = username;
         this.nombre = nombre;
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;

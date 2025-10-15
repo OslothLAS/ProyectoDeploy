@@ -8,14 +8,11 @@ import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.EstadoSolicitud;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.PosibleEstadoSolicitud;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
-import ar.utn.frba.ddsi.agregador.models.entities.usuarios.TipoUsuario;
 import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
-import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
-import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,12 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -48,20 +43,32 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     private WebClient usuarioWebClient;
 
     @Autowired
-    @Qualifier("userNameWebClient")
+    @Qualifier("usuarioPorSolicitudWebClient")
     private WebClient usuarioSesionWebClient;
 
+
+    public Usuario obtenerPorUsername(String username) {
+        return usuarioSesionWebClient.get()
+                .uri("/{username}", username)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
+                        error -> Mono.error(new RuntimeException("Usuario no encontrado")))
+                .bodyToMono(Usuario.class)
+                .block();
+    }
 
     @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
-        this.obtenerUserPorId(solicitud.getIdSolicitante());
+        this.obtenerPorUsername(solicitud.getUsername());
         SolicitudEliminacion solicitudEliminacion = this.solicitudRepository.save(this.dtoToSolicitud(solicitud));
         return solicitudEliminacion.getId();
     }
 
+
+/*
     public Usuario obtenerUserPorId(Long id) {
         return usuarioWebClient.get()
                 .uri("/{id}", id)
@@ -70,7 +77,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                         error -> Mono.error(new RuntimeException("Usuario no encontrado")))
                 .bodyToMono(Usuario.class)
                 .block();
-    }
+    }*/
 
     public String obtenerUsernamePorSesion() {
         // 1. Obtener el objeto de autenticación del contexto.
@@ -94,22 +101,20 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
         Hecho hecho = hechoRepository.findById(solicitud.getIdHecho()).orElse(null);
-        Usuario usuario = this.obtenerUserPorId(solicitud.getIdSolicitante());
-        System.out.println("USUARIO ENCONTRADO POR API: " + usuario.getNombre());
+        Usuario usuario = this.obtenerPorUsername(solicitud.getUsername());
+
+        System.out.println("USUARIO ENCONTRADO POR API: " + usuario.getUsername());
 
         assert hecho != null;
         return new SolicitudEliminacion(
                 solicitud.getJustificacion(),
                 hecho.getId(),
-                usuario.getId());
+                usuario.getUsername());
     }
 
     @Override
-    public SolicitudEliminacion getSolicitud(Long idSolicitud) {
-        SolicitudEliminacion solicitud = this.solicitudRepository
-                .findById(idSolicitud)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con id: " + idSolicitud));
-        return solicitudRepository.findById(idSolicitud).orElse(null);
+    public Optional<SolicitudEliminacion> getSolicitud(Long idSolicitud) {
+        return this.solicitudRepository.findById(idSolicitud);
     }
 
 
@@ -128,6 +133,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         String username = usernameAdmin;
 
         EstadoSolicitud estadoSolicitud = new EstadoSolicitud(username,estado);
+
         if(estado == PosibleEstadoSolicitud.RECHAZADA) {
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
         }

@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
+import ar.utn.frba.ddsi.agregador.controllers.ColeccionController;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.*;
@@ -20,9 +21,12 @@ import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -111,6 +115,15 @@ public class ColeccionService implements IColeccionService {
 
        this.sincronizarHechos(hechos, nuevaColeccion);
     }
+
+    @Override
+    public ColeccionOutputDTO getColeccionById(Long idColeccion) {
+        return this.coleccionRepository.findById(idColeccion)
+                .map(ColeccionUtil::coleccionToDto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con id " + idColeccion));
+    }
+
+
 
     private List<CriterioDePertenencia> obtenerCriterios(List<CriterioDePertenencia> criteriosOriginal) {
         if (criteriosOriginal == null || criteriosOriginal.isEmpty()) {
