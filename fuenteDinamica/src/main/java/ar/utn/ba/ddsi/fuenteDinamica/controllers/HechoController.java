@@ -28,6 +28,13 @@ public class HechoController {
         return ResponseEntity.ok(this.hechoService.getAllHechos());
     }
 
+    @GetMapping("hecho/{id}")
+    public ResponseEntity<HechoDTO> obtenerHechoPorId(@PathVariable("id") Long id) {
+        HechoDTO hecho = this.hechoService.getHechoById(id);
+        return ResponseEntity.ok(hecho);
+    }
+
+
    /* @GetMapping("{id}")
     public ResponseEntity<HechoDTO> obtenerUsuarioPorId(@PathVariable("id") Long id) {
         HechoDTO hecho = this.hechoService.getHechoById(id);

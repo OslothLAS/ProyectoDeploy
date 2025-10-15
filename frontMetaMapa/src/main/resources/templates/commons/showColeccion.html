@@ -73,10 +73,9 @@
                 </a>
 
                 <!-- Botón Eliminar solo para ADMIN o CONTRIBUYENTE -->
-                <a href="#" class="action-btn delete-request-btn"
-                   data-id="${hecho.id}"
-                   data-title="${hecho.titulo}"
-                   onclick="openDeleteModalFromData(this)"
+                <a class="action-btn delete-request-btn"
+                   th:data-id="${hecho.id}"
+                   onclick="goToSolicitud(this)"
                    th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''CONTRIBUYENTE'')')}">
                     <i data-lucide="trash-2"></i> Eliminar
                 </a>
@@ -139,6 +138,10 @@
     document.getElementById('factId').value = id;
     document.getElementById('factTitle').value = title;
     document.getElementById('deleteModal').style.display = 'block';
+}
+    function goToSolicitud(btn) {
+    const id = btn.dataset.id;
+    window.location.href = `/solicitar-eliminacion?id=${id}`;
 }
 
 </script>

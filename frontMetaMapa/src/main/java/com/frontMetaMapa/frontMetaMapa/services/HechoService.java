@@ -3,6 +3,7 @@ package com.frontMetaMapa.frontMetaMapa.services;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class HechoService {
     // Obtener hecho por ID
     public Optional<HechoOutputDTO> obtenerHechoPorId(Long id) {
         try {
-            HechoOutputDTO hecho = hechoApiService.actualizarHecho(id, null); // Solo para verificar existencia
+            HechoOutputDTO hecho = hechoApiService.obtenerHechoPorId(id);
             return Optional.of(hecho);
         } catch (NotFoundException e) {
             return Optional.empty();
