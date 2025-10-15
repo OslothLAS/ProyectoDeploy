@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.*;
 public class HomeController {
 
     private final RegisterApiService registerApiService;
-    private final LoginApiService loginApiService;
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/visualizador";
+        return "visualizador/index";
     }
 
     @GetMapping("/404")

@@ -1,5 +1,6 @@
 package com.frontMetaMapa.frontMetaMapa.models.dtos.output;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.MultimediaDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ public class HechoOutputDTO {
     private Long id;
     private String username;
     private Boolean esValido;
-    private List<String> multimedia;
+    private List<MultimediaDTO> multimedia;
     private List<String> etiquetas = new ArrayList<>();
     //private List<Coleccion> colecciones = new ArrayList<>();
     private List<String> handles = new ArrayList<>();
