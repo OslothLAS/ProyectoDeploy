@@ -3,6 +3,7 @@ package ar.utn.frba.ddsi.agregador.controllers;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.CriterioDePertenenciaDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
@@ -110,5 +111,10 @@ public class ColeccionController {
         return provinciaRepository.findById(id)
                 .map(provincia -> ResponseEntity.ok(provincia))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/criterios")
+    public List<CriterioDePertenenciaDTO> obtenerCriteriosDePertenencia(){
+        return this.coleccionService.getCriterios();
     }
 }

@@ -2,10 +2,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.DescripcionStat;
-import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
-import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
+import ar.utn.frba.ddsi.agregador.dtos.output.*;
 import ar.utn.frba.ddsi.agregador.models.entities.factories.CriterioDePertenenciaFactory;
 import ar.utn.frba.ddsi.agregador.models.repositories.*;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
@@ -47,11 +44,16 @@ public class ColeccionService implements IColeccionService {
     private final IProvinciaRepository provinciaRepository;
     private final ILocalidadRepository localidadRepository;
     private final IFuenteRepository fuenteRepository;
+    private final ICriterioRepository criterioRepository;
+
     @Autowired
     @Qualifier("hechoWebClient")
     private WebClient hechoWebClient;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository, IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository,IFuenteRepository fuenteRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository,
+                            ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository,
+                            IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository,
+                            IFuenteRepository fuenteRepository, ICriterioRepository criterioRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
         this.categoriaRepository = categoriaRepository;
@@ -59,6 +61,7 @@ public class ColeccionService implements IColeccionService {
         this.provinciaRepository = provinciaRepository;
         this.localidadRepository = localidadRepository;
         this.fuenteRepository = fuenteRepository;
+        this.criterioRepository = criterioRepository;
     }
 
 
@@ -448,5 +451,15 @@ public class ColeccionService implements IColeccionService {
         System.out.println("--- Sincronización finalizada ---");
         System.out.println("Hechos actualizados: " + actualizados);
         System.out.println("Hechos nuevos insertados: " + insertados);
+    }
+
+    public List<Fuente> getFuentes(){
+        return this.fuenteRepository.findAll();
+    }
+
+    public List<CriterioDePertenenciaDTO> getCriterios(){
+        List<CriterioDePertenencia> criterios = this.criterioRepository.findAll();
+
+        return criterios.stream().map(ColeccionUtil::criterioToDTO).collect(Collectors.toList());
     }
 }
