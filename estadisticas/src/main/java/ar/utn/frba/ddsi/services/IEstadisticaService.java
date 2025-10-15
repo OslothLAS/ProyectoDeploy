@@ -5,11 +5,11 @@ import java.util.List;
 
 public interface IEstadisticaService {
     void calcularEstadisticas();
-    List<StatDTO> calcularProvinciaPorHechos(Long idColeccion);
-    StatDTO calcularCategoriaPorHechos();
-    List<StatDTO> calcularMaxHechos(Long categoria);
-    List<StatDTO> calcularHoraPico(Long categoria);
-    List<StatDTO> calcularSolicitudesPorSpam();
+    StatDTO getProvinciaMasReportadaPorColeccion(String nombreColeccion);
+    StatDTO getCategoriaConMasHechos();
+    StatDTO getProvinciaConMasHechosDeCategoria(String categoria);
+    StatDTO getHoraPicoDeCategoria(String categoria);
+    StatDTO getCantidadDeSpam();
     List<StatDTO> generateCSV();
-    StatDTO calcularProvinciaMasReportadaPorColeccion(String nombreColeccion);
+    List<StatDTO> findAll();
 }

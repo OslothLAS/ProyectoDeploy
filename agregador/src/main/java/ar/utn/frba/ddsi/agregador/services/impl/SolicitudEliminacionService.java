@@ -13,12 +13,17 @@ import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
 import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -26,6 +31,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SolicitudEliminacionService implements ISolicitudEliminacionService {
@@ -41,11 +47,14 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Qualifier("usuarioWebClient")
     private WebClient usuarioWebClient;
 
+    @Autowired
+    @Qualifier("userNameWebClient")
+    private WebClient usuarioSesionWebClient;
+
 
     @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
-        hechoRepository.save(HechoFactory.crearHechoDePrueba());
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
         this.obtenerUserPorId(solicitud.getIdSolicitante());
@@ -63,6 +72,25 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .block();
     }
 
+    public String obtenerUsernamePorSesion() {
+        // 1. Obtener el objeto de autenticación del contexto.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 2. Validar que la autenticación sea válida.
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new IllegalStateException("No hay un usuario autenticado en la sesión actual.");
+        }
+
+        // 3. Obtener el USERNAME del Principal.
+        //    El método .getName() devuelve el identificador del usuario (generalmente el username).
+        String username = authentication.getName();
+        if (username == null) {
+            throw new IllegalStateException("El Principal de la autenticación no tiene un nombre de usuario.");
+        }
+
+        return username;
+
+    }
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
         Hecho hecho = hechoRepository.findById(solicitud.getIdHecho()).orElse(null);
@@ -96,8 +124,10 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         }
     }
 
-    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Usuario admin, PosibleEstadoSolicitud estado) {
-        EstadoSolicitud estadoSolicitud = new EstadoSolicitud(admin,estado);
+    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, String usernameAdmin, PosibleEstadoSolicitud estado) {
+        String username = usernameAdmin;
+
+        EstadoSolicitud estadoSolicitud = new EstadoSolicitud(username,estado);
         if(estado == PosibleEstadoSolicitud.RECHAZADA) {
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
         }
@@ -120,9 +150,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
-        Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
-        //this.usuarioRepository.save(administrador);
-        this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
+
+        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.ACEPTADA);
 
         Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
@@ -131,23 +160,31 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .distinct()
                 .toList();
 
+        this.invalidarHechoAgregador(hecho.getTitulo(),hecho.getDescripcion());
         for (Fuente fuente : fuentesUnicas) {
             fuente.invalidarHecho(hecho.getTitulo(),hecho.getDescripcion());
         }
-    }
 
+    }
     @Override
     public void rechazarSolicitud(Long idSolicitud) {
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
-            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
 
-        Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
-
-        this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.RECHAZADA);
+        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.RECHAZADA);
     }
 
-    public StatDTO getCantidadSpam(){
+
+    private void invalidarHechoAgregador(String titulo, String descripcion) {
+        Optional<Hecho> hechoInvalido = hechoRepository.findByTituloAndDescripcion(titulo, descripcion);
+        hechoInvalido.ifPresent(hecho -> {
+            hecho.setEsValido(false);
+            hechoRepository.save(hecho);
+        });
+    }
+
+   public StatDTO getCantidadSpam(){
         Long cantSpam = this.solicitudRepository.countSolicitudesSpam();
-        return new StatDTO(null,null,null,null, DescripcionStat.solicitudes_spam,cantSpam,LocalDateTime.now());
+        return new StatDTO("","rachazo","Solicitudes rechazadas por spam",1, DescripcionStat.solicitudes_spam,cantSpam, LocalDateTime.now());
     }
 }

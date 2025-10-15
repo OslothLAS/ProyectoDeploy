@@ -32,10 +32,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
+import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.filtrarHechosRepetidos;
+import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.obtenerHechosValidos;
 import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
@@ -72,6 +75,7 @@ public class ColeccionService implements IColeccionService {
     public List<Coleccion> getColeccionesClass(){
         return this.coleccionRepository.findAll();
    }
+
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
 
@@ -80,11 +84,18 @@ public class ColeccionService implements IColeccionService {
 
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, importadores);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
+
+        List<Coleccion> coleccionesExistentes = coleccionRepository.findAll();
+
+        if (coleccionesExistentes.contains(nuevaColeccion)) {
+            throw new IllegalArgumentException("La coleccion ya existe");
+        }
+
         this.coleccionRepository.save(nuevaColeccion);
 
         List<Hecho> hechos = this.procesarHechos(importadores, criterios, nuevaColeccion);
 
-        this.hechoRepository.saveAll(hechos); //ver si con null se puede, supongo que si
+       this.sincronizarHechos(hechos, nuevaColeccion);
     }
 
     @Override
@@ -286,12 +297,13 @@ public class ColeccionService implements IColeccionService {
             List<CriterioDePertenencia> criterios = Optional.ofNullable(coleccion.getCriteriosDePertenencia())
                     .orElse(List.of());
           
-            List<Hecho> hechos = tomarHechosFuentes(coleccion.getImportadores(), criterios);
+            List<Hecho> hechosDeFuentes = tomarHechosFuentes(coleccion.getImportadores(), criterios);
+            List<Hecho> hechosRepository = hechoRepository.findAll();
+            List<Hecho> hechosSinRepetir = obtenerHechosValidos(filtrarHechosRepetidos(hechosRepository, hechosDeFuentes));
+            this.normalizarHechos(hechosDeFuentes);
 
-            this.normalizarHechos(hechos);
-
-            asignarColeccionAHechos(hechos, coleccion);
-            hechoRepository.saveAll(hechos);
+            hechoRepository.saveAll(hechosSinRepetir);
+            asignarColeccionAHechos(hechosSinRepetir, coleccion);
             coleccionRepository.save(coleccion);
         });
     }
@@ -359,5 +371,70 @@ public class ColeccionService implements IColeccionService {
             s.setFechaStat(LocalDateTime.now());
         });
         return stats;
+    }
+
+
+    @Transactional
+    public void sincronizarHechos(List<Hecho> hechosNuevos, Coleccion coleccion) {
+        System.out.println("--- Iniciando proceso de sincronización de Hechos ---");
+
+        if (hechosNuevos == null || hechosNuevos.isEmpty()) {
+            System.out.println("No hay hechos nuevos para sincronizar.");
+            return;
+        }
+
+        // 1. Obtenemos TODOS los hechos que ya existen en nuestra base de datos.
+        List<Hecho> hechosEnDB = hechoRepository.findAll();
+
+        // 2. Creamos un Mapa para una búsqueda ultra-rápida.
+        //    La clave será "titulo|||descripcion" y el valor será la entidad Hecho completa.
+        Function<Hecho, String> compositeKey = h -> (h.getTitulo() + "|||" + h.getDescripcion()).toLowerCase();
+        Map<String, Hecho> mapaHechosEnDB = hechosEnDB.stream()
+                .collect(Collectors.toMap(compositeKey, Function.identity()));
+
+        // 3. Preparamos una lista final que contendrá tanto los hechos actualizados como los nuevos.
+        List<Hecho> hechosParaGuardar = new ArrayList<>();
+
+        int actualizados = 0;
+        int insertados = 0;
+
+        // 4. Iteramos sobre cada hecho que viene de la fuente externa.
+        for (Hecho hechoNuevo : hechosNuevos) {
+            String key = compositeKey.apply(hechoNuevo);
+            Hecho hechoExistente = mapaHechosEnDB.get(key);
+
+            if (hechoExistente != null) {
+                // --- CASO 1: El hecho YA EXISTE. Lo actualizamos. ---
+                System.out.println("Actualizando hecho existente con título: " + hechoNuevo.getTitulo());
+
+                // Copiamos los campos del nuevo hecho al existente.
+                // IMPORTANTE: Actualizamos la instancia que vino de la DB, no la nueva.
+                hechoExistente.setEsValido(hechoNuevo.getEsValido());
+                hechoExistente.setFechaHecho(hechoNuevo.getFechaHecho());
+                hechoExistente.setUbicacion(hechoNuevo.getUbicacion()); // Asumiendo Cascade.MERGE
+                hechoExistente.setCategoria(hechoNuevo.getCategoria()); // Asumiendo Cascade.MERGE
+                // ... copia aquí cualquier otro campo que deba ser actualizado
+
+                hechosParaGuardar.add(hechoExistente);
+                actualizados++;
+
+            } else {
+                // --- CASO 2: El hecho es NUEVO. Lo añadimos para ser insertado. ---
+                System.out.println("Añadiendo nuevo hecho con título: " + hechoNuevo.getTitulo());
+                hechosParaGuardar.add(hechoNuevo);
+                insertados++;
+            }
+        }
+
+        // 5. Guardamos todos los cambios en una sola operación.
+        //    JPA/Hibernate es lo suficientemente inteligente para saber cuáles son INSERT y cuáles UPDATE.
+        if (!hechosParaGuardar.isEmpty()) {
+            hechoRepository.saveAll(hechosParaGuardar);
+            hechosParaGuardar.forEach(h-> h.addColeccion(coleccion));
+        }
+
+        System.out.println("--- Sincronización finalizada ---");
+        System.out.println("Hechos actualizados: " + actualizados);
+        System.out.println("Hechos nuevos insertados: " + insertados);
     }
 }

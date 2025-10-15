@@ -20,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "hecho")
+@EqualsAndHashCode(of = {"titulo", "descripcion"})
 public class Hecho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -128,8 +129,13 @@ public class Hecho {
                 normalizarCategoria(this.getCategoria().getCategoria()));
 
         Ubicacion ubicacion = this.getUbicacion();
-        double latitud = Double.parseDouble(ubicacion.getLatitud());
-        double longitud =  Double.parseDouble(ubicacion.getLongitud());
+
+
+
+        List<Double> latyLongNormalizadas = NormalizadorHecho.normalizarUbicaciones(ubicacion.getLatitud(),ubicacion.getLongitud());
+        double latitud = latyLongNormalizadas.get(0);
+        double longitud =  latyLongNormalizadas.get(1);
+
         Provincia provincia = null;
         Localidad localidad = null;
 

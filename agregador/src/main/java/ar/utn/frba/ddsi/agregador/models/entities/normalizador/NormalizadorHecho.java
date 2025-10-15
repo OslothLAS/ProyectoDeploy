@@ -5,7 +5,9 @@ import org.springframework.cglib.core.Local;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class NormalizadorHecho {
@@ -52,6 +54,44 @@ public class NormalizadorHecho {
 
     public static List<String> normalizarUbicacion(double latitud, double longitud) {
         return OpenStreetMap.obtenerUbicacion(latitud, longitud);
+    }
+
+    public static List<Double> normalizarUbicaciones(String latitud, String longitud) {
+
+        if (latitud != null && !latitud.isBlank()) {
+            try {
+                // Reemplaza la coma por un punto para un parseo seguro
+                String latitudLimpia = latitud.replace(',', '.');
+                double valor = Double.parseDouble(latitudLimpia);
+
+                // Usa Locale.US para forzar el punto como separador decimal en el formateo
+                latitud = String.format(Locale.US, "%.4f", valor);
+            } catch (NumberFormatException e) {
+                // Si el string no es un número válido, lo guardamos tal cual
+                latitud = latitud;
+            }
+        } else {
+            latitud = latitud;
+        }
+
+
+        if (longitud != null && !longitud.isBlank()) {
+            try {
+                String longitudLimpia = longitud.replace(',', '.');
+                double valor = Double.parseDouble(longitudLimpia);
+                longitud = String.format(Locale.US, "%.4f", valor);
+            } catch (NumberFormatException e) {
+                longitud = longitud;
+            }
+        } else {
+            longitud = longitud;
+        }
+
+        List<Double> valoresNormalizados = new ArrayList<>();
+        valoresNormalizados.add(Double.parseDouble(latitud));
+        valoresNormalizados.add(Double.parseDouble(longitud));
+
+        return valoresNormalizados;
     }
 
 

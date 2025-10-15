@@ -2,6 +2,7 @@ package com.usuarios.servicioDeUsuarios.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.usuarios.servicioDeUsuarios.models.entities.Rol;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
