@@ -14,4 +14,5 @@ public interface IHechoService {
     void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion);
     HechoDTO getHechoById(Long id);
     List<HechoDTO> getAllHechos();
+    List<HechoDTO> getHechosByUsername(String username);
 }
