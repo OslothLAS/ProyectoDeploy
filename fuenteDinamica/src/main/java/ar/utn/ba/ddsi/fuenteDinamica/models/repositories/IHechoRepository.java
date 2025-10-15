@@ -11,4 +11,5 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
     Optional<Hecho> findByTituloAndDescripcion(String titulo, String descripcion);
     HechoDTO findById(long id);
     List<Hecho> findAll();
+    List<Hecho> findByUsername(String username);
 }
