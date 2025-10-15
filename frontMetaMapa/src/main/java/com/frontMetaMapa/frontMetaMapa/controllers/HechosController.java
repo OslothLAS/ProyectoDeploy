@@ -66,6 +66,7 @@ public class HechosController {
                     .findFirst();
             if (hechoEncontrado.isPresent()) {
                 model.addAttribute("hecho", hechoEncontrado.get());
+                model.addAttribute("username", username);
                 return "commons/detalleHecho";
             } else {
                 // Si no encuentra el hecho, redirigir con error

@@ -19,15 +19,22 @@
         <header style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
             <!-- Badge de categoría arriba -->
             <div th:if="${hecho.categoria}">
-                <span class="categoria-badge" style="display: inline-flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="tag"></i>
-                    <span th:text="${hecho.categoria}">Categoría</span>
-                </span>
+        <span class="categoria-badge" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="tag"></i>
+            <span th:text="${hecho.categoria}">Categoría</span>
+        </span>
             </div>
 
             <!-- Título -->
             <h1 th:text="${hecho.titulo}" class="hecho-title" style="margin: 0;">Título del hecho</h1>
+
+            <!-- Autor -->
+            <p style="margin: 0; color: var(--text-light); font-style: italic;">
+                AUTOR: <span th:text="${username}">nombre_usuario</span>
+            </p>
+
         </header>
+
 
         <!-- Grid de información organizada -->
         <section class="hecho-info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
