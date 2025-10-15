@@ -43,8 +43,10 @@ public class SecurityConfig {
                 // Configuración del formulario de login
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")     // procesa el POST del formulario
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error=true")  // vuelve con error si falla
                         .permitAll()
-                        .defaultSuccessUrl("/visualizador", true)
                 )
                 // Configuración del logout
                 .logout(logout -> logout

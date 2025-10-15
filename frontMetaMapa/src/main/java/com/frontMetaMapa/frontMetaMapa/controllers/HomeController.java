@@ -27,6 +27,19 @@ public class HomeController {
         return "redirect:/visualizador";
     }
 
+    @GetMapping("/404")
+    public String notFound(Model model) {
+        model.addAttribute("titulo", "No encontrado");
+        return "404";
+    }
+
+    @GetMapping("/403")
+    public String accessDenied(Model model) {
+        model.addAttribute("titulo", "Acceso denegado");
+        model.addAttribute("mensaje", "No tiene permiso para acceder a este recurso.");
+        return "403";
+    }
+
     @GetMapping("/register")
     public String register() {
         return "register";
@@ -62,40 +75,10 @@ public class HomeController {
     }
 
     @GetMapping("/login")
-    public String loginPage(Model model, HttpServletRequest request) {
-        // Si ya hay token en sesión, mandarlo directo al visualizador
-        String token = (String) request.getSession().getAttribute("accessToken");
-        if (token != null) {
-            return "redirect:/visualizador";
-        }
-        return "login"; // tu template login.html
+    public String login() {
+        return "login";
     }
 
-    // 👉 Procesar login
-    @PostMapping("/login")
-    public String handleLogin(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            HttpServletRequest request,
-            Model model
-    ) {
-        try {
-            AuthResponseDTO authResponse = loginApiService.login(username, password);
-
-            if (authResponse != null && authResponse.getAccessToken() != null) {
-                request.getSession().setAttribute("accessToken", authResponse.getAccessToken());
-                request.getSession().setAttribute("refreshToken", authResponse.getRefreshToken());
-
-                return "redirect:/visualizador";
-            } else {
-                model.addAttribute("error", "Credenciales inválidas");
-                return "login";
-            }
-        } catch (Exception e) {
-            model.addAttribute("error", "Error al iniciar sesión: " + e.getMessage());
-            return "login";
-        }
-    }
 
     // 👉 Cerrar sesión
     @GetMapping("/logout")

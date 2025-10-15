@@ -39,6 +39,8 @@ public class LoginApiService {
                     .retrieve()
                     .bodyToMono(AuthResponseDTO.class)
                     .block();
+            System.out.println("🎯 === LOGIN EXITOSO ==="+response);
+
             return response;
         } catch (WebClientResponseException e) {
             log.error(e.getMessage());
