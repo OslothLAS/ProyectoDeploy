@@ -23,8 +23,8 @@
     </div>
 
     <div class="form-container">
-        <form id="crearHechoForm">
-            <div class="form-grid">
+        <form th:action="@{/hecho}" method="post" enctype="multipart/form-data">
+        <div class="form-grid">
 
                 <div class="form-group full-width">
                     <label for="titulo">Título del Hecho *</label>
@@ -166,71 +166,6 @@
 <script>
     lucide.createIcons();
 
-    document.getElementById('crearHechoForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-
-        // Build the data object matching backend structure
-        const data = {
-            titulo: formData.get('titulo'),
-            descripcion: formData.get('descripcion'),
-            categoria: formData.get('categoria'),
-            ubicacion: {
-                latitud: formData.get('latitud'),
-                longitud: formData.get('longitud'),
-                localidad: {
-                    nombre: formData.get('localidad'),
-                    provincia: {
-                        id: parseInt(formData.get('provincia'))
-                    }
-                }
-            },
-            fechaHecho: new Date(formData.get('fechaHecho')).toISOString(),
-            multimedia: [],
-            mostrarDatos: formData.get('mostrarDatos') === 'on'
-        };
-
-        // Handle multimedia files
-        const files = formData.getAll('multimedia');
-        if (files && files.length > 0 && files[0].size > 0) {
-            // Here you would upload files and get URLs
-            // For now, we'll create placeholder structure
-            data.multimedia = Array.from(files).map(file => ({
-                url: `~/uploads/${file.name}`
-            }));
-        }
-
-        console.log('[v0] Datos formateados para el backend:', JSON.stringify(data, null, 2));
-
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/hechos', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(data)
-        // });
-
-        document.getElementById('successMessage').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => {
-            this.reset();
-            document.getElementById('successMessage').style.display = 'none';
-        }, 3000);
-    });
-
-    // File upload feedback
-    document.getElementById('multimedia').addEventListener('change', function(e) {
-        const files = e.target.files;
-        const label = document.querySelector('.file-upload-label span');
-        if (files.length > 0) {
-            label.textContent = `${files.length} archivo(s) seleccionado(s)`;
-        } else {
-            label.textContent = 'Arrastra archivos aquí o haz clic para seleccionar';
-        }
-    });
-
-    // Set current date as default
-    document.getElementById('fecha').valueAsDate = new Date();
 </script>
 </body>
 </html>

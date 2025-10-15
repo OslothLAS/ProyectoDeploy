@@ -1,6 +1,7 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
@@ -33,18 +34,14 @@ public class HechosApiService {
     }
 
     // Crear un hecho
-    public HechoOutputDTO createHecho(HechoInputDTO hechoDTO) {
-        HechoOutputDTO response = webApiCallerService.post(
-                hechosServiceUrl + "/hechos",
+    public void createHecho(HechoApiDto hechoDTO) {
+        webApiCallerService.post(
+                hechosServiceUrl + "/api/hechos",
                 hechoDTO,
-                HechoOutputDTO.class
+                Void.class
         );
-
-        if (response == null) {
-            throw new RuntimeException("Error al crear hecho en el servicio externo");
-        }
-        return response;
     }
+
 
     // Obtener todos los hechos
     public List<HechoOutputDTO> obtenerHechos() {
