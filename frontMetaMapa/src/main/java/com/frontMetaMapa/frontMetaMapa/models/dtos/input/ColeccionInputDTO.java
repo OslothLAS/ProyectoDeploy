@@ -16,6 +16,6 @@ public class ColeccionInputDTO {
     @JsonProperty("fuentes")
     private List<FuenteInputDTO> fuentes;
     @JsonProperty("criterios")
-    private List<CriterioDePertenenciaDTO> criterios;
+    private List<CriterioDePertenenciaInputDTO> criterios;
     private String estrategiaConsenso;
 }

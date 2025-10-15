@@ -1,6 +1,11 @@
 package com.frontMetaMapa.frontMetaMapa.models.dtos.output;
 
-public class CriterioDePertenenciaDTO {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class CriterioDePertenenciaOutputDTO {
     private Long id;
     private String tipo;
     private String valor;

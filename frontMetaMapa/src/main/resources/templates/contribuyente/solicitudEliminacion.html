@@ -22,13 +22,15 @@
 
     <p>Si consideras que un hecho debe ser eliminado del sistema, completa este formulario. La justificación debe tener al menos <strong>500 caracteres</strong>.</p>
 
-    <form id="form-eliminacion">
+    <form th:action="@{/solicitar-eliminacion}" th:object="${solicitudInputDTO}" method="post" id="form-eliminacion">
         <label for="justificacion">Justificación de la Solicitud</label>
-        <textarea id="justificacion" name="justificacion" minlength="500" placeholder="Escribe aquí los fundamentos para la eliminación..." required></textarea>
+        <textarea id="justificacion" th:field="*{justificacion}" minlength="500"
+                  placeholder="Escribe aquí los fundamentos para la eliminación..." required></textarea>
         <span class="note">Tu justificación debe tener al menos 500 caracteres.</span>
 
         <button type="submit" class="btn-primary">Enviar Solicitud</button>
     </form>
+
 </div>
 
 <!-- Footer -->

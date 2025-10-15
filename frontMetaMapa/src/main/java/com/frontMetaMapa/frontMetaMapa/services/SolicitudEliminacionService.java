@@ -15,9 +15,9 @@ public class SolicitudEliminacionService {
     /**
      * Crea una nueva solicitud de eliminación.
      */
-    public SolicitudOutputDTO crearSolicitud(SolicitudInputDTO solicitudDTO) {
+    public void crearSolicitud(SolicitudInputDTO solicitudDTO) {
         validarDatosBasicos(solicitudDTO);
-        return solicitudesEliminacionApiService.createSolicitud(solicitudDTO);
+        solicitudesEliminacionApiService.createSolicitud(solicitudDTO);
     }
 
     /**

@@ -36,51 +36,18 @@ public class SolicitudesEliminacionApiService {
         this.authServiceUrl = authServiceUrl;
         this.solicitudesServiceUrl = solicitudesServiceUrl;
     }
-    public AuthResponseDTO login(String username, String password) {
-        try {
-            AuthResponseDTO response = webClient
-                    .post()
-                    .uri(authServiceUrl + "/auth")
-                    .bodyValue(Map.of(
-                            "username", username,
-                            "password", password
-                    ))
-                    .retrieve()
-                    .bodyToMono(AuthResponseDTO.class)
-                    .block();
-            return response;
-        } catch (WebClientResponseException e) {
-            log.error(e.getMessage());
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                // Login fallido - credenciales incorrectas
-                return null;
-            }
-            // Otros errores HTTP
-            throw new RuntimeException("Error en el servicio de autenticación: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error de conexión con el servicio de autenticación: " + e.getMessage(), e);
-        }
-    }
 
-    public UserRolesPermissionsDTO getRolesPermisos(String accessToken) {
-        try {
-            UserRolesPermissionsDTO response = webApiCallerService.getWithAuth(
-                    authServiceUrl + "/auth/user/roles-permisos",
-                    accessToken,
-                    UserRolesPermissionsDTO.class
-            );
-            return response;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException("Error al obtener roles y permisos: " + e.getMessage(), e);
-        }
-    }
-    public SolicitudOutputDTO createSolicitud(SolicitudInputDTO solicitudDTO){
-        SolicitudOutputDTO response = webApiCallerService.post(solicitudesServiceUrl + "/solicitudes", solicitudDTO, SolicitudOutputDTO.class);
+    public void createSolicitud(SolicitudInputDTO solicitudDTO) {
+        Integer response = webApiCallerService.post(
+                solicitudesServiceUrl + "/solicitudes",
+                solicitudDTO,
+                Integer.class // sigue esperando el ID, pero no lo usamos
+        );
+
         if (response == null) {
             throw new RuntimeException("Error al crear solicitud en el servicio externo");
         }
-        return response;
+        // No devolvemos nada, solo verificamos que el POST salió bien
     }
 
     public SolicitudOutputDTO obtenerSolicitudPorId(String id) {
