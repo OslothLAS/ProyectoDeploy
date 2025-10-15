@@ -2,12 +2,14 @@ package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.*;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,10 @@ public class HechoService {
         return hechoApiService.obtenerHechos();
     }
 
+    public  List<HechoApiOutputDto> obtenerHechosPorUsername(String username) {
+        return hechoApiService.getHechosByUsername(username);
+    }
+
     // Obtener hecho por ID
     public Optional<HechoOutputDTO> obtenerHechoPorId(Long id) {
         try {
@@ -33,9 +39,13 @@ public class HechoService {
     }
 
     // Crear un hecho
-    public HechoOutputDTO crearHecho(HechoInputDTO hechoDTO) {
-        validarDatosBasicos(hechoDTO);
-        return hechoApiService.createHecho(hechoDTO);
+    public void crearHecho(HechoInputDTO dto) {
+        validarDatosBasicos(dto);
+
+        HechoApiInputDto apiDTO = mapearAHechoApiDto(dto);
+
+        // 🔹 Llamar al servicio que hace el POST real
+        hechoApiService.createHecho(apiDTO);
     }
 
     // Actualizar un hecho
@@ -49,6 +59,45 @@ public class HechoService {
         validarDatosBasicos(hechoDTO);
 
         return hechoApiService.actualizarHecho(id, hechoDTO);
+    }
+
+    // 🧩 Mapeo de DTO de entrada a DTO del backend (API)
+    private HechoApiInputDto mapearAHechoApiDto(HechoInputDTO dto) {
+        // Ubicación
+        UbicacionDTO ubicacion = new UbicacionDTO();
+        ubicacion.setLatitud(dto.getLatitud());
+        ubicacion.setLongitud(dto.getLongitud());
+
+        LocalidadDTO localidad = new LocalidadDTO();
+        localidad.setNombre(dto.getLocalidad());
+
+        ProvinciaDTO provincia = new ProvinciaDTO();
+        provincia.setId(dto.getProvincia());
+
+        localidad.setProvincia(provincia);
+        ubicacion.setLocalidad(localidad);
+
+        // Crear DTO API
+        HechoApiInputDto apiDTO = new HechoApiInputDto();
+        apiDTO.setTitulo(dto.getTitulo());
+        apiDTO.setDescripcion(dto.getDescripcion());
+        apiDTO.setCategoria(dto.getCategoria());
+        apiDTO.setUbicacion(ubicacion);
+        apiDTO.setFechaHecho(dto.getFechaHecho());
+        apiDTO.setMostrarDatos(dto.getMostrarDatos());
+
+        // Multimedia
+        if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
+            List<MultimediaDTO> multimediaList = new ArrayList<>();
+            for (MultipartFile file : dto.getMultimedia()) {
+                MultimediaDTO media = new MultimediaDTO();
+                media.setUrl(file.getOriginalFilename()); // o el path al subirlo
+                multimediaList.add(media);
+            }
+            apiDTO.setMultimedia(multimediaList);
+        }
+
+        return apiDTO;
     }
 
     // Validaciones básicas

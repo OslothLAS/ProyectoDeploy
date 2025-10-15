@@ -1,18 +1,12 @@
 package com.frontMetaMapa.frontMetaMapa.models.dtos.input;
 
-
-
-
-
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,23 +14,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoInputDTO {
-    private AutorDTO autor;
-    private Boolean esValido;
-    private List<MultimediaDTO> multimedia;
-    private List<String> etiquetas = new ArrayList<>();
-    private List<ColeccionInputDTO> colecciones = new ArrayList<>();
-    private List<String> handles = new ArrayList<>();
-    private Origen origen;
-    private FuenteOrigen fuenteOrigen;
-    private Boolean mostrarDatos; //ver esto
-    private LocalDateTime fechaCreacion;
-    private Duration plazoEdicion;
-    private Boolean esEditable;
-
-    //datos
     private String titulo;
     private String descripcion;
-    private CategoriaDTO categoria;
-    private UbicacionDTO ubicacion;
+    private String categoria;
+
+    // Campos planos desde el form
+    private String latitud;
+    private String longitud;
+    private String localidad;
+    private Long provincia;
+
     private LocalDateTime fechaHecho;
+
+    // Archivos multimedia del input type="file"
+    private List<MultipartFile> multimedia;
+
+    private Boolean mostrarDatos = false;
 }

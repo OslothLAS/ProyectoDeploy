@@ -19,12 +19,6 @@ public class ContribuyenteController {
         }
 
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
-    @GetMapping("/mis-contribuciones")
-    public String misContribuciones(){
-        return "contribuyente/misContribuciones";
-    }
-
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/solicitud-eliminacion")
     public String solicitudEliminacion(){
         return "contribuyente/solicitudEliminacion";

@@ -1,15 +1,15 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiInputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -33,17 +33,20 @@ public class HechosApiService {
     }
 
     // Crear un hecho
-    public HechoOutputDTO createHecho(HechoInputDTO hechoDTO) {
-        HechoOutputDTO response = webApiCallerService.post(
-                hechosServiceUrl + "/hechos",
+    public void createHecho(HechoApiInputDto hechoDTO) {
+        webApiCallerService.post(
+                hechosServiceUrl + "/api/hechos",
                 hechoDTO,
-                HechoOutputDTO.class
+                Void.class
         );
+    }
 
-        if (response == null) {
-            throw new RuntimeException("Error al crear hecho en el servicio externo");
-        }
-        return response;
+
+    public List<HechoApiOutputDto> getHechosByUsername(String username) {
+        return webApiCallerService.getList(
+                hechosServiceUrl + "/api/hechos/" + username,
+                HechoApiOutputDto.class
+        );
     }
 
     // Obtener todos los hechos
