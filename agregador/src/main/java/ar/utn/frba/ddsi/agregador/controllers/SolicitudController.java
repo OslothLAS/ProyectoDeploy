@@ -26,8 +26,8 @@ public class SolicitudController {
 
     @GetMapping("/{idSolicitud}")
     @PreAuthorize("hasAnyRole('ADMIN','CONTRIBUYENTE')")
-    public SolicitudOutputDTO getSolicitud(@PathVariable("idSolicitud") Long idSolicitud) {
-        return solicitudToDTO(this.solicitudService.getSolicitud(idSolicitud));
+    public SolicitudOutputDTO getSolicitud(@PathVariable("idSolicitud") Long solicitante) {
+        return solicitudToDTO(this.solicitudService.getSolicitud(solicitante));
     }
 
     @PutMapping("/{id_solicitud}/aceptar")

@@ -3,6 +3,8 @@ package ar.utn.frba.ddsi.agregador.utils;
 import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.solicitudes.SolicitudEliminacion;
 
+import java.util.Optional;
+
 
 public class SolicitudUtil {
     public static SolicitudOutputDTO solicitudToDTO(SolicitudEliminacion solicitud) {

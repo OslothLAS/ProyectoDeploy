@@ -25,7 +25,10 @@ public class SolicitudEliminacion {
     private Long hecho;
 
     @JoinColumn(name = "usuario_id")
-    private Long solicitante;
+    private Long usuarioID;
+
+    @JoinColumn(name = "solicitante")
+    private String solicitante;
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaDeCreacion;
@@ -37,12 +40,13 @@ public class SolicitudEliminacion {
     @JoinColumn(name = "solicitud_id")
     private List<EstadoSolicitud> estados;
 
-    public SolicitudEliminacion(String justificacion,Long hechoId, Long solicitante) {
+    public SolicitudEliminacion(String justificacion,Long hechoId, String solicitante) {
         this.justificacion = justificacion;
         this.hecho = hechoId;
         this.solicitante = solicitante;
         this.fechaDeCreacion = LocalDateTime.now();
         this.estados = new ArrayList<>();
+
         if(DetectorDeSpam.getInstance().isSpam(justificacion)) {
             this.marcarComoSpam();
         }else{
