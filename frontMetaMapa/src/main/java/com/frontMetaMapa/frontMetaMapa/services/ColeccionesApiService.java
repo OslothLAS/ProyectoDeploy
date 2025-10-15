@@ -2,10 +2,11 @@ package com.frontMetaMapa.frontMetaMapa.services;
 
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.input.ColeccionInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.AuthResponseDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.ColeccionOutputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.DTOS.output.RolesPermisosDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.ColeccionInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UserRolesPermissionsDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +36,32 @@ public class ColeccionesApiService {
 
 
     public List<ColeccionOutputDTO> obtenerTodasLasColecciones() {
-        List<ColeccionOutputDTO> response = webApiCallerService.getList(coleccionesServiceUrl + "/colecciones", ColeccionOutputDTO.class);
+        List<ColeccionOutputDTO> response = webApiCallerService.getListWithoutToken(
+                coleccionesServiceUrl + "/colecciones",
+                ColeccionOutputDTO.class
+        );
         return response != null ? response : List.of();
     }
 
-    public ColeccionOutputDTO obtenerColeccionPorId(String id) {
-        ColeccionOutputDTO response = webApiCallerService.get(coleccionesServiceUrl + "/colecciones/" + id, ColeccionOutputDTO.class);
+    public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion) {
+        List<HechoOutputDTO> response = webApiCallerService.getListWithoutToken(
+                coleccionesServiceUrl + "/colecciones/" + idColeccion + "/hechos",
+                HechoOutputDTO.class
+        );
+        return response != null ? response : List.of();
+    }
+
+    public ColeccionOutputDTO obtenerColeccionPorId(Long id) {
+        ColeccionOutputDTO response = webApiCallerService.getWithoutToken(
+                coleccionesServiceUrl + "/colecciones/" + id,
+                ColeccionOutputDTO.class
+        );
         if (response == null) {
-            throw new NotFoundException("Coleccion", id);
+            throw new NotFoundException("Coleccion");
         }
         return response;
     }
+
 
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
         ColeccionOutputDTO response = webApiCallerService.post(coleccionesServiceUrl + "/colecciones", coleccionDTO, ColeccionOutputDTO.class);
@@ -55,7 +71,7 @@ public class ColeccionesApiService {
         return response;
     }
 
-    public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO coleccionDTO) {
+    public ColeccionOutputDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionDTO) {
         ColeccionOutputDTO response = webApiCallerService.put(coleccionesServiceUrl + "/colecciones/" + id, coleccionDTO, ColeccionOutputDTO.class);
         if (response == null) {
             throw new RuntimeException("Error al actualizar coleccion en el servicio externo");
@@ -63,11 +79,11 @@ public class ColeccionesApiService {
         return response;
     }
 
-    public void eliminarColeccion(String id) {
+    public void eliminarColeccion(Long id) {
         webApiCallerService.delete(coleccionesServiceUrl + "/colecciones/" + id);
     }
 
-    public boolean existeColeccion(String id) {
+    public boolean existeColeccion(Long id) {
         try {
             obtenerColeccionPorId(id);
             return true;

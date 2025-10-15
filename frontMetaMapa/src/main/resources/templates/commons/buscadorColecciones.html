@@ -82,6 +82,13 @@
             // Inicializa Lucide icons
             lucide.replace();
         });
+        function goToColeccion(btn) {
+    const id = btn.dataset.id;
+    window.location.href = `/colecciones/show?id=${id}`;
+}
+
+
+
     </script>
 </head>
 <body>
@@ -156,33 +163,48 @@
     <div class="collections-grid" id="collectionsGrid">
         <div class="collection-card"
              th:each="coleccion : ${colecciones}"
-             th:data-category="${coleccion.categoria}"
-             th:data-region="${coleccion.region}"
-             th:data-year="${#dates.format(coleccion.fechaYHoraDeActualizacion,'yyyy')}"
-             th:onclick="'window.location.href=\'/colecciones/' + ${coleccion.handle} + '\'''">
+             th:data-category="'general'"
+             th:data-region="'global'"
+             th:data-year="${#temporals.format(coleccion.fechaYHoraDeActualizacion, 'yyyy')}"
 
-            <div class="card-header">
+             >
+
+
+        <div class="card-header">
                 <h3 class="card-title" th:text="${coleccion.titulo}">Título</h3>
-                <span class="card-category" th:text="${coleccion.categoria}">Categoría</span>
+                <span class="card-category">General</span>
             </div>
 
             <div class="card-content">
                 <p class="card-description" th:text="${coleccion.descripcion}">Descripción</p>
                 <div class="card-stats">
-                    <span class="stat"><i data-lucide="bar-chart-3"></i> <span th:text="${coleccion.numeroDeHechos}">0</span> hechos</span>
-                    <span class="stat"><i data-lucide="users"></i> <span th:text="${coleccion.numeroDeContribuyentes}">0</span> contribuyentes</span>
-                    <span class="stat"><i data-lucide="map-pin"></i> <span th:text="${coleccion.region}">Región</span></span>
+                    <span class="stat"><i data-lucide="bar-chart-3"></i> <span>0</span> hechos</span>
+                    <span class="stat"><i data-lucide="users"></i> <span th:text="${#lists.size(coleccion.importadores)}">0</span> contribuyentes</span>
+                    <span class="stat"><i data-lucide="map-pin"></i> <span>Global</span></span>
                 </div>
                 <div class="card-tags">
-                    <span class="tag" th:each="tag : ${coleccion.tags}" th:text="${tag}">Etiqueta</span>
+                    <span class="tag" th:text="${coleccion.consenso}">Etiqueta</span>
                 </div>
                 <div class="card-footer">
-                    <span class="card-date" th:text="'Actualizado: ' + ${#dates.format(coleccion.fechaYHoraDeActualizacion,'dd MMM yyyy')}">Fecha</span>
-                    <button class="view-btn">Ver Colección</button>
+                    <span class="card-date"
+                          th:text="'Actualizado: ' + ${#temporals.format(coleccion.fechaYHoraDeActualizacion,'dd MMM yyyy')}">
+    Fecha
+</span>
+
+                    <button class="action-btn view-btn"
+                            th:data-id="${coleccion.id}"
+                            onclick="goToColeccion(this)">
+                        <i data-lucide="eye"></i> Ver Colección
+                    </button>
+
+
+
+
                 </div>
             </div>
         </div>
     </div>
+
 </main>
 
 <div th:replace="~{layout/footer :: footer}"></div>
