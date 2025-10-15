@@ -36,22 +36,32 @@ public class ColeccionesApiService {
 
 
     public List<ColeccionOutputDTO> obtenerTodasLasColecciones() {
-        List<ColeccionOutputDTO> response = webApiCallerService.getList(coleccionesServiceUrl + "/colecciones", ColeccionOutputDTO.class);
+        List<ColeccionOutputDTO> response = webApiCallerService.getListWithoutToken(
+                coleccionesServiceUrl + "/colecciones",
+                ColeccionOutputDTO.class
+        );
         return response != null ? response : List.of();
     }
 
-    public List<HechoOutputDTO> obtenerHechosPorColeccionId (Long idColeccion) {
-        List<HechoOutputDTO> response = webApiCallerService.getList(coleccionesServiceUrl + "/colecciones/" + idColeccion + "/hechos", HechoOutputDTO.class);
+    public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion) {
+        List<HechoOutputDTO> response = webApiCallerService.getListWithoutToken(
+                coleccionesServiceUrl + "/colecciones/" + idColeccion + "/hechos",
+                HechoOutputDTO.class
+        );
         return response != null ? response : List.of();
     }
 
     public ColeccionOutputDTO obtenerColeccionPorId(Long id) {
-        ColeccionOutputDTO response = webApiCallerService.get(coleccionesServiceUrl + "/colecciones/" + id, ColeccionOutputDTO.class);
+        ColeccionOutputDTO response = webApiCallerService.getWithoutToken(
+                coleccionesServiceUrl + "/colecciones/" + id,
+                ColeccionOutputDTO.class
+        );
         if (response == null) {
             throw new NotFoundException("Coleccion");
         }
         return response;
     }
+
 
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
         ColeccionOutputDTO response = webApiCallerService.post(coleccionesServiceUrl + "/colecciones", coleccionDTO, ColeccionOutputDTO.class);

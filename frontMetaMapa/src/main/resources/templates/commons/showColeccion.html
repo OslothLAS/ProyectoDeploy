@@ -51,10 +51,11 @@
                     <div class="fact-location">
                         <i data-lucide="map-pin"></i>
                         <span th:text="${hecho.ubicacion != null && hecho.ubicacion.localidad != null ?
-               hecho.ubicacion.localidad.nombre + (hecho.ubicacion.localidad.provincia != null ? ', Provincia ' + hecho.ubicacion.localidad.provincia.nombre : '')
+               hecho.ubicacion.localidad.nombre + (hecho.ubicacion.localidad.provincia != null ? ', Provincia ID ' + hecho.ubicacion.localidad.provincia.id : '')
                : 'Global'}">
     Ubicación
 </span>
+
 
 
                     </div>
@@ -70,13 +71,15 @@
                 <a th:href="@{'/hechos/' + ${hecho.id}}" class="action-btn view-btn">
                     <i data-lucide="eye"></i> Ver Detalles
                 </a>
+
+                <!-- Botón Eliminar solo para ADMIN o CONTRIBUYENTE -->
                 <a href="#" class="action-btn delete-request-btn"
                    data-id="${hecho.id}"
                    data-title="${hecho.titulo}"
-                   onclick="openDeleteModalFromData(this)">
+                   onclick="openDeleteModalFromData(this)"
+                   th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''CONTRIBUYENTE'')')}">
                     <i data-lucide="trash-2"></i> Eliminar
                 </a>
-
             </div>
         </div>
     </div>

@@ -161,6 +161,35 @@ public class WebApiCallerService {
             return null;
         });
     }
+    public <T> T getWithoutToken(String url, Class<T> responseType) {
+        try {
+            return webClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToMono(responseType)
+                    .block();
+        } catch (Exception e) {
+            throw new RuntimeException("Error en llamada al API sin token: " + e.getMessage(), e);
+        }
+    }
+    /**
+     * Ejecuta una llamada HTTP GET que retorna lista sin token
+     */
+    public <T> java.util.List<T> getListWithoutToken(String url, Class<T> responseType) {
+        try {
+            return webClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToFlux(responseType)
+                    .collectList()
+                    .block();
+        } catch (Exception e) {
+            throw new RuntimeException("Error en llamada al API sin token: " + e.getMessage(), e);
+        }
+    }
+
 
     /**
      * Refresca el access token usando el refresh token
