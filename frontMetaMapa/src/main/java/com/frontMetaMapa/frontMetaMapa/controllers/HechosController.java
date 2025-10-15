@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,11 +26,6 @@ public class HechosController {
         return "commons/buscadorHechos";
     }
 
-    @GetMapping("/hecho/{id}")
-    public String detalleHecho(@PathVariable Long id, Model model) {
-        model.addAttribute("idHecho", id);
-        return "commons/detalleHecho";
-    }
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/hecho/{id}/editar")
     public String editarHecho(@PathVariable Long id, Model model) {
@@ -55,5 +51,28 @@ public class HechosController {
         model.addAttribute("hechos", hechos);
         model.addAttribute("username", username);
         return "contribuyente/misContribuciones"; // Thymeleaf template
+    }
+
+    @GetMapping("/hecho/{titulo}")
+    public String detalleHecho(@PathVariable String titulo, Model model, HttpServletRequest request) {
+        String username = (String) request.getSession().getAttribute("username");
+        if (username == null) {
+            return "redirect:/login";
+        }
+        try {
+            List<HechoApiOutputDto> hechos = hechoService.obtenerHechosPorUsername(username);
+            Optional<HechoApiOutputDto> hechoEncontrado = hechos.stream()
+                    .filter(hecho -> hecho.getTitulo().equals(titulo))
+                    .findFirst();
+            if (hechoEncontrado.isPresent()) {
+                model.addAttribute("hecho", hechoEncontrado.get());
+                return "commons/detalleHecho";
+            } else {
+                // Si no encuentra el hecho, redirigir con error
+                return "redirect:/mis-contribuciones?error=hecho-no-encontrado";
+            }
+        } catch (Exception e) {
+            return "redirect:/mis-contribuciones?error=error-servidor";
+        }
     }
 }
