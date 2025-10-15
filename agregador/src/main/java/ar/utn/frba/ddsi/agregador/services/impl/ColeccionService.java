@@ -6,6 +6,7 @@ import ar.utn.frba.ddsi.agregador.dtos.output.ColeccionOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.DescripcionStat;
 import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.factories.CriterioDePertenenciaFactory;
 import ar.utn.frba.ddsi.agregador.models.repositories.*;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -46,18 +46,19 @@ public class ColeccionService implements IColeccionService {
     private final IUbicacionRepository ubicacionRepository;
     private final IProvinciaRepository provinciaRepository;
     private final ILocalidadRepository localidadRepository;
-
+    private final IFuenteRepository fuenteRepository;
     @Autowired
     @Qualifier("hechoWebClient")
     private WebClient hechoWebClient;
 
-    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository, IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository) {
+    public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository, ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository, IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository,IFuenteRepository fuenteRepository) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
         this.categoriaRepository = categoriaRepository;
         this.ubicacionRepository = ubicacionRepository;
         this.provinciaRepository = provinciaRepository;
         this.localidadRepository = localidadRepository;
+        this.fuenteRepository = fuenteRepository;
     }
 
 
@@ -229,12 +230,28 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
-    public List<Hecho> getHechosDeColeccion(Long idColeccion, String modoNavegacion) {
+    public List<Hecho> getHechosDeColeccion(Long idColeccion, String modoNavegacion, Map<String, String> filtros) {
         Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
 
         List<Hecho> hechosDeColeccion = tomarHechosDeColeccion(coleccion);
         NavegacionStrategy strategy = NavegacionStrategyFactory.getStrategy(modoNavegacion);
+
+        if (filtros.containsKey("fuente")) {
+            String puertoFuente = filtros.get("fuente");
+            Fuente fuente = this.fuenteRepository.findByPuerto(puertoFuente);
+            if (fuente != null ) {
+                hechosDeColeccion = hechosDeColeccion.stream().filter(h-> h.getFuenteOrigen().equals(fuente.getOrigenHechos())).collect(Collectors.toList());
+            }
+        }
+
+        List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
+
+        hechosDeColeccion = hechosDeColeccion.stream()
+                .filter(Hecho::getEsValido)
+                .filter(hecho -> criterios.isEmpty() ||
+                        criterios.stream().allMatch(c -> c.cumpleCriterio(hecho)))
+                .collect(Collectors.toList());
 
         return strategy.navegar(coleccion, hechosDeColeccion);
     }
@@ -320,8 +337,26 @@ public class ColeccionService implements IColeccionService {
         hechoRepository.saveAll(hechosAsignados);
     }
 
-    public List<HechoOutputDTO> obtenerTodosLosHechos(){
-        return hechosToDTO(hechoRepository.findAll());
+    public List<HechoOutputDTO> obtenerTodosLosHechos(Map<String, String> filtros){
+        List<Hecho> hechos = hechoRepository.findAll();
+
+        if (filtros.containsKey("fuente")) {
+            String puertoFuente = filtros.get("fuente");
+            Fuente fuente = this.fuenteRepository.findByPuerto(puertoFuente);
+            if (fuente != null ) {
+                hechos = hechos.stream().filter(h-> h.getFuenteOrigen().equals(fuente.getOrigenHechos())).collect(Collectors.toList());
+            }
+        }
+
+        List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
+
+        hechos = hechos.stream()
+                .filter(Hecho::getEsValido)
+                .filter(hecho -> criterios.isEmpty() ||
+                        criterios.stream().allMatch(c -> c.cumpleCriterio(hecho)))
+                .collect(Collectors.toList());
+
+        return hechosToDTO(hechos);
     }
 
     public List<StatDTO> getProvinciaMasReportadaPorTodasLasColecciones() {

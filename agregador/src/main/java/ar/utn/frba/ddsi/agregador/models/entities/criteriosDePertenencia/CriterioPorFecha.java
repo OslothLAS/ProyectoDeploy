@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -14,14 +13,14 @@ import java.time.LocalDateTime;
 @DiscriminatorValue("fecha")
 public class CriterioPorFecha extends CriterioDePertenencia {
     @Column(name = "fecha_desde")
-    private final LocalDateTime fechaInicio;
+    private final LocalDate fechaInicio;
     @Column(name = "fecha_hasta")
-    private final LocalDateTime fechaFin;
+    private final LocalDate fechaFin;
 
     @Transient
     private final String tipo;
 
-    public CriterioPorFecha(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+    public CriterioPorFecha(LocalDate fechaInicio, LocalDate fechaFin) {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.tipo = "fecha";
@@ -29,7 +28,14 @@ public class CriterioPorFecha extends CriterioDePertenencia {
 
     @Override
     public boolean cumpleCriterio(Hecho hecho) {
-        LocalDateTime fechaHecho = hecho.getFechaHecho();
+        LocalDate fechaHecho = hecho.getFechaHecho().toLocalDate();
+        if(fechaFin == null && fechaInicio != null){
+            return !fechaHecho.isBefore(fechaInicio);
+        }
+        if(fechaFin != null && fechaInicio == null){
+            return !fechaHecho.isAfter(fechaFin);
+        }
+
         return !fechaHecho.isBefore(fechaInicio) && !fechaHecho.isAfter(fechaFin);
     }
 

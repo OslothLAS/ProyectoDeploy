@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 
 import java.util.List;
+import java.util.Map;
 
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
 
@@ -53,8 +54,9 @@ public class ColeccionController {
     @GetMapping("/{idColeccion}/hechos")
     public ResponseEntity<List<HechoOutputDTO>> getHechosDeColeccion(
             @PathVariable(name = "idColeccion") Long idColeccion,
-            @RequestParam(name = "modoNavegacion", defaultValue = "IRRESTRICTO") String modoNavegacion) {
-        List<Hecho> hechos = this.coleccionService.getHechosDeColeccion(idColeccion, modoNavegacion);
+            @RequestParam(name = "modoNavegacion", defaultValue = "IRRESTRICTO") String modoNavegacion,
+            @RequestParam Map<String, String> filtros) {
+        List<Hecho> hechos = this.coleccionService.getHechosDeColeccion(idColeccion, modoNavegacion, filtros );
         return ResponseEntity.ok(hechosToDTO(hechos));
     }
 

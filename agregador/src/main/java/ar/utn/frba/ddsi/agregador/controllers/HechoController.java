@@ -4,9 +4,11 @@ import ar.utn.frba.ddsi.agregador.dtos.output.HechoOutputDTO;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/hechos")
@@ -18,7 +20,7 @@ public class HechoController {
     }
 
     @GetMapping
-    public List<HechoOutputDTO> obtenerTodosLosHechos(){
-        return this.coleccionService.obtenerTodosLosHechos();
+    public List<HechoOutputDTO> obtenerTodosLosHechos(@RequestParam Map<String, String> filtros){
+        return this.coleccionService.obtenerTodosLosHechos(filtros);
     }
 }
