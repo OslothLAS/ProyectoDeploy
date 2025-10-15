@@ -6,6 +6,8 @@ import com.usuarios.servicioDeUsuarios.services.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import static com.usuarios.servicioDeUsuarios.utils.UsuarioUtil.usuarioToDTO;
@@ -36,4 +38,6 @@ public class UsuarioController {
         Usuario usuario = usuarioService.findById(id);
         return ResponseEntity.ok(usuarioToDTO(usuario));
     }
+
+
 }

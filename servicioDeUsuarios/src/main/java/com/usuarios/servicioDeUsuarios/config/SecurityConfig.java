@@ -3,6 +3,7 @@ package com.usuarios.servicioDeUsuarios.config;
 import com.usuarios.servicioDeUsuarios.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,7 +33,6 @@ public class SecurityConfig {
 
                     // CAMBIO CLAVE: Se agregó "/**" para permitir el acceso a sub-rutas como /api/users/1
                     auth.requestMatchers("/api/auth/**", "/api/auth/refresh", "/api/users/**").permitAll();
-
                     auth.requestMatchers("/api/auth/user/roles-permisos").authenticated();
                     auth.anyRequest().authenticated();
                 })

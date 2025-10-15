@@ -13,6 +13,7 @@ import ar.utn.frba.ddsi.agregador.models.entities.usuarios.Usuario;
 import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
+import ar.utn.frba.ddsi.agregador.models.repositories.IUsuarioRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
 import ar.utn.frba.ddsi.agregador.utils.HechoFactory;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SolicitudEliminacionService implements ISolicitudEliminacionService {
@@ -45,7 +47,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     @Transactional
     @Override
     public Long crearSolicitud(SolicitudInputDTO solicitud) {
-        hechoRepository.save(HechoFactory.crearHechoDePrueba());
         String s = this.validarJustificacion(solicitud.getJustificacion());
         solicitud.setJustificacion(s);
         this.obtenerUserPorId(solicitud.getIdSolicitante());
@@ -97,7 +98,9 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
     private void cambiarEstadoHecho(SolicitudEliminacion solicitud, Usuario admin, PosibleEstadoSolicitud estado) {
-        EstadoSolicitud estadoSolicitud = new EstadoSolicitud(admin,estado);
+        Long idAdmin = admin.getId();
+
+        EstadoSolicitud estadoSolicitud = new EstadoSolicitud(idAdmin,estado);
         if(estado == PosibleEstadoSolicitud.RECHAZADA) {
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
         }
@@ -120,9 +123,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
-        Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
-        //this.usuarioRepository.save(administrador);
-        this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.ACEPTADA);
+
+        this.cambiarEstadoHecho(solicitud,obtenerUserPorId(1L), PosibleEstadoSolicitud.ACEPTADA);
 
         Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
@@ -131,23 +133,31 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .distinct()
                 .toList();
 
+        this.invalidarHechoAgregador(hecho.getTitulo(),hecho.getDescripcion());
         for (Fuente fuente : fuentesUnicas) {
             fuente.invalidarHecho(hecho.getTitulo(),hecho.getDescripcion());
         }
-    }
 
+    }
     @Override
     public void rechazarSolicitud(Long idSolicitud) {
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
-            .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
 
-        Usuario administrador = new Usuario("el", "admin", LocalDate.now(), TipoUsuario.ADMIN);
-
-        this.cambiarEstadoHecho(solicitud,administrador, PosibleEstadoSolicitud.RECHAZADA);
+        this.cambiarEstadoHecho(solicitud,obtenerUserPorId(1L), PosibleEstadoSolicitud.RECHAZADA);
     }
 
-    public StatDTO getCantidadSpam(){
+
+    private void invalidarHechoAgregador(String titulo, String descripcion) {
+        Optional<Hecho> hechoInvalido = hechoRepository.findByTituloAndDescripcion(titulo, descripcion);
+        hechoInvalido.ifPresent(hecho -> {
+            hecho.setEsValido(false);
+            hechoRepository.save(hecho);
+        });
+    }
+
+   public StatDTO getCantidadSpam(){
         Long cantSpam = this.solicitudRepository.countSolicitudesSpam();
-        return new StatDTO(null,null,null,null, DescripcionStat.solicitudes_spam,cantSpam,LocalDateTime.now());
+        return new StatDTO("","rachazo","Solicitudes rechazadas por spam",1, DescripcionStat.solicitudes_spam,cantSpam, LocalDateTime.now());
     }
 }

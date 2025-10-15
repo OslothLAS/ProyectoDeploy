@@ -5,6 +5,7 @@ import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategie
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "coleccion")
+@EqualsAndHashCode(of = {"titulo", "descripcion"})
 public class Coleccion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

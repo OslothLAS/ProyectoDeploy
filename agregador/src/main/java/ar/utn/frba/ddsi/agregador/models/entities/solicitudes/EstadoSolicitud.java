@@ -18,9 +18,8 @@ public class EstadoSolicitud {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
     @JoinColumn(name = "evaluador_id")
-    private Usuario evaluador;
+    private Long evaluador;
 
     @Enumerated(EnumType.STRING)
     private PosibleEstadoSolicitud estado;
@@ -34,7 +33,7 @@ public class EstadoSolicitud {
     @Column(name = "spam")
     private Boolean spam;
 
-    public EstadoSolicitud(Usuario administrador, PosibleEstadoSolicitud estado) {
+    public EstadoSolicitud(Long administrador, PosibleEstadoSolicitud estado) {
         this.evaluador = administrador;
         this.estado = estado;
         this.fechaDeCreacion = LocalDateTime.now();
