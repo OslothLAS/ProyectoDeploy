@@ -8,12 +8,10 @@ import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import com.frontMetaMapa.frontMetaMapa.services.RegisterApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,14 +45,6 @@ public class HomeController {
 
     @PostMapping("/register")
     public String handleRegister(@ModelAttribute UsuarioDTO request, Model model) {
-        System.out.println("🎯 === POST /register INICIADO ===");
-        System.out.println("📝 Datos recibidos:");
-        System.out.println("  Username: " + request.getUsername());
-        System.out.println("  Nombre: " + request.getNombre());
-        System.out.println("  Apellido: " + request.getApellido());
-        System.out.println("  Fecha: " + request.getFechaNacimiento());
-        System.out.println("  Rol: " + request.getRol());
-
         try {
             boolean success = registerApiService.registerUser(request);
             System.out.println("✅ Resultado del servicio: " + success);
@@ -86,6 +76,11 @@ public class HomeController {
         request.getSession().invalidate();
         return "redirect:/login?logout";
     }
+
+    @GetMapping("/buscador-hechos")
+    public String buscadorHechos() {
+        return "commons/buscadorHechos";
+    }
 }
 
 /*
@@ -95,12 +90,10 @@ public class HomeController {
         model.addAttribute("colecciones", colecciones);
         return "commons/buscadorColecciones";
     }
+*/
 
 
-    @GetMapping("/buscador-hechos")
-    public String buscadorHechos() {
-        return "commons/buscadorHechos";
-    }
+
 
     /*
     @GetMapping("/hecho/{id}")

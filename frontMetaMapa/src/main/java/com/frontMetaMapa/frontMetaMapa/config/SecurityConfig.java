@@ -20,10 +20,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   CustomSuccessHandler successHandler) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // 🔓 Rutas públicas
                         .requestMatchers(
                                 "/login",
                                 "/register",
@@ -35,26 +35,21 @@ public class SecurityConfig {
                                 "/buscador-hechos",
                                 "/buscador-colecciones"
                         ).permitAll()
-                        // 🔒 Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
-                // 🔥 AGREGA ESTO: Deshabilitar CSRF para testing
                 .csrf(csrf -> csrf.disable())
-                // Configuración del formulario de login
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .loginProcessingUrl("/login")     // procesa el POST del formulario
-                        .defaultSuccessUrl("/", true)
-                        .failureUrl("/login?error=true")  // vuelve con error si falla
+                        .loginProcessingUrl("/login")
+                        .successHandler(successHandler) // 👈 acá reemplazamos defaultSuccessUrl
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
-                // Configuración del logout
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
-                // Manejo de excepciones
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login?unauthorized")

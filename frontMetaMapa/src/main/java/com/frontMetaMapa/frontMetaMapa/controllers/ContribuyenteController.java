@@ -12,16 +12,19 @@ public class ContribuyenteController {
         return "contribuyente/index";
     }
 
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping ("/subir-hecho")
     public String subirHecho(){
         return "contribuyente/subirHecho";
         }
 
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/mis-contribuciones")
     public String misContribuciones(){
         return "contribuyente/misContribuciones";
     }
 
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/solicitud-eliminacion")
     public String solicitudEliminacion(){
         return "contribuyente/solicitudEliminacion";
