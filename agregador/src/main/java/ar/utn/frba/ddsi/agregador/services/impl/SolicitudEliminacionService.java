@@ -113,9 +113,13 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
     @Override
-    public Optional<SolicitudEliminacion> getSolicitud(Long idSolicitud) {
-        return this.solicitudRepository.findById(idSolicitud);
+    public SolicitudEliminacion getSolicitud(Long idSolicitud) {
+        SolicitudEliminacion solicitud = this.solicitudRepository
+                .findById(idSolicitud)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con id: " + idSolicitud));
+        return solicitudRepository.findById(idSolicitud).orElse(null);
     }
+
 
 
 

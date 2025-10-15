@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface ISolicitudEliminacionService {
 
     Long crearSolicitud(SolicitudInputDTO solicitud);
-    Optional<SolicitudEliminacion> getSolicitud(Long solicitante);
+    SolicitudEliminacion getSolicitud(Long solicitante);
     String validarJustificacion(String justificacionSolicitud);
     void aceptarSolicitud(Long idSolicitud);
     void rechazarSolicitud(Long idSolicitud);
