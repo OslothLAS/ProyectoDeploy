@@ -1,16 +1,15 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiDto;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiInputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -34,7 +33,7 @@ public class HechosApiService {
     }
 
     // Crear un hecho
-    public void createHecho(HechoApiDto hechoDTO) {
+    public void createHecho(HechoApiInputDto hechoDTO) {
         webApiCallerService.post(
                 hechosServiceUrl + "/api/hechos",
                 hechoDTO,
@@ -42,6 +41,13 @@ public class HechosApiService {
         );
     }
 
+
+    public List<HechoApiOutputDto> getHechosByUsername(String username) {
+        return webApiCallerService.getList(
+                hechosServiceUrl + "/api/hechos/" + username,
+                HechoApiOutputDto.class
+        );
+    }
 
     // Obtener todos los hechos
     public List<HechoOutputDTO> obtenerHechos() {

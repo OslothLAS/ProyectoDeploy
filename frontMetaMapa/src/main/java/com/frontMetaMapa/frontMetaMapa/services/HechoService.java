@@ -3,6 +3,7 @@ package com.frontMetaMapa.frontMetaMapa.services;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.*;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class HechoService {
         return hechoApiService.obtenerHechos();
     }
 
+    public  List<HechoApiOutputDto> obtenerHechosPorUsername(String username) {
+        return hechoApiService.getHechosByUsername(username);
+    }
+
     // Obtener hecho por ID
     public Optional<HechoOutputDTO> obtenerHechoPorId(Long id) {
         try {
@@ -37,6 +42,28 @@ public class HechoService {
     public void crearHecho(HechoInputDTO dto) {
         validarDatosBasicos(dto);
 
+        HechoApiInputDto apiDTO = mapearAHechoApiDto(dto);
+
+        // 🔹 Llamar al servicio que hace el POST real
+        hechoApiService.createHecho(apiDTO);
+    }
+
+    // Actualizar un hecho
+    public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO hechoDTO) {
+        // Verificar que existe
+        hechoApiService.obtenerHechos().stream()
+                .filter(h -> h.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
+
+        validarDatosBasicos(hechoDTO);
+
+        return hechoApiService.actualizarHecho(id, hechoDTO);
+    }
+
+    // 🧩 Mapeo de DTO de entrada a DTO del backend (API)
+    private HechoApiInputDto mapearAHechoApiDto(HechoInputDTO dto) {
+        // Ubicación
         UbicacionDTO ubicacion = new UbicacionDTO();
         ubicacion.setLatitud(dto.getLatitud());
         ubicacion.setLongitud(dto.getLongitud());
@@ -50,8 +77,8 @@ public class HechoService {
         localidad.setProvincia(provincia);
         ubicacion.setLocalidad(localidad);
 
-        // 🔹 Crear el DTO que se enviará al backend
-        HechoApiDto apiDTO = new HechoApiDto();
+        // Crear DTO API
+        HechoApiInputDto apiDTO = new HechoApiInputDto();
         apiDTO.setTitulo(dto.getTitulo());
         apiDTO.setDescripcion(dto.getDescripcion());
         apiDTO.setCategoria(dto.getCategoria());
@@ -59,37 +86,18 @@ public class HechoService {
         apiDTO.setFechaHecho(dto.getFechaHecho());
         apiDTO.setMostrarDatos(dto.getMostrarDatos());
 
-        // 🔹 Manejo opcional de archivos multimedia (si los subís)
+        // Multimedia
         if (dto.getMultimedia() != null && !dto.getMultimedia().isEmpty()) {
             List<MultimediaDTO> multimediaList = new ArrayList<>();
-
             for (MultipartFile file : dto.getMultimedia()) {
-                // Por ahora solo pasás la URL si ya existe,
-                // o lo que necesite tu backend (ej. subir a un storage primero)
                 MultimediaDTO media = new MultimediaDTO();
                 media.setUrl(file.getOriginalFilename()); // o el path al subirlo
                 multimediaList.add(media);
             }
-
             apiDTO.setMultimedia(multimediaList);
         }
 
-        // 🔹 Llamar al servicio que hace el POST real
-        hechoApiService.createHecho(apiDTO);
-    }
-
-
-    // Actualizar un hecho
-    public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO hechoDTO) {
-        // Verificar que existe
-        hechoApiService.obtenerHechos().stream()
-                .filter(h -> h.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
-
-        validarDatosBasicos(hechoDTO);
-
-        return hechoApiService.actualizarHecho(id, hechoDTO);
+        return apiDTO;
     }
 
     // Validaciones básicas

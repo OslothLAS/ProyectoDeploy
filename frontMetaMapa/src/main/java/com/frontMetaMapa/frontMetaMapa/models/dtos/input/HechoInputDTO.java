@@ -29,5 +29,5 @@ public class HechoInputDTO {
     // Archivos multimedia del input type="file"
     private List<MultipartFile> multimedia;
 
-    private Boolean mostrarDatos;
+    private Boolean mostrarDatos = false;
 }
