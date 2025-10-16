@@ -69,6 +69,43 @@ package "Agregador" {
   database SolicitudesRepositorio
 }
 
+package "Usuarios" {
+  () "API Usuarios" as apiUsuarios
+  () "API Auth" as apiAuth
+
+  package "Servicio de Usuarios" {
+    [Usuarios] as usuario
+    [Auth] as auth
+  }
+  database UsuarioRepository as usuarios
+}
+apiUsuarios --> usuario
+usuario --> usuarios
+
+
+package "Estadisticas" {
+  () "API Estadisticas" as apiEstadisticas
+
+  package "Servicio de Estadisticas" {
+    [Estadisticas] as estadisticas
+  }
+  database StatRepository as stats
+}
+apiEstadisticas --> estadisticas
+estadisticas --> stats
+apiEstadisticas --> apiAgregador
+
+package "Navegador" {
+  package "FrontEnd" {
+     [Front] as front
+  }
+}
+
+front --> apiAuth
+front --> apiEstadisticas
+front --> apiAgregador
+front --> apiDinamica
+
 apiAgregador --> agregacion
 agregacion --> fuentes
 agregacion --> solicitudesModelo
@@ -79,5 +116,5 @@ fuentes --> apiProxy
 fuentes --> apiEstatica
 fuentes --> apiDinamica
 fuentes --> HechosyColeccionesRepositorio
-
+solicitudes --> apiUsuarios
 @enduml
