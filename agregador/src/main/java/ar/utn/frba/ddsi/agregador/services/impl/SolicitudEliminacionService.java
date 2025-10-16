@@ -71,6 +71,8 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
 
+
+
 /*
     public Usuario obtenerUserPorId(Long id) {
         return usuarioWebClient.get()
@@ -103,7 +105,9 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
     private SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
-        Hecho hecho = hechoRepository.findById(solicitud.getIdHecho()).orElse(null);
+
+        //Hecho hecho = hechoRepository.findById(solicitud.getIdHecho()).orElse(null);
+
         Usuario usuario = this.obtenerPorUsername(solicitud.getUsername());
 
         System.out.println("USUARIO ENCONTRADO POR API: " + usuario.getUsername());
