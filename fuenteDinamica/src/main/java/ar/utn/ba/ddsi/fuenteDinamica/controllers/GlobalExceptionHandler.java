@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica.controllers;
 
+import ar.utn.ba.ddsi.fuenteDinamica.exceptions.HechoNoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

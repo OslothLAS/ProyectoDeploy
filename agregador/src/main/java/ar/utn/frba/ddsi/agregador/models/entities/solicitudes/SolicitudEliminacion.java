@@ -22,7 +22,7 @@ public class SolicitudEliminacion {
     @Column(name = "hecho_id", nullable = false)
     private Long idHecho;  // referencia al hecho
 
-    @Column(name = "solicitante", nullable = false)
+    @Column(name = "solicitante", nullable = true)
     private String solicitante;  // username del solicitante
 
     @Column(name = "fecha_creacion", nullable = false)
