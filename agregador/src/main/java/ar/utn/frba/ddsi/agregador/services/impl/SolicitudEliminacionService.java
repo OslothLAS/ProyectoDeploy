@@ -2,6 +2,7 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.DescripcionStat;
+import ar.utn.frba.ddsi.agregador.dtos.output.SolicitudOutputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
@@ -23,8 +24,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import static ar.utn.frba.ddsi.agregador.utils.SolicitudUtil.solicitudToDTO;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,10 +116,18 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
     @Override
-    public Optional<SolicitudEliminacion> getSolicitud(Long idSolicitud) {
-        return this.solicitudRepository.findById(idSolicitud);
+    public SolicitudEliminacion getSolicitud(Long idSolicitud) {
+        SolicitudEliminacion solicitud = this.solicitudRepository
+                .findById(idSolicitud)
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con id: " + idSolicitud));
+        return solicitudRepository.findById(idSolicitud).orElse(null);
     }
 
+    public List<SolicitudOutputDTO> getSolicitudes() {
+        List<SolicitudEliminacion> solicitudes = this.solicitudRepository.findAll();
+        List<SolicitudOutputDTO> solicitudesDTO = solicitudes.stream().map(s -> solicitudToDTO(s)).toList();
+        return solicitudesDTO;
+    }
 
 
     @Override

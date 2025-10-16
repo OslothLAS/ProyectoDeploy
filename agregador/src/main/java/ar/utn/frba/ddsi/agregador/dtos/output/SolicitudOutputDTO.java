@@ -12,6 +12,7 @@ public class SolicitudOutputDTO {
 
     private Long id;
     private Long solicitante;
+    private String username;
     private LocalDateTime fechaDeCreacion;
     private LocalDateTime fechaDeEvaluacion;
     private String justificacion;
