@@ -13,7 +13,7 @@ public interface IHechoService {
     void editarHecho(Long idHecho, HechoDTO dto, TokenInfo tokenInfo) throws Exception;
     List<Hecho> obtenerTodos(Map<String, String> filtros);
     void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion);
-    HechoDTO getHechoById(Long id);
+    HechoOutputDTO getHechoById(Long id);
     List<HechoDTO> getAllHechos();
     List<HechoDTO> getHechosByUsername(String username);
 }

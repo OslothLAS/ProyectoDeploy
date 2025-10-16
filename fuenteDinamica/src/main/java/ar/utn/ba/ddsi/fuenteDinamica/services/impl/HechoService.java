@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.exceptions.HechoNoEncontradoException;
 import ar.utn.ba.ddsi.fuenteDinamica.exceptions.UnauthorizedActionException;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
@@ -26,8 +27,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.hechoToDTO;
-import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.hechosToDTO;
+
+import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.*;
 
 @Service
 public class HechoService implements IHechoService {
@@ -43,10 +44,14 @@ public class HechoService implements IHechoService {
         this.provinciaRepository = provinciaRepository;
     }
 
-    public HechoDTO getHechoById(Long id) {
-        Optional<Hecho> hecho = hechoRepository.findById(id);
-        return hechoToDTO(hecho.get());
+    public HechoOutputDTO getHechoById(Long id) {
+        Hecho hecho = hechoRepository.findById(id)
+                .orElseThrow(() -> new HechoNoEncontradoException(
+                        "No se encontró el hecho con id: " + id));
+
+        return hechoToOutputDTO(hecho);
     }
+
 
     public List<HechoDTO> getAllHechos() {
         List<Hecho> hecho = hechoRepository.findAll();
@@ -87,7 +92,7 @@ public class HechoService implements IHechoService {
 
         Hecho hechoPersistido = hechoRepository.save(hecho);
 
-        return HechoUtil.hechoToOutputDTO(hechoPersistido);
+        return hechoToOutputDTO(hechoPersistido);
     }
 
 

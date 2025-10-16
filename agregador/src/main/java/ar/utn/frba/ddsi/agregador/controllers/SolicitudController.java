@@ -24,7 +24,7 @@ public class SolicitudController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'ADMIN')")
-    public Long crearSolicitud(@RequestBody SolicitudInputDTO solicitud) {
+    public SolicitudOutputDTO crearSolicitud(@RequestBody SolicitudInputDTO solicitud) {
         return this.solicitudService.crearSolicitud(solicitud);
     }
 
