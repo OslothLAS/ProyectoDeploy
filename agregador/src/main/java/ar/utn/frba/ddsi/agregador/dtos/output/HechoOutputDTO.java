@@ -18,24 +18,25 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoOutputDTO {
-    private Long id;
     private String username;
-    private Boolean esValido;
-    private List<MultimediaDTO> multimedia;
-    private List<String> etiquetas = new ArrayList<>();
-    //private List<Coleccion> colecciones = new ArrayList<>();
-    private List<String> handles = new ArrayList<>();
-    private Origen origen;
-    private FuenteOrigen fuenteOrigen;
-    private Boolean mostrarDatos; //ver esto
-    private LocalDateTime fechaCreacion;
-    private Duration plazoEdicion;
-    private Boolean esEditable;
-
-    //datos
     private String titulo;
     private String descripcion;
     private String categoria;
     private UbicacionDTO ubicacion;
     private LocalDateTime fechaHecho;
+    private List<MultimediaDTO> multimedia;
+
+    private Long id;
+
+    private Origen origen;
+    private Boolean mostrarDatos; //ver esto
+    private Boolean esValido;
+    private LocalDateTime fechaCreacion;
+
+
+    private List<String> etiquetas = new ArrayList<>();
+    private List<String> handles = new ArrayList<>();
+    private FuenteOrigen fuenteOrigen;
+    private Duration plazoEdicion;
+    private Boolean esEditable;
 }

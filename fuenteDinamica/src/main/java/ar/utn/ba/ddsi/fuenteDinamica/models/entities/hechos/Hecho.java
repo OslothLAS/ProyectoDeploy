@@ -76,8 +76,9 @@ public class Hecho {
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 
-    public Hecho(Boolean esValido, String titulo, String descripcion, Categoria categoria, Ubicacion ubi, LocalDateTime fechaHecho,
+    public Hecho(String username, Boolean esValido, String titulo, String descripcion, Categoria categoria, Ubicacion ubi, LocalDateTime fechaHecho,
                  List <Multimedia> multimedia, Boolean mostrarDatos, Boolean esEditable) {
+        this.username = username;
         this.esValido = esValido;
         this.titulo = titulo;
         this.descripcion = descripcion;
