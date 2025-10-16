@@ -46,13 +46,16 @@ public class SolicitudUtil {
     }
 
     // Convertir DTO de entrada a entidad
-    public static SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitudDTO) {
+    public static SolicitudEliminacion dtoToSolicitud(SolicitudInputDTO solicitud){
         return new SolicitudEliminacion(
-                solicitudDTO.getJustificacion(),
-                solicitudDTO.getIdHecho(),
-                solicitudDTO.getUsername()
+                solicitud.getJustificacion(),
+                solicitud.getIdHecho(),
+                (solicitud.getUsername() != null && !solicitud.getUsername().isBlank())
+                        ? solicitud.getUsername()
+                        : null
         );
     }
+
 
     // Mapear lista de estados a DTOs
     public static List<EstadoSolicitudDTO> mapEstados(List<EstadoSolicitud> estados) {

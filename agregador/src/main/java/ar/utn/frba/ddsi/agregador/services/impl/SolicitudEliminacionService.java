@@ -68,10 +68,10 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
         solicitudDTO.setJustificacion(justificacionValida);
 
-        UsuarioDTO usuario = this.obtenerUserPorUsername(solicitudDTO.getUsername());
+        /*UsuarioDTO usuario = this.obtenerUserPorUsername(solicitudDTO.getUsername());
         if (usuario == null) {
             throw new UsuarioNoEncontradoException("El usuario con username " + solicitudDTO.getUsername() + " no existe.");
-        }
+        }*/
 
         HechoOutputDTO hecho = this.obtenerHechoPorId(solicitudDTO.getIdHecho());
 
