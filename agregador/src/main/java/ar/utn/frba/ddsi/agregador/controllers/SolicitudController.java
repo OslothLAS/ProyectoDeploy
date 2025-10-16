@@ -42,7 +42,8 @@ public class SolicitudController {
     @PreAuthorize("hasRole('ADMIN')")
     public void rechazarSolicitud(@PathVariable("id_solicitud") Long idSolicitud) {this.solicitudService.rechazarSolicitud(idSolicitud);}
 
-    @GetMapping("hasRole('ADMIN')")
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SolicitudOutputDTO>> getSolicitudes(){
 
         return ResponseEntity.ok(this.solicitudService.getSolicitudes());

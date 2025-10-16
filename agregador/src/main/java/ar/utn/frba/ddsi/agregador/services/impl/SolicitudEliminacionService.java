@@ -160,7 +160,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     }
 
 
-    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, String usernameAdmin, PosibleEstadoSolicitud estado) {
+    private void cambiarEstadoHecho(SolicitudEliminacion solicitud, String usernameAdmin, PosibleEstadoSolicitud estado, HechoOutputDTO hecho) {
         String username = usernameAdmin;
 
         EstadoSolicitud estadoSolicitud = new EstadoSolicitud(username,estado);
@@ -171,7 +171,7 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         else if(estado == PosibleEstadoSolicitud.ACEPTADA){
             solicitud.cambiarEstadoSolicitud(estadoSolicitud);
 
-            Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
+
 
             if (hecho != null) {
                 int updated = this.hechoRepository.invalidateByTituloAndDescripcion(hecho.getTitulo(), hecho.getDescripcion());
@@ -187,10 +187,10 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
+        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitud.getId());
+        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.ACEPTADA, hecho);
 
-        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.ACEPTADA);
 
-        Hecho hecho = hechoRepository.findById(solicitud.getId()).orElse(null);
 
         List<Fuente> fuentesUnicas = coleccionRepository.findAll().stream()
                 .flatMap(coleccion -> coleccion.getImportadores().stream())
@@ -207,8 +207,9 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     public void rechazarSolicitud(Long idSolicitud) {
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
-
-        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.RECHAZADA);
+        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitud.getId());
+        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.RECHAZADA, hecho);
+        solicitudRepository.save(solicitud);
     }
 
 
