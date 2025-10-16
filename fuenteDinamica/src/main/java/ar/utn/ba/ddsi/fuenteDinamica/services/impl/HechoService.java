@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.exceptions.UnauthorizedActionException;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
@@ -54,9 +55,9 @@ public class HechoService implements IHechoService {
 
     @Transactional
     @Override
-    public void crearHecho(HechoDTO hechoDTO, TokenInfo token) {
+    // Servicio
+    public HechoOutputDTO crearHecho(HechoDTO hechoDTO, TokenInfo token) {
         Categoria categoria = new Categoria(hechoDTO.getCategoria());
-
         Categoria categoriaPersistida = categoriaRepository.findByCategoriaNormalizada(categoria.getCategoriaNormalizada())
                 .orElseGet(() -> {
                     try {
@@ -67,28 +68,31 @@ public class HechoService implements IHechoService {
                     }
                 });
 
-
-        Provincia provincia = this.provinciaRepository.findById(hechoDTO.getUbicacion().getLocalidad().getProvincia().getId())
+        Provincia provincia = provinciaRepository.findById(
+                        hechoDTO.getUbicacion().getLocalidad().getProvincia().getId())
                 .orElseThrow(() -> new RuntimeException("No se encontró la provincia"));
 
         Hecho hecho = HechoUtil.hechoDTOtoHecho(hechoDTO);
-
         hecho.setCategoria(categoriaPersistida);
         hecho.getUbicacion().getLocalidad().setProvincia(provincia);
 
-        if(token != null) {
-            if (Objects.equals(token.getRol(), Rol.ADMIN.name()) || Objects.equals(token.getRol(), Rol.CONTRIBUYENTE.name())) {
-                hecho.setEsEditable(true);
-                hecho.setMostrarDatos(hecho.getMostrarDatos());
-                hecho.setUsername(token.getUsername());
-                hecho.setOrigen(Origen.CONTRIBUYENTE);
-            }
-        }else{
+        if (token != null && (token.getRol().equals(Rol.ADMIN.name()) || token.getRol().equals(Rol.CONTRIBUYENTE.name()))) {
+            hecho.setEsEditable(true);
+            hecho.setUsername(token.getUsername());
+            hecho.setOrigen(Origen.CONTRIBUYENTE);
+        } else {
             hecho.setOrigen(Origen.VISUALIZADOR);
         }
         hecho.setEsValido(true);
-        hechoRepository.save(hecho);
+
+        Hecho hechoPersistido = hechoRepository.save(hecho);
+
+        return HechoUtil.hechoToOutputDTO(hechoPersistido);
     }
+
+
+
+
 
     @Override
     public void editarHecho(Long idHecho, HechoDTO dto, TokenInfo tokenInfo) throws Exception {

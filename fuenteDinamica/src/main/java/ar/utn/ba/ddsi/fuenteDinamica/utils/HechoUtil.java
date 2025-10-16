@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.utils;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.*;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,4 +96,28 @@ public class HechoUtil {
         }
         return new Ubicacion(dto.getUbicacion().getLatitud(), dto.getUbicacion().getLongitud(),localidad);
     }
+    public static HechoOutputDTO hechoToOutputDTO(Hecho hecho) {
+        HechoOutputDTO dto = new HechoOutputDTO();
+
+        List<Multimedia> multimediaNueva = new ArrayList<>();
+        if (hecho.getMultimedia() != null) {
+            multimediaNueva.addAll(hecho.getMultimedia());
+        }
+
+        dto.setId(hecho.getId());
+        dto.setTitulo(hecho.getTitulo());
+        dto.setDescripcion(hecho.getDescripcion());
+        dto.setCategoria(hecho.getCategoria() != null ? hecho.getCategoria().getCategoria() : null);
+        dto.setFechaHecho(hecho.getFechaHecho());
+        dto.setMultimedia(multimediaNueva);
+        dto.setUbicacion(ubicacionToDTO(hecho.getUbicacion()));
+        dto.setMostrarDatos(hecho.getMostrarDatos());
+        dto.setOrigen(hecho.getOrigen());
+        dto.setEsValido(hecho.getEsValido());
+        dto.setFechaCreacion(hecho.getFechaCreacion());
+        dto.setUsername(hecho.getUsername());
+
+        return dto;
+    }
+
 }
