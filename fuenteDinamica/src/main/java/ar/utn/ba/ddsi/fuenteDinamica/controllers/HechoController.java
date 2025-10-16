@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.fuenteDinamica.controllers;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
 import ar.utn.ba.ddsi.fuenteDinamica.utils.JwtUtil;
@@ -42,7 +43,7 @@ public class HechoController {
     }*/
 
     @PostMapping
-    public void crearHecho(@RequestBody HechoDTO hecho, @RequestHeader(value = "Authorization", required = false) String authHeader) {
+    public HechoOutputDTO crearHecho(@RequestBody HechoDTO hecho, @RequestHeader(value = "Authorization", required = false) String authHeader) {
         TokenInfo tokenInfo = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -50,7 +51,7 @@ public class HechoController {
             tokenInfo = JwtUtil.validarToken(token);
         }
 
-        this.hechoService.crearHecho(hecho, tokenInfo);
+        return this.hechoService.crearHecho(hecho, tokenInfo);
     }
 
     @PostMapping("/prueba")
