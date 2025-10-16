@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
 </head>
 <body>
-<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <div class="container">
     <div class="page-header">

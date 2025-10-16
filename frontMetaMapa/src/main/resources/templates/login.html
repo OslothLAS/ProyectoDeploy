@@ -55,6 +55,11 @@
             <p>¿No tienes una cuenta?</p>
             <a href="/register">Registrarse</a>
         </div>
+
+        <div th:if="${param.error}" class="alert-error">
+            ⚠️ Usuario o contraseña incorrectos
+        </div>
+
     </div>
 </main>
 

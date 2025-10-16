@@ -4,6 +4,7 @@ import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
@@ -19,7 +20,13 @@ import java.util.List;
 public class AdministradorController {
     private final ColeccionService coleccionService;
     @GetMapping("/administrador")
-    public String administrador() {
+    public String administrador(Model model, Authentication authentication) {
+        String rol = authentication.getAuthorities()
+                .stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("SIN_ROL");
+        model.addAttribute("rol", rol);
         return "administrador/index";
     }
 

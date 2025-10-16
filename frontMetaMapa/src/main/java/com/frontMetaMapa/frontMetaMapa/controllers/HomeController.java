@@ -75,35 +75,7 @@ public class HomeController {
         request.getSession().invalidate();
         return "redirect:/login?logout";
     }
-
-
 }
 
 
-
-
-
-
-    /*
-
-
-    @GetMapping("/coleccion/{id}/editar")
-    public String editarColeccion(@PathVariable Long id, Model model) {
-        model.addAttribute("idColeccion", id);
-        return "commons/editarColeccion";
-    }
-
-
-
-    @GetMapping("/mis-contribuciones")
-    public String misContribuciones() {
-        return "commons/misContribuciones";
-    }
-
-
-    @GetMapping("/coleccion/example")
-    public String showColeccionExample() {
-        return "commons/showColeccionExample";
-    }
-*/
 

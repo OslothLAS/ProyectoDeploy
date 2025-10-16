@@ -10,7 +10,7 @@
 </head>
 <body>
 <!-- Navbar -->
-<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <!-- Enhanced hero section -->
 <header class="hero" id="inicio">
@@ -96,8 +96,8 @@
     </div>
 
     <div style="display: flex; justify-content: center; margin-top: 2rem;">
-        <a href="buscador-hechos" class="btn">
-            Explorar Todos los Hechos
+        <a href="/buscador-colecciones" class="btn">
+            Explorar Todas las colecciones
         </a>
     </div>
 </section>

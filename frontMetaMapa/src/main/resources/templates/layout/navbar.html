@@ -7,7 +7,8 @@
 
 <nav th:fragment="navbar(showLogout)">
     <div class="nav-container">
-        <a href="/" class="logo">
+        <a th:href="${rol == 'ROLE_ADMIN' ? '/administrador' : (rol == 'ROLE_CONTRIBUYENTE' ? '/contribuyente' : '/')}"
+           class="logo">
             <i data-lucide="map"></i>
             MetaMapa
         </a>
