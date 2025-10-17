@@ -9,140 +9,122 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
 </head>
 <body>
-<!-- Navbar -->
-<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+<div th:replace="~{layout/navbar :: navbar( ${rol})}"></div>
 
 <div class="container">
-    <!-- Converted header to editable form -->
-    <form class="hecho-header" id="editForm" th:action="@{/hechos/editar}" th:object="${hecho}" method="post" enctype="multipart/form-data">
-
-        <input type="hidden" th:field="*{id}" />
-
-        <div class="form-group">
-            <label class="form-label" for="titulo">Título del Hecho</label>
-            <input type="text" id="titulo" th:field="*{titulo}" class="form-input" required>
+    <div class="page-header">
+        <h1>Editar Hecho</h1>
+        <p>Modifica la información existente del hecho.</p>
+        <!-- Mensaje de advertencia si no es editable -->
+        <div th:if="${!hecho.editable}" class="alert alert-warning">
+            <i data-lucide="alert-triangle"></i>
+            Este hecho ya no puede ser editado (ha pasado más de 7 días desde su creación).
         </div>
+    </div>
 
-        <div class="form-group">
-            <label class="form-label" for="categoria">Categoría</label>
-            <select id="categoria" th:field="*{categoria}" class="form-select" required>
-                <option value="desastre-natural" th:selected="${hecho.categoria == 'desastre-natural'}">Desastre Natural</option>
-                <option value="accidente" th:selected="${hecho.categoria == 'accidente'}">Accidente</option>
-                <option value="evento-social" th:selected="${hecho.categoria == 'evento-social'}">Evento Social</option>
-                <option value="construccion" th:selected="${hecho.categoria == 'construccion'}">Construcción</option>
-                <option value="transporte" th:selected="${hecho.categoria == 'transporte'}">Transporte</option>
-                <option value="otro" th:selected="${hecho.categoria == 'otro'}">Otro</option>
-            </select>
-        </div>
+    <div class="form-container">
+        <!-- Agregar el ID en la URL del action -->
+        <form th:action="@{/hechoEdicion/{id}(id=${hecho.id})}" th:object="${hecho}" method="post" enctype="multipart/form-data">
 
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label" for="fechaHecho">Fecha del Hecho</label>
-                <input type="date" id="fechaHecho" th:field="*{fechaHecho}" class="form-input" required
-                       th:value="${#temporals.format(hecho.fechaHecho, 'yyyy-MM-dd')}">
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="fechaPublicacion">Fecha de Publicación</label>
-                <input type="date" id="fechaPublicacion" th:field="*{fechaCreacion}" class="form-input" required
-                       th:value="${#temporals.format(hecho.fechaCreacion, 'yyyy-MM-dd')}">
-            </div>
-        </div>
+            <!-- ID oculto -->
+            <input type="hidden" th:field="*{id}" />
 
-        <div class="form-group">
-            <label class="form-label" for="ubicacion">Ubicación</label>
-            <input type="text" id="ubicacion" th:value="${hecho.ubicacion != null ? hecho.ubicacion.localidad.nombre : ''}" class="form-input" required>
-        </div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="titulo">Título del Hecho *</label>
+                    <input type="text" id="titulo" th:field="*{titulo}" required placeholder="Ingresa un título descriptivo" th:disabled="${!hecho.editable}">
+                </div>
 
-        <!-- Galería multimedia -->
-        <div class="galeria-section">
-            <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                <i data-lucide="images"></i>
-                Imágenes del Hecho
-            </h3>
+                <div class="form-group">
+                    <label for="categoria">Categoría *</label>
+                    <select id="categoria" th:field="*{categoria}" required th:disabled="${!hecho.editable}">
+                        <option value="">Selecciona una categoría</option>
+                        <option value="Incendio">Incendio</option>
+                        <option value="Accidente Vial">Accidente Vial</option>
+                        <option value="Fenómeno Natural">Fenómeno Natural</option>
+                        <option value="Evento Social">Evento Social</option>
+                        <option value="Infraestructura">Infraestructura</option>
+                        <option value="Medio Ambiente">Medio Ambiente</option>
+                        <option value="Seguridad">Seguridad</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
 
-            <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
-                <i data-lucide="upload" style="font-size: 2rem; color: var(--text-light); margin-bottom: 0.5rem;"></i>
-                <p style="color: var(--text-light); margin: 0;">
-                    Haz clic aquí o arrastra imágenes para subir
-                </p>
-                <small style="color: var(--text-light);">
-                    Formatos soportados: JPG, PNG, GIF (máx. 5MB cada una)
-                </small>
-            </div>
+                <div class="form-group">
+                    <label for="fechaHecho">Fecha del Hecho *</label>
+                    <!-- Corregir el binding de fechaHecho -->
+                    <input type="datetime-local" id="fechaHecho" th:field="*{fechaHecho}" class="form-input" required th:disabled="${!hecho.editable}">
+                </div>
 
-            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <div class="form-group">
+                    <label for="latitud">Latitud *</label>
+                    <!-- Usar la ubicación del DTO -->
+                    <input type="text" id="latitud" th:field="*{ubicacion.latitud}" required th:disabled="${!hecho.editable}">
+                </div>
 
-            <div class="uploaded-images" id="uploadedImages">
-                <!-- Mostrar imágenes existentes -->
-                <div class="uploaded-image" th:each="media : ${hecho.multimedia}">
-                    <img th:src="${media.url}" th:alt="'Imagen del hecho: ' + ${hecho.titulo}">
-                    <button type="button" class="remove-image" onclick="removeImage(this)">
-                        <i data-lucide="x"></i>
-                    </button>
+                <div class="form-group">
+                    <label for="longitud">Longitud *</label>
+                    <!-- Usar la ubicación del DTO -->
+                    <input type="text" id="longitud" th:field="*{ubicacion.longitud}" required th:disabled="${!hecho.editable}">
+                </div>
+
+                <div class="form-group">
+                    <label for="localidad">Localidad *</label>
+                    <!-- Usar la ubicación del DTO -->
+                    <input type="text" id="localidad" th:field="*{ubicacion.localidad}" required th:disabled="${!hecho.editable}">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" th:field="*{descripcion}" required placeholder="Describe detalladamente el hecho ocurrido..." th:disabled="${!hecho.editable}"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="multimedia">Multimedia (Opcional)</label>
+                    <input type="file" id="multimedia" name="multimedia" multiple accept="image/*,video/*,audio/*" th:disabled="${!hecho.editable}">
+                    <div class="uploaded-images" th:if="${hecho.multimedia != null and !hecho.multimedia.empty}">
+                        <h4>Archivos actuales:</h4>
+                        <div th:each="media : ${hecho.multimedia}">
+                            <a th:href="${media.url}" target="_blank" th:text="${media.url}"></a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Descripción -->
-        <div class="descripcion">
-            <label class="form-label" for="descripcion">Descripción del Hecho</label>
-            <textarea id="descripcion" th:field="*{descripcion}" class="form-textarea" required></textarea>
-        </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="mostrarDatos" th:field="*{mostrarDatos}" th:disabled="${!hecho.editable}">
+                <label for="mostrarDatos">Mostrar mis datos públicamente</label>
+            </div>
 
-        <!-- Botones -->
-        <div class="form-actions">
-            <a th:href="@{'/hecho/' + ${hecho.id}}" class="btn btn-secondary">
-                <i data-lucide="x"></i> Cancelar
-            </a>
-            <button type="button" class="btn btn-danger">
-                <i data-lucide="trash-2"></i> Eliminar
-            </button>
-            <button type="submit" class="btn btn-primary">
-                <i data-lucide="save"></i> Guardar Cambios
-            </button>
-        </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancelar</button>
+                <!-- Deshabilitar el botón si no es editable -->
+                <button type="submit" class="btn btn-primary" th:disabled="${!hecho.editable}">Guardar Cambios</button>
+            </div>
 
-    </form>
-
+        </form>
+    </div>
 </div>
 
-<!-- Footer -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
     lucide.createIcons();
 
-    function handleImageUpload(event) {
-      const files = event.target.files;
-      const uploadedImages = document.getElementById('uploadedImages');
-
-      Array.from(files).forEach(file => {
-        if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const imageDiv = document.createElement('div');
-            imageDiv.className = 'uploaded-image';
-            imageDiv.innerHTML = `
-              <img src="${e.target.result}" alt="Imagen subida">
-              <button type="button" class="remove-image" onclick="removeImage(this)">
-                <i data-lucide="x"></i>
-              </button>
-            `;
-            uploadedImages.appendChild(imageDiv);
-            lucide.createIcons();
-          };
-          reader.readAsDataURL(file);
+    // Formatear la fecha para el input datetime-local
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.getElementById('fechaHecho');
+        if (fechaInput) {
+            // Thymeleaf debería manejar esto automáticamente con th:field,
+            // pero si no funciona, puedes formatearlo manualmente
+            const fechaValue = fechaInput.getAttribute('th:value');
+            if (fechaValue) {
+                // Convertir el formato de fecha si es necesario
+                const date = new Date(fechaValue);
+                const formatted = date.toISOString().slice(0, 16);
+                fechaInput.value = formatted;
+            }
         }
-      });
-    }
-
-    function removeImage(button) {
-      button.parentElement.remove();
-    }
-
-    document.getElementById('editForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Cambios guardados exitosamente!');
     });
 </script>
 </body>

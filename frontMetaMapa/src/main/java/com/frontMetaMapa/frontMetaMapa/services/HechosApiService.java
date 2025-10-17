@@ -70,7 +70,7 @@ public class HechosApiService {
     }
 
     // Actualizar un hecho por ID
-    public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO hechoDTO) {
+    public HechoOutputDTO actualizarHecho(Long id, HechoApiInputDto hechoDTO) {
         HechoOutputDTO response = webApiCallerService.put(
                 hechosServiceUrl + "/hechos/" + id,
                 hechoDTO,

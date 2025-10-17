@@ -10,10 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +91,7 @@ public class HechosController {
         }
     }
 
-
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/edicionHecho/{id}")
     public String editarHecho(@PathVariable Long id, Model model, HttpServletRequest request) {
         String username = (String) request.getSession().getAttribute("username");
@@ -122,6 +119,31 @@ public class HechosController {
             }
         } catch (Exception e) {
             return "redirect:/mis-contribuciones?error=error-servidor";
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
+    @PostMapping("/hechoEdicion/{id}")
+    public String editarHecho(
+            @PathVariable Long id,
+            @ModelAttribute HechoInputDTO hechoInputDTO,
+            HttpServletRequest request,
+            Model model) {
+
+        String username = (String) request.getSession().getAttribute("username");
+        if (username == null) {
+            return "redirect:/login";
+        }
+
+        try {
+
+            hechoService.actualizarHecho(id, hechoInputDTO);
+
+            // Redirigir a la página de contribuciones con mensaje de éxito
+            return "redirect:/mis-contribuciones?success=hecho-actualizado";
+
+        } catch (Exception e) {
+            return "redirect:/edicionHecho/" + id + "?error=error-actualizacion";
         }
     }
 }

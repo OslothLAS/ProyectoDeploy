@@ -123,42 +123,62 @@ public class Hecho {
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 
-    public void normalizarHecho(){
-        Categoria categoria = this.getCategoria();
-        categoria.setCategoria(NormalizadorHecho.
-                normalizarCategoria(this.getCategoria().getCategoria()));
-
-        Ubicacion ubicacion = this.getUbicacion();
-
-
-
-        List<Double> latyLongNormalizadas = NormalizadorHecho.normalizarUbicaciones(ubicacion.getLatitud(),ubicacion.getLongitud());
-        double latitud = latyLongNormalizadas.get(0);
-        double longitud =  latyLongNormalizadas.get(1);
-
-        Provincia provincia = null;
-        Localidad localidad = null;
-
-        if (ubicacion.getLocalidad() != null) {
-            localidad = ubicacion.getLocalidad();
-            if (localidad.getProvincia() != null) {
-                provincia = localidad.getProvincia();
+    public void normalizarHecho() {
+        // Validar y normalizar categoría
+        if (this.getCategoria() != null && this.getCategoria().getCategoria() != null) {
+            Categoria categoria = this.getCategoria();
+            String categoriaNormalizada = NormalizadorHecho.normalizarCategoria(categoria.getCategoria());
+            if (categoriaNormalizada != null) {
+                categoria.setCategoria(categoriaNormalizada);
             }
         }
-        if (provincia == null) {
-            provincia = new Provincia();
+
+        // Validar ubicación
+        Ubicacion ubicacion = this.getUbicacion();
+        if (ubicacion == null) {
+            return; // No hay ubicación para normalizar
         }
 
-        List<String> resultados = NormalizadorHecho.normalizarUbicacion(latitud,longitud);
-        provincia.setNombre(resultados.get(0));
+        // Normalizar coordenadas con validación
+        List<Double> latyLongNormalizadas = NormalizadorHecho.normalizarUbicaciones(
+                ubicacion.getLatitud(), ubicacion.getLongitud());
 
-        if (localidad == null) {
-            localidad = new Localidad();
-            localidad.setProvincia(provincia);
-            ubicacion.setLocalidad(localidad);
+        if (latyLongNormalizadas != null && latyLongNormalizadas.size() >= 2) {
+            double latitud = latyLongNormalizadas.get(0);
+            double longitud = latyLongNormalizadas.get(1);
+
+            // Normalizar ubicación (provincia y localidad) con validación
+            List<String> resultados = NormalizadorHecho.normalizarUbicacion(latitud, longitud);
+
+            if (resultados != null && resultados.size() >= 2) {
+                Provincia provincia = null;
+                Localidad localidad = ubicacion.getLocalidad();
+
+                if (localidad != null && localidad.getProvincia() != null) {
+                    provincia = localidad.getProvincia();
+                }
+
+                if (provincia == null) {
+                    provincia = new Provincia();
+                }
+
+                provincia.setNombre(resultados.get(0));
+
+                if (localidad == null) {
+                    localidad = new Localidad();
+                    localidad.setProvincia(provincia);
+                    ubicacion.setLocalidad(localidad);
+                } else {
+                    localidad.setNombre(resultados.get(1));
+                    localidad.setProvincia(provincia);
+                }
+            } else {
+                // Log warning o manejar el caso donde no se pudo normalizar la ubicación
+                System.out.println("Advertencia: No se pudieron normalizar los datos de ubicación");
+            }
         } else {
-            localidad.setNombre(resultados.get(1));
-            localidad.setProvincia(provincia);
+            // Log warning o manejar el caso donde no se pudieron normalizar las coordenadas
+            System.out.println("Advertencia: No se pudieron normalizar las coordenadas");
         }
     }
 }

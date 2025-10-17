@@ -57,8 +57,9 @@ public class HechoService {
                 .orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
 
         validarDatosBasicos(hechoDTO);
+        HechoApiInputDto hechoInput = mapearAHechoApiDto(hechoDTO);
 
-        return hechoApiService.actualizarHecho(id, hechoDTO);
+        return hechoApiService.actualizarHecho(id, hechoInput);
     }
 
     // 🧩 Mapeo de DTO de entrada a DTO del backend (API)
