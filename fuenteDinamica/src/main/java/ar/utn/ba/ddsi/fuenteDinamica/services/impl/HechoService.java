@@ -24,10 +24,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.*;
 
 @Service
@@ -94,10 +92,6 @@ public class HechoService implements IHechoService {
 
         return hechoToOutputDTO(hechoPersistido);
     }
-
-
-
-
 
     @Override
     public void editarHecho(Long idHecho, HechoDTO dto, TokenInfo tokenInfo) throws Exception {
@@ -180,6 +174,8 @@ public class HechoService implements IHechoService {
                 .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
     }
+
+
     public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
         Optional<Hecho> hechoInvalido = hechoRepository.findByTituloAndDescripcion(titulo, descripcion);
         hechoInvalido.ifPresent(hecho -> {
@@ -188,7 +184,7 @@ public class HechoService implements IHechoService {
         });
     }
 
-    public List<HechoDTO> getHechosByUsername(String username){
-        return hechosToDTO(hechoRepository.findByUsername(username));
+    public List<HechoOutputDTO> getHechosByUsername(String username){
+        return hechosToOutputDTO(hechoRepository.findByUsername(username));
     }
 }

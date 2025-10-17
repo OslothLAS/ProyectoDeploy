@@ -120,4 +120,9 @@ public class HechoUtil {
         return dto;
     }
 
+    public static List<HechoOutputDTO> hechosToOutputDTO(List<Hecho> hechos) {
+        return hechos.stream()
+                .map(HechoUtil::hechoToOutputDTO)
+                .collect(Collectors.toList());
+    }
 }
