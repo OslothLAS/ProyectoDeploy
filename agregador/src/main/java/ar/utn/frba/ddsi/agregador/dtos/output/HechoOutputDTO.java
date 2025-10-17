@@ -18,6 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoOutputDTO {
+    private Long id;
+
     private String username;
     private String titulo;
     private String descripcion;
@@ -25,8 +27,6 @@ public class HechoOutputDTO {
     private UbicacionDTO ubicacion;
     private LocalDateTime fechaHecho;
     private List<MultimediaDTO> multimedia;
-
-    private Long id;
 
     private Origen origen;
     private Boolean mostrarDatos; //ver esto

@@ -92,6 +92,9 @@ public class HechoUtil {
     private static Ubicacion getUbicacion(HechoOutputDTO dto) {
         Provincia provincia = new Provincia(null);
         Localidad localidad = new Localidad(provincia,null);
+        if(dto.getUbicacion() == null){
+            return null;
+        }
 
         if (dto.getUbicacion().getLocalidad() != null) {
             if (dto.getUbicacion().getLocalidad().getProvincia() != null) {

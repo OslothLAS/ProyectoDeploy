@@ -63,7 +63,7 @@ public class Hecho {
             joinColumns = @JoinColumn(name = "hecho_id"),
             inverseJoinColumns = @JoinColumn(name = "coleccion_id")
     )
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE) // 👈 este es el que tenés
     private List<Coleccion> colecciones = new ArrayList<>();
 
     @Transient

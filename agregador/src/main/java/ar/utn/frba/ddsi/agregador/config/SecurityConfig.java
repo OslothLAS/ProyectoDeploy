@@ -3,6 +3,7 @@ package ar.utn.frba.ddsi.agregador.config;
 import ar.utn.frba.ddsi.agregador.filters.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,12 +28,16 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/solicitudes").permitAll() // ⬅️ POST /solicitudes sin token
-                        .anyRequest().authenticated()               // ⬅️ el resto necesita token
+                        .requestMatchers("/solicitudes", "/hechos").permitAll()                // ⬅️ públicos
+                        .requestMatchers(HttpMethod.GET, "/colecciones").permitAll()           // ⬅️ GET /colecciones
+                        .requestMatchers(HttpMethod.GET, "/colecciones/*/hechos").permitAll()  // ⬅️ GET /colecciones/{id}/hechos
+                        .anyRequest().authenticated()                                          // ⬅️ el resto con token
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+
 
 }
