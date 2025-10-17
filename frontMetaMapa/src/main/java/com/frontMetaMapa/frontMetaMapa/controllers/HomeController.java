@@ -8,6 +8,8 @@ import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import com.frontMetaMapa.frontMetaMapa.services.RegisterApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,20 @@ import org.springframework.web.bind.annotation.*;
 public class HomeController {
 
     private final RegisterApiService registerApiService;
+
+    @ModelAttribute
+    public void addRolToModel(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String rol = authentication.getAuthorities()
+                    .stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse("SIN_ROL");
+            model.addAttribute("rol", rol);
+        } else {
+            model.addAttribute("rol", "ANONIMO");
+        }
+    }
 
     @GetMapping("/")
     public String home() {

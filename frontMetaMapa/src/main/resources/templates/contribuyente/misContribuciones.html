@@ -275,10 +275,10 @@
         <div class="contribution-actions">
             <!-- Botón de edición solo disponible durante 7 días -->
             <a th:if="${hecho.editable}"
-               th:href="@{'/editar-hecho/' + ${hecho.titulo}}" class="btn-outline">
+               th:href="@{'/edicionHecho/' + ${hecho.id}}" class="btn-outline">
                 <i data-lucide="edit"></i> Editar
             </a>
-            <a th:href="@{'/hecho/' + ${hecho.titulo}}" class="btn btn-secondary">
+            <a th:href="@{'/hecho/'+${hecho.id}}" class="btn btn-secondary">
                 <i data-lucide="eye"></i> Ver Detalles
             </a>
         </div>

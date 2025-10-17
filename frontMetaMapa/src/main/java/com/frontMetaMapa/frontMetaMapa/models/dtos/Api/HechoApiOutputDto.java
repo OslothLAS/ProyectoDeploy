@@ -1,6 +1,7 @@
-package com.frontMetaMapa.frontMetaMapa.models.dtos.output;
+package com.frontMetaMapa.frontMetaMapa.models.dtos.Api;
 
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.MultimediaDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UbicacionDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +13,10 @@ import java.util.List;
 @Setter
 public class HechoApiOutputDto {
 
+        private Long id;
         private String titulo;
         private String descripcion;
+        private String username;
         private String categoria;
         private UbicacionDTO ubicacion;
         private LocalDateTime fechaHecho;

@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/solicitudes", "/hechos").permitAll()                // ⬅️ públicos
                         .requestMatchers(HttpMethod.GET, "/colecciones").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/colecciones/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/colecciones/*").permitAll()           // ⬅️ GET /colecciones
                         .requestMatchers(HttpMethod.GET, "/colecciones/*/hechos").permitAll()  // ⬅️ GET /colecciones/{id}/hechos
                         .anyRequest().authenticated()                                          // ⬅️ el resto con token
                 )

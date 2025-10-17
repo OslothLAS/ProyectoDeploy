@@ -39,7 +39,9 @@ public class SecurityConfig {
                                 "/buscador-colecciones/**",
                                 "/colecciones/**",
                                 "/error/**",     // 👈 importante
-                                "/404"
+                                "/404",
+                                "/solicitar-eliminacion",
+                                "/solicitar-eliminacion/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

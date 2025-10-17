@@ -237,7 +237,7 @@
 </head>
 <body>
 <!-- Navbar -->
-<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <!-- Restructured main content with centered card layout -->
 <main class="upload-container">

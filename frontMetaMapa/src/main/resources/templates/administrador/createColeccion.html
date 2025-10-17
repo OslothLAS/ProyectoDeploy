@@ -22,12 +22,8 @@
     </style>
 </head>
 <body>
-<nav>
-    <div class="nav-container">
-        <a th:href="@{/colecciones}" class="logo">← MetaMapa</a>
-        <span id="formMode"></span>
-    </div>
-</nav>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+
 
 <main>
     <h1 th:text="${coleccion.id != null} ? 'Editar Colección' : 'Nueva Colección'">Nueva Colección</h1>

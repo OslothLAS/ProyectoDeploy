@@ -3,7 +3,7 @@ package com.frontMetaMapa.frontMetaMapa.services;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiInputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoApiOutputDto;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
@@ -58,10 +58,10 @@ public class HechosApiService {
         return response;
     }
 
-    public HechoOutputDTO obtenerHechoPorId(Long id) {
-        HechoOutputDTO response = webApiCallerService.getWithoutToken(
+    public HechoApiOutputDto obtenerHechoPorId(Long id) {
+        HechoApiOutputDto response = webApiCallerService.getWithoutToken(
                 hechosServiceUrl + "api/hechos/hecho/" + id,
-                HechoOutputDTO.class
+                HechoApiOutputDto.class
         );
         if (response == null) {
             throw new NotFoundException("Hechos");

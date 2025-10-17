@@ -9,7 +9,7 @@
 </head>
 <body>
 <!-- Importing navbar from layout -->
-<div th:replace="~{layout/navbar :: navbar(false)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <main>
     <div class="container">

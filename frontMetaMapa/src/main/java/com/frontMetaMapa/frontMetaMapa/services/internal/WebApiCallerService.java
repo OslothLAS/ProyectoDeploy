@@ -130,6 +130,25 @@ public class WebApiCallerService {
         );
     }
 
+    public <T> T postWithoutToken(String url, Object body, Class<T> responseType) {
+        try {
+            return webClient
+                    .post()
+                    .uri(url)
+                    .bodyValue(body)
+                    .retrieve()
+                    .bodyToMono(responseType)
+                    .block();
+        } catch (WebClientResponseException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new NotFoundException(e.getMessage());
+            }
+            throw new RuntimeException("Error en llamada POST sin token: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error de conexión al realizar POST sin token: " + e.getMessage(), e);
+        }
+    }
+
     /**
      * Ejecuta una llamada HTTP PUT
      */

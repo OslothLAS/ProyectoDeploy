@@ -10,45 +10,50 @@
 </head>
 <body>
 <!-- Navbar -->
-<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <div class="container">
     <!-- Converted header to editable form -->
-    <form class="hecho-header" id="editForm">
+    <form class="hecho-header" id="editForm" th:action="@{/hechos/editar}" th:object="${hecho}" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" th:field="*{id}" />
+
         <div class="form-group">
             <label class="form-label" for="titulo">Título del Hecho</label>
-            <input type="text" id="titulo" class="form-input" value="Incendio en el Bosque Central" required>
+            <input type="text" id="titulo" th:field="*{titulo}" class="form-input" required>
         </div>
 
         <div class="form-group">
             <label class="form-label" for="categoria">Categoría</label>
-            <select id="categoria" class="form-select" required>
-                <option value="desastre-natural" selected>Desastre Natural</option>
-                <option value="accidente">Accidente</option>
-                <option value="evento-social">Evento Social</option>
-                <option value="construccion">Construcción</option>
-                <option value="transporte">Transporte</option>
-                <option value="otro">Otro</option>
+            <select id="categoria" th:field="*{categoria}" class="form-select" required>
+                <option value="desastre-natural" th:selected="${hecho.categoria == 'desastre-natural'}">Desastre Natural</option>
+                <option value="accidente" th:selected="${hecho.categoria == 'accidente'}">Accidente</option>
+                <option value="evento-social" th:selected="${hecho.categoria == 'evento-social'}">Evento Social</option>
+                <option value="construccion" th:selected="${hecho.categoria == 'construccion'}">Construcción</option>
+                <option value="transporte" th:selected="${hecho.categoria == 'transporte'}">Transporte</option>
+                <option value="otro" th:selected="${hecho.categoria == 'otro'}">Otro</option>
             </select>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label" for="fechaHecho">Fecha del Hecho</label>
-                <input type="date" id="fechaHecho" class="form-input" value="2025-08-25" required>
+                <input type="date" id="fechaHecho" th:field="*{fechaHecho}" class="form-input" required
+                       th:value="${#temporals.format(hecho.fechaHecho, 'yyyy-MM-dd')}">
             </div>
             <div class="form-group">
                 <label class="form-label" for="fechaPublicacion">Fecha de Publicación</label>
-                <input type="date" id="fechaPublicacion" class="form-input" value="2025-08-27" required>
+                <input type="date" id="fechaPublicacion" th:field="*{fechaCreacion}" class="form-input" required
+                       th:value="${#temporals.format(hecho.fechaCreacion, 'yyyy-MM-dd')}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="form-label" for="ubicacion">Ubicación</label>
-            <input type="text" id="ubicacion" class="form-input" value="Bosque Central, Córdoba" required>
+            <input type="text" id="ubicacion" th:value="${hecho.ubicacion != null ? hecho.ubicacion.localidad.nombre : ''}" class="form-input" required>
         </div>
 
-        <!-- Converted gallery to image upload section -->
+        <!-- Galería multimedia -->
         <div class="galeria-section">
             <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
                 <i data-lucide="images"></i>
@@ -68,9 +73,9 @@
             <input type="file" id="imageInput" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
 
             <div class="uploaded-images" id="uploadedImages">
-                <!-- Existing images as editable items -->
-                <div class="uploaded-image">
-                    <img src="images/Incendio_Forestal.jpg" alt="Vista general del incendio forestal">
+                <!-- Mostrar imágenes existentes -->
+                <div class="uploaded-image" th:each="media : ${hecho.multimedia}">
+                    <img th:src="${media.url}" th:alt="'Imagen del hecho: ' + ${hecho.titulo}">
                     <button type="button" class="remove-image" onclick="removeImage(this)">
                         <i data-lucide="x"></i>
                     </button>
@@ -78,28 +83,27 @@
             </div>
         </div>
 
-        <!-- Converted description to editable textarea -->
+        <!-- Descripción -->
         <div class="descripcion">
             <label class="form-label" for="descripcion">Descripción del Hecho</label>
-            <textarea id="descripcion" class="form-textarea" required>Un gran incendio forestal se desató en el Bosque Central afectando a más de 300 hectáreas.</textarea>
+            <textarea id="descripcion" th:field="*{descripcion}" class="form-textarea" required></textarea>
         </div>
 
-        <!-- Added form action buttons -->
+        <!-- Botones -->
         <div class="form-actions">
-            <a href="detalle-hecho.html" class="btn btn-secondary">
-                <i data-lucide="x"></i>
-                Cancelar
+            <a th:href="@{'/hecho/' + ${hecho.id}}" class="btn btn-secondary">
+                <i data-lucide="x"></i> Cancelar
             </a>
             <button type="button" class="btn btn-danger">
-                <i data-lucide="trash-2"></i>
-                Eliminar
+                <i data-lucide="trash-2"></i> Eliminar
             </button>
             <button type="submit" class="btn btn-primary">
-                <i data-lucide="save"></i>
-                Guardar Cambios
+                <i data-lucide="save"></i> Guardar Cambios
             </button>
         </div>
+
     </form>
+
 </div>
 
 <!-- Footer -->

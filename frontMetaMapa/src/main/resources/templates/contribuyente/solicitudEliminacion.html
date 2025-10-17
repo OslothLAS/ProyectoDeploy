@@ -17,12 +17,15 @@
     <h1><i data-lucide="trash-2"></i> Solicitud de Eliminación</h1>
 
     <!-- Mostrar título y descripción como texto -->
-    <p><strong>Título Colección:</strong> <span th:text="${tituloHecho}">Título de la colección</span></p>
-    <p><strong>Descripción Colección:</strong> <span th:text="${descripcionHecho}">Descripción de la colección</span></p>
+    <p><strong>Título Hecho:</strong> <span th:text="${tituloHecho}">Título de la colección</span></p>
+    <p><strong>Descripción Hecho:</strong> <span th:text="${descripcionHecho}">Descripción de la colección</span></p>
 
     <p>Si consideras que un hecho debe ser eliminado del sistema, completa este formulario. La justificación debe tener al menos <strong>500 caracteres</strong>.</p>
 
     <form th:action="@{/solicitar-eliminacion}" th:object="${solicitudInputDTO}" method="post" id="form-eliminacion">
+        <!-- Campo oculto con el ID del hecho -->
+        <input type="hidden" th:field="*{idHecho}" />
+
         <label for="justificacion">Justificación de la Solicitud</label>
         <textarea id="justificacion" th:field="*{justificacion}" minlength="500"
                   placeholder="Escribe aquí los fundamentos para la eliminación..." required></textarea>

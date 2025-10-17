@@ -10,10 +10,10 @@
 </head>
 <body>
 
-<div th:replace="~{layout/navbar :: navbar(false)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
-<section class="collection-header">
-    <div class="collection-content">
+<Header class="hero">
+    <div class="hero-content">
         <h1 th:text="${tituloColeccion}">Título Colección</h1>
         <p th:text="${descripcionColeccion}">Descripción de la colección</p>
         <div class="collection-meta">
@@ -21,7 +21,7 @@
             <div class="meta-item" th:text="'🔥 ' + ${hechos.size()} + ' hechos registrados'">🔥 0 hechos registrados</div>
         </div>
     </div>
-</section>
+</Header>
 
 <section class="search-section">
     <div class="search-container">
@@ -76,7 +76,6 @@
                 <a class="action-btn delete-request-btn"
                    th:data-id="${hecho.id}"
                    onclick="goToSolicitud(this)"
-                   th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''CONTRIBUYENTE'')')}">
                     <i data-lucide="trash-2"></i> Eliminar
                 </a>
             </div>
