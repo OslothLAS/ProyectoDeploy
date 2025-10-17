@@ -15,6 +15,7 @@ import ar.utn.frba.ddsi.agregador.models.repositories.IColeccionRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.ISolicitudEliminacionRepository;
 import ar.utn.frba.ddsi.agregador.services.ISolicitudEliminacionService;
+import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 import ar.utn.frba.ddsi.agregador.utils.SolicitudUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,11 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
             throw new UsuarioNoEncontradoException("El usuario con username " + solicitudDTO.getUsername() + " no existe.");
         }*/
 
-        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitudDTO.getIdHecho());
+        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitudDTO.getIdHecho())
+                .orElseThrow(() -> new HechoNoEncontradoException(
+                        "No se encontró el hecho con id: " + solicitudDTO.getIdHecho()
+                ));
+
 
         // Convertir DTO -> entidad
         SolicitudEliminacion solicitudNueva = SolicitudUtil.dtoToSolicitud(solicitudDTO);
@@ -96,16 +101,12 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
                 .block();
     }
 
-    public HechoOutputDTO obtenerHechoPorId(Long idHecho) {
-        return hechoWebClient.get()
-                .uri("/hecho/{id}", idHecho) // solo el path relativo
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError,
-                        error -> Mono.error(new HechoNoEncontradoException(
-                                "No se encontró el hecho con id: " + idHecho)))
-                .bodyToMono(HechoOutputDTO.class)
-                .block();
+    public Optional<HechoOutputDTO> obtenerHechoPorId(Long idHecho) {
+        return hechoRepository.findById(idHecho)
+                .map(HechoUtil::hechoToDTO); // ✅ method reference
     }
+
+
 
 
 
@@ -187,7 +188,9 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
-        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitud.getId());
+        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitud.getIdHecho()).orElseThrow(() -> new HechoNoEncontradoException(
+                "No se encontró el hecho con id: " + solicitud.getIdHecho()
+        ));
         this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.ACEPTADA, hecho);
 
 
@@ -207,7 +210,9 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
     public void rechazarSolicitud(Long idSolicitud) {
         SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idSolicitud));
-        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitud.getId());
+        HechoOutputDTO hecho = this.obtenerHechoPorId(solicitud.getIdHecho()).orElseThrow(() -> new HechoNoEncontradoException(
+                "No se encontró el hecho con id: " + solicitud.getIdHecho()
+        ));
         this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.RECHAZADA, hecho);
         solicitudRepository.save(solicitud);
     }
