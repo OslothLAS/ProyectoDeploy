@@ -1,16 +1,17 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.SolicitudApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.SolicitudOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
+import com.frontMetaMapa.frontMetaMapa.services.SolicitudEliminacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -18,20 +19,33 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class AdministradorController {
+
     private final ColeccionService coleccionService;
+    private final SolicitudEliminacionService solicitudEliminacionService;
+
+    @ModelAttribute
+    public void addRolToModel(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String rol = authentication.getAuthorities()
+                    .stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse("SIN_ROL");
+            model.addAttribute("rol", rol);
+        } else {
+            model.addAttribute("rol", "ANONIMO");
+        }
+    }
+
     @GetMapping("/administrador")
-    public String administrador(Model model, Authentication authentication) {
-        String rol = authentication.getAuthorities()
-                .stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElse("SIN_ROL");
-        model.addAttribute("rol", rol);
+    public String administrador() {
         return "administrador/index";
     }
 
     @GetMapping("/dashboard-solicitudes")
-    public String solicitudes() {
+    public String solicitudes(Model model) {
+        List<SolicitudOutputDTO> solicitudes = solicitudEliminacionService.obtenerSolicitudes();
+        model.addAttribute("solicitudes", solicitudes);
         return "administrador/dashboardSolicitud";
     }
 

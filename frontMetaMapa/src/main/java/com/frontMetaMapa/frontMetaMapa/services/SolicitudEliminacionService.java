@@ -1,10 +1,15 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.EstadoSolicitud;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.SolicitudApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.SolicitudInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.SolicitudOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SolicitudEliminacionService {
@@ -34,15 +39,20 @@ public class SolicitudEliminacionService {
     /**
      * Acepta una solicitud de eliminación.
      */
-    public SolicitudOutputDTO aceptarSolicitud(String id) {
-        return solicitudesEliminacionApiService.cambiarEstadoSolicitud(id, "aceptar");
+    public void aceptarSolicitud(String id) {
+         solicitudesEliminacionApiService.cambiarEstadoSolicitud(id, "aceptar");
+    }
+
+    public List<SolicitudOutputDTO> obtenerSolicitudes() {
+        List<SolicitudApiOutputDto> solicitudesApi = solicitudesEliminacionApiService.obtenerSolicitudes();
+        return convertirASolicitudOutputDTO(solicitudesApi);
     }
 
     /**
      * Rechaza una solicitud de eliminación.
      */
-    public SolicitudOutputDTO rechazarSolicitud(String id) {
-        return solicitudesEliminacionApiService.cambiarEstadoSolicitud(id, "rechazar");
+    public void rechazarSolicitud(String id) {
+         solicitudesEliminacionApiService.cambiarEstadoSolicitud(id, "rechazar");
     }
 
     /**
@@ -64,5 +74,28 @@ public class SolicitudEliminacionService {
         if (solicitudDTO.getJustificacion() == null || solicitudDTO.getJustificacion().trim().isEmpty()) {
             throw new IllegalArgumentException("La justificación es obligatoria");
         }
+    }
+
+
+    public List<SolicitudOutputDTO> convertirASolicitudOutputDTO(List<SolicitudApiOutputDto> solicitudesApi) {
+        return solicitudesApi.stream().map(solicitudApi -> {
+            SolicitudOutputDTO dto = new SolicitudOutputDTO();
+            dto.setId(solicitudApi.getId());
+            dto.setUsername(solicitudApi.getUsername());
+            dto.setFechaDeCreacion(solicitudApi.getFechaDeCreacion());
+            dto.setFechaDeEvaluacion(solicitudApi.getFechaDeEvaluacion());
+            dto.setJustificacion(solicitudApi.getJustificacion());
+            dto.setIdHecho(solicitudApi.getIdHecho());
+
+            // Tomamos el último estado de la lista
+            if (solicitudApi.getEstados() != null && !solicitudApi.getEstados().isEmpty()) {
+                EstadoSolicitud ultimoEstado = solicitudApi.getEstados()
+                        .get(solicitudApi.getEstados().size() - 1);
+                dto.setEstado(ultimoEstado.getEstado().name()); // convertir enum a String
+                dto.setEvaluador(ultimoEstado.getEvaluador());
+            }
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

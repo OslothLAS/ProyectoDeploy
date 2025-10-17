@@ -8,14 +8,12 @@ import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import com.frontMetaMapa.frontMetaMapa.services.SolicitudEliminacionService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -55,6 +53,20 @@ public class SolicitudesController {
     public String crearSolicitud(@ModelAttribute SolicitudInputDTO solicitudInputDTO) {
         solicitudEliminacionService.crearSolicitud(solicitudInputDTO);
         return "redirect:/visualizador"; // redirigir a donde quieras
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/solicitudEliminacion/{id}/aceptar")
+    public String aceptarSolicitud(@PathVariable String id, Model model, HttpServletRequest request) {
+        solicitudEliminacionService.aceptarSolicitud(id);
+        return "redirect:/administrador/dashboard-solicitudes";
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/solicitudEliminacion/{id}/rechazar")
+    public String rechazarSolicitud(@PathVariable String id, Model model, HttpServletRequest request) {
+        solicitudEliminacionService.rechazarSolicitud(id);
+        return "redirect:/dashboard-solicitudes";
     }
 
 

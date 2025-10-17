@@ -10,7 +10,7 @@
 </head>
 <body>
 <!-- Navbar -->
-<div th:replace="~{layout/navbar :: navbar(true)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <div class="dashboard-section">
     <div class="dashboard-container">
@@ -22,32 +22,24 @@
         <!-- Dashboard Stats -->
         <div class="dashboard-stats">
             <div class="stat-card">
-                <div class="icon">
-                    <i data-lucide="clock"></i>
-                </div>
-                <h3 id="pendingCount">8</h3>
+                <div class="icon"><i data-lucide="clock"></i></div>
+                <h3 id="pendingCount" th:text="${solicitudes.?[estado == 'PENDIENTE'].size()}">0</h3>
                 <p>Solicitudes Pendientes</p>
             </div>
             <div class="stat-card">
-                <div class="icon">
-                    <i data-lucide="check-circle"></i>
-                </div>
-                <h3 id="approvedCount">24</h3>
+                <div class="icon"><i data-lucide="check-circle"></i></div>
+                <h3 id="approvedCount" th:text="${solicitudes.?[estado == 'ACEPTADA'].size()}">0</h3>
                 <p>Solicitudes Aprobadas</p>
             </div>
             <div class="stat-card">
-                <div class="icon">
-                    <i data-lucide="x-circle"></i>
-                </div>
-                <h3 id="rejectedCount">12</h3>
+                <div class="icon"><i data-lucide="x-circle"></i></div>
+                <h3 id="rejectedCount" th:text="${solicitudes.?[estado == 'RECHAZADA'].size()}">0</h3>
                 <p>Solicitudes Rechazadas</p>
             </div>
             <div class="stat-card">
-                <div class="icon">
-                    <i data-lucide="database"></i>
-                </div>
-                <h3 id="totalFacts">1,247</h3>
-                <p>Total de Hechos</p>
+                <div class="icon"><i data-lucide="list"></i></div>
+                <h3 id="totalSolicitudes" th:text="${solicitudes.size()}">0</h3>
+                <p>Total de Solicitudes</p>
             </div>
         </div>
 
@@ -57,50 +49,67 @@
                 <h2>Solicitudes de Eliminación</h2>
                 <div class="filter-tabs">
                     <button class="filter-tab active" onclick="filterRequests('all')">Todas</button>
-                    <button class="filter-tab" onclick="filterRequests('pending')">Pendientes</button>
-                    <button class="filter-tab" onclick="filterRequests('approved')">Aprobadas</button>
-                    <button class="filter-tab" onclick="filterRequests('rejected')">Rechazadas</button>
+                    <button class="filter-tab" onclick="filterRequests('PENDIENTE')">Pendientes</button>
+                    <button class="filter-tab" onclick="filterRequests('ACEPTADA')">Aprobadas</button>
+                    <button class="filter-tab" onclick="filterRequests('RECHAZADA')">Rechazadas</button>
                 </div>
             </div>
 
             <div id="requestsList">
-                <!-- Solicitud Pendiente 1 -->
-                <div class="request-item" data-status="pending">
+                <div th:each="solicitud : ${solicitudes}" class="request-item"
+                     th:attr="data-status=${solicitud.estado}">
+
                     <div class="request-header">
                         <div class="request-info">
-                            <h4>Incendio forestal en Córdoba - Datos inexactos</h4>
+                            <h4 th:text="'Hecho #' + ${solicitud.idHecho} + ' - ' + ${solicitud.estado.toLowerCase()}"></h4>
                             <div class="request-meta">
-                                <span><i data-lucide="calendar"></i> 15 Ago 2025</span>
-                                <span><i data-lucide="map-pin"></i> Córdoba, Argentina</span>
-                                <span><i data-lucide="user"></i> Usuario Anónimo</span>
+                                <span><i data-lucide="calendar"></i>
+                                    <span th:text="${#temporals.format(solicitud.fechaDeCreacion, 'dd MMM yyyy')}"></span>
+                                </span>
+                                <span><i data-lucide="user"></i>
+                                    <span th:text="${solicitud.username != null ? solicitud.username : 'Usuario Anónimo'}"></span>
+                                </span>
+                                <span><i data-lucide="user-check"></i>
+                                    <span th:text="${solicitud.evaluador != null ? solicitud.evaluador : 'Sin evaluador'}"></span>
+                                </span>
                             </div>
                         </div>
-                        <span class="status-badge status-pending">Pendiente</span>
+
+                        <span th:class="${'status-badge ' + (solicitud.estado == 'PENDIENTE' ? 'status-pending' : (solicitud.estado == 'ACEPTADA' ? 'status-approved' : 'status-rejected'))}"
+                              th:text="${solicitud.estado.toLowerCase()}">
+                        </span>
                     </div>
 
-                    <div class="request-reason">
-                        "Los datos presentados sobre el incendio forestal en la provincia de Córdoba contienen información errónea..."
-                    </div>
+                    <div class="request-reason" th:text="${solicitud.justificacion}"></div>
 
                     <div class="request-actions">
-                        <button class="btn-small btn-view" onclick="viewFactDetails('001')">
+                        <button class="btn-small btn-view"
+                                th:attr="onclick='viewFactDetails(' + ${solicitud.idHecho} + ')'">
                             <i data-lucide="eye"></i> Ver Hecho
                         </button>
-                        <button class="btn-small btn-approve" onclick="approveRequest('001')">
-                            <i data-lucide="check"></i> Aprobar
-                        </button>
-                        <button class="btn-small btn-reject" onclick="rejectRequest('001')">
-                            <i data-lucide="x"></i> Rechazar
-                        </button>
+
+                        <form th:action="@{/solicitudEliminacion/{id}/aceptar(id=${solicitud.id})}" method="post" style="display:inline">
+                            <input type="hidden" name="_method" value="post"/>
+                            <button type="submit" class="btn-small btn-approve">
+                                <i data-lucide="check"></i> Aprobar
+                            </button>
+                        </form>
+
+                        <form th:action="@{/solicitudEliminacion/{id}/rechazar(id=${solicitud.id})}" method="post" style="display:inline">
+                            <input type="hidden" name="_method" value="post"/>
+                            <button type="submit" class="btn-small btn-reject">
+                                <i data-lucide="x"></i> Rechazar
+                            </button>
+                        </form>
                     </div>
                 </div>
-            </div>
 
-            <!-- Empty State -->
-            <div id="emptyState" class="empty-state" style="display: none;">
-                <i data-lucide="inbox"></i>
-                <h3>No hay solicitudes</h3>
-                <p>No se encontraron solicitudes que coincidan con el filtro seleccionado.</p>
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i data-lucide="inbox"></i>
+                    <h3>No hay solicitudes</h3>
+                    <p>No se encontraron solicitudes que coincidan con el filtro seleccionado.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -113,47 +122,43 @@
     lucide.createIcons();
 
     function filterRequests(status) {
-      const items = document.querySelectorAll('.request-item');
-      const tabs = document.querySelectorAll('.filter-tab');
-      const emptyState = document.getElementById('emptyState');
+        const items = document.querySelectorAll('.request-item');
+        const tabs = document.querySelectorAll('.filter-tab');
+        const emptyState = document.getElementById('emptyState');
 
-      tabs.forEach(tab => tab.classList.remove('active'));
-      event.target.classList.add('active');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
 
-      let visibleCount = 0;
+        let visibleCount = 0;
 
-      items.forEach(item => {
-        const itemStatus = item.dataset.status;
-        if (status === 'all' || itemStatus === status) {
-          item.style.display = 'block';
-          visibleCount++;
-        } else {
-          item.style.display = 'none';
-        }
-      });
+        items.forEach(item => {
+            const itemStatus = item.dataset.status;
+            if (status === 'all' || itemStatus === status) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
 
-      if (visibleCount === 0) {
-        emptyState.style.display = 'block';
-      } else {
-        emptyState.style.display = 'none';
-      }
+        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
     function viewFactDetails(id) {
-      alert(`Abriendo detalles del hecho ID: ${id}`);
+        alert(`Abriendo detalles del hecho ID: ${id}`);
     }
 
     function approveRequest(id) {
-      if (confirm('¿Estás seguro de que deseas aprobar esta solicitud de eliminación?')) {
-        alert(`Solicitud ${id} aprobada. El hecho será eliminado.`);
-      }
+        if (confirm('¿Estás seguro de que deseas aprobar esta solicitud de eliminación?')) {
+            alert(`Solicitud ${id} aprobada. El hecho será eliminado.`);
+        }
     }
 
     function rejectRequest(id) {
-      const reason = prompt('Ingresa la razón del rechazo (opcional):');
-      if (reason !== null) {
-        alert(`Solicitud ${id} rechazada. Razón: ${reason || 'No especificada'}`);
-      }
+        const reason = prompt('Ingresa la razón del rechazo (opcional):');
+        if (reason !== null) {
+            alert(`Solicitud ${id} rechazada. Razón: ${reason || 'No especificada'}`);
+        }
     }
 </script>
 </body>

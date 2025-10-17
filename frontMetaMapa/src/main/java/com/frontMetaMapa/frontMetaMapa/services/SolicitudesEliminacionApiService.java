@@ -1,6 +1,7 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.SolicitudApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.SolicitudInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -58,22 +60,15 @@ public class SolicitudesEliminacionApiService {
         return response;
     }
 
-    public SolicitudOutputDTO cambiarEstadoSolicitud(String id, String accion) {
-        SolicitudOutputDTO response = webApiCallerService.post(
-                solicitudesServiceUrl + "/solicitudes/" + id + "/" + accion,
-                null,
-                SolicitudOutputDTO.class
-        );
-
-        if (response == null) {
-            throw new NotFoundException("Solicitud", id);
-        }
-
-        return response;
+    public List<SolicitudApiOutputDto> obtenerSolicitudes() {
+        return webApiCallerService.getList(solicitudesServiceUrl + "/solicitudes", SolicitudApiOutputDto.class);
     }
 
-
-
-
-
+    public void cambiarEstadoSolicitud(String id, String accion) {
+        SolicitudOutputDTO response = webApiCallerService.put(
+                solicitudesServiceUrl + "/solicitudes/" + id + "/" + accion,
+                "{}",
+                SolicitudOutputDTO.class
+        );
+    }
 }
