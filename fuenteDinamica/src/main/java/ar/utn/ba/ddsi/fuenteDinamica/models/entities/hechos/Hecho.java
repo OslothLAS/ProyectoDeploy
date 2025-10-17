@@ -56,7 +56,7 @@ public class Hecho {
     @Column(name = "origen_fuente")
     private FuenteOrigen fuenteOrigen;
 
-    @Transient
+    @Column(name = "esValido")
     private Boolean mostrarDatos; //ver esto
 
     @Column(name = "fecha_carga")

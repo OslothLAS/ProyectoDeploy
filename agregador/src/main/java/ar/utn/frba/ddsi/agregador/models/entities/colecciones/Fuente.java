@@ -79,6 +79,7 @@ public class Fuente{
                     .uri("/api/hechos")
                     .retrieve()
                     .bodyToFlux(HechoOutputDTO.class)
+                    .filter(dto -> dto.getUbicacion() != null)
                     .map(HechoUtil::hechoDTOtoHecho)
                     .collectList()
                     .block();

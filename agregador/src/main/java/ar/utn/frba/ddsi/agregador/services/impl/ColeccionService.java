@@ -1,6 +1,5 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
-import ar.utn.frba.ddsi.agregador.controllers.ColeccionController;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.*;
@@ -21,7 +20,6 @@ import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
@@ -31,6 +29,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
@@ -146,10 +146,21 @@ public class ColeccionService implements IColeccionService {
 
     private List<Hecho> procesarHechos(List<Fuente> fuentes, List<CriterioDePertenencia> criterios, Coleccion coleccion) {
         List<Hecho> todosLosHechos = fuentes.parallelStream()
-                .flatMap(fuente ->
-                        fuente.obtenerHechos(criterios).stream()
-                                .peek(hecho -> hecho.setFuenteOrigen(fuente.getOrigenHechos()))
-                )
+                .flatMap(fuente -> {
+                    try {
+                        List<Hecho> hechosFuente = fuente.obtenerHechos(criterios);
+                        if (hechosFuente == null) {
+                            System.out.println("⚠️ Fuente " + fuente.getIp() + ":" + fuente.getPuerto() + " devolvió null");
+                            return Stream.<Hecho>empty();
+                        }
+                        hechosFuente.forEach(h -> h.setFuenteOrigen(fuente.getOrigenHechos()));
+                        return hechosFuente.stream();
+                    } catch (Exception e) {
+                        System.out.println("💥 Error al obtener hechos de " + fuente.getIp() + ":" + fuente.getPuerto());
+                        e.printStackTrace();
+                        return Stream.<Hecho>empty();
+                    }
+                })
                 .collect(Collectors.toList());
 
         if (todosLosHechos.isEmpty()) {
@@ -323,7 +334,7 @@ public class ColeccionService implements IColeccionService {
     }
 
 
-
+    @Transactional
     @Override
     public void actualizarHechos(){
         List<Coleccion> colecciones = this.coleccionRepository.findAll();

@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica;
 
 import ar.utn.ba.ddsi.fuenteDinamica.config.HechoProperties;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,10 +22,37 @@ public class FuenteDinamicaApplication {
         System.out.println("hola mundo ");
     }
 
-    /*@PostConstruct
-    public void insertarProvincia() {
-        jdbcTemplate.execute("INSERT INTO provincia (nombre) VALUES ('Buenos Aires')");
-        System.out.println("✅ Provincia 'Buenos Aires' insertada");
-    }*/
+    @PostConstruct
+    public void insertarProvincias() {
+        String sql = """
+            INSERT IGNORE INTO provincia (nombre) VALUES
+            ('Buenos Aires'),
+            ('Catamarca'),
+            ('Chaco'),
+            ('Chubut'),
+            ('Cordoba'),
+            ('Corrientes'),
+            ('Entre Rios'),
+            ('Formosa'),
+            ('Jujuy'),
+            ('La Pampa'),
+            ('La Rioja'),
+            ('Mendoza'),
+            ('Misiones'),
+            ('Neuquen'),
+            ('Rio Negro'),
+            ('Salta'),
+            ('San Juan'),
+            ('San Luis'),
+            ('Santa Cruz'),
+            ('Santa Fe'),
+            ('Santiago del Estero'),
+            ('Tierra del Fuego'),
+            ('Tucuman');
+        """;
+
+        jdbcTemplate.execute(sql);
+        System.out.println("Provincias insertadas");
+    }
 
 }

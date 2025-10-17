@@ -8,11 +8,8 @@ import com.usuarios.servicioDeUsuarios.utils.JwtUtil;
 import com.usuarios.servicioDeUsuarios.utils.UsuarioUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -82,6 +79,11 @@ public class UsuarioService implements UserDetailsService {
     private void validarDatosBasicos(UsuarioDTO dto) {
         ValidationException validationException = new ValidationException("Errores de validación");
         boolean tieneErrores = false;
+
+        if(usuarioRepository.findByUsername(dto.getUsername()).isPresent()){
+            validationException.addFieldError("username", "El nombre de usuario ya existe");
+            tieneErrores = true;
+        }
 
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
             validationException.addFieldError("nombre", "El nombre es obligatorio");
