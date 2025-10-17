@@ -28,7 +28,7 @@
 <main>
     <h1 th:text="${coleccion.id != null} ? 'Editar Colección' : 'Nueva Colección'">Nueva Colección</h1>
 
-    <form th:action="@{/colecciones}" th:object="${coleccion}" method="post">
+    <form th:action="@{/createColeccion}" th:object="${coleccion}" method="post">
         <input type="hidden" th:field="*{id}" />
 
         <label>Título</label>

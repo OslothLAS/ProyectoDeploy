@@ -36,8 +36,8 @@ public class ColeccionService {
     }
 
     public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
-        validarDatosBasicos(coleccionDTO);
-        validarDuplicidadDeColeccion(coleccionDTO);
+        //validarDatosBasicos(coleccionDTO);
+        //validarDuplicidadDeColeccion(coleccionDTO);
         return coleccionApiService.crearColeccion(coleccionDTO);
     }
 

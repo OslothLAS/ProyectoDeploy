@@ -3,6 +3,7 @@ package com.frontMetaMapa.frontMetaMapa.controllers;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.ColeccionInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.CriterioDePertenenciaInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.FuenteInputDTO;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.CriterioDePertenenciaOutputDTO;
 
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
@@ -10,6 +11,7 @@ import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -62,7 +64,7 @@ public class ColeccionesController {
         return "commons/showColeccion";
     }
 
-    @GetMapping("/nuevo")
+    @GetMapping("/crearColeccion")
     public String nuevaColeccion(Model model) {
         ColeccionInputDTO coleccionDTO = new ColeccionInputDTO();
         // Inicializamos listas vacías para Thymeleaf
@@ -76,6 +78,13 @@ public class ColeccionesController {
 
         model.addAttribute("coleccion", coleccionDTO);
         return "administrador/createColeccion"; // nombre del HTML Thymeleaf
+    }
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/createColeccion")
+    public String crearColeccion(@ModelAttribute ColeccionInputDTO coleccionInputDTO) {
+        System.out.println(coleccionInputDTO);
+        coleccionService.crearColeccion(coleccionInputDTO);
+        return "commons/buscadorColecciones"; // o redirección al mensaje de éxito
     }
 
     /**
