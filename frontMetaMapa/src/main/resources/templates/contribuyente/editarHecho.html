@@ -36,42 +36,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="categoria">Categoría *</label>
-                    <select id="categoria" th:field="*{categoria}" required th:disabled="${!hecho.editable}">
-                        <option value="">Selecciona una categoría</option>
-                        <option value="Incendio">Incendio</option>
-                        <option value="Accidente Vial">Accidente Vial</option>
-                        <option value="Fenómeno Natural">Fenómeno Natural</option>
-                        <option value="Evento Social">Evento Social</option>
-                        <option value="Infraestructura">Infraestructura</option>
-                        <option value="Medio Ambiente">Medio Ambiente</option>
-                        <option value="Seguridad">Seguridad</option>
-                        <option value="Otro">Otro</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="fechaHecho">Fecha del Hecho *</label>
-                    <!-- Corregir el binding de fechaHecho -->
-                    <input type="datetime-local" id="fechaHecho" th:field="*{fechaHecho}" class="form-input" required th:disabled="${!hecho.editable}">
-                </div>
-
-                <div class="form-group">
                     <label for="latitud">Latitud *</label>
-                    <!-- Usar la ubicación del DTO -->
-                    <input type="text" id="latitud" th:field="*{ubicacion.latitud}" required th:disabled="${!hecho.editable}">
+                    <!-- CORREGIDO: Asegurar que sea número -->
+                    <input type="number" id="latitud" th:field="*{ubicacion.latitud}" step="any" required th:disabled="${!hecho.editable}">
                 </div>
 
                 <div class="form-group">
                     <label for="longitud">Longitud *</label>
-                    <!-- Usar la ubicación del DTO -->
-                    <input type="text" id="longitud" th:field="*{ubicacion.longitud}" required th:disabled="${!hecho.editable}">
+                    <!-- CORREGIDO: Asegurar que sea número -->
+                    <input type="number" id="longitud" th:field="*{ubicacion.longitud}" step="any" required th:disabled="${!hecho.editable}">
                 </div>
 
                 <div class="form-group">
                     <label for="localidad">Localidad *</label>
-                    <!-- Usar la ubicación del DTO -->
-                    <input type="text" id="localidad" th:field="*{ubicacion.localidad}" required th:disabled="${!hecho.editable}">
+                    <!-- CORREGIDO: Cambiar a ubicacion.localidad.nombre -->
+                    <input type="text" id="localidad" th:field="*{ubicacion.localidad.nombre}" required th:disabled="${!hecho.editable}">
                 </div>
 
                 <div class="form-group full-width">
@@ -79,16 +58,6 @@
                     <textarea id="descripcion" th:field="*{descripcion}" required placeholder="Describe detalladamente el hecho ocurrido..." th:disabled="${!hecho.editable}"></textarea>
                 </div>
 
-                <div class="form-group full-width">
-                    <label for="multimedia">Multimedia (Opcional)</label>
-                    <input type="file" id="multimedia" name="multimedia" multiple accept="image/*,video/*,audio/*" th:disabled="${!hecho.editable}">
-                    <div class="uploaded-images" th:if="${hecho.multimedia != null and !hecho.multimedia.empty}">
-                        <h4>Archivos actuales:</h4>
-                        <div th:each="media : ${hecho.multimedia}">
-                            <a th:href="${media.url}" target="_blank" th:text="${media.url}"></a>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="checkbox-group">
@@ -110,22 +79,6 @@
 
 <script>
     lucide.createIcons();
-
-    // Formatear la fecha para el input datetime-local
-    document.addEventListener('DOMContentLoaded', function() {
-        const fechaInput = document.getElementById('fechaHecho');
-        if (fechaInput) {
-            // Thymeleaf debería manejar esto automáticamente con th:field,
-            // pero si no funciona, puedes formatearlo manualmente
-            const fechaValue = fechaInput.getAttribute('th:value');
-            if (fechaValue) {
-                // Convertir el formato de fecha si es necesario
-                const date = new Date(fechaValue);
-                const formatted = date.toISOString().slice(0, 16);
-                fechaInput.value = formatted;
-            }
-        }
-    });
 </script>
 </body>
 </html>

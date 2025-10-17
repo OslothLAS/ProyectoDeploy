@@ -1,5 +1,6 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
@@ -126,7 +127,7 @@ public class HechosController {
     @PostMapping("/hechoEdicion/{id}")
     public String editarHecho(
             @PathVariable Long id,
-            @ModelAttribute HechoInputDTO hechoInputDTO,
+            @ModelAttribute HechoInputEditarApi hechoInputDTO,
             HttpServletRequest request,
             Model model) {
 
@@ -134,16 +135,9 @@ public class HechosController {
         if (username == null) {
             return "redirect:/login";
         }
-
-        try {
-
             hechoService.actualizarHecho(id, hechoInputDTO);
-
             // Redirigir a la página de contribuciones con mensaje de éxito
             return "redirect:/mis-contribuciones?success=hecho-actualizado";
 
-        } catch (Exception e) {
-            return "redirect:/edicionHecho/" + id + "?error=error-actualizacion";
-        }
     }
 }

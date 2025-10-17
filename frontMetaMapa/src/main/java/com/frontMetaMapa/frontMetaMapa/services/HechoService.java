@@ -2,6 +2,7 @@ package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.*;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
@@ -49,17 +50,9 @@ public class HechoService {
     }
 
     // Actualizar un hecho
-    public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO hechoDTO) {
-        // Verificar que existe
-        hechoApiService.obtenerHechos().stream()
-                .filter(h -> h.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
+    public void actualizarHecho(Long id, HechoInputEditarApi hechoDTO) {
 
-        validarDatosBasicos(hechoDTO);
-        HechoApiInputDto hechoInput = mapearAHechoApiDto(hechoDTO);
-
-        return hechoApiService.actualizarHecho(id, hechoInput);
+        hechoApiService.actualizarHecho(id, hechoDTO);
     }
 
     // 🧩 Mapeo de DTO de entrada a DTO del backend (API)

@@ -1,6 +1,7 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiInputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
@@ -70,16 +71,11 @@ public class HechosApiService {
     }
 
     // Actualizar un hecho por ID
-    public HechoOutputDTO actualizarHecho(Long id, HechoApiInputDto hechoDTO) {
-        HechoOutputDTO response = webApiCallerService.put(
-                hechosServiceUrl + "/hechos/" + id,
+    public void actualizarHecho(Long id, HechoInputEditarApi hechoDTO) {
+        webApiCallerService.put(
+                hechosServiceUrl + "/api/hechos/" + id,
                 hechoDTO,
                 HechoOutputDTO.class
         );
-
-        if (response == null) {
-            throw new NotFoundException("Hecho", id.toString());
-        }
-        return response;
     }
 }
