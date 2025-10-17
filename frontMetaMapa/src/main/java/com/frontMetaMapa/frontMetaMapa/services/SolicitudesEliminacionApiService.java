@@ -40,10 +40,10 @@ public class SolicitudesEliminacionApiService {
     }
 
     public void createSolicitud(SolicitudInputDTO solicitudDTO) {
-        Integer response = webApiCallerService.post(
+        SolicitudApiOutputDto response = webApiCallerService.postWithoutToken(
                 solicitudesServiceUrl + "/solicitudes",
                 solicitudDTO,
-                Integer.class // sigue esperando el ID, pero no lo usamos
+                SolicitudApiOutputDto.class // sigue esperando el ID, pero no lo usamos
         );
 
         if (response == null) {

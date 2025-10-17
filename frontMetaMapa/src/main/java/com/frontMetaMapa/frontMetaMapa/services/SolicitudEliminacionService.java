@@ -67,10 +67,6 @@ public class SolicitudEliminacionService {
             throw new IllegalArgumentException("El id del hecho es obligatorio");
         }
 
-        if (solicitudDTO.getIdSolicitante() == null) {
-            throw new IllegalArgumentException("El id del solicitante es obligatorio");
-        }
-
         if (solicitudDTO.getJustificacion() == null || solicitudDTO.getJustificacion().trim().isEmpty()) {
             throw new IllegalArgumentException("La justificación es obligatoria");
         }

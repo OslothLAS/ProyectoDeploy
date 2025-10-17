@@ -10,7 +10,7 @@
 </head>
 <body>
 <!-- Importing navbar from layout -->
-<div th:replace="~{layout/navbar :: navbar(false)}"></div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <!-- Contenedor principal cuando existe el hecho -->
 <div class="container" th:if="${hecho}">
@@ -30,7 +30,7 @@
 
             <!-- Autor -->
             <p style="margin: 0; color: var(--text-light); font-style: italic;">
-                AUTOR: <span th:text="${username}">nombre_usuario</span>
+                AUTOR: <span th:text="${hecho.mostrarDatos} ? ${username} : 'Anónimo'">nombre_usuario</span>
             </p>
 
         </header>

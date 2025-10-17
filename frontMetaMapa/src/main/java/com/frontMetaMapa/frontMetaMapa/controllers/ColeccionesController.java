@@ -10,6 +10,8 @@ import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ColeccionesController {
     private final ColeccionService coleccionService;
+
+
+    @ModelAttribute
+    public void addRolToModel(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String rol = authentication.getAuthorities()
+                    .stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse("SIN_ROL");
+            model.addAttribute("rol", rol);
+        } else {
+            model.addAttribute("rol", "ANONIMO");
+        }
+    }
 
     @GetMapping("/buscador-colecciones")
     public String buscadorColecciones(Model model) {

@@ -16,10 +16,15 @@
             <a href="#inicio">Inicio</a>
             <a href="#nosotros">Nosotros</a>
             <a href="#hechos">Explorar</a>
-            <a th:if="${showLogout}" href="/">Cerrar sesión</a>
-            <a th:unless="${showLogout}" href="/login">Acceso</a>
+
+            <!-- Mostrar "Cerrar sesión" solo si el usuario tiene rol ADMIN o CONTRIBUYENTE -->
+            <a th:if="${rol == 'ROLE_ADMIN' or rol == 'ROLE_CONTRIBUYENTE'}" href="/logout">Cerrar sesión</a>
+
+            <!-- Mostrar "Acceso" si no tiene esos roles -->
+            <a th:unless="${rol == 'ROLE_ADMIN' or rol == 'ROLE_CONTRIBUYENTE'}" href="/login">Acceso</a>
         </div>
     </div>
 </nav>
+
 </body>
 </html>

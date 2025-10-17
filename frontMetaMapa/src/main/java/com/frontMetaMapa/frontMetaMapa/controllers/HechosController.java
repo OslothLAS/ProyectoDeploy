@@ -1,11 +1,13 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoApiOutputDto;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HechosController {
     private final HechoService hechoService;
+
+
+    @ModelAttribute
+    public void addRolToModel(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String rol = authentication.getAuthorities()
+                    .stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse("SIN_ROL");
+            model.addAttribute("rol", rol);
+        } else {
+            model.addAttribute("rol", "ANONIMO");
+        }
+    }
 
     @GetMapping("/buscador-hechos")
     public String buscadorHechos() {
@@ -53,23 +70,54 @@ public class HechosController {
         return "contribuyente/misContribuciones"; // Thymeleaf template
     }
 
-    @GetMapping("/hecho/{titulo}")
-    public String detalleHecho(@PathVariable String titulo, Model model, HttpServletRequest request) {
+    @GetMapping("/hecho/{id}")
+    public String detalleHecho(@PathVariable Long id, Model model, HttpServletRequest request) {
         String username = (String) request.getSession().getAttribute("username");
         if (username == null) {
             return "redirect:/login";
         }
+
         try {
-            List<HechoApiOutputDto> hechos = hechoService.obtenerHechosPorUsername(username);
-            Optional<HechoApiOutputDto> hechoEncontrado = hechos.stream()
-                    .filter(hecho -> hecho.getTitulo().equals(titulo))
-                    .findFirst();
-            if (hechoEncontrado.isPresent()) {
-                model.addAttribute("hecho", hechoEncontrado.get());
+            // Obtener el hecho directamente por ID
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
+
+            if (hechoOpt.isPresent()) {
+                model.addAttribute("hecho", hechoOpt.get());
                 model.addAttribute("username", username);
                 return "commons/detalleHecho";
             } else {
                 // Si no encuentra el hecho, redirigir con error
+                return "redirect:/mis-contribuciones?error=hecho-no-encontrado";
+            }
+        } catch (Exception e) {
+            return "redirect:/mis-contribuciones?error=error-servidor";
+        }
+    }
+
+
+    @GetMapping("/edicionHecho/{id}")
+    public String editarHecho(@PathVariable Long id, Model model, HttpServletRequest request) {
+        String username = (String) request.getSession().getAttribute("username");
+        if (username == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            // Obtener el hecho por ID
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
+
+            if (hechoOpt.isPresent()) {
+                HechoApiOutputDto hecho = hechoOpt.get();
+
+                // Opcional: verificar si el usuario tiene permisos para editar este hecho
+                if (!hecho.getUsername().equals(username)) {
+                    return "redirect:/mis-contribuciones?error=sin-permiso";
+                }
+
+                model.addAttribute("hecho", hecho);
+                model.addAttribute("username", username);
+                return "contribuyente/editarHecho";
+            } else {
                 return "redirect:/mis-contribuciones?error=hecho-no-encontrado";
             }
         } catch (Exception e) {
