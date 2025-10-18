@@ -63,12 +63,9 @@ public class ColeccionesApiService {
     }
 
 
-    public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
-        ColeccionOutputDTO response = webApiCallerService.post(coleccionesServiceUrl + "/colecciones", coleccionDTO, ColeccionOutputDTO.class);
-        if (response == null) {
-            throw new RuntimeException("Error al crear coleccion en el servicio externo");
-        }
-        return response;
+    public void crearColeccion(ColeccionInputDTO coleccionDTO) {
+        System.out.println("llego esto: " + coleccionDTO);
+        webApiCallerService.post(coleccionesServiceUrl + "/colecciones", coleccionDTO, Void.class);
     }
 
     public ColeccionOutputDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionDTO) {

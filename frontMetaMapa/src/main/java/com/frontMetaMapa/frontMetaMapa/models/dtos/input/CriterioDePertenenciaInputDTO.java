@@ -8,5 +8,5 @@ import lombok.Setter;
 public class CriterioDePertenenciaInputDTO {
     private Long id;
     private String tipo;
-    private String valor;
+    private String categoria;;
 }

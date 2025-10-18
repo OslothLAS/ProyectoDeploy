@@ -35,10 +35,10 @@ public class ColeccionService {
         return coleccionApiService.obtenerHechosPorColeccionId(idColeccion);
     }
 
-    public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
+    public void crearColeccion(ColeccionInputDTO coleccionDTO) {
         //validarDatosBasicos(coleccionDTO);
         //validarDuplicidadDeColeccion(coleccionDTO);
-        return coleccionApiService.crearColeccion(coleccionDTO);
+        coleccionApiService.crearColeccion(coleccionDTO);
     }
 
     public ColeccionOutputDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionDTO) {

@@ -73,7 +73,7 @@ public class ColeccionesController {
         // Agregamos un criterio de categoría por defecto
         CriterioDePertenenciaInputDTO criterio = new CriterioDePertenenciaInputDTO();
         criterio.setTipo("categoria");
-        criterio.setValor("");
+        criterio.setCategoria("");
         coleccionDTO.getCriterios().add(criterio);
 
         model.addAttribute("coleccion", coleccionDTO);
@@ -84,7 +84,7 @@ public class ColeccionesController {
     public String crearColeccion(@ModelAttribute ColeccionInputDTO coleccionInputDTO) {
         System.out.println(coleccionInputDTO);
         coleccionService.crearColeccion(coleccionInputDTO);
-        return "commons/buscadorColecciones"; // o redirección al mensaje de éxito
+        return "redirect:/buscador-colecciones"; // o redirección al mensaje de éxito
     }
 
     /**
@@ -123,14 +123,14 @@ public class ColeccionesController {
                 CriterioDePertenenciaInputDTO cIn = new CriterioDePertenenciaInputDTO();
                 cIn.setId(cOut.getId());
                 cIn.setTipo(cOut.getTipo());
-                cIn.setValor(cOut.getValor());
+                cIn.setCategoria(cOut.getValor());
                 criteriosInput.add(cIn);
             }
         } else {
             // Si no hay criterios, agregar uno por defecto
             CriterioDePertenenciaInputDTO defaultC = new CriterioDePertenenciaInputDTO();
             defaultC.setTipo("categoria");
-            defaultC.setValor("");
+            defaultC.setCategoria("");
             criteriosInput.add(defaultC);
         }
         inputDTO.setCriterios(criteriosInput);
