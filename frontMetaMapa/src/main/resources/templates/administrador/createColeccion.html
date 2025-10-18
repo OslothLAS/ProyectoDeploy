@@ -28,7 +28,7 @@
 <main>
     <h1 th:text="${coleccion.id != null} ? 'Editar Colección' : 'Nueva Colección'">Nueva Colección</h1>
 
-    <form th:action="@{/colecciones}" th:object="${coleccion}" method="post">
+    <form th:action="@{/createColeccion}" th:object="${coleccion}" method="post">
         <input type="hidden" th:field="*{id}" />
 
         <label>Título</label>
@@ -59,8 +59,7 @@
             <option value="MAYORIA">Mayoría simple</option>
         </select>
 
-        <label>Categoría</label>
-        <select th:field="*{criterios[0].valor}" required>
+        <select th:field="*{criterios[0].categoria}" required>
             <option value="AMBIENTAL">Ambiental</option>
             <option value="SOCIAL">Social</option>
             <option value="ECONOMICO">Económico</option>

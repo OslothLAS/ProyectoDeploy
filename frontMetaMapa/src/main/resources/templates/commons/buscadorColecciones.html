@@ -100,52 +100,7 @@
         <p class="page-subtitle">Explora y descubre colecciones de hechos verificados organizados por temática, región y período temporal</p>
     </div>
 
-    <div class="search-filters">
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Buscar colecciones por nombre, descripción o etiquetas..." id="searchInput">
-            <button class="search-btn" onclick="filterCollections()">
-                <i data-lucide="search"></i> Buscar
-            </button>
-        </div>
 
-        <div class="filters">
-            <div class="filter-group">
-                <label for="categoryFilter">Categoría:</label>
-                <select id="categoryFilter" class="filter-select">
-                    <option value="">Todas</option>
-                    <option value="ambiental">Ambiental</option>
-                    <option value="social">Social</option>
-                    <option value="economico">Económico</option>
-                    <option value="politico">Político</option>
-                    <option value="salud">Salud</option>
-                    <option value="educacion">Educación</option>
-                    <option value="tecnologia">Tecnología</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="regionFilter">Región:</label>
-                <select id="regionFilter" class="filter-select">
-                    <option value="">Todas</option>
-                    <option value="argentina">Argentina</option>
-                    <option value="brasil">Brasil</option>
-                    <option value="chile">Chile</option>
-                    <option value="colombia">Colombia</option>
-                    <option value="mexico">México</option>
-                    <option value="peru">Perú</option>
-                    <option value="global">Global</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="yearFilter">Año:</label>
-                <select id="yearFilter" class="filter-select">
-                    <option value="">Todos</option>
-                    <option th:each="c : ${#numbers.sequence(2020, 2024)}" th:value="${c}" th:text="${c}">2024</option>
-                </select>
-            </div>
-        </div>
-    </div>
 
     <div class="results-info">
         <div class="results-count" id="resultsCount" th:text="'Mostrando ' + ${colecciones.size()} + ' colecciones'">Mostrando 0 colecciones</div>

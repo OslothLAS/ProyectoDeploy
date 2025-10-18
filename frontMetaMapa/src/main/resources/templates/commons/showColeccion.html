@@ -10,9 +10,9 @@
 </head>
 <body>
 
-<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+<div th:replace="layout/navbar :: navbar(${rol})"></div>
 
-<Header class="hero">
+<header class="hero">
     <div class="hero-content">
         <h1 th:text="${tituloColeccion}">Título Colección</h1>
         <p th:text="${descripcionColeccion}">Descripción de la colección</p>
@@ -21,20 +21,49 @@
             <div class="meta-item" th:text="'🔥 ' + ${hechos.size()} + ' hechos registrados'">🔥 0 hechos registrados</div>
         </div>
     </div>
-</Header>
+</header>
 
-<section class="search-section">
-    <div class="search-container">
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Buscar por titulo, descripción o fuente..." id="searchInput">
-            <button class="search-btn" onclick="searchFacts()">
-                <i data-lucide="search"></i> Buscar
+<!-- FILTROS -->
+<section class="filters-section">
+    <div class="filters-container" style="display:flex; gap:15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
+
+        <!-- Fuente -->
+        <div class="filter-item" style="display:flex; flex-direction:column;">
+            <label for="fuente" style="font-weight:600; margin-bottom:5px;">Fuente:</label>
+            <select id="fuente" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
+                <option value="">Todas</option>
+                <option value="8060" th:selected="${filtroFuente == '8060'}">ESTÁTICA</option>
+                <option value="8070" th:selected="${filtroFuente == '8070'}">DINÁMICA</option>
+                <option value="8090" th:selected="${filtroFuente == '8090'}">PROXY</option>
+            </select>
+        </div>
+
+        <!-- Fecha Fin -->
+        <div class="filter-item" style="display:flex; flex-direction:column;">
+            <label for="fechaFin" style="font-weight:600; margin-bottom:5px;">Fecha Fin:</label>
+            <input type="date" id="fechaFin" th:value="${filtroFechaFin}" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
+        </div>
+
+        <!-- Categoría -->
+        <div class="filter-item" style="display:flex; flex-direction:column;">
+            <label for="categoria" style="font-weight:600; margin-bottom:5px;">Categoría:</label>
+            <input type="text" id="categoria" placeholder="Escribe una categoría..." th:value="${filtroCategoria}" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
+        </div>
+
+        <!-- Botones -->
+        <div class="filter-buttons" style="display:flex; gap:10px; align-items:flex-end;">
+            <button class="search-btn" onclick="applyFilters()" style="background-color:#4CAF50; color:white; border:none; padding:8px 16px; border-radius:5px; cursor:pointer;">
+                <i data-lucide="filter"></i> Filtrar
+            </button>
+            <button class="clear-btn" onclick="clearFilters()" style="background-color:#f44336; color:white; border:none; padding:8px 16px; border-radius:5px; cursor:pointer;">
+                <i data-lucide="x"></i> Limpiar filtros
             </button>
         </div>
-        <!-- Filtros opcionales -->
+
     </div>
 </section>
 
+<!-- LISTA DE HECHOS -->
 <section class="facts-section">
     <div class="section-header">
         <div>
@@ -51,31 +80,33 @@
                     <div class="fact-location">
                         <i data-lucide="map-pin"></i>
                         <span th:text="${hecho.ubicacion != null && hecho.ubicacion.localidad != null ?
-               hecho.ubicacion.localidad.nombre + (hecho.ubicacion.localidad.provincia != null ? ', Provincia ID ' + hecho.ubicacion.localidad.provincia.id : '')
-               : 'Global'}">
-    Ubicación
-</span>
-
-
-
+                                       hecho.ubicacion.localidad.nombre + (hecho.ubicacion.localidad.provincia != null ? ', Provincia ID ' + hecho.ubicacion.localidad.provincia.id : '') :
+                                       'Global'}">Ubicación</span>
                     </div>
                 </div>
                 <div class="fact-date" th:text="${#temporals.format(hecho.fechaHecho,'dd MMM yyyy')}">Fecha</div>
             </div>
-            <p class="fact-description" th:text="${hecho.descripcion}">Descripción del hecho</p>
-            <div class="fact-source">
-                <strong>Fuente:</strong> <span th:text="${hecho.fuenteOrigen != null ? hecho.fuenteOrigen : 'Desconocida'}">Fuente</span>
 
+            <p class="fact-description" th:text="${hecho.descripcion}">Descripción del hecho</p>
+
+            <div class="fact-source">
+                <strong>Fuente:</strong>
+                <span th:switch="${hecho.fuenteOrigen}">
+                    <span th:case="'8060'">ESTÁTICA</span>
+                    <span th:case="'8070'">DINÁMICA</span>
+                    <span th:case="'8090'">PROXY</span>
+                    <span th:case="*">Desconocida</span>
+                </span>
             </div>
+
             <div class="fact-actions">
                 <a th:href="@{'/hechoColeccion/' + ${hecho.id}}" class="action-btn view-btn">
                     <i data-lucide="eye"></i> Ver Detalles
                 </a>
-
-                <!-- Botón Eliminar solo para ADMIN o CONTRIBUYENTE -->
                 <a class="action-btn delete-request-btn"
                    th:data-id="${hecho.id}"
-                   onclick="goToSolicitud(this)"
+
+                   onclick="goToSolicitud(this)">
                     <i data-lucide="trash-2"></i> Eliminar
                 </a>
             </div>
@@ -83,66 +114,37 @@
     </div>
 </section>
 
-<div class="modal" id="deleteModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">Solicitar Eliminación de Hecho</h3>
-            <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
-        </div>
-        <form id="deleteRequestForm" onsubmit="submitDeleteRequest(event)">
-            <input type="hidden" id="factId" name="factId">
-            <input type="hidden" id="factTitle" name="factTitle">
-            <div class="form-group">
-                <label class="form-label" for="requestReason">Motivo de la Solicitud</label>
-                <select class="form-select" id="requestReason" name="requestReason" required>
-                    <option value="">Seleccionar motivo</option>
-                    <option value="informacion-incorrecta">Información Incorrecta</option>
-                    <option value="duplicado">Hecho Duplicado</option>
-                    <option value="fuente-no-confiable">Fuente No Confiable</option>
-                    <option value="datos-desactualizados">Datos Desactualizados</option>
-                    <option value="otro">Otro</option>
-                </select>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
-                <button type="submit" class="submit-btn">Enviar Solicitud</button>
-            </div>
-        </form>
-    </div>
-</div>
+
+
 
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
     lucide.createIcons();
 
-    function openDeleteModal(id, title) {
-        document.getElementById('factId').value = id;
-        document.getElementById('factTitle').value = title;
-        document.getElementById('deleteModal').style.display = 'block';
+    function applyFilters() {
+        const fuente = document.getElementById("fuente").value;
+        const fechaFin = document.getElementById("fechaFin").value;
+        const categoria = document.getElementById("categoria").value;
+
+        let params = new URLSearchParams();
+        if (fuente) params.append("fuente", fuente);
+        if (fechaFin) params.append("fechaFin", fechaFin);
+        if (categoria) params.append("categoria", categoria);
+
+        const idColeccion = /*[[${idColeccion}]]*/ '1';
+        window.location.href = `/colecciones/show?id=${idColeccion}&` + params.toString();
     }
 
-    function closeDeleteModal() {
-        document.getElementById('deleteModal').style.display = 'none';
+    function clearFilters() {
+        const idColeccion = /*[[${idColeccion}]]*/ '1';
+        window.location.href = `/colecciones/show?id=${idColeccion}`;
     }
 
-    function submitDeleteRequest(event) {
-        event.preventDefault();
-        alert('Solicitud enviada para el hecho ' + document.getElementById('factTitle').value);
-        closeDeleteModal();
-    }
-    function openDeleteModalFromData(element) {
-    const id = element.getAttribute('data-id');
-    const title = element.getAttribute('data-title');
-    document.getElementById('factId').value = id;
-    document.getElementById('factTitle').value = title;
-    document.getElementById('deleteModal').style.display = 'block';
-}
-    function goToSolicitud(btn) {
+     function goToSolicitud(btn) {
     const id = btn.dataset.id;
     window.location.href = `/solicitar-eliminacion?id=${id}`;
 }
-
 </script>
 
 </body>

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,13 +44,33 @@ public class ColeccionesApiService {
         return response != null ? response : List.of();
     }
 
-    public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion) {
+    // ColeccionApiService o APIService
+    public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion,
+                                                            String fuente,
+                                                            String fechaFin,
+                                                            String categoria) {
+        StringBuilder url = new StringBuilder(coleccionesServiceUrl)
+                .append("/colecciones/")
+                .append(idColeccion)
+                .append("/hechos");
+
+        List<String> params = new ArrayList<>();
+        if (fuente != null && !fuente.isBlank()) params.add("fuente=" + fuente);
+        if (fechaFin != null && !fechaFin.isBlank()) params.add("fechaFin=" + fechaFin);
+        if (categoria != null && !categoria.isBlank()) params.add("categoria=" + categoria);
+
+        if (!params.isEmpty()) {
+            url.append("?").append(String.join("&", params));
+        }
+
         List<HechoOutputDTO> response = webApiCallerService.getListWithoutToken(
-                coleccionesServiceUrl + "/colecciones/" + idColeccion + "/hechos",
+                url.toString(),
                 HechoOutputDTO.class
         );
+
         return response != null ? response : List.of();
     }
+
 
     public ColeccionOutputDTO obtenerColeccionPorId(Long id) {
         ColeccionOutputDTO response = webApiCallerService.getWithoutToken(
@@ -63,12 +84,9 @@ public class ColeccionesApiService {
     }
 
 
-    public ColeccionOutputDTO crearColeccion(ColeccionInputDTO coleccionDTO) {
-        ColeccionOutputDTO response = webApiCallerService.post(coleccionesServiceUrl + "/colecciones", coleccionDTO, ColeccionOutputDTO.class);
-        if (response == null) {
-            throw new RuntimeException("Error al crear coleccion en el servicio externo");
-        }
-        return response;
+    public void crearColeccion(ColeccionInputDTO coleccionDTO) {
+        System.out.println("llego esto: " + coleccionDTO);
+        webApiCallerService.post(coleccionesServiceUrl + "/colecciones", coleccionDTO, Void.class);
     }
 
     public ColeccionOutputDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionDTO) {
