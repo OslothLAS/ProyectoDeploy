@@ -1,9 +1,11 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.UsuarioDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
+import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import com.frontMetaMapa.frontMetaMapa.services.RegisterApiService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,12 +16,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
 
     private final RegisterApiService registerApiService;
+    private final HechoService hechoService;
 
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
@@ -36,9 +41,18 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
+
+        // Tomar solo los primeros 3
+        List<HechoApiOutputDto> primerosTres = hechos.stream()
+                .limit(3)
+                .toList(); // .collect(Collectors.toList()) si usás Java < 16
+
+        model.addAttribute("hechos", primerosTres);
         return "visualizador/index";
     }
+
 
     @GetMapping("/404")
     public String notFound(Model model) {

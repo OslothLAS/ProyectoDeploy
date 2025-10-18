@@ -76,7 +76,7 @@ public class HechosController {
     @PostMapping("/hecho")
     public String crearHecho(@ModelAttribute HechoInputDTO hechoInputDTO) {
         hechoService.crearHecho(hechoInputDTO);
-        return "commons/buscadorHechos"; // o redirección al mensaje de éxito
+        return "redirect:/mis-contribuciones"; // o redirección al mensaje de éxito
     }
 
     @GetMapping("/mis-contribuciones")

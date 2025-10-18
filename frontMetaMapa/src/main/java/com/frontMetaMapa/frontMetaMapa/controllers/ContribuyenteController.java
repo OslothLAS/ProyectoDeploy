@@ -1,5 +1,8 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
+import com.frontMetaMapa.frontMetaMapa.services.HechoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,8 +11,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.List;
+
 @Controller
+@RequiredArgsConstructor
 public class ContribuyenteController {
+
+    private final HechoService hechoService;
+
 
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
@@ -27,7 +36,15 @@ public class ContribuyenteController {
 
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/contribuyente")
-    public String contribuyente() {
+    public String contribuyente(Model model) {
+        List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
+
+        // Tomar solo los primeros 3
+        List<HechoApiOutputDto> primerosTres = hechos.stream()
+                .limit(3)
+                .toList(); // .collect(Collectors.toList()) si usás Java < 16
+
+        model.addAttribute("hechos", primerosTres);
         return "contribuyente/index";
     }
 

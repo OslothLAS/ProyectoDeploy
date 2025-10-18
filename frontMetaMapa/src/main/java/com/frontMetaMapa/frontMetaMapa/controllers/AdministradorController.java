@@ -1,9 +1,11 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.SolicitudApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.SolicitudOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
+import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import com.frontMetaMapa.frontMetaMapa.services.SolicitudEliminacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -22,6 +24,7 @@ public class AdministradorController {
 
     private final ColeccionService coleccionService;
     private final SolicitudEliminacionService solicitudEliminacionService;
+    private final HechoService hechoService;
 
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
@@ -38,7 +41,15 @@ public class AdministradorController {
     }
 
     @GetMapping("/administrador")
-    public String administrador() {
+    public String administrador(Model model) {
+        List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
+
+        // Tomar solo los primeros 3
+        List<HechoApiOutputDto> primerosTres = hechos.stream()
+                .limit(3)
+                .toList(); // .collect(Collectors.toList()) si usás Java < 16
+
+        model.addAttribute("hechos", primerosTres);
         return "administrador/index";
     }
 

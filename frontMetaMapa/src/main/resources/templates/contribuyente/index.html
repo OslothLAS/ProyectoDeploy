@@ -67,32 +67,33 @@
 
 <!-- Modified examples section -->
 <section>
-    <h2>Categorías Populares</h2>
+    <h2>Hechos destacados</h2>
     <p class="section-subtitle">
         Explora las categorías más activas donde puedes contribuir con información
     </p>
-    <div class="grid grid-3">
-        <div class="card">
-            <div class="card-icon">
-                <i data-lucide="flame"></i>
+    < <div class="facts-grid" id="factsGrid">
+    <div class="fact-card" th:each="hecho : ${hechos}">
+        <div class="fact-header">
+            <div>
+                <h3 class="fact-title" th:text="${hecho.titulo}">Título del hecho</h3>
+                <div class="fact-location">
+                    <i data-lucide="map-pin"></i>
+                    <span th:text="${hecho.ubicacion != null && hecho.ubicacion.localidad != null ?
+                                       hecho.ubicacion.localidad.nombre :
+                                       'Global'}">Ubicación</span>
+                </div>
             </div>
-            <h3>Incendios Forestales</h3>
-            <p>Registro colaborativo de focos de incendios forestales y su impacto ambiental.</p>
+            <div class="fact-date" th:text="${#temporals.format(hecho.fechaHecho,'dd MMM yyyy')}">Fecha</div>
         </div>
-        <div class="card">
-            <div class="card-icon">
-                <i data-lucide="car"></i>
-            </div>
-            <h3>Accidentes Viales</h3>
-            <p>Documentación de accidentes automovilísticos para identificar patrones de riesgo.</p>
+
+        <p class="fact-description" th:text="${hecho.descripcion}">Descripción del hecho</p>
+
+        <div class="fact-actions">
+            <a th:href="@{'/hechoColeccion/' + ${hecho.id}}" class="action-btn view-btn">
+                <i data-lucide="eye"></i> Ver Detalles
+            </a>
         </div>
-        <div class="card">
-            <div class="card-icon">
-                <i data-lucide="cloud-rain"></i>
-            </div>
-            <h3>Eventos Climáticos</h3>
-            <p>Registro detallado de huracanes, tormentas y otros fenómenos meteorológicos.</p>
-        </div>
+    </div>
     </div>
 
     <div style="display: flex; justify-content: center; margin-top: 2rem;">
