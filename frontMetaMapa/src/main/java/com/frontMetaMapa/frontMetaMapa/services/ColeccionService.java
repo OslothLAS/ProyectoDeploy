@@ -50,9 +50,10 @@ public class ColeccionService {
         // Verificar que existe
         coleccionApiService.obtenerColeccionPorId(id);
 
-        validarDatosBasicos(coleccionDTO);
+        //validarDatosBasicos(coleccionDTO);
 
         // Si cambia el id, validar duplicidad
+
         if (!id.equals(coleccionDTO.getId())) {
             validarDuplicidadDeColeccion(coleccionDTO);
         }

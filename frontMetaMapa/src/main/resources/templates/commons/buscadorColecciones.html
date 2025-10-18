@@ -153,9 +153,10 @@
                     </button>
 
                     <button class="action-btn view-btn"
+                            th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
                             th:data-id="${coleccion.id}"
-                            onclick="goToColeccion(this)">
-                        <i data-lucide="eye"></i> Editar Colección
+                            th:onclick="'window.location.href=\'/colecciones/' + ${coleccion.id} + '/editar\''">
+                        <i data-lucide="edit-2"></i> Editar Colección
                     </button>
 
 
