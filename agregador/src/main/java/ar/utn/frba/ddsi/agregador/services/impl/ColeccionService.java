@@ -3,16 +3,14 @@ package ar.utn.frba.ddsi.agregador.services.impl;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.*;
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.*;
+import ar.utn.frba.ddsi.agregador.models.entities.factories.ConsensoFactory;
 import ar.utn.frba.ddsi.agregador.models.entities.factories.CriterioDePertenenciaFactory;
 import ar.utn.frba.ddsi.agregador.models.repositories.*;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategy;
 import ar.utn.frba.ddsi.agregador.navegacion.NavegacionStrategyFactory;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.Absoluta;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.Mayoria;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.MultipleMencion;
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.consenso.strategies.TipoConsenso;
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioPorCategoria;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.*;
@@ -122,6 +120,47 @@ public class ColeccionService implements IColeccionService {
                 .map(ColeccionUtil::coleccionToDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con id " + idColeccion));
     }
+
+    @Override
+    public ColeccionOutputDTO editarColeccion(Long idColeccion, ColeccionInputDTO dto){
+        Coleccion coleccion = coleccionRepository.findById(idColeccion)
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada"));
+
+        // Actualizar campos básicos
+        if (dto.getTitulo() != null) {
+            coleccion.setTitulo(dto.getTitulo());
+        }
+
+        if (dto.getDescripcion() != null) {
+            coleccion.setDescripcion(dto.getDescripcion());
+        }
+
+        // Actualizar estrategia de consenso usando el factory
+        if (dto.getEstrategiaConsenso() != null) {
+            IAlgoritmoConsenso algoritmo = ConsensoFactory.getStrategy(dto.getEstrategiaConsenso());
+            coleccion.setConsenso(algoritmo);
+        }
+
+        // Actualizar fuentes si vienen
+        if (dto.getFuentes() != null && !dto.getFuentes().isEmpty()) {
+            coleccion.setImportadores(
+                    dto.getFuentes().stream()
+                            .map(f -> new Fuente(f.getIp(), f.getPuerto(), f.getId()))
+                            .collect(Collectors.toList())
+            );
+        }
+
+        // 🚫 No se actualizan criterios
+
+        // Guardar cambios
+        Coleccion actualizada = coleccionRepository.save(coleccion);
+
+        // Devolver DTO de salida
+        return ColeccionUtil.coleccionToDto(actualizada);
+    }
+
+
+
 
 
 

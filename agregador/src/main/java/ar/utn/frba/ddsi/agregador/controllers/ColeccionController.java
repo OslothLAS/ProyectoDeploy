@@ -54,6 +54,20 @@ public class ColeccionController {
         return ResponseEntity.ok(coleccion);
     }
 
+    @PutMapping("/{idColeccion}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ColeccionOutputDTO> editarColeccion(
+            @PathVariable("idColeccion") Long id,
+            @RequestBody ColeccionInputDTO dto) {
+        try {
+            ColeccionOutputDTO updated = coleccionService.editarColeccion(id, dto);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")

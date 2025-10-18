@@ -33,4 +33,5 @@ public interface IColeccionService {
     List<StatDTO> getProviniciaMasReportadaPorCategoria();
     List<Fuente> getFuentes();
     List<CriterioDePertenenciaDTO> getCriterios();
+    ColeccionOutputDTO editarColeccion(Long idColeccion, ColeccionInputDTO coleccion);
 }
