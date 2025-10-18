@@ -101,6 +101,15 @@ public class ColeccionesController {
         return "redirect:/buscador-colecciones"; // o redirección al mensaje de éxito
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/deleteColeccion/{id}")
+    public String deleteColeccion(@PathVariable("id") Long id) {
+        coleccionService.eliminarColeccion(id);
+        return "redirect:/buscador-colecciones"; // o redirección al mensaje de éxito
+    }
+
+
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/colecciones/{id}/editar")
     public String editarColeccion(@PathVariable Long id, Model model) {

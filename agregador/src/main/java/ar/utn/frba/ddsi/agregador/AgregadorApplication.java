@@ -54,6 +54,7 @@ public class AgregadorApplication {
         };
     }
 
+
     @Bean
     CommandLineRunner crearColeccionMaestra(IColeccionService coleccionService) {
         return args -> {
