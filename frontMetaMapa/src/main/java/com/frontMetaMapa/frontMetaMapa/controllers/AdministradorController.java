@@ -8,12 +8,14 @@ import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import com.frontMetaMapa.frontMetaMapa.services.SolicitudEliminacionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.model.IModel;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class AdministradorController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/administrador")
     public String administrador(Model model) {
         List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
@@ -53,6 +56,7 @@ public class AdministradorController {
         return "administrador/index";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/dashboard-solicitudes")
     public String solicitudes(Model model) {
         List<SolicitudOutputDTO> solicitudes = solicitudEliminacionService.obtenerSolicitudes();
@@ -60,11 +64,25 @@ public class AdministradorController {
         return "administrador/dashboardSolicitud";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/panel-control")
-    public String panelControl() {
+    public String panelControl(Model model) {
+        List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
+        List<SolicitudOutputDTO> solicitudes = solicitudEliminacionService.obtenerSolicitudes();
+
+        long pendingRequests = solicitudes.stream()
+                .filter(s -> "PENDIENTE".equalsIgnoreCase(s.getEstado()))
+                .count();
+
+        long processedRequests = solicitudes.size() - pendingRequests;
+
+        model.addAttribute("totalFacts", hechos.size());
+        model.addAttribute("pendingRequests", pendingRequests);
+        model.addAttribute("processedRequests", processedRequests);
         return "administrador/panelControl";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/mis-colecciones")
     public String misColecciones(Model model, Authentication authentication) {
         List<ColeccionOutputDTO> colecciones = coleccionService.obtenerTodasLasColecciones();
@@ -74,6 +92,7 @@ public class AdministradorController {
         return "administrador/verColecciones";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/subirCsv")
     public String subirCsv() {
         return "administrador/uploadCSV";
