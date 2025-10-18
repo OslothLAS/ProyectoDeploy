@@ -3,6 +3,7 @@ package com.frontMetaMapa.frontMetaMapa.controllers;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoMapaOutputDto;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 public class HechosController {
-    private final HechoService hechoService;
 
+    private final HechoService hechoService;
 
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
@@ -37,7 +39,29 @@ public class HechosController {
     }
 
     @GetMapping("/buscador-hechos")
-    public String buscadorHechos() {
+    public String buscadorHechos(Model model) {
+        List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
+
+        // 🔍 AÑADE ESTOS DEBUGGINGS:
+        System.out.println("=== DEBUG CONTROLLER ===");
+        System.out.println("Hechos del servicio: " + hechos.size());
+
+        if (!hechos.isEmpty()) {
+            System.out.println("Primer hecho: " + hechos.get(0));
+            System.out.println("Título: " + hechos.get(0).getTitulo());
+            System.out.println("Ubicación: " + hechos.get(0).getUbicacion());
+        }
+
+        List<HechoMapaOutputDto> hechosMapa = mapHechosToMapa(hechos);
+
+        System.out.println("Hechos después del mapeo: " + hechosMapa.size());
+        if (!hechosMapa.isEmpty()) {
+            System.out.println("Primer hecho mapeado: " + hechosMapa.get(0));
+        }
+
+        model.addAttribute("hechos", hechosMapa);
+        System.out.println("=== FIN DEBUG ===");
+
         return "commons/buscadorHechos";
     }
 
@@ -92,6 +116,13 @@ public class HechosController {
         }
     }
 
+    @GetMapping("/hechoColeccion/{id}")
+    public String detalleHechoColeccion(@PathVariable Long id, Model model, HttpServletRequest request) {
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorIdPorColeccion(id);
+                model.addAttribute("hecho", hechoOpt.get());
+                return "commons/detalleHecho";
+    }
+
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/edicionHecho/{id}")
     public String editarHecho(@PathVariable Long id, Model model, HttpServletRequest request) {
@@ -135,9 +166,77 @@ public class HechosController {
         if (username == null) {
             return "redirect:/login";
         }
-            hechoService.actualizarHecho(id, hechoInputDTO);
-            // Redirigir a la página de contribuciones con mensaje de éxito
-            return "redirect:/mis-contribuciones?success=hecho-actualizado";
+        hechoService.actualizarHecho(id, hechoInputDTO);
+        // Redirigir a la página de contribuciones con mensaje de éxito
+        return "redirect:/mis-contribuciones?success=hecho-actualizado";
+    }
 
+    // --------------------------------------------------------------------
+    // 🔁 Mapper local para convertir HechoApiOutputDto → HechoMapaOutputDto
+    // --------------------------------------------------------------------
+    private List<HechoMapaOutputDto> mapHechosToMapa(List<HechoApiOutputDto> hechos) {
+        if (hechos == null) return List.of();
+
+        // DEBUG
+        System.out.println("=== INICIO MAPEO ===");
+        System.out.println("Hechos a mapear: " + hechos.size());
+
+        List<HechoMapaOutputDto> resultado = hechos.stream()
+                .filter(h -> h.getUbicacion() != null)
+                .filter(h -> isValidDouble(h.getUbicacion().getLatitud()) && isValidDouble(h.getUbicacion().getLongitud()))
+                .map(h -> {
+                    // DEBUG de cada hecho
+                    System.out.println("Procesando: " + h.getTitulo());
+                    System.out.println("Latitud original: '" + h.getUbicacion().getLatitud() + "'");
+                    System.out.println("Longitud original: '" + h.getUbicacion().getLongitud() + "'");
+
+                    HechoMapaOutputDto dto = new HechoMapaOutputDto();
+                    dto.setId(h.getId());
+                    dto.setTitulo(h.getTitulo());
+                    dto.setDescripcion(h.getDescripcion());
+                    dto.setCategoria(h.getCategoria());
+                    dto.setLatitud(parseDoubleSafe(h.getUbicacion().getLatitud()));
+                    dto.setLongitud(parseDoubleSafe(h.getUbicacion().getLongitud()));
+
+                    System.out.println("Latitud convertida: " + dto.getLatitud());
+                    System.out.println("Longitud convertida: " + dto.getLongitud());
+                    System.out.println("---");
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        System.out.println("Hechos mapeados exitosamente: " + resultado.size());
+        System.out.println("=== FIN MAPEO ===");
+
+        return resultado;
+    }
+
+    private Double parseDoubleSafe(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            // Reemplazar coma por punto y eliminar espacios
+            String normalized = value.trim().replace(',', '.');
+            return Double.parseDouble(normalized);
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Error parseando '" + value + "': " + e.getMessage());
+            return null;
+        }
+    }
+
+    private boolean isValidDouble(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            String normalized = value.trim().replace(',', '.');
+            Double.parseDouble(normalized);
+            return true;
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Valor inválido '" + value + "': " + e.getMessage());
+            return false;
+        }
     }
 }

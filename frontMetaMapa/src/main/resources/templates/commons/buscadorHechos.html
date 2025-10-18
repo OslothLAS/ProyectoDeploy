@@ -22,38 +22,6 @@
                 Haz clic en cualquier marcador para ver detalles completos.
             </p>
         </div>
-        <div class="filters">
-            <h3>Filtrar Hechos</h3>
-            <form id="filterForm">
-                <div class="filter-row">
-                    <label for="category">Categoría:</label>
-                    <select id="category" name="category">
-                        <option value="">Todas</option>
-                        <option value="social">Social</option>
-                        <option value="economic">Económico</option>
-                        <option value="political">Político</option>
-                        <option value="environmental">Ambiental</option>
-                    </select>
-                </div>
-                <div class="filter-row">
-                    <label for="dateReportFrom">Fecha de Reporte desde:</label>
-                    <input type="date" id="dateReportFrom" name="dateReportFrom">
-                    <label for="dateReportTo">hasta:</label>
-                    <input type="date" id="dateReportTo" name="dateReportTo">
-                </div>
-                <div class="filter-row">
-                    <label for="dateEventFrom">Fecha de Acontecimiento desde:</label>
-                    <input type="date" id="dateEventFrom" name="dateEventFrom">
-                    <label for="dateEventTo">hasta:</label>
-                    <input type="date" id="dateEventTo" name="dateEventTo">
-                </div>
-                <div class="filter-row">
-                    <label for="location">Ubicación:</label>
-                    <input type="text" id="location" name="location" placeholder="Ciudad, país...">
-                </div>
-                <button type="submit" class="btn-primary">Aplicar filtros</button>
-            </form>
-        </div>
 
         <div class="map-container">
             <div class="map-header">
@@ -63,26 +31,6 @@
                 </p>
             </div>
             <div id="map"></div>
-        </div>
-
-        <div class="map-legend">
-            <h3 class="legend-title">Categorías</h3>
-            <div class="legend-item">
-                <div class="legend-color social"></div>
-                <span>Hechos Sociales</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color economic"></div>
-                <span>Hechos Económicos</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color political"></div>
-                <span>Hechos Políticos</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color environmental"></div>
-                <span>Hechos Ambientales</span>
-            </div>
         </div>
 
         <div class="fact-details" id="factDetails">
@@ -103,173 +51,61 @@
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
     const map = L.map('map').setView([-34.6037, -58.3816], 2);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    const facts = [
-        {
-            id: 1,
-            title: "Reducción de la Pobreza en Argentina",
-            lat: -34.6037,
-            lng: -58.3816,
-            category: "social",
-            content: "Según datos del INDEC, la pobreza en Argentina se redujo del 35.4% al 32.6% en el último trimestre de 2023, afectando a aproximadamente 15 millones de personas.",
-            sources: [
-                "Informe oficial del INDEC sobre pobreza 2023",
-                "Ministerio de Economía de Argentina: datos sociales"
-            ],
-            date: "2024-01-15",
-            verified: true
-        },
-        {
-            id: 2,
-            title: "Crecimiento del PIB Brasileño",
-            lat: -15.7942,
-            lng: -47.8822,
-            category: "economic",
-            content: "El PIB de Brasil creció un 2.9% en 2023, superando las expectativas iniciales del 2.1%, impulsado principalmente por el sector servicios y la industria manufacturera.",
-            sources: [
-                "Instituto Brasileño de Geografía y Estadística (IBGE)",
-                "Banco Central de Brasil – Informe de Inflación 2023"
-            ],
-            date: "2024-02-20",
-            verified: true
-        },
-        {
-            id: 3,
-            title: "Reforma Educativa en Chile",
-            lat: -33.4489,
-            lng: -70.6693,
-            category: "political",
-            content: "El Congreso chileno aprobó una reforma educativa que aumenta la inversión en educación pública en un 15% y establece nuevos estándares de calidad para 2024-2026.",
-            sources: [
-                "Ministerio de Educación de Chile – Reforma 2024",
-                "Registro oficial del Congreso Nacional de Chile"
-            ],
-            date: "2024-03-10",
-            verified: true
-        },
-        {
-            id: 4,
-            title: "Deforestación en la Amazonía",
-            lat: -3.4653,
-            lng: -62.2159,
-            category: "environmental",
-            content: "Los datos satelitales muestran una reducción del 22% en la deforestación de la Amazonía brasileña durante 2023, la menor tasa registrada en los últimos 5 años.",
-            sources: [
-                "Instituto Nacional de Investigaciones Espaciales (INPE)",
-                "Ministerio de Medio Ambiente de Brasil – Informe 2023"
-            ],
-            date: "2024-01-30",
-            verified: true
-        },
-        {
-            id: 5,
-            title: "Elecciones Presidenciales en México",
-            lat: 19.4326,
-            lng: -99.1332,
-            category: "political",
-            content: "Las elecciones presidenciales de México 2024 registraron una participación del 68.2%, la más alta en los últimos 12 años, con más de 65 millones de votantes.",
-            sources: [
-                "Instituto Nacional Electoral (INE) – Resultados 2024",
-                "Tribunal Electoral del Poder Judicial – Reporte oficial"
-            ],
-            date: "2024-06-02",
-            verified: true
-        },
-        {
-            id: 6,
-            title: "Avance en Energía Solar en España",
-            lat: 40.4168,
-            lng: -3.7038,
-            category: "environmental",
-            content: "España instaló 5.2 GW de nueva capacidad solar en 2023, consolidándose como uno de los líderes europeos en energía renovable.",
-            sources: [
-                "Asociación Española de Energía Renovable – Informe 2023",
-                "Ministerio para la Transición Ecológica – Energía Solar"
-            ],
-            date: "2024-04-05",
-            verified: true
-        },
-        {
-            id: 7,
-            title: "Avances en Vacunación contra el Dengue en Perú",
-            lat: -12.0464,
-            lng: -77.0428,
-            category: "social",
-            content: "El Ministerio de Salud de Perú lanzó un plan piloto de vacunación contra el dengue en 5 regiones, beneficiando a más de 1 millón de personas.",
-            sources: [
-                "Ministerio de Salud del Perú – Plan de Vacunación 2024",
-                "Organización Panamericana de la Salud – Reporte Regional"
-            ],
-            date: "2024-05-18",
-            verified: true
-        }
-    ];
+    // Datos provenientes del backend
+    const facts = [[${hechos}]];
+    console.log('Hechos recibidos:', facts);
+    console.log('Número de hechos:', facts.length);
 
-    const categoryColors = {
-        social: '#ef4444',
-        economic: '#f59e0b',
-        political: '#8b5cf6',
-        environmental: '#10b981'
-    };
+    // Verifica la estructura del primer hecho (si existe)
+    if (facts.length > 0) {
+        console.log('Estructura del primer hecho:', facts[0]);
+        console.log('Coordenadas primer hecho - Lat:', facts[0].latitud, 'Lon:', facts[0].longitud);
+    }
+
+    // CONTADOR PARA DEBUG
+    let markersAdded = 0;
 
     facts.forEach(fact => {
-        const marker = L.circleMarker([fact.lat, fact.lng], {
-            color: categoryColors[fact.category],
-            fillColor: categoryColors[fact.category],
+        // ✅ CAMBIO IMPORTANTE: Usa fact.latitud y fact.longitud DIRECTAMENTE
+        if (!fact.latitud || !fact.longitud) {
+            console.log('❌ Hecho sin coordenadas:', fact.titulo);
+            return;
+        }
+
+        console.log(`📍 Añadiendo marcador: ${fact.titulo}`);
+        console.log(`   Coordenadas: [${fact.latitud}, ${fact.longitud}]`);
+
+        // TODOS LOS MARCADORES SON NARANJAS (#f59e0b)
+        const marker = L.circleMarker([fact.latitud, fact.longitud], {
+            color: '#f59e0b',
+            fillColor: '#f59e0b',
             fillOpacity: 0.8,
             radius: 8,
             weight: 2
         }).addTo(map);
 
+        markersAdded++;
+
         marker.on('click', function() {
-            showFactDetails(fact);
+            // Redirigir a la página de detalles del hecho
+            window.location.href = '/hechoColeccion/' + fact.id;
         });
 
-        marker.bindTooltip(fact.title, {
+        marker.bindTooltip(fact.titulo, {
             permanent: false,
             direction: 'top'
         });
     });
 
-    function showFactDetails(fact) {
-        const factDetails = document.getElementById('factDetails');
-        const factTitle = document.getElementById('factTitle');
-        const factMeta = document.getElementById('factMeta');
-        const factContent = document.getElementById('factContent');
-        const factSources = document.getElementById('factSources');
-        const sourcesList = document.getElementById('sourcesList');
-
-        factTitle.textContent = fact.title;
-
-        factMeta.innerHTML = `
-            <span class="fact-tag">${getCategoryName(fact.category)}</span>
-            <span class="fact-tag">${fact.date}</span>
-            <span class="fact-tag">✓ Verificado</span>
-        `;
-
-        factContent.textContent = fact.content;
-
-        sourcesList.innerHTML = '';
-        fact.sources.forEach(source => {
-            const link = document.createElement('a');
-            link.href = source;
-            link.textContent = source;
-            link.className = 'source-link';
-            link.target = '_blank';
-            sourcesList.appendChild(link);
-        });
-
-        factDetails.classList.add('active');
-        factSources.style.display = 'block';
-
-        factDetails.scrollIntoView({ behavior: 'smooth' });
-    }
+    console.log(`✅ Total marcadores añadidos al mapa: ${markersAdded}`);
 
     function getCategoryName(category) {
         const names = {
@@ -280,6 +116,7 @@
         };
         return names[category] || category;
     }
+    /*]]>*/
 </script>
 <script>lucide.createIcons();</script>
 </body>

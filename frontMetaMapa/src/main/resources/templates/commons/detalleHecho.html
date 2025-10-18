@@ -30,7 +30,7 @@
 
             <!-- Autor -->
             <p style="margin: 0; color: var(--text-light); font-style: italic;">
-                AUTOR: <span th:text="${hecho.mostrarDatos} ? ${username} : 'Anónimo'">nombre_usuario</span>
+                AUTOR: <span th:text="${hecho.mostrarDatos} ? ${hecho.username} : 'Anónimo'">nombre_usuario</span>
             </p>
 
         </header>
@@ -97,6 +97,14 @@
                 <span style="color: var(--text-color); font-size: 0.9375rem;">Este hecho aún puede ser editado (dentro del período de 7 días)</span>
             </div>
         </aside>
+
+        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <a th:href="@{/solicitar-eliminacion(id=${hecho.id})}"
+               class="btn btn-danger">
+                <i data-lucide="trash-2"></i>
+                <span>Eliminar</span>
+            </a>
+        </div>
     </article>
 </div>
 

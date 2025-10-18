@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -24,13 +25,17 @@ public class HechosApiService {
     private final WebClient webClient;
     private final WebApiCallerService webApiCallerService;
     private final String hechosServiceUrl;
+    private final String hechoTotalesServiceUrl;
+
 
     @Autowired
     public HechosApiService(WebApiCallerService webApiCallerService,
-                           @Value("${hechos.service.url}") String hechosServiceUrl) {
+                            @Value("${hechos.service.url}") String hechosServiceUrl,
+                            @Value("${hechos.totales.service.url}") String hechoTotalesServiceUrl) {
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.hechosServiceUrl = hechosServiceUrl;
+        this.hechoTotalesServiceUrl = hechoTotalesServiceUrl;
     }
 
     // Crear un hecho
@@ -51,8 +56,8 @@ public class HechosApiService {
     }
 
     // Obtener todos los hechos
-    public List<HechoOutputDTO> obtenerHechos() {
-        List<HechoOutputDTO> response = webApiCallerService.getList(hechosServiceUrl + "/hechos", HechoOutputDTO.class);
+    public List<HechoApiOutputDto> obtenerHechos() {
+        List<HechoApiOutputDto> response = webApiCallerService.getListWithoutToken(hechoTotalesServiceUrl + "/hechos", HechoApiOutputDto.class);
         if (response == null) {
             throw new RuntimeException("Error al obtener hechos del servicio externo");
         }
@@ -69,6 +74,25 @@ public class HechosApiService {
         }
         return response;
     }
+
+    public HechoApiOutputDto obtenerHechoPorIdPorColeccion(Long id) {
+        // Traemos la lista completa de hechos
+        HechoApiOutputDto[] hechosArray = webApiCallerService.getWithoutToken(
+                hechoTotalesServiceUrl + "colecciones/1/hechos",
+                HechoApiOutputDto[].class
+        );
+
+        if (hechosArray == null || hechosArray.length == 0) {
+            throw new NotFoundException("Hechos");
+        }
+
+        // Convertimos a lista y filtramos por id
+        return Arrays.stream(hechosArray)
+                .filter(h -> h.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Hecho con id " + id + " no encontrado"));
+    }
+
 
     // Actualizar un hecho por ID
     public void actualizarHecho(Long id, HechoInputEditarApi hechoDTO) {

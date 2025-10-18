@@ -2266,3 +2266,12 @@ th {
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
+
+.btn-ver-hecho {
+  background: #0891b2;
+  color: white;
+}
+
+.btn-ver-hecho:hover {
+  background-color: #066a8f; /* Un tono más oscuro al pasar el mouse */
+}

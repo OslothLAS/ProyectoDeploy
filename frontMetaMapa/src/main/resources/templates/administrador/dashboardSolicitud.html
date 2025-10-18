@@ -83,10 +83,13 @@
                     <div class="request-reason" th:text="${solicitud.justificacion}"></div>
 
                     <div class="request-actions">
-                        <button class="btn-small btn-view"
-                                th:attr="onclick='viewFactDetails(' + ${solicitud.idHecho} + ')'">
-                            <i data-lucide="eye"></i> Ver Hecho
-                        </button>
+                        <form th:action="@{/hechoColeccion/{id}(id=${solicitud.id})}" method="get" style="display:inline">
+                            <input type="hidden" name="_method" value="get"/>
+                            <button type="submit" class="btn-small btn-ver-hecho">
+                                <i data-lucide="."></i> Ver Hecho
+                            </button>
+                        </form>
+
 
                         <form th:action="@{/solicitudEliminacion/{id}/aceptar(id=${solicitud.id})}" method="post" style="display:inline">
                             <input type="hidden" name="_method" value="post"/>

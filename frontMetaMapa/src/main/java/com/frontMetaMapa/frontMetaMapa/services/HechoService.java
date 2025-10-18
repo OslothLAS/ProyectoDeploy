@@ -5,7 +5,6 @@ import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.*;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +20,7 @@ public class HechoService {
     private HechosApiService hechoApiService;
 
     // Obtener todos los hechos
-    public List<HechoOutputDTO> obtenerTodosLosHechos() {
+    public List<HechoApiOutputDto> obtenerTodosLosHechos() {
         return hechoApiService.obtenerHechos();
     }
 
@@ -33,6 +32,16 @@ public class HechoService {
     public Optional<HechoApiOutputDto> obtenerHechoPorId(Long id) {
         try {
             HechoApiOutputDto hecho = hechoApiService.obtenerHechoPorId(id);
+            return Optional.of(hecho);
+        } catch (NotFoundException e) {
+            return Optional.empty();
+        }
+    }
+
+    // Obtener hecho por ID
+    public Optional<HechoApiOutputDto> obtenerHechoPorIdPorColeccion(Long id) {
+        try {
+            HechoApiOutputDto hecho = hechoApiService.obtenerHechoPorIdPorColeccion(id);
             return Optional.of(hecho);
         } catch (NotFoundException e) {
             return Optional.empty();

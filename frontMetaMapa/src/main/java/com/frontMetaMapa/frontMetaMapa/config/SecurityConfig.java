@@ -41,7 +41,8 @@ public class SecurityConfig {
                                 "/error/**",     // 👈 importante
                                 "/404",
                                 "/solicitar-eliminacion",
-                                "/solicitar-eliminacion/**"
+                                "/solicitar-eliminacion/**",
+                                "/hechoColeccion/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

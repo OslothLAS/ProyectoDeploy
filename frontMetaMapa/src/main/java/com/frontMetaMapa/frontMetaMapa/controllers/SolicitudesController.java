@@ -45,7 +45,7 @@ public class SolicitudesController {
      */
     @GetMapping("/solicitar-eliminacion")
     public String solicitarEliminacion(@RequestParam Long id, Model model, Authentication authentication) {
-        HechoApiOutputDto hecho = hechoService.obtenerHechoPorId(id)
+        HechoApiOutputDto hecho = hechoService.obtenerHechoPorIdPorColeccion(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado con id " + id));
 
         SolicitudInputDTO dto = new SolicitudInputDTO();
