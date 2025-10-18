@@ -7,6 +7,7 @@ import ar.utn.frba.ddsi.agregador.models.entities.normalizador.OpenStreetMap;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,22 +36,25 @@ public class AgregadorApplication {
         System.out.println("Chivilcoy -> " + resultado1.get(1));
     }
 
-    // 🔹 Eliminar constraint al iniciar
     @Bean
-    CommandLineRunner eliminarConstraintHechoColeccion() {
+    @Transactional
+    public CommandLineRunner inicializarConstraint() {
         return args -> {
             try {
-                entityManager
-                        .createNativeQuery("ALTER TABLE hecho_coleccion DROP FOREIGN KEY FKf7y6vt2wuxtngwuquqjv7jeiq")
-                        .executeUpdate();
-                System.out.println("Constraint de hecho_coleccion eliminada exitosamente ✅");
+                entityManager.createNativeQuery("""
+                    ALTER TABLE hecho_coleccion
+                    ADD CONSTRAINT FK_hecho_coleccion_hecho
+                    FOREIGN KEY (hecho_id) REFERENCES hecho(id)
+                    ON DELETE CASCADE
+                """).executeUpdate();
+                System.out.println("Constraint creada correctamente (ON DELETE CASCADE).");
             } catch (Exception e) {
-                System.out.println("No se pudo eliminar la constraint (probablemente ya no exista): " + e.getMessage());
+                System.out.println("No se pudo crear la constraint (posiblemente ya exista): " + e.getMessage());
             }
         };
     }
 
-    // 🔹 Crear colección maestra al iniciar
+
     @Bean
     CommandLineRunner crearColeccionMaestra(IColeccionService coleccionService) {
         return args -> {

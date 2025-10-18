@@ -27,7 +27,6 @@ public class ColeccionUtil {
                 ConsensoFactory.getStrategy(dto.getEstrategiaConsenso())
         );
     }
-
     public static ColeccionOutputDTO coleccionToDto(Coleccion coleccion) {
         if (coleccion == null) {
             return null;
@@ -37,15 +36,30 @@ public class ColeccionUtil {
         dto.setId(coleccion.getId());
         dto.setTitulo(coleccion.getTitulo());
         dto.setDescripcion(coleccion.getDescripcion());
-        dto.setImportadores( coleccion.getImportadores()
-                .stream()
-                .map(ColeccionUtil::fuenteToFuenteDTO)
-                .collect(Collectors.toList()));
+
+        // Importadores
+        dto.setImportadores(
+                coleccion.getImportadores().stream()
+                        .map(ColeccionUtil::fuenteToFuenteDTO)
+                        .collect(Collectors.toList())
+        );
+
+        // Criterios
+        dto.setCriteriosDePertenencia(
+                coleccion.getCriteriosDePertenencia().stream()
+                        .map(ColeccionUtil::criterioToDTO)
+                        .collect(Collectors.toList())
+        );
+
         dto.setHandle(coleccion.getHandle().getValue());
         dto.setFechaYHoraDeActualizacion(coleccion.getFechaYHoraDeActualizacion());
         dto.setConsenso(coleccion.getConsenso().getNombre());
+
         return dto;
     }
+
+
+
 
     public static Fuente fuenteDTOtoFuente(FuenteInputDTO fuenteDTO){
         return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getId());

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,68 +101,55 @@ public class ColeccionesController {
         return "redirect:/buscador-colecciones"; // o redirección al mensaje de éxito
     }
 
-    /**
-     * Mostrar formulario para editar colección existente
-     */
-    @GetMapping("/editar/{id}")
-    public String editarColeccion(@PathVariable Long id, Model model) {
-        ColeccionOutputDTO outputDTO = coleccionService.obtenerColeccionPorId(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Colección no encontrada con id " + id));
-
-        // Crear InputDTO y mapear campos
-        ColeccionInputDTO inputDTO = new ColeccionInputDTO();
-        inputDTO.setId(outputDTO.getId());
-        inputDTO.setTitulo(outputDTO.getTitulo());
-        inputDTO.setDescripcion(outputDTO.getDescripcion());
-        inputDTO.setEstrategiaConsenso(outputDTO.getConsenso());
-
-        // Mapear fuentes
-        List<FuenteInputDTO> fuentesInput = new ArrayList<>();
-        if (outputDTO.getImportadores() != null) {
-            for (var fOut : outputDTO.getImportadores()) {
-                FuenteInputDTO fIn = new FuenteInputDTO();
-                fIn.setId(fOut.getId());
-                fIn.setIp(fOut.getIp());
-                fIn.setPuerto(fOut.getPuerto());
-                fuentesInput.add(fIn);
-            }
-        }
-        inputDTO.setFuentes(fuentesInput);
-
-        // Mapear criterios
-        List<CriterioDePertenenciaInputDTO> criteriosInput = new ArrayList<>();
-        if (outputDTO.getCriteriosDePertenencia() != null && !outputDTO.getCriteriosDePertenencia().isEmpty()) {
-            for (CriterioDePertenenciaOutputDTO cOut : outputDTO.getCriteriosDePertenencia()) {
-                CriterioDePertenenciaInputDTO cIn = new CriterioDePertenenciaInputDTO();
-                cIn.setId(cOut.getId());
-                cIn.setTipo(cOut.getTipo());
-                cIn.setCategoria(cOut.getValor());
-                criteriosInput.add(cIn);
-            }
-        } else {
-            // Si no hay criterios, agregar uno por defecto
-            CriterioDePertenenciaInputDTO defaultC = new CriterioDePertenenciaInputDTO();
-            defaultC.setTipo("categoria");
-            defaultC.setCategoria("");
-            criteriosInput.add(defaultC);
-        }
-        inputDTO.setCriterios(criteriosInput);
-
-        model.addAttribute("coleccion", inputDTO);
-        return "administrador/createColeccion"; // mismo HTML que para crear
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/deleteColeccion/{id}")
+    public String deleteColeccion(@PathVariable("id") Long id) {
+        coleccionService.eliminarColeccion(id);
+        return "redirect:/buscador-colecciones"; // o redirección al mensaje de éxito
     }
+
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/colecciones/{id}/editar")
+    public String editarColeccion(@PathVariable Long id, Model model) {
+        ColeccionOutputDTO coleccion = coleccionService.obtenerColeccionPorId(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada"));
+
+        model.addAttribute("coleccion", coleccion); // <-- clave "coleccion" para Thymeleaf
+        return "administrador/editarColeccion";
+    }
+
+
+    // Manejar envío del formulario
+    @PostMapping("/editar/{id}")
+    public String editarColeccion(
+            @PathVariable("id") Long id,
+            @ModelAttribute("coleccion") ColeccionInputDTO dto,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ColeccionOutputDTO actualizado = coleccionService.actualizarColeccion(id, dto);
+            redirectAttributes.addFlashAttribute("successMessage", "Colección actualizada correctamente");
+            return "redirect:/colecciones/show?id=" + id;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar la colección");
+            return "redirect:/colecciones/editar/" + id;
+        }
+    }
+}
 
 
     /**
      * Guardar colección (crear o actualizar)
      */
+    /*
     @PostMapping
     public String guardarColeccion(@ModelAttribute ColeccionInputDTO coleccionDTO) {
         Long id = coleccionDTO.getId();
         coleccionService.actualizarColeccion(id, coleccionDTO);
         return "redirect:/colecciones"; // lista de colecciones
-    }
+    }*/
 
 
 
@@ -169,4 +157,4 @@ public class ColeccionesController {
 
 
 
-}
+

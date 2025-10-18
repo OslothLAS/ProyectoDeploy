@@ -86,7 +86,16 @@
     const id = btn.dataset.id;
     window.location.href = `/colecciones/show?id=${id}`;
 }
+function openDeleteModal(btn) {
+    const id = btn.dataset.id;
+    const form = document.getElementById('deleteForm');
+    form.action = '/deleteColeccion/' + id; // Asigna la URL de tu controller
+    document.getElementById('deleteModal').style.display = 'flex';
+}
 
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
 
 
     </script>
@@ -151,6 +160,32 @@
                             onclick="goToColeccion(this)">
                         <i data-lucide="eye"></i> Ver Colección
                     </button>
+
+                    <button class="action-btn view-btn"
+                            th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                            th:data-id="${coleccion.id}"
+                            th:onclick="'window.location.href=\'/colecciones/' + ${coleccion.id} + '/editar\''">
+                        <i data-lucide="edit-2"></i> Editar Colección
+                    </button>
+                    <button class="action-btn delete-btn"
+                            th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+                            th:data-id="${coleccion.id}"
+                            onclick="openDeleteModal(this)">
+                        <i data-lucide="trash-2"></i> Eliminar Colección
+                    </button>
+                    <!-- Modal de confirmación -->
+                    <div id="deleteModal" class="modal" style="display:none;">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeDeleteModal()">&times;</span>
+                            <h3>¿Estás seguro?</h3>
+                            <p>Esta acción eliminará la colección de forma permanente.</p>
+                            <form id="deleteForm" method="post" action="">
+                                <button type="button" onclick="closeDeleteModal()">Cancelar</button>
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+
+                        </div>
+                    </div>
 
 
 
