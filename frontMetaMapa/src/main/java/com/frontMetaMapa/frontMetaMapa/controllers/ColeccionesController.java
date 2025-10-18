@@ -50,19 +50,32 @@ public class ColeccionesController {
         return "commons/buscadorColecciones";
     }
     @GetMapping("/colecciones/show")
-    public String showColeccion(@RequestParam Long id, Model model) {
+    public String showColeccion(
+            @RequestParam Long id,
+            @RequestParam(required = false) String fuente,
+            @RequestParam(required = false) String fechaFin,
+            @RequestParam(required = false) String categoria,
+            Model model) {
+
         ColeccionOutputDTO coleccion = coleccionService.obtenerColeccionPorId(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con id " + id));
 
-        List<HechoOutputDTO> hechos = coleccionService.obtenerHechosPorColeccionId(id);
+        List<HechoOutputDTO> hechos = coleccionService.obtenerHechosPorColeccionId(id, fuente, fechaFin, categoria);
 
         model.addAttribute("idColeccion", id);
         model.addAttribute("tituloColeccion", coleccion.getTitulo());
         model.addAttribute("descripcionColeccion", coleccion.getDescripcion());
         model.addAttribute("hechos", hechos);
 
+        // ⚡ Pasamos los filtros al template
+        model.addAttribute("filtroFuente", fuente);
+        model.addAttribute("filtroFechaFin", fechaFin);
+        model.addAttribute("filtroCategoria", categoria);
+
         return "commons/showColeccion";
     }
+
+
 
     @GetMapping("/crearColeccion")
     public String nuevaColeccion(Model model) {

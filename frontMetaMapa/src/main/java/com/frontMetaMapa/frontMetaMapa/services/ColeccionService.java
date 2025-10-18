@@ -31,9 +31,14 @@ public class ColeccionService {
         }
     }
 
-    public List<HechoOutputDTO> obtenerHechosPorColeccionId (Long idColeccion) {
-        return coleccionApiService.obtenerHechosPorColeccionId(idColeccion);
+    // Service
+    public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion,
+                                                            String fuente,
+                                                            String fechaFin,
+                                                            String categoria) {
+        return coleccionApiService.obtenerHechosPorColeccionId(idColeccion, fuente, fechaFin, categoria);
     }
+
 
     public void crearColeccion(ColeccionInputDTO coleccionDTO) {
         //validarDatosBasicos(coleccionDTO);
