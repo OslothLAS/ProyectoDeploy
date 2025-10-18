@@ -64,6 +64,15 @@ public class HechoService {
         hechoApiService.actualizarHecho(id, hechoDTO);
     }
 
+    public void importarHechosCSV(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new ValidationException("El archivo CSV está vacío.");
+        }
+
+        // Delega la llamada HTTP real al ApiService
+        hechoApiService.importarHechosCSV(file);
+    }
+
     // 🧩 Mapeo de DTO de entrada a DTO del backend (API)
     private HechoApiInputDto mapearAHechoApiDto(HechoInputDTO dto) {
         // Ubicación
@@ -103,6 +112,8 @@ public class HechoService {
         return apiDTO;
     }
 
+    
+
     // Validaciones básicas
     private void validarDatosBasicos(HechoInputDTO hechoDTO) {
         ValidationException validationException = new ValidationException("Errores de validación");
@@ -132,4 +143,5 @@ public class HechoService {
             throw validationException;
         }
     }
+
 }

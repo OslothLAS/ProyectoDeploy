@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import utils.ConfigReader;
 import utils.NormalizadorTexto;
+
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,7 +24,7 @@ public class ImportadorHechos {
     private final Set<String> clavesHechosInvalidos = ConcurrentHashMap.newKeySet();
     //por ahora persistimos en memoria...    ):
 
-    private String claveHecho(String titulo, String descripcion) {
+    public String claveHecho(String titulo, String descripcion) {
         return titulo.trim() + "::" + descripcion.trim();
     }
 
@@ -64,5 +66,16 @@ public class ImportadorHechos {
         this.pathArchivos = config.getPathsAsArray("filePaths", ",");
         this.estrategiasPorExtension = new ConcurrentHashMap<>();
         this.estrategiasPorExtension.put("csv", new EstrategiaExtraccionHechoCSV());
+    }
+
+    public List<Hecho> procesarStreamDeArchivo(InputStream inputStream, String extension) {
+        EstrategiaExtraccionHecho estrategia = estrategiasPorExtension.get(NormalizadorTexto.normalizarTexto(extension));
+
+        if (estrategia == null) {
+            log.error("Formato no soportado para la extensión: {}", extension);
+            throw new UnsupportedOperationException("Formato no soportado: " + extension);
+        }
+
+        return estrategia.obtenerHechosDesde(inputStream);
     }
 }

@@ -11,9 +11,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,16 +34,20 @@ public class HechosApiService {
     private final WebApiCallerService webApiCallerService;
     private final String hechosServiceUrl;
     private final String hechoTotalesServiceUrl;
+    private final String hechosStaticServiceUrl;
 
 
     @Autowired
     public HechosApiService(WebApiCallerService webApiCallerService,
                             @Value("${hechos.service.url}") String hechosServiceUrl,
-                            @Value("${hechos.totales.service.url}") String hechoTotalesServiceUrl) {
+                            @Value("${hechos.totales.service.url}") String hechoTotalesServiceUrl,
+                            @Value("${hechos.static.service.url}") String hechosStaticServiceUrl)
+                            {
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.hechosServiceUrl = hechosServiceUrl;
         this.hechoTotalesServiceUrl = hechoTotalesServiceUrl;
+        this.hechosStaticServiceUrl = hechosStaticServiceUrl;
     }
 
     // Crear un hecho
@@ -101,5 +113,41 @@ public class HechosApiService {
                 hechoDTO,
                 HechoOutputDTO.class
         );
+    }
+
+    public void importarHechosCSV(MultipartFile file) {
+
+        // Apunta a http://localhost:8020/api/hechos/importar
+        String apiUrl = hechosStaticServiceUrl + "/api/hechos/importar";
+        log.info("Enviando archivo CSV al servicio ESTÁTICO: {}", apiUrl);
+
+        try {
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+            ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            };
+
+            body.add("archivo", resource); // "archivo" coincide con el @RequestParam
+
+            webClient.post()
+                    .uri(apiUrl)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(BodyInserters.fromMultipartData(body))
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block(); // Espera a que termine
+
+        } catch (IOException e) {
+            log.error("Error al leer los bytes del archivo", e);
+            throw new RuntimeException("Error al leer el archivo: " + e.getMessage());
+        } catch (WebClientResponseException e) {
+            log.error("Error del backend ESTÁTICO (8020) al importar: {} - {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
+            throw new RuntimeException("Falló la importación en el backend: " + e.getResponseBodyAsString());
+        }
+
     }
 }

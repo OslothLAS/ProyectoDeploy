@@ -13,9 +13,9 @@
             MetaMapa
         </a>
         <div class="nav-links">
-            <a href="#inicio">Inicio</a>
+            <a th:href="${rol == 'ROLE_ADMIN' ? '/administrador' : (rol == 'ROLE_CONTRIBUYENTE' ? '/contribuyente' : '/') }">Inicio</a>
             <a href="#nosotros">Nosotros</a>
-            <a href="#hechos">Explorar</a>
+            <a href="/buscador-colecciones">Explorar</a>
 
             <!-- Mostrar "Cerrar sesión" solo si el usuario tiene rol ADMIN o CONTRIBUYENTE -->
             <a th:if="${rol == 'ROLE_ADMIN' or rol == 'ROLE_CONTRIBUYENTE'}" href="/logout">Cerrar sesión</a>

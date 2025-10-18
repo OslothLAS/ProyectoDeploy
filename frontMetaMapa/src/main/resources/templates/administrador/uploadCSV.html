@@ -237,7 +237,7 @@
 </head>
 <body>
 <!-- Navbar -->
-<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+<div th:replace="~{layout/navbar :: navbar( ${rol})}"></div>
 
 <!-- Restructured main content with centered card layout -->
 <main class="upload-container">
@@ -276,6 +276,7 @@
 
 <!-- PapaParse para manejar CSV grandes -->
 <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
 <script>
     const fileInput = document.getElementById("csvFile");
     const fileInputWrapper = document.getElementById("fileInputWrapper");
@@ -285,26 +286,31 @@
     const importBtn = document.getElementById("importBtn");
 
     let parsedData = [];
+    let archivoParaEnviar = null; // <-- 1. Variable para guardar el archivo original
 
     fileInput.addEventListener("change", (e)=>{
         const file = e.target.files[0];
         if(!file) return;
 
+        archivoParaEnviar = file; // <-- 2. Guarda el archivo original
+
         fileInputWrapper.classList.add('has-file');
         fileNameDisplay.innerHTML = `<div class="file-name">📎 ${file.name}</div>`;
 
-        statusEl.textContent = "Procesando archivo...";
+        statusEl.textContent = "Procesando archivo para vista previa...";
         parsedData = [];
 
+        // Usamos PapaParse SÓLO para la vista previa
         Papa.parse(file, {
             header: true,
             skipEmptyLines: true,
             worker: true,
+            preview: 20, // <-- Solo parsea las primeras 20 filas
             step: function(row) {
                 parsedData.push(row.data);
             },
             complete: function() {
-                statusEl.textContent = `✅ Archivo procesado correctamente. Total registros: ${parsedData.length}`;
+                statusEl.textContent = `✅ Vista previa lista. Se encontraron ${parsedData.length} filas de muestra.`;
                 mostrarPreview();
                 importBtn.disabled = false;
             }
@@ -312,8 +318,8 @@
     });
 
     function mostrarPreview(){
-        const primeras = parsedData.slice(0,20);
-        if(primeras.length === 0) return;
+        // Esta función está perfecta, no necesita cambios
+        if(parsedData.length === 0) return;
 
         let html = `
         <div class="upload-card">
@@ -326,11 +332,11 @@
               <thead>
                 <tr>`;
 
-        Object.keys(primeras[0]).forEach(key=>{
+        Object.keys(parsedData[0]).forEach(key=>{
             html += `<th>${key}</th>`;
         });
         html += "</tr></thead><tbody>";
-        primeras.forEach(row=>{
+        parsedData.forEach(row=>{ // 'primeras' ahora es 'parsedData'
             html += "<tr>";
             Object.values(row).forEach(val=>{
                 html += `<td>${val}</td>`;
@@ -341,11 +347,52 @@
         previewContainer.innerHTML = html;
     }
 
-    importBtn.addEventListener("click", ()=>{
-        localStorage.setItem("hechos", JSON.stringify(parsedData));
-        statusEl.textContent = `✅ ${parsedData.length} hechos importados con éxito.`;
+    // 3. Reemplazamos el listener del botón
+    importBtn.addEventListener("click", subirArchivoAlBackend);
+
+    async function subirArchivoAlBackend() {
+        if (!archivoParaEnviar) {
+            statusEl.textContent = "❌ No hay archivo seleccionado.";
+            return;
+        }
+
+        statusEl.textContent = "Importando... Esto puede tardar unos segundos.";
         importBtn.disabled = true;
-    });
+
+        // 4. Prepara el FormData para enviar el archivo
+        const formData = new FormData();
+        // "archivo" debe coincidir con el @RequestParam("archivo") de tu Controller
+        formData.append('archivo', archivoParaEnviar);
+
+        try {
+            // 5. ¡AQUÍ OCURRE LA MAGIA! Llama a tu AdministradorController (MVC)
+            const response = await fetch('/subirCsv', {
+                method: 'POST',
+                body: formData
+            });
+
+            const resultado = await response.json(); // Lee la respuesta JSON
+
+            if (response.ok) {
+                // 6. Éxito (Respuesta 200 OK)
+                statusEl.textContent = `✅ ${resultado.message}`;
+                // Opcional: redirigir después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = '/administrador'; // O a donde quieras ir
+                }, 2000);
+            } else {
+                // 7. Error (Respuesta 400, 500, etc.)
+                statusEl.textContent = `❌ ${resultado.message}`;
+                importBtn.disabled = false;
+            }
+
+        } catch (error) {
+            // 8. Error de red (el frontend no puede contactar al backend)
+            console.error('Error de red:', error);
+            statusEl.textContent = '❌ Error de conexión. No se pudo contactar al servidor.';
+            importBtn.disabled = false;
+        }
+    }
 </script>
 </body>
 </html>

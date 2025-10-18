@@ -8,6 +8,8 @@ import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import com.frontMetaMapa.frontMetaMapa.services.SolicitudEliminacionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,9 +17,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.model.IModel;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -97,4 +101,30 @@ public class AdministradorController {
     public String subirCsv() {
         return "administrador/uploadCSV";
     }
+
+    @PostMapping("/subirCsv")
+    @ResponseBody // ¡Importante! Devuelve JSON, no una vista
+    public ResponseEntity<?> importarHechosCSV(
+            @RequestParam("archivo") MultipartFile file) {
+
+        if (file.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Por favor, selecciona un archivo."));
+        }
+
+        try {
+            // Llama al servicio intermediario
+            hechoService.importarHechosCSV(file);
+
+            return ResponseEntity
+                    .ok(Map.of("message", "¡Archivo importado correctamente!"));
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error al importar: " + e.getMessage()));
+        }
+    }
+
 }
