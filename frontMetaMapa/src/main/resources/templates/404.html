@@ -11,7 +11,7 @@
 <body>
 
 <!-- Navbar -->
-<div th:replace="~{layout/navbar :: navbar(${rol}, ${showLogout})}"></div>
+<div th:replace="~{layout/navbar :: navbar(${rol})}"></div>
 
 <main class="hero" style="text-align: center; padding: 6rem 1rem;">
     <i data-lucide="map-pin-off" style="width: 80px; height: 80px; color: #ff4d4f;"></i>
@@ -19,14 +19,7 @@
     <p style="font-size: 1.2rem; margin-top: 0.5rem;">
         Uy... parece que este mapa no tiene coordenadas 🗺️
     </p>
-    <p style="color: #777; margin-top: 1rem;">
-        (O tal vez el desarrollador las perdió en un bucle infinito 😅)
-    </p>
 
-    <a href="/" class="btn" style="margin-top: 2rem;">
-        <i data-lucide="compass"></i>
-        Volver al Inicio
-    </a>
 </main>
 
 <!-- Footer -->

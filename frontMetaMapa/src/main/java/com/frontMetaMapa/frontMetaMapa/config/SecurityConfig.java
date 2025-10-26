@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
@@ -26,32 +27,29 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/login",
-                                "/",
-                                "/buscador-colecciones",
                                 "/register",
-                                "/visualizador",
-                                "/visualizador/**",
+                                "/",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/buscador-hechos",
+                                "/visualizador/**",
                                 "/buscador-hechos/**",
                                 "/buscador-colecciones/**",
                                 "/colecciones/**",
-                                "/error/**",     // 👈 importante
-                                "/404",
-                                "/solicitar-eliminacion",
                                 "/solicitar-eliminacion/**",
-                                "/hechoColeccion/**"
+                                "/hechoColeccion/**",
+                                "/error",
+                                "/error/**",
+                                "/404",
+                                "/403"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-
                 .csrf(csrf -> csrf.disable())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .successHandler(successHandler) // 👈 acá reemplazamos defaultSuccessUrl
+                        .successHandler(successHandler)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
@@ -62,13 +60,24 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            System.out.println("❌ Acceso no autorizado a: " + request.getRequestURI());
-                            response.sendRedirect("/login?unauthorized");
+                            String uri = request.getRequestURI();
+                            System.out.println("❌ Acceso no autorizado a: " + uri);
+
+                            // Si el usuario intenta acceder a una URL protegida
+                            // lo llevamos al login. Pero si el error es 404, no.
+                            if (uri.startsWith("/error") || uri.equals("/404") || uri.equals("/403")) {
+                                response.sendRedirect("/404");
+                            } else {
+                                response.sendRedirect("/login?unauthorized");
+                            }
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 response.sendRedirect("/403")
                         )
                 );
+
+        // ❗️Clave: el endpoint /error se maneja fuera de los filtros de autenticación
+        http.securityMatcher("/**");
 
         return http.build();
     }
