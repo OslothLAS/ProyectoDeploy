@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class Coleccion {
             joinColumns = @JoinColumn(name = "coleccion_id"),
             inverseJoinColumns = @JoinColumn(name = "fuente_id")
     )
+    @OnDelete(action= OnDeleteAction.CASCADE)
     private List<Fuente> importadores;
 
     @OneToMany(cascade = CascadeType.ALL)

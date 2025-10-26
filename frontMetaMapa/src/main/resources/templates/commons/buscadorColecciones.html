@@ -124,6 +124,22 @@ function closeDeleteModal() {
         </div>
     </div>
 
+ <!--
+    <div id="deleteModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeDeleteModal()">&times;</span>
+            <h3>¿Estás seguro?</h3>
+            <p>Esta acción eliminará la colección de forma permanente.</p>
+            <form id="deleteForm" method="post" action="">
+                <button type="button" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+            </form>
+
+        </div>
+    </div>
+    -->
+
+
     <div class="collections-grid" id="collectionsGrid">
         <div class="collection-card"
              th:each="coleccion : ${colecciones}"
@@ -167,29 +183,13 @@ function closeDeleteModal() {
                             th:onclick="'window.location.href=\'/colecciones/' + ${coleccion.id} + '/editar\''">
                         <i data-lucide="edit-2"></i> Editar Colección
                     </button>
+                    <!--
                     <button class="action-btn delete-btn"
                             th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
                             th:data-id="${coleccion.id}"
                             onclick="openDeleteModal(this)">
                         <i data-lucide="trash-2"></i> Eliminar Colección
-                    </button>
-                    <!-- Modal de confirmación -->
-                    <div id="deleteModal" class="modal" style="display:none;">
-                        <div class="modal-content">
-                            <span class="close" onclick="closeDeleteModal()">&times;</span>
-                            <h3>¿Estás seguro?</h3>
-                            <p>Esta acción eliminará la colección de forma permanente.</p>
-                            <form id="deleteForm" method="post" action="">
-                                <button type="button" onclick="closeDeleteModal()">Cancelar</button>
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
-
-                        </div>
-                    </div>
-
-
-
-
+                    </button> -->
                 </div>
             </div>
         </div>

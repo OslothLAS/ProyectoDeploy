@@ -48,7 +48,7 @@ public class AdministradorController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/administrador")
-    public String administrador(Model model) {
+    public String administrador(Model model, Authentication authentication) {
         List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
 
         // Tomar solo los primeros 3
@@ -57,6 +57,8 @@ public class AdministradorController {
                 .toList(); // .collect(Collectors.toList()) si usás Java < 16
 
         model.addAttribute("hechos", primerosTres);
+        model.addAttribute("username",authentication.getName());
+
         return "administrador/index";
     }
 

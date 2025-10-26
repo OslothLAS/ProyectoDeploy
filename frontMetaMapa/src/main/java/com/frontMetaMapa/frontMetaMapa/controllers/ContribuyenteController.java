@@ -36,7 +36,7 @@ public class ContribuyenteController {
 
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/contribuyente")
-    public String contribuyente(Model model) {
+    public String contribuyente(Model model, Authentication authentication) {
         List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();
 
         // Tomar solo los primeros 3
@@ -45,6 +45,7 @@ public class ContribuyenteController {
                 .toList(); // .collect(Collectors.toList()) si usás Java < 16
 
         model.addAttribute("hechos", primerosTres);
+        model.addAttribute("username",authentication.getName());
         return "contribuyente/index";
     }
 

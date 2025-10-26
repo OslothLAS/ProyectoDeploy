@@ -12,11 +12,12 @@
 <!-- Navbar -->
 <div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
-<!-- Enhanced hero section -->
-<header class="hero" id="inicio">
+<!-- Enhanced hero section --><header class="hero" id="inicio">
     <div class="hero-content">
         <h1>MetaMapa</h1>
         <p>Sistema colaborativo de código abierto para la recopilación, visualización y mapeo de información institucional</p>
+
+        <h1 th:text="'Bienvenido, ' + ${username} + ' 👋'"></h1>
 
         <div class="hero-actions">
             <a href="/dashboard-solicitudes" class="btn-primary">

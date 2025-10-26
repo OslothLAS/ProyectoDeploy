@@ -48,6 +48,7 @@ public class ColeccionService {
 
     public ColeccionOutputDTO actualizarColeccion(Long id, ColeccionInputDTO coleccionDTO) {
         // Verificar que existe
+        System.out.println(coleccionDTO.getTitulo());
         coleccionApiService.obtenerColeccionPorId(id);
 
         //validarDatosBasicos(coleccionDTO);

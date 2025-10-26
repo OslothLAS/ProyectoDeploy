@@ -59,17 +59,13 @@
             <option value="MAYORIA">Mayoría simple</option>
         </select>
 
-        <select th:field="*{criterios[0].categoria}" required>
-            <option value="AMBIENTAL">Ambiental</option>
-            <option value="SOCIAL">Social</option>
-            <option value="ECONOMICO">Económico</option>
-            <option value="POLITICO">Político</option>
-        </select>
+        <label>Categoría</label>
+        <input type="text" th:field="*{criterios[0].categoria}" placeholder="Escribí una categoría">
         <input type="hidden" th:field="*{criterios[0].tipo}" value="categoria" />
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">💾 Guardar</button>
-            <a th:href="@{/colecciones}" class="btn btn-secondary">Cancelar</a>
+            <a th:href="@{/administrador}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </main>
