@@ -13,12 +13,12 @@ import java.time.LocalDate;
 @DiscriminatorValue("fecha")
 public class CriterioPorFecha extends CriterioDePertenencia {
     @Column(name = "fecha_desde")
-    private final LocalDate fechaInicio;
+    private LocalDate fechaInicio;
     @Column(name = "fecha_hasta")
-    private final LocalDate fechaFin;
+    private LocalDate fechaFin;
 
     @Transient
-    private final String tipo;
+    private String tipo;
 
     public CriterioPorFecha(LocalDate fechaInicio, LocalDate fechaFin) {
         this.fechaInicio = fechaInicio;

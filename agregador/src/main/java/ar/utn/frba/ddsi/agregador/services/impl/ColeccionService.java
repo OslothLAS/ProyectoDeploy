@@ -338,11 +338,26 @@ public class ColeccionService implements IColeccionService {
     }
 
     @Override
+    @Transactional
     public void deleteColeccion(Long idColeccion) {
-        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
+        Coleccion coleccion = coleccionRepository.findById(idColeccion)
                 .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
-        this.coleccionRepository.delete(coleccion);
+
+        // 1️⃣ Buscar todos los hechos que contienen esta colección
+        List<Hecho> hechosAsociados = hechoRepository.findByColeccionesContaining(coleccion);
+
+        // 2️⃣ Quitar la colección de cada hecho
+        for (Hecho hecho : hechosAsociados) {
+            hecho.getColecciones().remove(coleccion);
+        }
+
+        // 3️⃣ Guardar los cambios en los hechos
+        hechoRepository.saveAll(hechosAsociados);
+
+        // 4️⃣ Ahora sí, eliminar la colección
+        coleccionRepository.delete(coleccion);
     }
+
 
     @Override
     public void cambiarConsenso(Long idColeccion, TipoConsenso tipo) {

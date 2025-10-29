@@ -55,4 +55,8 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
             "AND h.descripcion = :descripcion")
     int invalidateByTituloAndDescripcion(@Param("titulo") String titulo,
                                          @Param("descripcion") String descripcion);
+
+    @Query("SELECT h FROM Hecho h JOIN h.colecciones c WHERE c = :coleccion")
+    List<Hecho> findByColeccionesContaining(@Param("coleccion") ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion coleccion);
+
 }
