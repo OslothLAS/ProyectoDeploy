@@ -4,6 +4,7 @@ import ar.utn.frba.ddsi.agregador.dtos.input.SolicitudInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.*;
 import ar.utn.frba.ddsi.agregador.exceptions.HechoNoEncontradoException;
 import ar.utn.frba.ddsi.agregador.exceptions.JustificacionInvalidaException;
+import ar.utn.frba.ddsi.agregador.exceptions.SolicitudNoEncontradaException;
 import ar.utn.frba.ddsi.agregador.exceptions.UsuarioNoEncontradoException;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
@@ -108,13 +109,6 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
 
 
-
-
-
-
-
-
-
     public String obtenerUsernamePorSesion() {
         // 1. Obtener el objeto de autenticación del contexto.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -185,14 +179,14 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
 
     @Override
     public void aceptarSolicitud(Long idSolicitud) {
-        SolicitudEliminacion solicitud = this.solicitudRepository.findById(idSolicitud)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + idSolicitud));
 
+        SolicitudEliminacion solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new SolicitudNoEncontradaException("Solicitud no encontrada con ID: " + idSolicitud));
         HechoOutputDTO hecho = this.obtenerHechoPorId(solicitud.getIdHecho()).orElseThrow(() -> new HechoNoEncontradoException(
                 "No se encontró el hecho con id: " + solicitud.getIdHecho()
         ));
-        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.ACEPTADA, hecho);
 
+        this.cambiarEstadoHecho(solicitud,obtenerUsernamePorSesion(), PosibleEstadoSolicitud.ACEPTADA, hecho);
 
 
         List<Fuente> fuentesUnicas = coleccionRepository.findAll().stream()

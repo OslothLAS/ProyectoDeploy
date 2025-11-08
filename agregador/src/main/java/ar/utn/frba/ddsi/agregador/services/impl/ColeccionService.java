@@ -1,5 +1,7 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.output.*;
@@ -80,6 +82,13 @@ public class ColeccionService implements IColeccionService {
 
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
+
+        String tituloNormalizado = coleccionDTO.getTitulo().trim().toLowerCase();
+        if (coleccionRepository.existsByTitulo(coleccionDTO.getTitulo())) {
+            System.out.println("⚠️ Colección duplicada detectada");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una colección con ese título");
+        }
+
         List<String> puertos = coleccionDTO.getFuentes().stream().map(Fuente::getPuerto).toList();
 
         List<Fuente> fuentesExistentes = fuenteRepository.findAllByPuertoIn(puertos);
@@ -103,9 +112,8 @@ public class ColeccionService implements IColeccionService {
 
         List<Coleccion> coleccionesExistentes = coleccionRepository.findAll();
 
-        if (coleccionesExistentes.contains(nuevaColeccion)) {
-            throw new IllegalArgumentException("La coleccion ya existe");
-        }
+
+
 
         this.coleccionRepository.save(nuevaColeccion);
 
