@@ -35,14 +35,11 @@ public class FiltroConsensuados {
 
             if (countOrigenesDistintos >= cantidadDeFuentesQueCoinciden) {
                 // añado el primer hecho del grupo (o podrías añadir todos)
-                hechosFiltrados.add(listaHechos.get(0));
+                hechosFiltrados.addAll(listaHechos);
             }
         });
 
         return hechosFiltrados;
     }
-
-
-
 
 }

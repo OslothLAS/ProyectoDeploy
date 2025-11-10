@@ -89,7 +89,7 @@ public class Hecho {
     @Column(name = "editable")
     private Boolean esEditable;
 
-    @Transient
+    @Column(name = "consensuado")
     private Boolean esConsensuado;
 
     public Hecho(Boolean esValido,

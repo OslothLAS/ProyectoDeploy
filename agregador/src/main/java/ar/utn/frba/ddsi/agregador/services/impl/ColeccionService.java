@@ -33,7 +33,6 @@ import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
 import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.filtrarHechosRepetidos;
-import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.obtenerHechosValidos;
 import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
@@ -108,10 +107,14 @@ public class ColeccionService implements IColeccionService {
         }
 
         this.coleccionRepository.save(nuevaColeccion);
+        List<Hecho> todosLosHechos = this.hechoRepository.findAll();
 
         List<Hecho> hechos = this.procesarHechos(fuentesFinales, criterios, nuevaColeccion);
 
-       this.sincronizarHechos(hechos, nuevaColeccion);
+       List<Hecho> hechosAGuardar = filtrarHechosRepetidos(todosLosHechos,hechos);
+
+       this.asignarColeccionAHechos(hechosAGuardar, nuevaColeccion);
+       this.hechoRepository.saveAll(hechosAGuardar);
     }
 
     @Override
@@ -161,9 +164,6 @@ public class ColeccionService implements IColeccionService {
 
 
 
-
-
-
     private List<CriterioDePertenencia> obtenerCriterios(List<CriterioDePertenencia> criteriosOriginal) {
         if (criteriosOriginal == null || criteriosOriginal.isEmpty()) {
             return new ArrayList<>();
@@ -193,6 +193,7 @@ public class ColeccionService implements IColeccionService {
                             return Stream.<Hecho>empty();
                         }
                         hechosFuente.forEach(h -> h.setFuenteOrigen(fuente.getOrigenHechos()));
+                        hechosFuente.forEach(h -> h.setEsConsensuado(false));
                         return hechosFuente.stream();
                     } catch (Exception e) {
                         System.out.println("💥 Error al obtener hechos de " + fuente.getIp() + ":" + fuente.getPuerto());
@@ -384,18 +385,30 @@ public class ColeccionService implements IColeccionService {
           
             List<Hecho> hechosDeFuentes = tomarHechosFuentes(coleccion.getImportadores(), criterios);
             List<Hecho> hechosRepository = hechoRepository.findAll();
-            List<Hecho> hechosSinRepetir = obtenerHechosValidos(filtrarHechosRepetidos(hechosRepository, hechosDeFuentes));
+            List<Hecho> hechosSinRepetir = filtrarHechosRepetidosCron(hechosRepository, hechosDeFuentes);
+            List <Hecho> hechosAGuardar = filtrarHechosRepetidos(hechosRepository,  hechosSinRepetir);
             this.normalizarHechos(hechosDeFuentes);
 
-            hechoRepository.saveAll(hechosSinRepetir);
-            asignarColeccionAHechos(hechosSinRepetir, coleccion);
+            hechoRepository.saveAll(hechosAGuardar);
+            asignarColeccionAHechos(hechosAGuardar, coleccion);
             coleccionRepository.save(coleccion);
         });
+    }
+
+    private List<Hecho> filtrarHechosRepetidosCron(List<Hecho> hechosExistentes, List<Hecho> hechosNuevos) {
+        return hechosNuevos.stream()
+                .filter(hNuevo -> hechosExistentes.stream().noneMatch(hExistente ->
+                        Objects.equals(hExistente.getTitulo(), hNuevo.getTitulo()) &&
+                                Objects.equals(hExistente.getDescripcion(), hNuevo.getDescripcion()) &&
+                                Objects.equals(hExistente.getFuenteOrigen(), hNuevo.getFuenteOrigen())
+                ))
+                .toList();
     }
 
     @Override
     public void consensuarHechos() {
         List<Coleccion> colecciones =  this.coleccionRepository.findAll();
+        System.out.println("las colecciones son" + colecciones);
         List <Hecho> hechosAsignados = new ArrayList<>();
 
         colecciones.forEach(c -> {
@@ -490,7 +503,11 @@ public class ColeccionService implements IColeccionService {
 
         Function<Hecho, String> compositeKey = h -> (h.getTitulo() + "|||" + h.getDescripcion()).toLowerCase();
         Map<String, Hecho> mapaHechosEnDB = hechosEnDB.stream()
-                .collect(Collectors.toMap(compositeKey, Function.identity()));
+                .collect(Collectors.toMap(
+                        compositeKey,
+                        Function.identity(),
+                        (h1, h2) -> h1
+                ));
 
         List<Hecho> hechosParaGuardar = new ArrayList<>();
 
