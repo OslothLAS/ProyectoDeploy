@@ -95,6 +95,10 @@ public class Fuente{
                 .retrieve()
                 .bodyToFlux(HechoOutputDTO.class)
                 .map(HechoUtil::hechoDTOtoHecho)
+                .map(h -> {
+                    h.setEsConsensuado(false);
+                    return h;
+                })
                 .collectList()
                 .block();
 

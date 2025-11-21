@@ -1,7 +1,6 @@
 package com.usuarios.servicioDeUsuarios.utils;
 
 import com.usuarios.servicioDeUsuarios.filters.TokenInfo;
-import com.usuarios.servicioDeUsuarios.models.repositories.IUsuarioRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -27,7 +26,7 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64)); // Puedes necesitar Decoders.BASE64.decode() dependiendo de cómo la generes
     }
 
-    private static final long ACCESS_TOKEN_VALIDITY = 15 * 60 * 1000; // 15 min
+    private static final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000; // 15 min
     private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 días
 
     public static String generarAccessToken(String username, String rol) {
