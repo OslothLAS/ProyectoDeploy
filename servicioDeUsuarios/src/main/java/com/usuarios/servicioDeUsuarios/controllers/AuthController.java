@@ -34,13 +34,11 @@ public class AuthController {
             String username = credentials.get("username");
             String password = credentials.get("password");
 
-            // Validación básica de credenciales
             if (username == null || username.trim().isEmpty() ||
                     password == null || password.trim().isEmpty()) {
                 return ResponseEntity.badRequest().build();
             }
 
-            // Autenticar usuario usando el LoginService
             Usuario usuario = loginService.autenticarUsuario(username, password);
 
 
