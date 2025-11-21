@@ -10,6 +10,8 @@ public class UsuarioUtil {
     }
 
     public static Usuario usuarioDTOToEntity(UsuarioDTO usuarioDTO) {
+
+
         return new Usuario(usuarioDTO.getUsername(), usuarioDTO.getContrasenia() ,usuarioDTO.getNombre(), usuarioDTO.getApellido(),
                 usuarioDTO.getFechaNacimiento(), usuarioDTO.getRol());
     }

@@ -78,6 +78,7 @@ public class HechoService implements IHechoService {
         Hecho hecho = HechoUtil.hechoDTOtoHecho(hechoDTO);
         hecho.setCategoria(categoriaPersistida);
         hecho.getUbicacion().getLocalidad().setProvincia(provincia);
+        hecho.setUsername(hechoDTO.getUsername());
 
         if (token != null && (token.getRol().equals(Rol.ADMIN.name()) || token.getRol().equals(Rol.CONTRIBUYENTE.name()))) {
             hecho.setEsEditable(true);
@@ -155,6 +156,12 @@ public class HechoService implements IHechoService {
         if (dto.getMultimedia() != null) {
             hecho.setMultimedia(dto.getMultimedia());
         }
+
+        if(dto.getUsername() != null){
+            hecho.setUsername(dto.getUsername());
+        }
+
+
 
         hechoRepository.save(hecho);
     }

@@ -1,6 +1,7 @@
 package com.usuarios.servicioDeUsuarios.services;
 
 import com.usuarios.servicioDeUsuarios.dtos.UsuarioDTO;
+import com.usuarios.servicioDeUsuarios.exceptions.UsuarioYaExisteException;
 import com.usuarios.servicioDeUsuarios.exceptions.ValidationException;
 import com.usuarios.servicioDeUsuarios.models.entities.Usuario;
 import com.usuarios.servicioDeUsuarios.models.repositories.IUsuarioRepository;
@@ -65,6 +66,7 @@ public class UsuarioService implements UserDetailsService {
 
 
     public Long crearUsuario(UsuarioDTO usuarioDTO) {
+
         validarDatosBasicos(usuarioDTO);
         Usuario usuario = UsuarioUtil.usuarioDTOToEntity(usuarioDTO);
 
@@ -80,9 +82,8 @@ public class UsuarioService implements UserDetailsService {
         ValidationException validationException = new ValidationException("Errores de validación");
         boolean tieneErrores = false;
 
-        if(usuarioRepository.findByUsername(dto.getUsername()).isPresent()){
-            validationException.addFieldError("username", "El nombre de usuario ya existe");
-            tieneErrores = true;
+        if (usuarioRepository.existsByUsername(dto.getUsername())) {
+            throw new UsuarioYaExisteException("El nombre de usuario '" + dto.getUsername() + "' ya está en uso.");
         }
 
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty()) {
