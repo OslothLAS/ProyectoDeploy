@@ -9,7 +9,7 @@ import org.springframework.util.MultiValueMap;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
-        property = "tipo",
+        property = "rol",
         visible = true
 )
 @JsonSubTypes({

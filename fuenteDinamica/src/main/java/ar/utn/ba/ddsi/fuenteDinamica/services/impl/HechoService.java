@@ -1,22 +1,32 @@
 package ar.utn.ba.ddsi.fuenteDinamica.services.impl;
 
-import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.HechoDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.TokenInfo;
+import ar.utn.ba.ddsi.fuenteDinamica.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.exceptions.HechoNoEncontradoException;
+import ar.utn.ba.ddsi.fuenteDinamica.exceptions.UnauthorizedActionException;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Categoria;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Origen;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Provincia;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.usuarios.Rol;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.models.repositories.IProvinciaRepository;
 import ar.utn.ba.ddsi.fuenteDinamica.services.IHechoService;
-import config.HechoProperties;
+import ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil;
+import ar.utn.ba.ddsi.fuenteDinamica.config.HechoProperties;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.*;
 
 @Service
 public class HechoService implements IHechoService {
@@ -32,13 +42,25 @@ public class HechoService implements IHechoService {
         this.provinciaRepository = provinciaRepository;
     }
 
+    public HechoOutputDTO getHechoById(Long id) {
+        Hecho hecho = hechoRepository.findById(id)
+                .orElseThrow(() -> new HechoNoEncontradoException(
+                        "No se encontró el hecho con id: " + id));
+
+        return hechoToOutputDTO(hecho);
+    }
+
+
+    public List<HechoDTO> getAllHechos() {
+        List<Hecho> hecho = hechoRepository.findAll();
+        return hecho.stream().map(h -> hechoToDTO(h)).collect(Collectors.toList());
+    }
+
     @Transactional
     @Override
-    public void crearHecho(HechoInputDTO hechoDTO) {
-
-
-       /* Categoria categoria = new Categoria(hechoDTO.getCategoria());
-
+    // Servicio
+    public HechoOutputDTO crearHecho(HechoDTO hechoDTO, TokenInfo token) {
+        Categoria categoria = new Categoria(hechoDTO.getCategoria());
         Categoria categoriaPersistida = categoriaRepository.findByCategoriaNormalizada(categoria.getCategoriaNormalizada())
                 .orElseGet(() -> {
                     try {
@@ -48,92 +70,121 @@ public class HechoService implements IHechoService {
                                 .orElseThrow(() -> new IllegalStateException("Error al recuperar categoría existente", e));
                     }
                 });
-        datos.setCategoria(categoriaPersistida);
 
-        Provincia provincia = this.provinciaRepository.findById(hechoDTO.getUbicacion().getLocalidad().getProvincia().getId())
+        Provincia provincia = provinciaRepository.findById(
+                        hechoDTO.getUbicacion().getLocalidad().getProvincia().getId())
                 .orElseThrow(() -> new RuntimeException("No se encontró la provincia"));
 
-        datos.getUbicacion().getLocalidad().setProvincia(provincia);
+        Hecho hecho = HechoUtil.hechoDTOtoHecho(hechoDTO);
+        hecho.setCategoria(categoriaPersistida);
+        hecho.getUbicacion().getLocalidad().setProvincia(provincia);
 
-        if(hechoDTO.getId() != null) { //si tiene ID => es contribuyente
-            Usuario usuario = usuarioRepository.findById(hechoDTO.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el usuario con ID: " + hechoDTO.getId()));
-        Hecho hecho = Hecho.create(datos, usuario,hechoDTO.getMultimedia(), hechoDTO.getMostrarDatos());
-        hecho.setEsEditable(true);
-        hecho.setPlazoEdicion(Duration.ofDays(hechoProperties.getPlazoEdicionDias()));
-        this.hechoRepository.save(hecho);
-    } else{
-//          Visualizador visualizador = new Visualizador(hechoDTO.getNombre(),hechoDTO.getApellido(),hechoDTO.getFechaDeNacimiento());
-        Hecho hecho = Hecho.create(datos);
-        hecho.setEsEditable(false);
-        this.hechoRepository.save(hecho);
-    }*/
-}
+        if (token != null && (token.getRol().equals(Rol.ADMIN.name()) || token.getRol().equals(Rol.CONTRIBUYENTE.name()))) {
+            hecho.setEsEditable(true);
+            hecho.setUsername(token.getUsername());
+            hecho.setOrigen(Origen.CONTRIBUYENTE);
+        } else {
+            hecho.setOrigen(Origen.VISUALIZADOR);
+        }
+        hecho.setEsValido(true);
 
-@Override
-public void editarHecho(Long idHecho, HechoInputDTO dto) throws Exception {
-    Hecho hecho = hechoRepository.findById(idHecho)
-            .orElseThrow(Exception::new);
+        Hecho hechoPersistido = hechoRepository.save(hecho);
 
-    /*if(!hecho.getAutor().getId().equals(dto.getId())) {
-        throw new Exception("Solo el autor del hecho puede modificarlo");
-    }*/
-
-    if (!hecho.esEditable()) {
-        throw new Exception("El plazo de edicion ha expirado");
+        return hechoToOutputDTO(hechoPersistido);
     }
 
-    if (dto.getTitulo() != null) {
-        hecho.setTitulo(dto.getTitulo());
-    }
+    @Override
+    public void editarHecho(Long idHecho, HechoDTO dto, TokenInfo tokenInfo) throws Exception {
+        Hecho hecho = hechoRepository.findById(idHecho)
+                .orElseThrow(Exception::new);
 
-    if (dto.getDescripcion() != null) {
-        hecho.setDescripcion(dto.getDescripcion());
-    }
+        if(hecho.getUsername() != null){
+            if(!hecho.getUsername().equals(tokenInfo.getUsername())) {
+                throw new UnauthorizedActionException("Solo el autor del hecho puede modificarlo");
+            }
+        }else{
+            if(tokenInfo != null) {
+                throw new UnauthorizedActionException("Solo el autor del hecho puede modificarlo");
+            }
+        }
 
-    if (dto.getCategoria() != null) {
-        hecho.setCategoria(new Categoria(dto.getCategoria()));
-    }
+        if (!hecho.esEditable()) {
+            throw new UnauthorizedActionException("El plazo de edicion ha expirado");
+        }
 
-//        if (dto.getLatitud() != null) {
-//            //hecho.getDatosHechos().setUbicacion(dto.getUbicacion());
-//TODO        }
+        if (dto.getTitulo() != null) {
+            hecho.setTitulo(dto.getTitulo());
+        }
 
-    if (dto.getFechaHecho() != null) {
-        hecho.setFechaHecho(dto.getFechaHecho());
-    }
+        if (dto.getDescripcion() != null) {
+            hecho.setDescripcion(dto.getDescripcion());
+        }
 
-    if (dto.getMostrarDatos() != null) {
-        hecho.setMostrarDatos(dto.getMostrarDatos());
-    }
+        if (dto.getCategoria() != null) {
+            hecho.setCategoria(new Categoria(dto.getCategoria()));
+        }
 
-    if (dto.getMultimedia() != null) {
-        hecho.setMultimedia(dto.getMultimedia());
-    }
+        if (dto.getUbicacion() != null) {
+            var dtoUbic = dto.getUbicacion();
 
-    hechoRepository.save(hecho);
-}
+            if (dtoUbic.getLatitud() != null)
+                hecho.getUbicacion().setLatitud(dtoUbic.getLatitud());
 
+            if (dtoUbic.getLongitud() != null)
+                hecho.getUbicacion().setLongitud(dtoUbic.getLongitud());
 
-@Override
-public List<Hecho> obtenerTodos(Map<String, String> filtros){
-    List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
-    List<Hecho> hechos = this.hechoRepository.findAll();
+            if (dtoUbic.getLocalidad() != null) {
+                var dtoLoc = dtoUbic.getLocalidad();
 
-    if (criterios.isEmpty()) {
-        return hechos;
-    }
+                if (dtoLoc.getNombre() != null)
+                    hecho.getUbicacion().getLocalidad().setNombre(dtoLoc.getNombre());
 
-    return hechos.stream()
-            .filter(Hecho::getEsValido)
-            .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
-            .collect(Collectors.toList());
-}
-public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
-    Optional<Hecho> hechoInvalido = hechoRepository.findByDatosHechosTituloAndDatosHechosDescripcion(titulo, descripcion);
-    hechoInvalido.ifPresent(hecho -> {
-        hecho.setEsValido(false);
+                if (dtoLoc.getProvincia() != null && dtoLoc.getProvincia().getId() != null)
+                    hecho.getUbicacion().getLocalidad().getProvincia().setId(dtoLoc.getProvincia().getId());
+            }
+        }
+
+        if (dto.getFechaHecho() != null) {
+            hecho.setFechaHecho(dto.getFechaHecho());
+        }
+
+        if (dto.getMostrarDatos() != null) {
+            hecho.setMostrarDatos(dto.getMostrarDatos());
+        }
+
+        if (dto.getMultimedia() != null) {
+            hecho.setMultimedia(dto.getMultimedia());
+        }
+
         hechoRepository.save(hecho);
-    });
-}
+    }
+
+
+    @Override
+    public List<Hecho> obtenerTodos(Map<String, String> filtros){
+        List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
+        List<Hecho> hechos = this.hechoRepository.findAll();
+
+        if (criterios.isEmpty()) {
+            return hechos;
+        }
+
+        return hechos.stream()
+                .filter(Hecho::getEsValido)
+                .filter(hecho -> criterios.stream().allMatch(criterio -> criterio.cumpleCriterio(hecho)))
+                .collect(Collectors.toList());
+    }
+
+
+    public void invalidarHechoPorTituloYDescripcion(String titulo, String descripcion) {
+        Optional<Hecho> hechoInvalido = hechoRepository.findByTituloAndDescripcion(titulo, descripcion);
+        hechoInvalido.ifPresent(hecho -> {
+            hecho.setEsValido(false);
+            hechoRepository.save(hecho);
+        });
+    }
+
+    public List<HechoOutputDTO> getHechosByUsername(String username){
+        return hechosToOutputDTO(hechoRepository.findByUsername(username));
+    }
 }

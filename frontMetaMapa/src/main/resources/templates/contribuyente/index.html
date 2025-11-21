@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMapa - Panel del Contribuyente</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+
+<!-- Enhanced hero section -->
+<header class="hero" id="inicio">
+    <div class="hero-content">
+        <h1>MetaMapa</h1>
+        <p>Sistema colaborativo de código abierto para la recopilación, visualización y mapeo de información institucional</p>
+        <h1 th:text="'Bienvenido, ' + ${username} + ' 👋'"></h1>
+        <div class="hero-actions">
+            <a href="/subir-hecho" class="btn-primary">
+                <i data-lucide="plus-circle"></i>
+                Subir Nuevo Hecho
+            </a>
+            <a href="/buscador-hechos" class="btn">
+                <i data-lucide="search"></i>
+                Explorar Hechos
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- Added contributor actions section -->
+<section>
+    <h2>Acciones Principales</h2>
+    <p class="section-subtitle">
+        Gestiona tus contribuciones y explora la información colaborativa
+    </p>
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="upload"></i>
+            </div>
+            <h3>Subir Nuevo Hecho</h3>
+            <p>Contribuye con información nueva agregando hechos con título, descripción, ubicación, fecha y multimedia.</p>
+            <a href="/subir-hecho" class="btn">Crear Hecho</a>
+        </div>
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="edit-3"></i>
+            </div>
+            <h3>Mis Contribuciones</h3>
+            <p>Revisa y edita los hechos que has creado. Puedes modificarlos durante los primeros 7 días.</p>
+            <a href="/mis-contribuciones" class="btn">Ver Mis Hechos</a>
+        </div>
+        <div class="card">
+            <div class="card-icon">
+                <i data-lucide="trash-2"></i>
+            </div>
+            <h3>Solicitar Eliminación</h3>
+            <p>Solicita la eliminación de un hecho si consideras que su publicación no corresponde o es incorrecta.</p>
+            <a href="/solicitud-eliminacion" class="btn">Nueva Solicitud</a>
+        </div>
+    </div>
+</section>
+
+<!-- Modified examples section -->
+<section>
+    <h2>Hechos destacados</h2>
+    <p class="section-subtitle">
+        Explora las categorías más activas donde puedes contribuir con información
+    </p>
+    < <div class="facts-grid" id="factsGrid">
+    <div class="fact-card" th:each="hecho : ${hechos}">
+        <div class="fact-header">
+            <div>
+                <h3 class="fact-title" th:text="${hecho.titulo}">Título del hecho</h3>
+                <div class="fact-location">
+                    <i data-lucide="map-pin"></i>
+                    <span th:text="${hecho.ubicacion != null && hecho.ubicacion.localidad != null ?
+                                       hecho.ubicacion.localidad.nombre :
+                                       'Global'}">Ubicación</span>
+                </div>
+            </div>
+            <div class="fact-date" th:text="${#temporals.format(hecho.fechaHecho,'dd MMM yyyy')}">Fecha</div>
+        </div>
+
+        <p class="fact-description" th:text="${hecho.descripcion}">Descripción del hecho</p>
+
+        <div class="fact-actions">
+            <a th:href="@{'/hechoColeccion/' + ${hecho.id}}" class="action-btn view-btn">
+                <i data-lucide="eye"></i> Ver Detalles
+            </a>
+        </div>
+    </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-top: 2rem;">
+        <a href="/buscador-colecciones" class="btn">
+            Explorar Todas las colecciones
+        </a>
+    </div>
+</section>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>

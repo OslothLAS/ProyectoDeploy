@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${tituloColeccion} + ' - MetaMapa'">Colección</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="layout/navbar :: navbar(${rol})"></div>
+
+<header class="hero">
+    <div class="hero-content">
+        <h1 th:text="${tituloColeccion}">Título Colección</h1>
+        <p th:text="${descripcionColeccion}">Descripción de la colección</p>
+        <div class="collection-meta">
+            <div class="meta-item">🌍 Global</div>
+            <div class="meta-item" th:text="'🔥 ' + ${hechos.size()} + ' hechos registrados'">🔥 0 hechos registrados</div>
+        </div>
+    </div>
+</header>
+
+<!-- FILTROS -->
+<section class="filters-section">
+    <div class="filters-container" style="display:flex; gap:15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
+
+        <!-- Fuente -->
+        <div class="filter-item" style="display:flex; flex-direction:column;">
+            <label for="fuente" style="font-weight:600; margin-bottom:5px;">Fuente:</label>
+            <select id="fuente" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
+                <option value="">Todas</option>
+                <option value="8060" th:selected="${filtroFuente == '8060'}">ESTÁTICA</option>
+                <option value="8070" th:selected="${filtroFuente == '8070'}">DINÁMICA</option>
+                <option value="8090" th:selected="${filtroFuente == '8090'}">PROXY</option>
+            </select>
+        </div>
+
+        <!-- Fecha Fin -->
+        <div class="filter-item" style="display:flex; flex-direction:column;">
+            <label for="fechaFin" style="font-weight:600; margin-bottom:5px;">Fecha Fin:</label>
+            <input type="date" id="fechaFin" th:value="${filtroFechaFin}" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
+        </div>
+
+        <!-- Categoría -->
+        <div class="filter-item" style="display:flex; flex-direction:column;">
+            <label for="categoria" style="font-weight:600; margin-bottom:5px;">Categoría:</label>
+            <input type="text" id="categoria" placeholder="Escribe una categoría..." th:value="${filtroCategoria}" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
+        </div>
+
+        <!-- Botones -->
+        <div class="filter-buttons" style="display:flex; gap:10px; align-items:flex-end;">
+            <button class="search-btn" onclick="applyFilters()" style="background-color:#4CAF50; color:white; border:none; padding:8px 16px; border-radius:5px; cursor:pointer;">
+                <i data-lucide="filter"></i> Filtrar
+            </button>
+            <button class="clear-btn" onclick="clearFilters()" style="background-color:#f44336; color:white; border:none; padding:8px 16px; border-radius:5px; cursor:pointer;">
+                <i data-lucide="x"></i> Limpiar filtros
+            </button>
+        </div>
+
+    </div>
+</section>
+
+<!-- LISTA DE HECHOS -->
+<section class="facts-section">
+    <div class="section-header">
+        <div>
+            <h2>Hechos Registrados</h2>
+            <p class="facts-count" th:text="'Mostrando ' + ${hechos.size()} + ' de ' + ${hechos.size()} + ' hechos'">Mostrando 0 de 0 hechos</p>
+        </div>
+    </div>
+
+    <div class="facts-grid" id="factsGrid">
+        <div class="fact-card" th:each="hecho : ${hechos}">
+            <div class="fact-header">
+                <div>
+                    <h3 class="fact-title" th:text="${hecho.titulo}">Título del hecho</h3>
+                    <div class="fact-location">
+                        <i data-lucide="map-pin"></i>
+                        <span th:text="${hecho.ubicacion != null && hecho.ubicacion.localidad != null ?
+                                       hecho.ubicacion.localidad.nombre + (hecho.ubicacion.localidad.provincia != null ? ', Provincia ID ' + hecho.ubicacion.localidad.provincia.id : '') :
+                                       'Global'}">Ubicación</span>
+                    </div>
+                </div>
+                <div class="fact-date" th:text="${#temporals.format(hecho.fechaHecho,'dd MMM yyyy')}">Fecha</div>
+            </div>
+
+            <p class="fact-description" th:text="${hecho.descripcion}">Descripción del hecho</p>
+
+            <div class="fact-source">
+                <strong>Fuente:</strong>
+                <span th:switch="${hecho.fuenteOrigen}">
+                    <span th:case="'8060'">ESTÁTICA</span>
+                    <span th:case="'8070'">DINÁMICA</span>
+                    <span th:case="'8090'">PROXY</span>
+                    <span th:case="*">Desconocida</span>
+                </span>
+            </div>
+
+            <div class="fact-actions">
+                <a th:href="@{'/hechoColeccion/' + ${hecho.id}}" class="action-btn view-btn">
+                    <i data-lucide="eye"></i> Ver Detalles
+                </a>
+                <a class="action-btn delete-request-btn"
+                   th:data-id="${hecho.id}"
+
+                   onclick="goToSolicitud(this)">
+                    <i data-lucide="trash-2"></i> Eliminar
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+
+    function applyFilters() {
+        const fuente = document.getElementById("fuente").value;
+        const fechaFin = document.getElementById("fechaFin").value;
+        const categoria = document.getElementById("categoria").value;
+
+        let params = new URLSearchParams();
+        if (fuente) params.append("fuente", fuente);
+        if (fechaFin) params.append("fechaFin", fechaFin);
+        if (categoria) params.append("categoria", categoria);
+
+        const idColeccion = /*[[${idColeccion}]]*/ '1';
+        window.location.href = `/colecciones/show?id=${idColeccion}&` + params.toString();
+    }
+
+    function clearFilters() {
+        const idColeccion = /*[[${idColeccion}]]*/ '1';
+        window.location.href = `/colecciones/show?id=${idColeccion}`;
+    }
+
+     function goToSolicitud(btn) {
+    const id = btn.dataset.id;
+    window.location.href = `/solicitar-eliminacion?id=${id}`;
+}
+</script>
+
+</body>
+</html>

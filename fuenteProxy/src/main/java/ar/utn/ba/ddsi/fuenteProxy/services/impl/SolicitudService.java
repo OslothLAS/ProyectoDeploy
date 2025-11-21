@@ -2,14 +2,12 @@ package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudesInputDto;
-import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.Metamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.repositories.IRepositoryMetamapa;
 import ar.utn.ba.ddsi.fuenteProxy.services.IHechoService;
 import ar.utn.ba.ddsi.fuenteProxy.services.ISolicitudService;
-import entities.Metamapa;
-import entities.hechos.Hecho;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;

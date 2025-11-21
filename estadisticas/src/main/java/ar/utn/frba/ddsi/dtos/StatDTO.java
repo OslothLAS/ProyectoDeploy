@@ -1,33 +1,24 @@
 package ar.utn.frba.ddsi.dtos;
 
-import ar.utn.frba.ddsi.models.entities.Estadistica;
-import jakarta.persistence.*;
+import ar.utn.frba.ddsi.models.entities.DescripcionStat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatDTO {
-
     private String tituloColeccion;
-
-
-    private String descripcion;
-
+    private String provincia;
+    private String categoria;
+    private Integer hora;
+    private DescripcionStat descripcion;
     private Long cantidad;
-
-    public static StatDTO fromEntity(Estadistica estadistica) {
-        StatDTO dto = new StatDTO();
-        dto.setTituloColeccion(estadistica.getTituloColeccion());
-        dto.setDescripcion(estadistica.getDescripcion());
-        dto.setCantidad(estadistica.getCantidad());
-        return dto;
-    }
-
-
+    private LocalDateTime fechaStat;
 }
 

@@ -1,0 +1,11 @@
+ar/utn/frba/ddsi/models/entities/AgregadorConnector.class
+ar/utn/frba/ddsi/models/entities/Estadistica.class
+ar/utn/frba/ddsi/controllers/EstadisticaController.class
+ar/utn/frba/ddsi/schedullers/StatScheduller.class
+ar/utn/frba/ddsi/Main.class
+ar/utn/frba/ddsi/models/repositories/IStatRepository.class
+ar/utn/frba/ddsi/services/impl/EstadisticaService.class
+ar/utn/frba/ddsi/dtos/StatDTO.class
+ar/utn/frba/ddsi/models/entities/ExportadorCSV.class
+ar/utn/frba/ddsi/models/entities/TipoEstadistica.class
+ar/utn/frba/ddsi/services/IEstadisticaService.class

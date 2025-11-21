@@ -1,30 +1,25 @@
 package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 
-
 import ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion.ColeccionDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.coleccion.ColeccionInputDto;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoDto;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoOutputDTO;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudDto;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.solicitud.SolicitudesInputDto;
-import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoMapper;
-import ar.utn.ba.ddsi.fuenteProxy.repositories.IRepositoryMetamapa;
+import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoUtil;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.Metamapa;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.hechos.Handle;
+import ar.utn.ba.ddsi.fuenteProxy.models.entities.hechos.Hecho;
+import ar.utn.ba.ddsi.fuenteProxy.models.repositories.IRepositoryMetamapa;
 import ar.utn.ba.ddsi.fuenteProxy.services.IMetamapaAdminService;
-import entities.Metamapa;
-import entities.colecciones.Handle;
-import entities.hechos.Hecho;
-import entities.solicitudes.SolicitudEliminacion;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static utils.NormalizadorTexto.normalizarTrimTexto;
+import static ar.utn.ba.ddsi.fuenteProxy.utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
 public class MetamapaAdminService implements IMetamapaAdminService {
@@ -57,9 +52,8 @@ public class MetamapaAdminService implements IMetamapaAdminService {
     @Override
     public List<Hecho> getHechosXcategoria(String categoria) {
         return getHechos().stream()
-                .filter(hecho -> hecho.getDatosHechos() != null)
-                .filter(hecho -> hecho.getDatosHechos().getCategoria() != null)
-                .filter(hecho -> hecho.getDatosHechos().getCategoria().getCategoriaNormalizada().equalsIgnoreCase(normalizarTrimTexto(categoria)))
+                .filter(hecho -> hecho.getCategoria() != null)
+                .filter(hecho -> hecho.getCategoria().getCategoriaNormalizada().equalsIgnoreCase(normalizarTrimTexto(categoria)))
                 .toList();
     }
 
@@ -73,9 +67,8 @@ public class MetamapaAdminService implements IMetamapaAdminService {
     @Override
     public List<Hecho> getHechosXcoleccionXmetamapa(Handle id_coleccion, Long metamapa) {
         return getHechosXmetamapa(metamapa).stream()
-                .filter(hecho -> hecho.getDatosHechos() != null)
-                .filter(hecho -> hecho.getColecciones() != null)
-                .filter(hecho -> hecho.getColecciones().contains(id_coleccion))
+                .filter(hecho -> hecho.getHandles() != null)
+                .filter(hecho -> hecho.getHandles().contains(id_coleccion))
                 .toList();
     }
 
@@ -358,15 +351,15 @@ public class MetamapaAdminService implements IMetamapaAdminService {
 
     private List<Hecho> fetchHechosFromUrl(String url) {
         try {
-            List<HechoDto> hechosDto = webClient.get()
+            List<HechoOutputDTO> hechosDto = webClient.get()
                     .uri(url)
                     .retrieve()
-                    .bodyToFlux(HechoDto.class)
+                    .bodyToFlux(HechoOutputDTO.class)
                     .collectList()
                     .block();
             if (hechosDto == null) return List.of();
             return hechosDto.stream()
-                    .map(HechoMapper::mapHechoDtoToHecho)
+                    .map(HechoUtil::hechoDTOtoHecho)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             return List.of();

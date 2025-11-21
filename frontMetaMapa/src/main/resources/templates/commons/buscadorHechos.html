@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Hechos - MetaMapa</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<!-- Importing navbar from layout -->
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+
+<main class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Explorar Hechos</h1>
+            <p class="page-subtitle">
+                Descubre hechos verificados de todo el mundo en nuestro mapa interactivo.
+                Haz clic en cualquier marcador para ver detalles completos.
+            </p>
+        </div>
+
+        <div class="map-container">
+            <div class="map-header">
+                <h2 class="map-title">Mapa Global de Hechos</h2>
+                <p class="map-description">
+                    Cada marcador representa un hecho verificado con fuentes confiables
+                </p>
+            </div>
+            <div id="map"></div>
+        </div>
+
+        <div class="fact-details" id="factDetails">
+            <h2 class="fact-title" id="factTitle">Selecciona un hecho en el mapa</h2>
+            <div class="fact-meta" id="factMeta"></div>
+            <div class="fact-content" id="factContent">
+                Haz clic en cualquier marcador del mapa para ver los detalles del hecho aquí.
+            </div>
+            <div class="fact-sources" id="factSources" style="display: none;">
+                <h3 class="sources-title">Fuentes</h3>
+                <div id="sourcesList"></div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Importing footer from layout -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const map = L.map('map').setView([-34.6037, -58.3816], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Datos provenientes del backend
+    const facts = [[${hechos}]];
+    console.log('Hechos recibidos:', facts);
+    console.log('Número de hechos:', facts.length);
+
+    // Verifica la estructura del primer hecho (si existe)
+    if (facts.length > 0) {
+        console.log('Estructura del primer hecho:', facts[0]);
+        console.log('Coordenadas primer hecho - Lat:', facts[0].latitud, 'Lon:', facts[0].longitud);
+    }
+
+    // CONTADOR PARA DEBUG
+    let markersAdded = 0;
+
+    facts.forEach(fact => {
+        // ✅ CAMBIO IMPORTANTE: Usa fact.latitud y fact.longitud DIRECTAMENTE
+        if (!fact.latitud || !fact.longitud) {
+            console.log('❌ Hecho sin coordenadas:', fact.titulo);
+            return;
+        }
+
+        console.log(`📍 Añadiendo marcador: ${fact.titulo}`);
+        console.log(`   Coordenadas: [${fact.latitud}, ${fact.longitud}]`);
+
+        // TODOS LOS MARCADORES SON NARANJAS (#f59e0b)
+        const marker = L.circleMarker([fact.latitud, fact.longitud], {
+            color: '#f59e0b',
+            fillColor: '#f59e0b',
+            fillOpacity: 0.8,
+            radius: 8,
+            weight: 2
+        }).addTo(map);
+
+        markersAdded++;
+
+        marker.on('click', function() {
+            // Redirigir a la página de detalles del hecho
+            window.location.href = '/hechoColeccion/' + fact.id;
+        });
+
+        marker.bindTooltip(fact.titulo, {
+            permanent: false,
+            direction: 'top'
+        });
+    });
+
+    console.log(`✅ Total marcadores añadidos al mapa: ${markersAdded}`);
+
+    function getCategoryName(category) {
+        const names = {
+            social: 'Social',
+            economic: 'Económico',
+            political: 'Político',
+            environmental: 'Ambiental'
+        };
+        return names[category] || category;
+    }
+    /*]]>*/
+</script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

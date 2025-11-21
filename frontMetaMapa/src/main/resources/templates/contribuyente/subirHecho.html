@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Hecho - MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+</head>
+<body>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Crear Nuevo Hecho</h1>
+        <p>Contribuye con información valiosa para nuestra comunidad. Todos los campos marcados con * son obligatorios.</p>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <i data-lucide="check-circle"></i>
+        ¡Hecho creado exitosamente! Tu contribución ha sido registrada.
+    </div>
+
+    <div class="form-container">
+        <form th:action="@{/hecho}" method="post" enctype="multipart/form-data">
+        <div class="form-grid">
+
+                <div class="form-group full-width">
+                    <label for="titulo">Título del Hecho *</label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ingresa un título descriptivo">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="categoria">Categoría *</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="Incendio">Incendio</option>
+                        <option value="Accidente Vial">Accidente Vial</option>
+                        <option value="Fenómeno Natural">Fenómeno Natural</option>
+                        <option value="Evento Social">Evento Social</option>
+                        <option value="Infraestructura">Infraestructura</option>
+                        <option value="Medio Ambiente">Medio Ambiente</option>
+                        <option value="Seguridad">Seguridad</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="fecha">Fecha del Hecho *</label>
+                    <input type="datetime-local" id="fecha" name="fechaHecho" required>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="latitud">Latitud *</label>
+                    <input type="text" id="latitud" name="latitud" required placeholder="-26.072916">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="longitud">Longitud *</label>
+                    <input type="text" id="longitud" name="longitud" required placeholder="-65.976031">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="localidad">Localidad *</label>
+                    <input type="text" id="localidad" name="localidad" required placeholder="Cafayate">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="provincia">Provincia *</label>
+                    <select id="provincia" name="provincia" required>
+                        <option value="">Selecciona una provincia</option>
+                        <option value="1">Buenos Aires</option>
+                        <option value="2">Salta</option>
+                        <option value="3">Córdoba</option>
+                        <option value="4">Mendoza</option>
+                        <option value="5">Tucumán</option>
+                        <option value="6">Santa Fe</option>
+                        <option value="7">Entre Ríos</option>
+                        <option value="8">Corrientes</option>
+                        <option value="9">Misiones</option>
+                        <option value="10">Chaco</option>
+                        <option value="11">Formosa</option>
+                        <option value="12">Jujuy</option>
+                        <option value="13">Catamarca</option>
+                        <option value="14">La Rioja</option>
+                        <option value="15">San Juan</option>
+                        <option value="16">San Luis</option>
+                        <option value="17">Santiago del Estero</option>
+                        <option value="18">Neuquén</option>
+                        <option value="19">Río Negro</option>
+                        <option value="20">Chubut</option>
+                        <option value="21">Santa Cruz</option>
+                        <option value="22">Tierra del Fuego</option>
+                        <option value="23">La Pampa</option>
+                        <option value="24">CABA</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group full-width">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" name="descripcion" required placeholder="Describe detalladamente el hecho ocurrido..."></textarea>
+                </div>
+
+
+                <div class="form-group full-width">
+                    <label for="multimedia">Multimedia (Opcional)</label>
+                    <div class="file-upload">
+                        <input type="file" id="multimedia" name="multimedia" multiple accept="image/*,video/*,audio/*">
+                        <div class="file-upload-label">
+                            <i data-lucide="upload"></i>
+                            <span>Arrastra archivos aquí o haz clic para seleccionar</span>
+                        </div>
+                    </div>
+                    <small style="color: var(--text-light); margin-top: 0.5rem; display: block;">
+                        Formatos soportados: JPG, PNG, MP4, MP3. Máximo 10MB por archivo.
+                    </small>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="mostrarDatos" name="mostrarDatos" checked>
+                <label for="mostrarDatos">Mostrar mis datos públicamente</label>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                    <i data-lucide="arrow-left"></i>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn">
+                    <i data-lucide="save"></i>
+                    Crear Hecho
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.5rem; margin-top: 2rem;">
+        <h3 style="color: var(--text-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="info"></i>
+            Información importante
+        </h3>
+        <p style="color: var(--text-light); margin-bottom: 0.5rem;">
+            • Los usuarios registrados pueden editar sus hechos durante los primeros 7 días después de la publicación.
+        </p>
+        <p style="color: var(--text-light); margin-bottom: 0.5rem;">
+            • Las contribuciones anónimas no pueden ser editadas posteriormente.
+        </p>
+        <p style="color: var(--text-light);">
+            • Toda la información será revisada por moderadores antes de su publicación final.
+        </p>
+    </div>
+</div>
+
+
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    lucide.createIcons();
+
+</script>
+</body>
+</html>

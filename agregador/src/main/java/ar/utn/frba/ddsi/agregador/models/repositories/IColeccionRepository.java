@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
-import entities.colecciones.Coleccion;
+
+import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

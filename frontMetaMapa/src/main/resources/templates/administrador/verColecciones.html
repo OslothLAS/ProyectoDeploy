@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador - Colecciones | MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
+
+<main>
+    <h1>Administrador de Colecciones</h1>
+    <div class="collections-grid" id="collectionsGrid"></div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<script>
+    // --- colecciones en memoria (simulación) ---
+    let colecciones = JSON.parse(localStorage.getItem("colecciones")) || [
+      {id:"1", nombre:"Incendios Forestales 2024", categoria:"ambiental", region:"Argentina", anio:"2024", descripcion:"Registro de incendios forestales en Argentina durante 2024."},
+      {id:"2", nombre:"Crisis Hídrica", categoria:"ambiental", region:"Latinoamérica", anio:"2023", descripcion:"Eventos relacionados a la escasez de agua."}
+    ];
+
+    function saveLocal() { localStorage.setItem("colecciones", JSON.stringify(colecciones)); }
+
+    function renderCollections(){
+      const grid = document.getElementById("collectionsGrid");
+      grid.innerHTML = colecciones.map(c=>`
+        <div class="collection-card">
+          <div class="card-header">
+            <div class="card-title">${c.nombre}</div>
+            <div class="card-category">${c.categoria} | ${c.region} | ${c.anio}</div>
+          </div>
+          <div class="card-body">
+            <p>${c.descripcion}</p>
+          </div>
+          <div class="card-footer">
+            <span class="small">#${c.id}</span>
+            <div class="actions">
+              <button class="btn btn-secondary" onclick="window.location.href='coleccion-editar.html?id=${c.id}'">✏️ Editar</button>
+              <button class="btn btn-danger" onclick="deleteCollection('${c.id}')">🗑️</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function deleteCollection(id){
+      if(!confirm("¿Seguro que quieres eliminar esta colección?")) return;
+      colecciones = colecciones.filter(c=>c.id!==id);
+      saveLocal();
+      renderCollections();
+    }
+
+    renderCollections();
+    lucide.createIcons();
+</script>
+</body>
+</html>

@@ -12,9 +12,9 @@ public class Usuario {
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;
-    private TipoUsuario tipo;
+    private Rol tipo;
 
-    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, TipoUsuario tipo) {
+    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, Rol tipo) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Hechos | MetaMapa</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <!-- Added page-specific styles for upload CSV -->
+    <style>
+        .upload-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .upload-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .upload-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .upload-header p {
+            font-size: 1.125rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 2rem;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2rem;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-input-wrapper:hover {
+            border-color: #0891b2;
+            background: #f0f9ff;
+        }
+
+        .file-input-wrapper.has-file {
+            border-color: #0891b2;
+            background: #ecfeff;
+        }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .file-input-text {
+            text-align: center;
+        }
+
+        .file-input-text h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-input-text p {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        #csvFile {
+            display: none;
+        }
+
+        .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #0891b2;
+        }
+
+        #preview {
+            margin-top: 2rem;
+        }
+
+        #preview table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #preview th {
+            background: #0891b2;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        #preview td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        #preview tr:last-child td {
+            border-bottom: none;
+        }
+
+        #preview tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        #importBtn {
+            background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(8, 145, 178, 0.3);
+        }
+
+        #importBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px -1px rgba(8, 145, 178, 0.4);
+        }
+
+        #importBtn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #status {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        #status:not(:empty) {
+            background: #ecfeff;
+            color: #0891b2;
+            border: 1px solid #a5f3fc;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .preview-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .preview-badge {
+            background: #0891b2;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .upload-container {
+                padding: 2rem 1rem;
+            }
+
+            .upload-header h1 {
+                font-size: 2rem;
+            }
+
+            .upload-card {
+                padding: 1.5rem;
+            }
+
+            #preview {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{layout/navbar :: navbar( ${rol})}"></div>
+
+<!-- Restructured main content with centered card layout -->
+<main class="upload-container">
+    <div class="upload-header">
+        <h1>Importar Hechos desde CSV</h1>
+        <p>Seleccione un archivo CSV (puede contener más de <b>10.000 entradas</b>). Se mostrarán las primeras 20 filas para verificación.</p>
+    </div>
+
+    <div class="upload-card">
+        <label for="csvFile" class="file-input-wrapper" id="fileInputWrapper">
+            <div class="upload-icon">📄</div>
+            <div class="file-input-text">
+                <h3>Seleccionar archivo CSV</h3>
+                <p>Haz clic aquí o arrastra tu archivo</p>
+            </div>
+            <input type="file" id="csvFile" accept=".csv">
+        </label>
+        <div id="fileNameDisplay"></div>
+    </div>
+
+    <div id="previewContainer"></div>
+
+    <!-- Centered button container -->
+    <div class="button-container">
+        <button id="importBtn" disabled>
+            <span>📥</span>
+            <span>Importar Datos</span>
+        </button>
+    </div>
+
+    <p id="status"></p>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{layout/footer :: footer}"></div>
+
+<!-- PapaParse para manejar CSV grandes -->
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
+<script>
+    const fileInput = document.getElementById("csvFile");
+    const fileInputWrapper = document.getElementById("fileInputWrapper");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+    const previewContainer = document.getElementById("previewContainer");
+    const statusEl = document.getElementById("status");
+    const importBtn = document.getElementById("importBtn");
+
+    let parsedData = [];
+    let archivoParaEnviar = null; // <-- 1. Variable para guardar el archivo original
+
+    fileInput.addEventListener("change", (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+
+        archivoParaEnviar = file; // <-- 2. Guarda el archivo original
+
+        fileInputWrapper.classList.add('has-file');
+        fileNameDisplay.innerHTML = `<div class="file-name">📎 ${file.name}</div>`;
+
+        statusEl.textContent = "Procesando archivo para vista previa...";
+        parsedData = [];
+
+        // Usamos PapaParse SÓLO para la vista previa
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            worker: true,
+            preview: 20, // <-- Solo parsea las primeras 20 filas
+            step: function(row) {
+                parsedData.push(row.data);
+            },
+            complete: function() {
+                statusEl.textContent = `✅ Vista previa lista. Se encontraron ${parsedData.length} filas de muestra.`;
+                mostrarPreview();
+                importBtn.disabled = false;
+            }
+        });
+    });
+
+    function mostrarPreview(){
+        // Esta función está perfecta, no necesita cambios
+        if(parsedData.length === 0) return;
+
+        let html = `
+        <div class="upload-card">
+          <div class="preview-header">
+            <h3>Vista Previa</h3>
+            <span class="preview-badge">Primeras 20 filas</span>
+          </div>
+          <div id="preview">
+            <table>
+              <thead>
+                <tr>`;
+
+        Object.keys(parsedData[0]).forEach(key=>{
+            html += `<th>${key}</th>`;
+        });
+        html += "</tr></thead><tbody>";
+        parsedData.forEach(row=>{ // 'primeras' ahora es 'parsedData'
+            html += "<tr>";
+            Object.values(row).forEach(val=>{
+                html += `<td>${val}</td>`;
+            });
+            html += "</tr>";
+        });
+        html += `</tbody></table></div></div>`;
+        previewContainer.innerHTML = html;
+    }
+
+    // 3. Reemplazamos el listener del botón
+    importBtn.addEventListener("click", subirArchivoAlBackend);
+
+    async function subirArchivoAlBackend() {
+        if (!archivoParaEnviar) {
+            statusEl.textContent = "❌ No hay archivo seleccionado.";
+            return;
+        }
+
+        statusEl.textContent = "Importando... Esto puede tardar unos segundos.";
+        importBtn.disabled = true;
+
+        // 4. Prepara el FormData para enviar el archivo
+        const formData = new FormData();
+        // "archivo" debe coincidir con el @RequestParam("archivo") de tu Controller
+        formData.append('archivo', archivoParaEnviar);
+
+        try {
+            // 5. ¡AQUÍ OCURRE LA MAGIA! Llama a tu AdministradorController (MVC)
+            const response = await fetch('/subirCsv', {
+                method: 'POST',
+                body: formData
+            });
+
+            const resultado = await response.json(); // Lee la respuesta JSON
+
+            if (response.ok) {
+                // 6. Éxito (Respuesta 200 OK)
+                statusEl.textContent = `✅ ${resultado.message}`;
+                // Opcional: redirigir después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = '/administrador'; // O a donde quieras ir
+                }, 2000);
+            } else {
+                // 7. Error (Respuesta 400, 500, etc.)
+                statusEl.textContent = `❌ ${resultado.message}`;
+                importBtn.disabled = false;
+            }
+
+        } catch (error) {
+            // 8. Error de red (el frontend no puede contactar al backend)
+            console.error('Error de red:', error);
+            statusEl.textContent = '❌ Error de conexión. No se pudo contactar al servidor.';
+            importBtn.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>

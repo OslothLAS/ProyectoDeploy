@@ -1,0 +1,120 @@
+@startuml
+' =======================
+' Fuente de Datos Proxy
+' =======================
+package "Fuente de Datos Proxy" {
+  () "API Proxy" as apiProxy
+
+  package "Servicio de Fuentes Proxy" {
+    [Fuentes Proxy] as instancias
+  }
+      Database "Repositorio Metamapas" as repo
+
+}
+
+apiProxy --> "Servicio de Fuentes Proxy"
+instancias --> repo
+instancias --> [Otros Metamapa]
+instancias --> [API Cátedra]
+
+' =======================
+' Fuente de Datos Estática
+' =======================
+package "Fuente de Datos Estática" {
+  () "API Estática" as apiEstatica
+
+  package "Servicio de Fuente Estática" {
+    [Fuentes Estática] as fuentesE
+  }
+
+  artifact "Dataset" as dataset
+}
+
+apiEstatica --> "Servicio de Fuente Estática"
+fuentesE --> dataset
+
+' =======================
+' Fuente de Datos Dinámica
+' =======================
+package "Fuente de Datos Dinámica" {
+  () "API Dinámica" as apiDinamica
+
+  package "Servicio de Fuente Dinámica" {
+    [Fuentes Dinámica] as fuentesD
+    [Solicitudes] as solicitudes
+  }
+
+  database "Repositorio Hechos y Solicitudes" as hechos
+}
+
+
+
+apiDinamica --> "Servicio de Fuente Dinámica"
+fuentesD --> hechos
+solicitudes --> fuentesD
+
+
+' =======================
+' Agregador
+' =======================
+package "Agregador" {
+  () "API Agregador" as apiAgregador
+
+  package "Servicio Agregación" {
+    [Agregación] as agregacion
+    [Fuentes] as fuentes
+    [Solicitudes] as solicitudesModelo
+  }
+  database HechosyColeccionesRepositorio
+  database SolicitudesRepositorio
+}
+
+package "Usuarios" {
+  () "API Usuarios" as apiUsuarios
+  () "API Auth" as apiAuth
+
+  package "Servicio de Usuarios" {
+    [Usuarios] as usuario
+    [Auth] as auth
+  }
+  database UsuarioRepository as usuarios
+}
+apiUsuarios --> usuario
+usuario --> usuarios
+
+
+package "Estadisticas" {
+  () "API Estadisticas" as apiEstadisticas
+
+  package "Servicio de Estadisticas" {
+    [Estadisticas] as estadisticas
+  }
+  database StatRepository as stats
+}
+apiEstadisticas --> estadisticas
+estadisticas --> stats
+apiEstadisticas --> apiAgregador
+
+package "Navegador" {
+  package "FrontEnd" {
+     [Front] as front
+  }
+}
+
+front --> apiAuth
+front --> apiEstadisticas
+front --> apiAgregador
+front --> apiDinamica
+
+apiAgregador --> agregacion
+agregacion --> fuentes
+agregacion --> solicitudesModelo
+solicitudesModelo --> SolicitudesRepositorio
+
+' Fuentes conectada a las 3 APIs
+fuentes --> apiProxy
+fuentes --> apiEstatica
+fuentes --> apiDinamica
+fuentes --> HechosyColeccionesRepositorio
+solicitudes --> apiUsuarios
+@enduml
