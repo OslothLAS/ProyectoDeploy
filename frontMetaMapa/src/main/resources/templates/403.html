@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Acceso Denegado | MetaMapa</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f5f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .error-container {
+            max-width: 540px;
+            margin: 70px auto;
+            background: white;
+            border-radius: 18px;
+            padding: 50px 40px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1f1f1f;
+        }
+
+        p.subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 25px;
+        }
+
+        .icon-box {
+            margin: 25px 0 35px 0;
+        }
+
+        .alert-error {
+            background: #ffe6e6;
+            color: #b30000;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .btn-home {
+            display: inline-block;
+            padding: 12px 22px;
+            background: #2b59ff;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s ease-in-out;
+        }
+
+        .btn-home:hover {
+            background: #1e42c8;
+        }
+
+        footer-text {
+            margin-top: 22px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<main>
+    <div class="error-container">
+
+        <h1>403 - Acceso Denegado</h1>
+        <p class="subtitle">
+            No tienes permisos para acceder a esta página.
+        </p>
+
+        <div class="icon-box">
+            <i data-lucide="shield-off" style="width: 70px; height: 70px; stroke-width: 1.5;"></i>
+        </div>
+
+        <!-- IP bloqueada -->
+        <div th:if="${ipBlocked}" class="alert-error">
+            🚫 Tu dirección IP ha sido bloqueada por motivos de seguridad.
+        </div>
+
+        <p style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
+            Si crees que esto es un error, contacta al administrador.
+        </p>
+    </div>
+</main>
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
