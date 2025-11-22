@@ -1,160 +1,142 @@
 @startuml
-'class ColeccionInputDTO {
-'    -titulo: String
-'    -descripcion: String
-'    -importadores: List<Fuente>
-'    -criterios: List<CriterioDePertenencia>
-'    -estrategiaConsenso: String
-'}
-'
-'interface IColeccionService {
-'    +createColeccion(coleccion: ColeccionInputDTO): void
-'    +getColeccion(idColeccion: Long, modoNavegacion: String): List<Hecho>
-'    +actualizarHechos(): void
-'    +consensuarHechos(): void
-'}
-'
-'interface IColeccionRepository {
-'    +save(coleccion: Coleccion): void
-'    +findById(id: Long): Coleccion
-'    +findAll(): List<Coleccion>
-'}
+' --- Configuración Visual ---
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+left to right direction
 
-interface NavegacionStrategy {
-    +navegar(coleccion: Coleccion, hechos: List<Hecho>): List<Hecho>
+' --- Módulo de Usuarios y Roles ---
+package "Usuarios" {
+    abstract class Usuario {
+        +String nombre
+        +String apellido
+        ..
+        +reportarFalla(Monopatin, MotivoReporte)
+    }
+
+    class Monopatinador extends Usuario {
+        +String tipoDocumento
+        +String nroDocumento
+        +String nacionalidad
+        +String domicilio
+        +String urlFotoRostro
+        +Boolean validadoRENAPER
+        ..
+        +calcularCosto(Viaje)
+    }
+
+    class Administrador extends Usuario {
+        +String legajo
+        ..
+        +gestionarTarifas()
+        +gestionarMonopatines()
+    }
+
+    class MedioDeContacto {
+        +TipoContacto tipo
+        +String valor
+    }
+
+    enum TipoContacto {
+        EMAIL
+        TELEFONO
+    }
+
+    ' Relaciones de Usuarios
+    Monopatinador "1" *-- "2..*" MedioDeContacto
+    MedioDeContacto -- TipoContacto
 }
 
-class NavegacionCuradaStrategy implements NavegacionStrategy{
-    ++navegar(coleccion: Coleccion, hechos: List<Hecho>): List<Hecho>
+' --- Módulo de Estructura (Estaciones y Comunas) ---
+package "Infraestructura" {
+    class Estacion {
+        +String direccion
+        +GeoCoordenadas coordenadas
+        +int capacidadPuestos
+    }
+
+    class Comuna {
+        +int numero
+    }
+
+    ' Relaciones de Infraestructura
+    Administrador "1" -- "0..*" Comuna : "comunasAsignadas"
+    Estacion "1" -- "1" Comuna
 }
 
-class NavegacionIrrestrictaStrategy implements NavegacionStrategy{
-    +navegar(coleccion: Coleccion, hechos: List<Hecho>): List<Hecho>
+' --- Módulo de Monopatines y Estados ---
+package "Flota" {
+    class Monopatin {
+        +String marca
+        +String modelo
+        +String color
+        +int aniosVidaUtilBateria
+        +EstadoMonopatin estado
+    }
+
+    enum EstadoMonopatin {
+        DISPONIBLE
+        NO_DISPONIBLE
+        EN_REPARACION
+        EN_USO
+    }
+
+    class Reparacion {
+        +LocalDateTime fecha
+        +String descripcion
+    }
+
+    ' Relaciones de Flota
+    Monopatin -- EstadoMonopatin
+    Monopatin "1" *-- "0..*" Reparacion : "historial"
+    ' Un monopatin está en 0 o 1 estación
+    Monopatin "0..*" -- "0..1" Estacion : "estacionadoEn"
 }
 
-class Coleccion {
-    -handle: Handle
-    -id: long
-    -titulo: String
-    -descripcion: String
-    -importadores: List<Fuente>
-    -criteriosDePertenencia: List<CriterioDePertenencia>
-    -fechaYHoraDeActualizacion: LocalDateTime
-    -consensoStrategy: ConsensoStrategy
 
-    +cumpleCriterios(hecho: Hecho): Boolean
+' --- Módulo Transaccional (Viajes y Reportes) ---
+package "Transacciones" {
+    class Viaje {
+        +LocalDateTime fechaHoraRetiro
+        +LocalDateTime fechaHoraDevolucion
+        +float kilometrosRealizados
+    }
+
+    class ReporteFalla {
+        +LocalDateTime fechaHoraDeteccion
+        +List<String> urlsFotos
+        +String descripcionManual
+    }
+
+    class MotivoReporte {
+        +String nombre
+        ' Si es true, habilita el campo descripcionManual
+        +Boolean esOtro
+    }
+
+    ' Relaciones Transaccionales
+    ' Un viaje conecta un monopatinador, un monopatin y estaciones
+    Viaje "0..*" -- "1" Monopatinador : "realizadoPor"
+    Viaje "0..*" -- "1" Monopatin : "utiliza"
+    Viaje "0..*" -- "1" Estacion : "origen"
+    Viaje "0..*" -- "1" Estacion : "destino"
+
+    ' Un reporte es hecho por un Usuario (Admin o Monopatinador)
+    ReporteFalla "0..*" -- "1" Usuario : "reportadoPor"
+    ReporteFalla "0..*" -- "1" Monopatin : "sobre"
+    ReporteFalla "1" -- "1..*" MotivoReporte : "motivo"
 }
 
-class Fuente{
-    -webClient: WebClient
-    -origenHechos: Origen
-
-    +obtenerHechos(List<CriterioDePertenencia> criterios): List<Hecho>
-    +construirQueryParams(List<CriterioDePertenencia> criterios): MultiValueMap<String, String>
+' --- Módulo de Configuración (Tarifas) ---
+package "Configuracion" {
+    class Tarifa {
+        +String descripcion
+        +float costoMinimoUso
+        +float costoAnual
+        +float tarifaBaseExtranjero
+        +float costoPorKmExtranjero
+    }
+    ' Aquí faltaría el Patrón Strategy para los factores
+    ' (clima, feriado), pero la Tarifa base la gestiona el Admin
+    Administrador "1" -- "*" Tarifa : "gestiona"
 }
-
-interface CriterioDePertenencia {
-    +cumpleCriterio(hecho: Hecho): boolean
-    +aQueryParam(): MultiValueMap<String, String>
-}
-
-class CriterioPorFecha implements CriterioDePertenencia{
-    -categoria: String
-    +cumpleCriterio(hecho: Hecho): boolean
-    +aQueryParam(): MultiValueMap<String, String>
-}
-
-class CriterioPorCategoria implements CriterioDePertenencia{
-    -fechaInicio: LocalDate
-    -fechaFin: LocalDate
-    -tipo: String
-    +cumpleCriterio(hecho: Hecho): boolean
-    +aQueryParam(): MultiValueMap<String, String>
-}
-
-abstract class ConsensoStrategy {
-    +//obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>)//: List<Hecho>
-    +obtenerHechos(List<Fuente> fuentes, List<Hecho> hechos, int cantidadDeFuentesQueCoinciden): List<Hecho>
-}
-
-class ConsensoMultipleMencionStrategy extends ConsensoStrategy{
-    +obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>): List<Hecho>
-}
-
-class ConsensoMayoriaStrategy extends ConsensoStrategy{
-    +obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>): List<Hecho>
-}
-
-class ConsensoAbsolutaStrategy extends ConsensoStrategy{
-    +obtenerHechosConsensuados(fuentes: List<Fuente>, hechos: List<Hecho>): List<Hecho>
-}
-
-class ConsensoFactory {
-    -strategies: Map<String, ConsensoStrategy>
-    +getStrategy(modoNavegacion: String): ConsensoStrategy
-}
-
-class Hecho {
-    -id: Long
-    -autor: String
-    -usuario: Usuario
-    -esValido: Boolean
-    -datosHechos: DatosHechos
-    -multimedia: Multimedia
-    -etiquetas: List<String>
-    -colecciones: List<Handle>
-    -origen: Origen
-    -mostrarDatos: Boolean
-    -fechaCreacion: LocalDateTime
-    -plazoEdicion: Duration
-    -esEditable: Boolean
-    -esConsensuado: Boolean
-
-    +esEditable(): Boolean
-}
-
-class DatosHechos{
-    -titulo: String
-    -descripcion: String
-    -categoria: String
-    -ubicacion: Ubicacion
-    -fechaHecho: LocalDate
-}
-
-class Handle{
-    -value: String
-}
-
-class Multimedia{
-    -url: String
-    -extension: String
-}
-
-enum Origen{
-    CARGA_MANUAL,
-    DATASET,
-    CONTRIBUYENTE,
-    VISUALIZADOR,
-    EXTERNO,
-    ESTATICO,
-    DINAMICO
-}
-
-Fuente -- Hecho
-
-NavegacionStrategy -- Coleccion
-NavegacionStrategy -- Hecho
-
-Coleccion --> Fuente
-Coleccion --> Handle
-Coleccion --> CriterioDePertenencia
-Coleccion --> ConsensoStrategy
-
-ConsensoFactory -- ConsensoStrategy
-
-Hecho --> DatosHechos
-Hecho --> Multimedia
-Hecho --> Handle
-Hecho --> Origen
-
 @enduml
