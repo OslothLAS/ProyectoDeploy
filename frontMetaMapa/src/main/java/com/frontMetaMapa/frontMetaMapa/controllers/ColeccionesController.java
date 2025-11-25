@@ -143,7 +143,6 @@ public class ColeccionesController {
     }
 
 
-    // Manejar envío del formulario
     @PostMapping("/editar/{id}")
     public String editarColeccion(
             @PathVariable("id") Long id,
@@ -151,10 +150,29 @@ public class ColeccionesController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            ColeccionOutputDTO actualizado = coleccionService.actualizarColeccion(id, dto);
+
+            // ✔ Convertimos origen → url real
+            if (dto.getFuentes() != null) {
+                dto.getFuentes().forEach(f -> {
+                    if (f.getOrigen() != null) {
+                        switch (f.getOrigen()) {
+                            case ESTATICO -> f.setUrl(fuenteEstaticaUrl);
+                            case DINAMICO -> f.setUrl(fuenteDinamicaUrl);
+                            case PROXY -> f.setUrl(fuenteProxyUrl);
+                            default -> f.setUrl(null);
+                        }
+                    }
+                });
+            }
+
+            // ✔ Guardamos
+            coleccionService.actualizarColeccion(id, dto);
             redirectAttributes.addFlashAttribute("successMessage", "Colección actualizada correctamente");
+
             return "redirect:/colecciones/show?id=" + id;
+
         } catch (Exception e) {
+
             redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar la colección");
             return "redirect:/colecciones/editar/" + id;
         }
@@ -162,9 +180,10 @@ public class ColeccionesController {
 }
 
 
-    /**
-     * Guardar colección (crear o actualizar)
-     */
+
+/**
+ * Guardar colección (crear o actualizar)
+ */
     /*
     @PostMapping
     public String guardarColeccion(@ModelAttribute ColeccionInputDTO coleccionDTO) {

@@ -48,8 +48,13 @@
                 <div class="form-group full-width">
                     <label>Fuentes</label>
                     <div th:each="fuente, iterStat : ${coleccion.importadores}" class="form-inline">
-                        <input type="text" th:field="*{importadores[__${iterStat.index}__].ip}" placeholder="IP">
-                        <input type="number" th:field="*{importadores[__${iterStat.index}__].puerto}" placeholder="Puerto">
+
+                        <select th:field="*{importadores[__${iterStat.index}__].origen}" required>
+                            <option value="ESTATICO">Estática</option>
+                            <option value="DINAMICO">Dinámica</option>
+                            <option value="PROXY">Proxy</option>
+                        </select>
+
                     </div>
                     <!-- Opción para agregar más fuentes vía JS si querés -->
                 </div>
