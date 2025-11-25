@@ -60,11 +60,13 @@ public class AgregadorApplication {
     CommandLineRunner importarHechosFuentes(IHechoRepository hechoRepository, IColeccionService coleccionService) {
         return args -> {
             List<Fuente> fuentes = List.of(
-                    new Fuente("localhost", "8060", null),
+                    new Fuente("localhost", "8060", null)
+            );
+/*
+,
                     new Fuente("localhost", "8070", null),
                     new Fuente("localhost", "8090", null)
-            );
-
+ */
             List<CriterioDePertenencia> criterios = new ArrayList<>();
 
             for (Fuente fuente : fuentes) {

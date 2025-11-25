@@ -104,11 +104,10 @@ public class AdministradorController {
         return "administrador/uploadCSV";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/subirCsv")
     @ResponseBody // ¡Importante! Devuelve JSON, no una vista
-    public ResponseEntity<?> importarHechosCSV(
-            @RequestParam("archivo") MultipartFile file) {
-
+    public ResponseEntity<?> importarHechosCSV(@RequestParam("archivo") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

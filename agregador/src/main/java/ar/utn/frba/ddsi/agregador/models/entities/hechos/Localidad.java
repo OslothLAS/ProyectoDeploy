@@ -22,6 +22,7 @@ public class Localidad {
     @Column(name = "nombre")
     private String nombre;
 
+
     public Localidad(Provincia provincia, String nombre) {
         this.provincia = provincia;
         this.nombre = nombre;

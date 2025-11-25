@@ -26,6 +26,7 @@ import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,10 +53,12 @@ public class ColeccionService implements IColeccionService {
     @Qualifier("hechoWebClient")
     private WebClient hechoWebClient;
 
+    private GeorefLocalCache georefLocalCache;
+
     public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository,
                             ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository,
                             IProvinciaRepository provinciaRepository, ILocalidadRepository localidadRepository,
-                            IFuenteRepository fuenteRepository, ICriterioRepository criterioRepository) {
+                            IFuenteRepository fuenteRepository, ICriterioRepository criterioRepository, GeorefLocalCache georefLocalCache) {
         this.hechoRepository = hechoRepository;
         this.coleccionRepository = coleccionRepository;
         this.categoriaRepository = categoriaRepository;
@@ -64,8 +67,73 @@ public class ColeccionService implements IColeccionService {
         this.localidadRepository = localidadRepository;
         this.fuenteRepository = fuenteRepository;
         this.criterioRepository = criterioRepository;
+        this.georefLocalCache = georefLocalCache;
     }
 
+    public void normalizarHechos(List<Hecho> hechos) {
+        Map<String, Ubicacion> ubicacionesCache = new ConcurrentHashMap<>();
+
+        for (Hecho hecho : hechos) {
+            // Normalizar ubicación
+            String latitud = hecho.getUbicacion().getLatitud();
+            String longitud = hecho.getUbicacion().getLongitud();
+            String claveUbicacion = latitud + "," + longitud;
+
+            // Buscar en cache o crear nueva ubicación
+            Ubicacion ubicacionPersistida = ubicacionesCache.computeIfAbsent(claveUbicacion, k -> {
+                // Buscar ubicación existente en BD
+                Optional<Ubicacion> ubicacionExistente = ubicacionRepository
+                        .findByLatitudAndLongitud(latitud, longitud);
+
+                if (ubicacionExistente.isPresent()) {
+                    return ubicacionExistente.get();
+                }
+
+                // No existe, buscar localidad más cercana con georef
+                Ubicacion nuevaUbicacion = this.georefLocalCache.buscar(latitud, longitud);
+                Localidad localidadGeoref = nuevaUbicacion.getLocalidad();
+
+                // Persistir provincia si no existe
+                Provincia provinciaExistente = provinciaRepository
+                        .findByNombre(localidadGeoref.getProvincia().getNombre())
+                        .orElseGet(() -> provinciaRepository.save(
+                                new Provincia(localidadGeoref.getProvincia().getNombre())
+                        ));
+
+                // Persistir localidad si no existe
+                Localidad localidadExistente = localidadRepository
+                        .findByNombreAndProvinciaNombre(
+                                localidadGeoref.getNombre(),
+                                provinciaExistente.getNombre()
+                        )
+                        .orElseGet(() -> localidadRepository.save(
+                                new Localidad(provinciaExistente, localidadGeoref.getNombre())
+                        ));
+
+                // Crear y persistir la nueva ubicación
+                Ubicacion ubicacionAGuardar = new Ubicacion(latitud, longitud, localidadExistente);
+                return ubicacionRepository.save(ubicacionAGuardar);
+            });
+
+            hecho.setUbicacion(ubicacionPersistida);
+
+            // Normalizar categoría
+            String nombreCategoria = hecho.getCategoria().getCategoria();
+            Categoria categoriaExistente = obtenerOCrearCategoriaCached(nombreCategoria);
+            hecho.setCategoria(categoriaExistente);
+        }
+    }
+
+    private final Map<String, Categoria> categoriaCache = new ConcurrentHashMap<>();
+
+    private Categoria obtenerOCrearCategoriaCached(String nombre) {
+        String clave = normalizarTrimTexto(nombre);
+
+        return categoriaCache.computeIfAbsent(clave, k ->
+                categoriaRepository.findByCategoriaNormalizada(k)
+                        .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)))
+        );
+    }
 
     public Categoria obtenerOCrearCategoria(String nombre) {
         String clave = normalizarTrimTexto(nombre);
@@ -216,7 +284,7 @@ public class ColeccionService implements IColeccionService {
                 .collect(Collectors.toList());*/
     }
 
-    public void normalizarHechos(List<Hecho> hechos){
+   /* public void normalizarHechos(List<Hecho> hechos){
         Map<String, Ubicacion> ubicacionesPorClave = new HashMap<>();
 
         hechos.parallelStream().forEach(Hecho::normalizarHecho);
@@ -282,10 +350,10 @@ public class ColeccionService implements IColeccionService {
             }
 
             String nombreCategoria = hecho.getCategoria().getCategoria();
-            Categoria categoriaExistente = obtenerOCrearCategoria(nombreCategoria);
+            Categoria categoriaExistente = obtenerOCrearCategoriaCached(nombreCategoria);
             hecho.setCategoria(categoriaExistente);
         }
-    }
+    }*/
 
     public List<ColeccionOutputDTO> getColecciones(){
         return this.coleccionRepository.findAll().stream().map(ColeccionUtil::coleccionToDto).collect(Collectors.toList());
