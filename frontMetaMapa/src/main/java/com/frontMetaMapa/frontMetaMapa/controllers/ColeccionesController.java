@@ -10,6 +10,7 @@ import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ColeccionesController {
     private final ColeccionService coleccionService;
+    @Value("${fuenteEstatica.service.url}")
+    private String fuenteEstaticaUrl;
 
+    @Value("${fuenteDinamica.service.url}")
+    private String fuenteDinamicaUrl;
+
+    @Value("${fuenteProxy.service.url}")
+    private String fuenteProxyUrl;
 
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
@@ -96,9 +104,23 @@ public class ColeccionesController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/createColeccion")
     public String crearColeccion(@ModelAttribute ColeccionInputDTO coleccionInputDTO) {
-        System.out.println(coleccionInputDTO);
+
+        // Si hay fuentes, las procesamos
+        if (coleccionInputDTO.getFuentes() != null) {
+            for (FuenteInputDTO fuente : coleccionInputDTO.getFuentes()) {
+                if (fuente.getOrigen() != null) {
+                    switch (fuente.getOrigen()) {
+                        case ESTATICO -> fuente.setUrl(fuenteEstaticaUrl);
+                        case DINAMICO -> fuente.setUrl(fuenteDinamicaUrl);
+                        case PROXY    -> fuente.setUrl(fuenteProxyUrl);
+                        default       -> fuente.setUrl(null);
+                    }
+                }
+            }
+        }
+
         coleccionService.crearColeccion(coleccionInputDTO);
-        return "redirect:/buscador-colecciones"; // o redirección al mensaje de éxito
+        return "redirect:/buscador-colecciones";
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
