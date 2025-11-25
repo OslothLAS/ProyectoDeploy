@@ -118,7 +118,7 @@ public class HechosController {
 
     @GetMapping("/hechoColeccion/{id}")
     public String detalleHechoColeccion(@PathVariable Long id, Model model, HttpServletRequest request) {
-            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorIdPorColeccion(id);
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
                 model.addAttribute("hecho", hechoOpt.get());
                 return "commons/detalleHecho";
     }

@@ -1,5 +1,6 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
+import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
@@ -20,11 +21,9 @@ import ar.utn.frba.ddsi.agregador.utils.ColeccionUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -578,5 +577,13 @@ public class ColeccionService implements IColeccionService {
         List<CriterioDePertenencia> criterios = this.criterioRepository.findAll();
 
         return criterios.stream().map(ColeccionUtil::criterioToDTO).collect(Collectors.toList());
+    }
+
+    public HechoOutputDTO obtenerHechoPorId(Long id){
+        Hecho hecho = hechoRepository.findById(id).orElse(null);
+        if (hecho == null){
+            return null;
+        }
+        return HechoUtil.hechoToDTO(hecho);
     }
 }

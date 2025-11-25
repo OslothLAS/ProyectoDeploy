@@ -2,10 +2,8 @@ package com.frontMetaMapa.frontMetaMapa.controllers;
 
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.SolicitudInputDTO;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import com.frontMetaMapa.frontMetaMapa.services.SolicitudEliminacionService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,7 +43,7 @@ public class SolicitudesController {
      */
     @GetMapping("/solicitar-eliminacion")
     public String solicitarEliminacion(@RequestParam Long id, Model model, Authentication authentication) {
-        HechoApiOutputDto hecho = hechoService.obtenerHechoPorIdPorColeccion(id)
+        HechoApiOutputDto hecho = hechoService.obtenerHechoPorId(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hecho no encontrado con id " + id));
 
         SolicitudInputDTO dto = new SolicitudInputDTO();

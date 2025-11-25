@@ -3,7 +3,7 @@ package ar.utn.ba.ddsi.fuenteProxy.services.impl;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.api.AuthRequest;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.api.AuthResponse;
 import ar.utn.ba.ddsi.fuenteProxy.dtos.api.DesastresResponse;
-import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoOutputDTO;
+import ar.utn.ba.ddsi.fuenteProxy.dtos.hecho.HechoInputDTO;
 import ar.utn.ba.ddsi.fuenteProxy.mappers.HechoUtil;
 import ar.utn.ba.ddsi.fuenteProxy.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.ba.ddsi.fuenteProxy.models.entities.criteriosDePertenencia.CriterioDePertenenciaFactory;
@@ -75,11 +75,11 @@ public class ApiService implements IApiService {
                 .bodyToMono(DesastresResponse.class)
                 .block();
 
-        List<HechoOutputDTO> hechosDto = response != null ? response.getData() : List.of();
+        List<HechoInputDTO> hechosDto = response != null ? response.getData() : List.of();
 
         // Mapear los HechoDto a Hecho
         List<Hecho> hechos = hechosDto.stream()
-                .map(HechoUtil::hechoDTOtoHecho)
+                .map(HechoUtil::hechoInputDTOtoHecho)
                 .toList();
 
         List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
