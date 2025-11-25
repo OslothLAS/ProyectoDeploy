@@ -33,24 +33,38 @@ public class HechoUtil {
         }
 
         // Procesar cada grupo de hechos repetidos
-        for (List<Hecho> grupoRepetidos : hechosAgrupados.values()) {
-            if (grupoRepetidos.size() > 1) {
-                // Marcar todos como inválidos primero
-                grupoRepetidos.forEach(h -> h.setEsValido(false));
+        List<Hecho> listaAretornar = new ArrayList<>();
 
-                // Seleccionar uno para mantener como válido (el más antiguo o el primero)
-                Hecho hechoAMantener = seleccionarHechoValido(grupoRepetidos);
-                hechoAMantener.setEsValido(true);
+        for (Hecho hechoNuevo : listaNuevos) {
+            String clave = generarClave(hechoNuevo.getTitulo(), hechoNuevo.getDescripcion());
+
+            if (!hechosAgrupados.containsKey(clave)) {
+                // No está repetido, agregar a la lista
+                listaAretornar.add(hechoNuevo);
             } else {
-                // Si no hay repetidos, mantener el estado actual o marcarlo como válido
-                Hecho hecho = grupoRepetidos.get(0);
-                if (hecho.getEsValido() == null) {
-                    hecho.setEsValido(true);
+                // Está repetido, verificar si tiene el mismo fuenteOrigen
+                List<Hecho> hechosConMismaClave = hechosAgrupados.get(clave);
+                boolean tieneMismaFuente = false;
+
+                for (Hecho hechoExistente : hechosConMismaClave) {
+                    if (hechoExistente.getFuenteOrigen() == hechoNuevo.getFuenteOrigen()) {
+                        tieneMismaFuente = true;
+                        listaAretornar.add(hechoExistente);
+                        break;
+                    }
+                }
+
+                if (tieneMismaFuente) {
+                    // Descartar (no hacer nada)
+                } else {
+                    // Diferente fuente, setear esValido en false y agregar
+                    hechoNuevo.setEsValido(false);
+                    listaAretornar.add(hechoNuevo);
                 }
             }
         }
 
-        return todosLosHechos;
+        return listaAretornar;
     }
 
     /**

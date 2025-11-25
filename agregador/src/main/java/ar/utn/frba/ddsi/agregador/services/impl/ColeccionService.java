@@ -108,11 +108,6 @@ public class ColeccionService implements IColeccionService {
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, fuentesFinales);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
 
-        List<Coleccion> coleccionesExistentes = coleccionRepository.findAll();
-
-
-
-
         this.coleccionRepository.save(nuevaColeccion);
         List<Hecho> todosLosHechos = this.hechoRepository.findAll();
 
