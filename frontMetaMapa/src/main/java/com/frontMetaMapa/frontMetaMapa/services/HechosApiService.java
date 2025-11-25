@@ -77,7 +77,7 @@ public class HechosApiService {
     }
 
     public HechoApiOutputDto obtenerHechoPorId(Long id) {
-        String url = "http://localhost:8080/hechos/" + id;
+        String url = hechoTotalesServiceUrl + "hechos/" + id;
         HechoAGREInput response = webApiCallerService.getWithoutToken(url, HechoAGREInput.class);
 
         if (response == null) {

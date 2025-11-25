@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 public class FuenteDTO {
     private Long id;
-    private String ip;
-    private String puerto;
+    private String url;
     private FuenteOrigen nombre;
 }

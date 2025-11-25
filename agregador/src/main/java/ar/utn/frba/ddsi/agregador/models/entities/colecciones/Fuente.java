@@ -26,15 +26,13 @@ public class Fuente{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ip")
-    private String ip;
+    @Column(name = "url")
+    private String url;
 
-    @Column(name = "puerto")
-    private String puerto;
 
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://" + ip + ":" + puerto)
+                .baseUrl(url)
                 .build();
     }
 
@@ -43,11 +41,16 @@ public class Fuente{
     private FuenteOrigen origenHechos;
 
     @JsonCreator
-    public Fuente(@JsonProperty("ip") String ip, @JsonProperty("puerto") String puerto,@JsonProperty("id") Long id) { // el id no va
+    public Fuente(@JsonProperty("url") String url) {
+        this.url = url;
+        this.origenHechos = determinarOrigen();
+    }
+
+    // ✔ Constructor usado para editar colecciones
+    public Fuente(Long id, String url) {
         this.id = id;
-        this.ip = ip;
-        this.puerto = puerto;
-        this.origenHechos = this.determinarOrigen();
+        this.url = url;
+        this.origenHechos = determinarOrigen();
     }
 
     private FuenteOrigen determinarOrigen() {
