@@ -4,6 +4,7 @@ package com.frontMetaMapa.frontMetaMapa.services.internal;
 //import ar.utn.ba.ddsi.gestionDeAlumnos.dto.RefreshTokenDTO;
 //import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.exceptions.RateLimitException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.RefreshTokenDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -132,20 +133,36 @@ public class WebApiCallerService {
 
     public <T> T postWithoutToken(String url, Object body, Class<T> responseType) {
         try {
-            return webClient
-                    .post()
+            return webClient.post()
                     .uri(url)
                     .bodyValue(body)
                     .retrieve()
                     .bodyToMono(responseType)
                     .block();
+
         } catch (WebClientResponseException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NotFoundException(e.getMessage());
+
+            // 1. Detectar si el Backend nos respondió 429
+            if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+
+                // 2. Leer el Header "Retry-After" que mandó el Backend
+                // IMPORTANTE: Usar getHeaders() (no getResponseHeaders)
+                String retryAfterHeader = e.getHeaders().getFirst("Retry-After");
+
+                long segundos = 60; // Valor por defecto si falla la lectura
+
+                if (retryAfterHeader != null) {
+                    try {
+                        segundos = Long.parseLong(retryAfterHeader);
+                    } catch (NumberFormatException ignored) {}
+                }
+
+                // 3. Lanzar la excepción interna del Frontend para que la atrape el Controller
+                throw new RateLimitException("Rate limit exceeded", segundos);
             }
-            throw new RuntimeException("Error en llamada POST sin token: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error de conexión al realizar POST sin token: " + e.getMessage(), e);
+
+            // ... manejo de otros errores (404, 500, etc) ...
+            throw e;
         }
     }
 

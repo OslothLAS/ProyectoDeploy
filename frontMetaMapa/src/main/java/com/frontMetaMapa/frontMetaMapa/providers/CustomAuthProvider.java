@@ -1,5 +1,6 @@
 package com.frontMetaMapa.frontMetaMapa.providers;
 
+import com.frontMetaMapa.frontMetaMapa.exceptions.RateLimitException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import io.jsonwebtoken.Claims;
@@ -41,10 +42,9 @@ public class CustomAuthProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        System.out.println("🔑 authenticate() llamado para usuario: {}"+ username);
+        System.out.println("🔑 authenticate() llamado para usuario: " + username);
 
         try {
-            // Llamada al servicio externo
             AuthResponseDTO authResponse = loginApiService.login(username, password);
 
             if (authResponse == null) {
@@ -72,8 +72,15 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
             return new UsernamePasswordAuthenticationToken(username, null, authorities);
 
+        } catch (RateLimitException e) {
+            // ✅ CORRECCIÓN CLAVE:
+            // Si es error de RateLimit, NO lo conviertas en BadCredentials.
+            // Lánzalo tal cual para que el Controller lo reciba y muestre el cartel rojo.
+            throw e;
+
         } catch (RuntimeException e) {
-            System.out.println("💥 Error en authenticate(): "+ e);
+            // Para el resto de errores (conexión, url vacía, etc), sí usa BadCredentials
+            System.out.println("💥 Error en authenticate(): " + e);
             throw new BadCredentialsException("Error en el sistema de autenticación: " + e.getMessage());
         }
     }

@@ -21,7 +21,11 @@
             <p>Accede a tu cuenta de MetaMapa</p>
         </div>
 
-        <form class="login-form" action="/login" method="post">
+        <div th:if="${error}" class="login-alert">
+            <i data-lucide="alert-circle"></i> <span th:text="${error}">Error placeholder</span>
+        </div>
+        <form class="login-form" th:action="@{/login}" method="post">
+
             <div class="form-group">
                 <label for="username">Usuario</label>
                 <input

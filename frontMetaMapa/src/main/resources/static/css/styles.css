@@ -2275,3 +2275,26 @@ th {
 .btn-ver-hecho:hover {
   background-color: #066a8f; /* Un tono más oscuro al pasar el mouse */
 }
+.login-alert {
+  background-color: #FEF2F2; /* Fondo rojo muy claro */
+  border: 1px solid #F87171; /* Borde rojo suave */
+  color: #991B1B;            /* Texto rojo oscuro */
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;     /* Bordes redondeados igual que tus inputs */
+  margin-bottom: 1.5rem;     /* Separación con el formulario */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;              /* Espacio entre icono y texto */
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Ajuste para el icono de Lucide dentro de la alerta */
+.login-alert i,
+.login-alert svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0; /* Evita que el icono se aplaste si el texto es largo */
+  stroke-width: 2px;
+}
