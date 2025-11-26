@@ -59,11 +59,11 @@ public class ColeccionUtil {
 
 
     public static Fuente fuenteDTOtoFuente(FuenteInputDTO fuenteDTO){
-        return new Fuente(fuenteDTO.getIp(), fuenteDTO.getPuerto(), fuenteDTO.getId());
+        return new Fuente(fuenteDTO.getId(), fuenteDTO.getUrl());
     }
 
     public static FuenteDTO fuenteToFuenteDTO(Fuente fuente){
-        return new FuenteDTO(fuente.getId(), fuente.getIp(), fuente.getPuerto(),fuente.getOrigenHechos());
+        return new FuenteDTO(fuente.getId(), fuente.getUrl(),fuente.getOrigenHechos());
     }
 
     public static CriterioDePertenenciaDTO criterioToDTO(CriterioDePertenencia criterio) {

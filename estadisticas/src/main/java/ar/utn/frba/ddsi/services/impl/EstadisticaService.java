@@ -13,12 +13,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class EstadisticaService implements IEstadisticaService {
+
     private final IStatRepository statRepository;
+    private final AgregadorConnector agregadorConnector;
 
-    public EstadisticaService(IStatRepository statRepository) {
+    public EstadisticaService(
+            IStatRepository statRepository,
+            AgregadorConnector agregadorConnector
+    ) {
         this.statRepository = statRepository;
-
+        this.agregadorConnector = agregadorConnector;
     }
+
 
     public Estadistica fromDTO(StatDTO dto) {
         Estadistica e = new Estadistica();
@@ -50,7 +56,6 @@ public class EstadisticaService implements IEstadisticaService {
 
     public void calcularEstadisticas() {
         List<StatDTO> stats = new ArrayList<>();
-        AgregadorConnector agregadorConnector = new AgregadorConnector();
 
         stats.addAll(agregadorConnector.getCategoriaPorHechos());
         stats.addAll(agregadorConnector.getHechosDeColeccion());
@@ -68,6 +73,7 @@ public class EstadisticaService implements IEstadisticaService {
 
         this.statRepository.saveAll(estadisticas);
     }
+
 
     public List<StatDTO> generateCSV() {
         List<Estadistica> estadisticas = statRepository.findAll();

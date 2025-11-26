@@ -11,6 +11,7 @@ import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,6 +28,12 @@ public class AgregadorApplication {
 
     @PersistenceContext
     private EntityManager entityManager;
+    @Value("${fuenteEstatica.service.url}")
+    private String fuenteEstaticaUrl;
+    @Value("${fuenteDinamica.service.url}")
+    private String fuenteDinamicaUrl;
+    @Value("${fuenteProxy.service.url}")
+    private String fuenteProxyUrl;
 
     public static void main(String[] args) {
         SpringApplication.run(AgregadorApplication.class, args);
@@ -64,6 +71,14 @@ public class AgregadorApplication {
     @Bean
     CommandLineRunner importarHechosFuentes(IHechoRepository hechoRepository, IColeccionService coleccionService, @Qualifier("fuentesProperties") FuentesProperties fuentesProperties) {
         return args -> {
+
+            List<Fuente> fuentes = List.of(
+                    new Fuente(fuenteEstaticaUrl),
+                    new Fuente(fuenteDinamicaUrl),
+                    new Fuente(fuenteProxyUrl)
+            );
+
+
             List<CriterioDePertenencia> criterios = new ArrayList<>();
 
             for (FuenteConfig fuenteConfig : fuentesProperties.getFuentes()) {
@@ -74,13 +89,11 @@ public class AgregadorApplication {
 
                     if (hechos != null && !hechos.isEmpty()) {
                         hechoRepository.saveAll(hechos);
-                        System.out.println("Importados " + hechos.size() +
-                                " hechos desde " + fuente.getIp() + ":" + fuente.getPuerto());
+
                     }
 
                 } catch (Exception e) {
-                    System.out.println("No se pudieron importar hechos desde " +
-                            fuente.getIp() + ":" + fuente.getPuerto());
+
                     e.printStackTrace();
                 }
             }

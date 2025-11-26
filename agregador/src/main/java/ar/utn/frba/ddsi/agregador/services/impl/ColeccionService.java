@@ -260,18 +260,29 @@ public class ColeccionService implements IColeccionService {
         }
         sw.stop();
 
-        sw.start("buscar fuentes");
-        List<String> puertos = coleccionDTO.getFuentes().stream().map(Fuente::getPuerto).toList();
-        List<Fuente> fuentesExistentes = fuenteRepository.findAllByPuertoIn(puertos);
-        sw.stop();
+        // 1️⃣ Extraer URLs de las fuentes enviadas desde el DTO
+        List<String> urls = coleccionDTO.getFuentes()
+                .stream()
+                .map(Fuente::getUrl)
+                .toList();
 
-        sw.start("crear fuentes nuevas");
+        // 2️⃣ Buscar fuentes existentes por URL
+        List<Fuente> fuentesExistentes = fuenteRepository.findAllByUrlIn(urls);
+
+        // 3️⃣ Convertir a mapa URL → Fuente
         Map<String, Fuente> fuentesMap = fuentesExistentes.stream()
-                .collect(Collectors.toMap(Fuente::getPuerto, f -> f));
-        List<Fuente> fuentesFinales = coleccionDTO.getFuentes().stream()
-                .map(f -> fuentesMap.getOrDefault(f.getPuerto(), fuenteRepository.save(f)))
+                .collect(Collectors.toMap(Fuente::getUrl, f -> f));
+
+        // 4️⃣ Reemplazar o crear nuevas fuentes según corresponda
+        List<Fuente> fuentesFinales = coleccionDTO.getFuentes()
+                .stream()
+                .map(fuenteDTO -> fuentesMap.getOrDefault(
+                        fuenteDTO.getUrl(),
+                        fuenteRepository.save(fuenteDTO)
+                ))
                 .toList();
         sw.stop();
+
 
         sw.start("obtener criterios");
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
@@ -295,11 +306,12 @@ public class ColeccionService implements IColeccionService {
         sw.start("asignar y guardar hechos");
         this.asignarColeccionAHechos(hechosAGuardar, nuevaColeccion);
         this.hechoRepository.saveAll(hechosAGuardar);
-            this.consensuarHechos();
+        this.consensuarHechos();
         sw.stop();
 
         log.info("\n{}", sw.prettyPrint());
     }
+
 
     @Override
     public ColeccionOutputDTO getColeccionById(Long idColeccion) {
@@ -332,7 +344,7 @@ public class ColeccionService implements IColeccionService {
         if (dto.getFuentes() != null && !dto.getFuentes().isEmpty()) {
             coleccion.setImportadores(
                     dto.getFuentes().stream()
-                            .map(f -> new Fuente(f.getIp(), f.getPuerto(), f.getId()))
+                            .map(f -> new Fuente(f.getId(), f.getUrl()))
                             .collect(Collectors.toList())
             );
         }
@@ -373,14 +385,13 @@ public class ColeccionService implements IColeccionService {
                     try {
                         List<Hecho> hechosFuente = fuente.obtenerHechos(criterios);
                         if (hechosFuente == null) {
-                                System.out.println("⚠️ Fuente " + fuente.getIp() + ":" + fuente.getPuerto() + " devolvió null");
                             return Stream.<Hecho>empty();
                         }
                         hechosFuente.forEach(h -> h.setFuenteOrigen(fuente.getOrigenHechos()));
                         hechosFuente.forEach(h -> h.setEsConsensuado(false));
                         return hechosFuente.stream();
                     } catch (Exception e) {
-                        System.out.println("💥 Error al obtener hechos de " + fuente.getIp() + ":" + fuente.getPuerto());
+
                         e.printStackTrace();
                         return Stream.<Hecho>empty();
                     }
@@ -429,7 +440,7 @@ public class ColeccionService implements IColeccionService {
 
         if (filtros.containsKey("fuente")) {
             String puertoFuente = filtros.get("fuente");
-            Fuente fuente = this.fuenteRepository.findByPuerto(puertoFuente);
+            Fuente fuente = this.fuenteRepository.findByUrl(puertoFuente);
             if (fuente != null ) {
                 hechosDeColeccion = hechosDeColeccion.stream().filter(h-> h.getFuenteOrigen().equals(fuente.getOrigenHechos())).collect(Collectors.toList());
             }
@@ -559,7 +570,7 @@ public class ColeccionService implements IColeccionService {
 
         if (filtros.containsKey("fuente")) {
             String puertoFuente = filtros.get("fuente");
-            Fuente fuente = this.fuenteRepository.findByPuerto(puertoFuente);
+            Fuente fuente = this.fuenteRepository.findByUrl(puertoFuente);
             if (fuente != null ) {
                 hechos = hechos.stream().filter(h-> h.getFuenteOrigen().equals(fuente.getOrigenHechos())).collect(Collectors.toList());
             }

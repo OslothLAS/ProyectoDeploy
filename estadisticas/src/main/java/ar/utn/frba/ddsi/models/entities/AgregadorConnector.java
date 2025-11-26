@@ -1,20 +1,22 @@
 package ar.utn.frba.ddsi.models.entities;
 
 import ar.utn.frba.ddsi.dtos.StatDTO;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 
+@Component
 public class AgregadorConnector {
-    private final String ip;
-    private final String puerto;
+
     private final WebClient webClient;
 
-    public AgregadorConnector() {
-        this.puerto = "8080";
-        this.ip = "localhost";
-        this.webClient = WebClient.builder().baseUrl("http://" + ip + ":" + puerto).build();
+    public AgregadorConnector(@Value("${agregador.service.url}") String rutaBase) {
+        this.webClient = WebClient.builder()
+                .baseUrl(rutaBase)
+                .build();
     }
 
     public List<StatDTO> getHechosDeColeccion() {
