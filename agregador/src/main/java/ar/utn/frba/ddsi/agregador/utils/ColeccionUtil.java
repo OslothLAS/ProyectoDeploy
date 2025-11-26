@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 public class ColeccionUtil {
 
     public static Coleccion dtoToColeccion(ColeccionInputDTO dto, List<Fuente> importadores) {
-        // Convertir los nombres de importadores a objetos Importador
-
-        // Crear la nueva colección
         return new Coleccion(
                 dto.getTitulo(),
                 dto.getDescripcion(),
