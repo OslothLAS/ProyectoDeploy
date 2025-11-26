@@ -251,14 +251,9 @@ public class ColeccionService implements IColeccionService {
 
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
-
-        StopWatch sw = new StopWatch();
-
-        sw.start("existsByTitulo");
         if (coleccionRepository.existsByTitulo(coleccionDTO.getTitulo())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una colección con ese título");
         }
-        sw.stop();
 
         // 1️⃣ Extraer URLs de las fuentes enviadas desde el DTO
         List<String> urls = coleccionDTO.getFuentes()
@@ -271,7 +266,7 @@ public class ColeccionService implements IColeccionService {
 
         // 3️⃣ Convertir a mapa URL → Fuente
         Map<String, Fuente> fuentesMap = fuentesExistentes.stream()
-                .collect(Collectors.toMap(Fuente::getUrl, f -> f));
+                .collect(Collectors.toMap(Fuente::getUrl, f -> f, (existing, replacement) -> existing));
 
         // 4️⃣ Reemplazar o crear nuevas fuentes según corresponda
         List<Fuente> fuentesFinales = coleccionDTO.getFuentes()
@@ -281,35 +276,21 @@ public class ColeccionService implements IColeccionService {
                         fuenteRepository.save(fuenteDTO)
                 ))
                 .toList();
-        sw.stop();
 
-
-        sw.start("obtener criterios");
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
-        sw.stop();
 
-        sw.start("crear coleccion");
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, fuentesFinales);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
         this.coleccionRepository.save(nuevaColeccion);
-        sw.stop();
 
-        sw.start("procesar hechos");
         List<Hecho> hechos = this.procesarHechos(fuentesFinales, criterios, nuevaColeccion);
-        sw.stop();
 
-        sw.start("filtrar repetidos");
         List<Hecho> hechosAGuardar = filtrarHechosRepetidosOptimizado(hechos);
-        sw.stop();
 
-
-        sw.start("asignar y guardar hechos");
         this.asignarColeccionAHechos(hechosAGuardar, nuevaColeccion);
         this.hechoRepository.saveAll(hechosAGuardar);
         this.consensuarHechos();
-        sw.stop();
 
-        log.info("\n{}", sw.prettyPrint());
     }
 
 
@@ -439,10 +420,9 @@ public class ColeccionService implements IColeccionService {
         NavegacionStrategy strategy = NavegacionStrategyFactory.getStrategy(modoNavegacion);
 
         if (filtros.containsKey("fuente")) {
-            String puertoFuente = filtros.get("fuente");
-            Fuente fuente = this.fuenteRepository.findByUrl(puertoFuente);
-            if (fuente != null ) {
-                hechosDeColeccion = hechosDeColeccion.stream().filter(h-> h.getFuenteOrigen().equals(fuente.getOrigenHechos())).collect(Collectors.toList());
+            String origen_fuente = filtros.get("fuente");
+            if (origen_fuente != null ) {
+                hechosDeColeccion = this.hechoRepository.findByFuenteOrigen(FuenteOrigen.valueOf(origen_fuente));
             }
         }
 

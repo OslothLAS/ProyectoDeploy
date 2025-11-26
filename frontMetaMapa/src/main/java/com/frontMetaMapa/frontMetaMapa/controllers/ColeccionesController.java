@@ -119,11 +119,11 @@ public class ColeccionesController {
         // Si hay fuentes, las procesamos
         if (coleccionInputDTO.getFuentes() != null) {
             for (FuenteInputDTO fuente : coleccionInputDTO.getFuentes()) {
-                if (fuente.getOrigen() != null) {
-                    switch (fuente.getOrigen()) {
-                        case ESTATICO -> fuente.setUrl(fuenteEstaticaUrl);
-                        case DINAMICO -> fuente.setUrl(fuenteDinamicaUrl);
-                        case PROXY    -> fuente.setUrl(fuenteProxyUrl);
+                if (fuente.getOrigenS() != null) {
+                    switch (fuente.getOrigenS()) {
+                        case "ESTATICO" -> fuente.setUrl(fuenteEstaticaUrl);
+                        case "DINAMICO" -> fuente.setUrl(fuenteDinamicaUrl);
+                        case "PROXY"    -> fuente.setUrl(fuenteProxyUrl);
                         default       -> fuente.setUrl(null);
                     }
                 }

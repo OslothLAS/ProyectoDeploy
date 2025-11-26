@@ -1,6 +1,7 @@
 package ar.utn.frba.ddsi.agregador.models.repositories;
 
 import ar.utn.frba.ddsi.agregador.dtos.output.StatDTO;
+import ar.utn.frba.ddsi.agregador.models.entities.hechos.FuenteOrigen;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,7 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
             "AND h.esValido = true")
     List<Hecho> findByColeccionIdAndEsValido(@Param("idColeccion") Long idColeccion);
 
+    List<Hecho> findByFuenteOrigen(FuenteOrigen fuenteOrigen);
 
     @Query("SELECT DISTINCT h FROM Hecho h " +
             "LEFT JOIN FETCH h.multimedia " +

@@ -9,4 +9,5 @@ public class FuenteInputDTO {
   private Long id;
   private String url;
   private FuenteOrigen origen;
+  private String origenS;
 }

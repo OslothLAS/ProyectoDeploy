@@ -79,9 +79,9 @@
         div.className = "fuente-group";
 
         div.innerHTML = `
-            <select name="fuentes[${index}].tipo" required>
-              <option value="ESTATICA">Estática</option>
-              <option value="DINAMICA">Dinámica</option>
+            <select name="fuentes[${index}].origenS" required>
+              <option value="ESTATICO">Estática</option>
+              <option value="DINAMICO">Dinámica</option>
               <option value="PROXY">Proxy</option>
             </select>
             <button type="button" class="remove-btn" onclick="removeFuente(this)">×</button>

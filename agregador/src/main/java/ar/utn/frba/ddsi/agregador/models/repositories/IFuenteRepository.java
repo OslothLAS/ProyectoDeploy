@@ -8,7 +8,5 @@ import java.util.List;
 public interface IFuenteRepository extends JpaRepository<Fuente, Long> {
     Fuente findByUrl(String url);
 
-    default List<Fuente> findAllByUrlIn(List<String> url) {
-        return null;
-    }
+    List<Fuente> findAllByUrlIn(List<String> url);
 }

@@ -1,18 +1,17 @@
 package ar.utn.frba.ddsi.agregador;
 
-import ar.utn.frba.ddsi.agregador.config.FuenteConfig;
 import ar.utn.frba.ddsi.agregador.config.FuentesProperties;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Fuente;
 import ar.utn.frba.ddsi.agregador.models.entities.criteriosDePertenencia.CriterioDePertenencia;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import ar.utn.frba.ddsi.agregador.models.entities.normalizador.OpenStreetMap;
+import ar.utn.frba.ddsi.agregador.models.repositories.IFuenteRepository;
 import ar.utn.frba.ddsi.agregador.models.repositories.IHechoRepository;
 import ar.utn.frba.ddsi.agregador.services.IColeccionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -69,7 +68,7 @@ public class AgregadorApplication {
 
 
     @Bean
-    CommandLineRunner importarHechosFuentes(IHechoRepository hechoRepository, IColeccionService coleccionService, @Qualifier("fuentesProperties") FuentesProperties fuentesProperties) {
+    CommandLineRunner importarHechosFuentes(IHechoRepository hechoRepository, IColeccionService coleccionService, IFuenteRepository fuenteRepo) {
         return args -> {
 
             List<Fuente> fuentes = List.of(
@@ -77,14 +76,14 @@ public class AgregadorApplication {
                     new Fuente(fuenteDinamicaUrl),
                     new Fuente(fuenteProxyUrl)
             );
-
+            fuenteRepo.saveAll(fuentes);
 
             List<CriterioDePertenencia> criterios = new ArrayList<>();
 
-            for (FuenteConfig fuenteConfig : fuentesProperties.getFuentes()) {
-                Fuente fuente = new Fuente(fuenteConfig.getIp(), fuenteConfig.getPuerto(), null);
+            for (Fuente fuente : fuentes) {
                 try {
                     List<Hecho> hechos = fuente.obtenerHechos(criterios);
+
                     coleccionService.normalizarHechos(hechos);
 
                     if (hechos != null && !hechos.isEmpty()) {
