@@ -199,7 +199,7 @@ public class HechoUtil {
         return new Hecho(null, dto.getUsername(), dto.getEsValido(), dto.getTitulo(),dto.getDescripcion(),new Categoria(dto.getCategoria()),
                 ubi,dto.getFechaHecho(),multimediaNueva, dto.getEtiquetas(),null,
                 handles, dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
-                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
+                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),false
         );
     }
 

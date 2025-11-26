@@ -291,9 +291,11 @@ public class ColeccionService implements IColeccionService {
         List<Hecho> hechosAGuardar = filtrarHechosRepetidosOptimizado(hechos);
         sw.stop();
 
+
         sw.start("asignar y guardar hechos");
         this.asignarColeccionAHechos(hechosAGuardar, nuevaColeccion);
         this.hechoRepository.saveAll(hechosAGuardar);
+            this.consensuarHechos();
         sw.stop();
 
         log.info("\n{}", sw.prettyPrint());
