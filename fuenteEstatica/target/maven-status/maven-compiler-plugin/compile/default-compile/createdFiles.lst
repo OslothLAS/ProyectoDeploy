@@ -2,8 +2,8 @@ ar/utn/ba/ddsi/fuenteEstatica/entities/dtos/UbicacionDTO.class
 ar/utn/ba/ddsi/fuenteEstatica/EstrategiasExtraccion/EstrategiaExtraccionHecho.class
 utils/HechoUtil.class
 ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Provincia.class
-ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Ubicacion.class
 ar/utn/ba/ddsi/fuenteEstatica/services/IExtractService.class
+ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Ubicacion.class
 ar/utn/ba/ddsi/fuenteEstatica/entities/criteriosDePertenencia/CriterioDePertenencia.class
 ar/utn/ba/ddsi/fuenteEstatica/EstaticaApplication.class
 ar/utn/ba/ddsi/fuenteEstatica/entities/criteriosDePertenencia/CriterioPorCategoria.class
@@ -22,7 +22,7 @@ utils/ConfigReader.class
 ar/utn/ba/ddsi/fuenteEstatica/entities/dtos/MultimediaDTO.class
 ar/utn/ba/ddsi/fuenteEstatica/services/impl/ExtractService.class
 utils/ExtensionReader.class
-ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Hecho.class
 ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Localidad.class
+ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Hecho.class
 ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Categoria.class
 ar/utn/ba/ddsi/fuenteEstatica/entities/hechos/Multimedia.class

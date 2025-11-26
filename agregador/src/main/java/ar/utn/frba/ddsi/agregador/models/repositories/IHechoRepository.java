@@ -12,6 +12,32 @@ import java.util.Optional;
 
 public interface IHechoRepository extends JpaRepository<Hecho, Long> {
 
+    @Query("SELECT DISTINCT h FROM Hecho h " +
+            "LEFT JOIN FETCH h.multimedia " +
+            "LEFT JOIN FETCH h.categoria " +
+            "LEFT JOIN FETCH h.ubicacion " +
+            "JOIN h.colecciones c " +
+            "WHERE c.id = :idColeccion " +
+            "AND h.esValido = true")
+    List<Hecho> findByColeccionIdAndEsValido(@Param("idColeccion") Long idColeccion);
+
+
+    @Query("SELECT DISTINCT h FROM Hecho h " +
+            "LEFT JOIN FETCH h.multimedia " +
+            "LEFT JOIN FETCH h.categoria " +
+            "LEFT JOIN FETCH h.ubicacion " +
+            "WHERE h.esValido = true")
+    List<Hecho> findAllWithRelations();
+
+    @Query("SELECT h FROM Hecho h WHERE " +
+            "h.titulo IN :titulos AND " +
+            "h.descripcion IN :descripciones AND " +
+            "h.fuenteOrigen IN :fuentes")
+    List<Hecho> findPosiblesCoincidencias(
+            @Param("titulos") List<String> titulos,
+            @Param("descripciones") List<String> descripciones,
+            @Param("fuentes") List<String> fuentes
+    );
 
     Optional<Hecho> findByTituloAndDescripcion(String titulo, String descripcion);
 

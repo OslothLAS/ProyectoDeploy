@@ -25,6 +25,35 @@
 
 <!-- FILTROS -->
 <section class="filters-section">
+    <div class="filter-item" style="display:flex; flex-direction:column;">
+        <label style="font-weight:600; margin-bottom:5px;">Modo:</label>
+
+        <div style="display:flex; gap:10px;">
+            <!-- Botón Curado -->
+            <a th:href="@{/colecciones/show(id=${idColeccion},
+                                       fuente=${#strings.isEmpty(filtroFuente) ? null : filtroFuente},
+                                       fechaFin=${#strings.isEmpty(filtroFechaFin) ? null : filtroFechaFin},
+                                       categoria=${#strings.isEmpty(filtroCategoria) ? null : filtroCategoria},
+                                       modoNavegacion='CURADO')}"
+               class="action-btn"
+               th:style="${modo} == 'curado' ? 'background:#0891b2;color:white;padding:8px 12px;border-radius:5px;' :
+                                      'background:#ddd;color:black;padding:8px 12px;border-radius:5px;'">
+                Curado
+            </a>
+
+            <!-- Botón Irrestricto -->
+            <a th:href="@{/colecciones/show(id=${idColeccion},
+                                       fuente=${#strings.isEmpty(filtroFuente) ? null : filtroFuente},
+                                       fechaFin=${#strings.isEmpty(filtroFechaFin) ? null : filtroFechaFin},
+                                       categoria=${#strings.isEmpty(filtroCategoria) ? null : filtroCategoria})}"
+               class="action-btn"
+               th:style="${modo} == 'irrestricto' ? 'background:#0891b2;color:white;padding:8px 12px;border-radius:5px;' :
+                                                'background:#ddd;color:black;padding:8px 12px;border-radius:5px;'">
+                Irrestricto
+            </a>
+        </div>
+    </div>
+
     <div class="filters-container" style="display:flex; gap:15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
 
         <!-- Fuente -->
@@ -91,11 +120,9 @@
 
             <div class="fact-source">
                 <strong>Fuente:</strong>
-                <span th:switch="${hecho.fuenteOrigen}">
-                    <span th:case="'8060'">ESTÁTICA</span>
-                    <span th:case="'8070'">DINÁMICA</span>
-                    <span th:case="'8090'">PROXY</span>
-                    <span th:case="*">Desconocida</span>
+                <span th:text="${hecho.fuenteOrigen.name() == 'ESTATICO' ? 'Estática' :
+                     (hecho.fuenteOrigen.name() == 'DINAMICO' ? 'Dinámica' :
+                     (hecho.fuenteOrigen.name() == 'PROXY' ? 'Proxy' : 'Desconocida'))}">
                 </span>
             </div>
 

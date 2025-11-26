@@ -64,12 +64,19 @@ public class ColeccionesController {
             @RequestParam(required = false) String fuente,
             @RequestParam(required = false) String fechaFin,
             @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String modoNavegacion,
             Model model) {
 
         ColeccionOutputDTO coleccion = coleccionService.obtenerColeccionPorId(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con id " + id));
 
-        List<HechoOutputDTO> hechos = coleccionService.obtenerHechosPorColeccionId(id, fuente, fechaFin, categoria);
+        String fuenteLimpia = ("null".equals(fuente) || fuente == null) ? null : fuente;
+        String fechaFinLimpia = ("null".equals(fechaFin) || fechaFin == null) ? null : fechaFin;
+        String categoriaLimpia = ("null".equals(categoria) || categoria == null) ? null : categoria;
+        String modoLimpio = ("null".equals(modoNavegacion) || modoNavegacion == null) ? null : modoNavegacion;
+
+        List<HechoOutputDTO> hechos = coleccionService.obtenerHechosPorColeccionId(
+                id, fuenteLimpia, fechaFinLimpia, categoriaLimpia, modoLimpio);
 
         model.addAttribute("idColeccion", id);
         model.addAttribute("tituloColeccion", coleccion.getTitulo());
@@ -77,9 +84,13 @@ public class ColeccionesController {
         model.addAttribute("hechos", hechos);
 
         // ⚡ Pasamos los filtros al template
-        model.addAttribute("filtroFuente", fuente);
-        model.addAttribute("filtroFechaFin", fechaFin);
-        model.addAttribute("filtroCategoria", categoria);
+        model.addAttribute("filtroFuente", fuenteLimpia != null ? fuenteLimpia : "");
+        model.addAttribute("filtroFechaFin", fechaFinLimpia != null ? fechaFinLimpia : "");
+        model.addAttribute("filtroCategoria", categoriaLimpia != null ? categoriaLimpia : "");
+
+        // Determinar el modo actual
+        String modo = "CURADO".equals(modoLimpio) ? "curado" : "irrestricto";
+        model.addAttribute("modo", modo);
 
         return "commons/showColeccion";
     }

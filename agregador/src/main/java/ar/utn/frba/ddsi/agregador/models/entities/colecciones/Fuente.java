@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 
@@ -31,6 +32,13 @@ public class Fuente{
 
 
     public WebClient webClient() {
+        // Configurar estrategias de intercambio con buffer más grande
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(configurer -> configurer
+                        .defaultCodecs()
+                        .maxInMemorySize(50 * 1024 * 1024)) // 50 MB (ajusta según necesites)
+                .build();
+
         return WebClient.builder()
                 .baseUrl(url)
                 .build();

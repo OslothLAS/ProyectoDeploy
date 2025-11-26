@@ -17,47 +17,47 @@ public class HechoUtil {
                 .collect(Collectors.toList());
     }
 
-    public static List<Hecho> filtrarHechosRepetidos(List<Hecho> listaExistentes, List<Hecho> listaNuevos) {
-        // Combinar ambas listas
-        List<Hecho> todosLosHechos = new ArrayList<>();
-        todosLosHechos.addAll(listaExistentes);
-        todosLosHechos.addAll(listaNuevos);
+    public static List<Hecho> filtrarHechosRepetidos(List<Hecho> existentes, List<Hecho> nuevos) {
 
-        // Mapa para agrupar hechos por su clave única (titulo + descripcion)
-        Map<String, List<Hecho>> hechosAgrupados = new HashMap<>();
+        // Mapa para guardar hechos existentes por su clave
+        Map<String, Hecho> existentesPorClave = new HashMap<>();
 
-        // Agrupar hechos con mismo título y descripción
-        for (Hecho hecho : todosLosHechos) {
-            String clave = generarClave(hecho.getTitulo(), hecho.getDescripcion());
-            hechosAgrupados.computeIfAbsent(clave, k -> new ArrayList<>()).add(hecho);
+        // Primero guardamos todos los hechos existentes en el mapa
+        for (Hecho h : existentes) {
+            String claveFuente = generarClave(h.getTitulo(), h.getDescripcion()) + "_" + h.getFuenteOrigen();
+            existentesPorClave.put(claveFuente, h);
         }
 
-        // Procesar cada grupo de hechos repetidos
-        for (List<Hecho> grupoRepetidos : hechosAgrupados.values()) {
-            if (grupoRepetidos.size() > 1) {
-                // Marcar todos como inválidos primero
-                grupoRepetidos.forEach(h -> h.setEsValido(false));
+        List<Hecho> result = new ArrayList<>();
+        Set<String> clavesYaProcesadas = new HashSet<>();
 
-                // Seleccionar uno para mantener como válido (el más antiguo o el primero)
-                Hecho hechoAMantener = seleccionarHechoValido(grupoRepetidos);
-                hechoAMantener.setEsValido(true);
-            } else {
-                // Si no hay repetidos, mantener el estado actual o marcarlo como válido
-                Hecho hecho = grupoRepetidos.get(0);
-                if (hecho.getEsValido() == null) {
-                    hecho.setEsValido(true);
-                }
+        for (Hecho h : nuevos) {
+            String claveFuente = generarClave(h.getTitulo(), h.getDescripcion()) + "_" + h.getFuenteOrigen();
+
+            // Si ya procesamos esta clave, saltar
+            if (clavesYaProcesadas.contains(claveFuente)) {
+                continue;
             }
+
+            // Si existe en la BD, agregar el existente
+            if (existentesPorClave.containsKey(claveFuente)) {
+                result.add(existentesPorClave.get(claveFuente));
+            } else {
+                // Si no existe, agregar el nuevo
+                result.add(h);
+            }
+
+            clavesYaProcesadas.add(claveFuente);
         }
 
-        return todosLosHechos;
+        return result;
     }
 
     /**
      * Genera una clave única combinando título y descripción
      * Normaliza los strings para evitar problemas con espacios y mayúsculas
      */
-    private static String generarClave(String titulo, String descripcion) {
+    public static String generarClave(String titulo, String descripcion) {
         String tituloNorm = (titulo != null) ? titulo.trim().toLowerCase() : "";
         String descNorm = (descripcion != null) ? descripcion.trim().toLowerCase() : "";
         return tituloNorm + "|" + descNorm;
@@ -199,7 +199,7 @@ public class HechoUtil {
         return new Hecho(null, dto.getUsername(), dto.getEsValido(), dto.getTitulo(),dto.getDescripcion(),new Categoria(dto.getCategoria()),
                 ubi,dto.getFechaHecho(),multimediaNueva, dto.getEtiquetas(),null,
                 handles, dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
-                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),null
+                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),false
         );
     }
 

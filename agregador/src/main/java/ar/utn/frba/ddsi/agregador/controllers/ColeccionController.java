@@ -67,8 +67,6 @@ public class ColeccionController {
         }
     }
 
-
-
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> createColeccion(@RequestBody ColeccionInputDTO coleccion){
