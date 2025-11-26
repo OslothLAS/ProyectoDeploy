@@ -110,19 +110,19 @@
                 </div>
 
 
-                <div class="form-group full-width">
-                    <label for="multimedia">Multimedia (Opcional)</label>
-                    <div class="file-upload">
-                        <input type="file" id="multimedia" name="multimedia" multiple accept="image/*,video/*,audio/*">
-                        <div class="file-upload-label">
-                            <i data-lucide="upload"></i>
-                            <span>Arrastra archivos aquí o haz clic para seleccionar</span>
-                        </div>
+            <div class="form-group full-width">
+                <label>Multimedia (Opcional)</label>
+
+                <div id="drop-zone" class="upload-box">
+                    <div class="text-center">
+                        <i data-lucide="upload-cloud" style="width: 48px; height: 48px; color: #ccc;"></i>
+                        <p>Arrastra imágenes aquí o haz clic para buscar</p>
                     </div>
-                    <small style="color: var(--text-light); margin-top: 0.5rem; display: block;">
-                        Formatos soportados: JPG, PNG, MP4, MP3. Máximo 10MB por archivo.
-                    </small>
                 </div>
+
+                <input type="file" id="multimedia" name="multimedia" multiple accept="image/*" style="display: none;">
+
+                <div id="preview-container" class="d-flex flex-wrap gap-2 mt-3"></div>
             </div>
 
             <div class="checkbox-group">
@@ -166,6 +166,76 @@
 <script>
     lucide.createIcons();
 
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('multimedia');
+        const previewContainer = document.getElementById('preview-container');
+
+        // Esta variable es un "acumulador" de archivos.
+        // El input normal se sobrescribe cada vez que seleccionas.
+        // DataTransfer nos permite sumar archivos (drop + drop + clic).
+        const dataTransfer = new DataTransfer();
+
+        // 1. CLIC: Al hacer clic en la caja, abrimos el selector de archivos nativo
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // 2. CAMBIO EN INPUT: Cuando el usuario selecciona archivos manualmente
+        fileInput.addEventListener('change', (e) => {
+            agregarArchivos(e.target.files);
+        });
+
+        // 3. DRAG & DROP (Efectos visuales)
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Importante para permitir el drop
+            dropZone.classList.add('dragover'); // Cambia color borde
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+
+            // Si soltó archivos, los procesamos
+            if (e.dataTransfer.files.length > 0) {
+                agregarArchivos(e.dataTransfer.files);
+            }
+        });
+
+        // --- FUNCIÓN PRINCIPAL ---
+        function agregarArchivos(files) {
+            // Convertimos la lista de archivos a un Array para poder recorrerlo
+            Array.from(files).forEach(file => {
+
+                // Validamos que sea imagen (opcional)
+                if (file.type.startsWith('image/')) {
+
+                    // A. Lo agregamos al acumulador DataTransfer
+                    dataTransfer.items.add(file);
+
+                    // B. Creamos la previsualización visual
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file); // Leemos el archivo para obtener su URL temporal
+
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'preview-card';
+                        div.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                        previewContainer.appendChild(div);
+                    };
+                }
+            });
+
+            // C. ¡TRUCO FINAL! Reemplazamos los archivos del input real
+            // con los que tenemos acumulados en DataTransfer.
+            fileInput.files = dataTransfer.files;
+        }
+    });
 </script>
 </body>
 </html>
