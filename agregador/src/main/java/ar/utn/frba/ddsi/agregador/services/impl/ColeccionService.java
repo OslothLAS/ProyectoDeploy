@@ -1,7 +1,10 @@
 package ar.utn.frba.ddsi.agregador.services.impl;
 
 import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StopWatch;
 import org.springframework.web.server.ResponseStatusException;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
@@ -33,8 +36,7 @@ import java.util.stream.Stream;
 
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.dtoToColeccion;
 import static ar.utn.frba.ddsi.agregador.utils.ColeccionUtil.fuenteDTOtoFuente;
-import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.hechosToDTO;
-import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.filtrarHechosRepetidos;
+import static ar.utn.frba.ddsi.agregador.utils.HechoUtil.*;
 import static ar.utn.frba.ddsi.agregador.utils.NormalizadorTexto.normalizarTrimTexto;
 
 @Service
@@ -48,12 +50,12 @@ public class ColeccionService implements IColeccionService {
     private final ILocalidadRepository localidadRepository;
     private final IFuenteRepository fuenteRepository;
     private final ICriterioRepository criterioRepository;
-
+    private static final Logger log = LoggerFactory.getLogger(ColeccionService.class);
     @Autowired
     @Qualifier("hechoWebClient")
     private WebClient hechoWebClient;
 
-    private GeorefLocalCache georefLocalCache;
+    private final GeorefLocalCache georefLocalCache;
 
     public ColeccionService(IHechoRepository hechoRepository, IColeccionRepository coleccionRepository,
                             ICategoriaRepository categoriaRepository, IUbicacionRepository ubicacionRepository,
@@ -70,58 +72,113 @@ public class ColeccionService implements IColeccionService {
         this.georefLocalCache = georefLocalCache;
     }
 
+    @Transactional
     public void normalizarHechos(List<Hecho> hechos) {
-        Map<String, Ubicacion> ubicacionesCache = new ConcurrentHashMap<>();
+        Map<String, Ubicacion> ubicacionesBD = ubicacionRepository.findAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        u -> u.getLatitud() + "," + u.getLongitud(),
+                        u -> u
+                ));
 
-        for (Hecho hecho : hechos) {
-            // Normalizar ubicación
-            String latitud = hecho.getUbicacion().getLatitud();
-            String longitud = hecho.getUbicacion().getLongitud();
-            String claveUbicacion = latitud + "," + longitud;
+        Map<String, Provincia> provinciasBD = provinciaRepository.findAll().stream()
+                .collect(Collectors.toMap(Provincia::getNombre, p -> p));
 
-            // Buscar en cache o crear nueva ubicación
-            Ubicacion ubicacionPersistida = ubicacionesCache.computeIfAbsent(claveUbicacion, k -> {
-                // Buscar ubicación existente en BD
-                Optional<Ubicacion> ubicacionExistente = ubicacionRepository
-                        .findByLatitudAndLongitud(latitud, longitud);
+        Map<String, Localidad> localidadesBD = localidadRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        l -> l.getNombre() + "_" + l.getProvincia().getNombre(),
+                        l -> l
+                ));
 
-                if (ubicacionExistente.isPresent()) {
-                    return ubicacionExistente.get();
+        ConcurrentHashMap<String, Ubicacion> ubicCache = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, Provincia> provCache = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, Localidad> locCache = new ConcurrentHashMap<>();
+
+        hechos.parallelStream().forEach(hecho -> {
+            String lat = hecho.getUbicacion().getLatitud();
+            String lon = hecho.getUbicacion().getLongitud();
+            String key = lat + "," + lon;
+
+            if (ubicacionesBD.containsKey(key)) {
+                hecho.setUbicacion(ubicacionesBD.get(key));
+            } else {
+                Ubicacion buscada = georefLocalCache.buscar(lat, lon);
+                Localidad locGeo = buscada.getLocalidad();
+
+                ubicCache.put(key, buscada);
+                if (locGeo.getProvincia() != null) {
+                    provCache.put(locGeo.getProvincia().getNombre(), locGeo.getProvincia());
                 }
+                String locKey = locGeo.getNombre() + "_" +
+                        (locGeo.getProvincia() != null ? locGeo.getProvincia().getNombre() : "");
+                locCache.put(locKey, locGeo);
+            }
 
-                // No existe, buscar localidad más cercana con georef
-                Ubicacion nuevaUbicacion = this.georefLocalCache.buscar(latitud, longitud);
-                Localidad localidadGeoref = nuevaUbicacion.getLocalidad();
+            String catNombre = hecho.getCategoria().getCategoria();
+            Categoria cat = obtenerOCrearCategoriaCached(catNombre);
+            hecho.setCategoria(cat);
+        });
 
-                // Persistir provincia si no existe
-                Provincia provinciaExistente = provinciaRepository
-                        .findByNombre(localidadGeoref.getProvincia().getNombre())
-                        .orElseGet(() -> provinciaRepository.save(
-                                new Provincia(localidadGeoref.getProvincia().getNombre())
-                        ));
+        List<Provincia> provinciasNuevas = provCache.values().stream()
+                .filter(p -> !provinciasBD.containsKey(p.getNombre()))
+                .distinct()
+                .collect(Collectors.toList());
 
-                // Persistir localidad si no existe
-                Localidad localidadExistente = localidadRepository
-                        .findByNombreAndProvinciaNombre(
-                                localidadGeoref.getNombre(),
-                                provinciaExistente.getNombre()
-                        )
-                        .orElseGet(() -> localidadRepository.save(
-                                new Localidad(provinciaExistente, localidadGeoref.getNombre())
-                        ));
-
-                // Crear y persistir la nueva ubicación
-                Ubicacion ubicacionAGuardar = new Ubicacion(latitud, longitud, localidadExistente);
-                return ubicacionRepository.save(ubicacionAGuardar);
-            });
-
-            hecho.setUbicacion(ubicacionPersistida);
-
-            // Normalizar categoría
-            String nombreCategoria = hecho.getCategoria().getCategoria();
-            Categoria categoriaExistente = obtenerOCrearCategoriaCached(nombreCategoria);
-            hecho.setCategoria(categoriaExistente);
+        if (!provinciasNuevas.isEmpty()) {
+            List<Provincia> provinciasGuardadas = provinciaRepository.saveAll(provinciasNuevas);
+            provinciasGuardadas.forEach(p -> provinciasBD.put(p.getNombre(), p));
         }
+
+        List<Localidad> localidadesNuevas = locCache.values().stream()
+                .filter(l -> {
+                    String locKey = l.getNombre() + "_" + l.getProvincia().getNombre();
+                    return !localidadesBD.containsKey(locKey);
+                })
+                .peek(l -> {
+                    Provincia provPersistida = provinciasBD.get(l.getProvincia().getNombre());
+                    l.setProvincia(provPersistida);
+                })
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!localidadesNuevas.isEmpty()) {
+            List<Localidad> localidadesGuardadas = localidadRepository.saveAll(localidadesNuevas);
+            localidadesGuardadas.forEach(l -> {
+                String locKey = l.getNombre() + "_" + l.getProvincia().getNombre();
+                localidadesBD.put(locKey, l);
+            });
+        }
+
+        List<Ubicacion> ubicacionesNuevas = ubicCache.values().stream()
+                .filter(u -> {
+                    String key = u.getLatitud() + "," + u.getLongitud();
+                    return !ubicacionesBD.containsKey(key);
+                })
+                .peek(u -> {
+                    Localidad loc = u.getLocalidad();
+                    String locKey = loc.getNombre() + "_" + loc.getProvincia().getNombre();
+                    Localidad locPersistida = localidadesBD.get(locKey);
+                    u.setLocalidad(locPersistida);
+                })
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!ubicacionesNuevas.isEmpty()) {
+            List<Ubicacion> ubicacionesGuardadas = ubicacionRepository.saveAll(ubicacionesNuevas);
+            ubicacionesGuardadas.forEach(u -> {
+                String key = u.getLatitud() + "," + u.getLongitud();
+                ubicacionesBD.put(key, u);
+            });
+        }
+
+        hechos.forEach(hecho -> {
+            String key = hecho.getUbicacion().getLatitud() + "," +
+                    hecho.getUbicacion().getLongitud();
+            Ubicacion ubicPersistida = ubicacionesBD.get(key);
+            if (ubicPersistida != null) {
+                hecho.setUbicacion(ubicPersistida);
+            }
+        });
     }
 
     private final Map<String, Categoria> categoriaCache = new ConcurrentHashMap<>();
@@ -146,45 +203,100 @@ public class ColeccionService implements IColeccionService {
         return this.coleccionRepository.findAll();
    }
 
+    private List<Hecho> filtrarHechosRepetidosOptimizado(List<Hecho> hechosNuevos) {
+        if (hechosNuevos.isEmpty()) {
+            return hechosNuevos;
+        }
+
+        Set<String> titulos = hechosNuevos.stream()
+                .map(Hecho::getTitulo)
+                .collect(Collectors.toSet());
+
+        Set<String> descripciones = hechosNuevos.stream()
+                .map(Hecho::getDescripcion)
+                .collect(Collectors.toSet());
+
+        Set<String> fuentes = hechosNuevos.stream()
+                .map(h -> h.getFuenteOrigen().name())
+                .collect(Collectors.toSet());
+
+        List<Hecho> hechosExistentes = hechoRepository.findPosiblesCoincidencias(
+                new ArrayList<>(titulos),
+                new ArrayList<>(descripciones),
+                new ArrayList<>(fuentes)
+        );
+
+        Map<String, Hecho> existentesPorClave = new HashMap<>();
+        for (Hecho h : hechosExistentes) {
+            String clave = generarClave(h.getTitulo(), h.getDescripcion()) + "_" + h.getFuenteOrigen();
+            existentesPorClave.put(clave, h);
+        }
+
+        List<Hecho> result = new ArrayList<>();
+        Set<String> clavesYaProcesadas = new HashSet<>();
+
+        for (Hecho h : hechosNuevos) {
+            String clave = generarClave(h.getTitulo(), h.getDescripcion()) + "_" + h.getFuenteOrigen();
+
+            if (clavesYaProcesadas.contains(clave)) {
+                continue;
+            }
+
+            result.add(existentesPorClave.getOrDefault(clave, h));
+            clavesYaProcesadas.add(clave);
+        }
+
+        return result;
+    }
+
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
 
-        String tituloNormalizado = coleccionDTO.getTitulo().trim().toLowerCase();
+        StopWatch sw = new StopWatch();
+
+        sw.start("existsByTitulo");
         if (coleccionRepository.existsByTitulo(coleccionDTO.getTitulo())) {
-            System.out.println("⚠️ Colección duplicada detectada");
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una colección con ese título");
         }
+        sw.stop();
 
+        sw.start("buscar fuentes");
         List<String> puertos = coleccionDTO.getFuentes().stream().map(Fuente::getPuerto).toList();
-
         List<Fuente> fuentesExistentes = fuenteRepository.findAllByPuertoIn(puertos);
+        sw.stop();
 
+        sw.start("crear fuentes nuevas");
         Map<String, Fuente> fuentesMap = fuentesExistentes.stream()
                 .collect(Collectors.toMap(Fuente::getPuerto, f -> f));
-
         List<Fuente> fuentesFinales = coleccionDTO.getFuentes().stream()
-                .map(fuenteDTO -> {
-                    if (fuentesMap.containsKey(fuenteDTO.getPuerto())) {
-                        return fuentesMap.get(fuenteDTO.getPuerto());
-                    }
-                    return fuenteRepository.save(fuenteDTO);
-                })
+                .map(f -> fuentesMap.getOrDefault(f.getPuerto(), fuenteRepository.save(f)))
                 .toList();
+        sw.stop();
 
+        sw.start("obtener criterios");
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
+        sw.stop();
 
+        sw.start("crear coleccion");
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, fuentesFinales);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
-
         this.coleccionRepository.save(nuevaColeccion);
-        List<Hecho> todosLosHechos = this.hechoRepository.findAll();
+        sw.stop();
 
+        sw.start("procesar hechos");
         List<Hecho> hechos = this.procesarHechos(fuentesFinales, criterios, nuevaColeccion);
+        sw.stop();
 
-       List<Hecho> hechosAGuardar = filtrarHechosRepetidos(todosLosHechos,hechos);
+        sw.start("filtrar repetidos");
+        List<Hecho> hechosAGuardar = filtrarHechosRepetidosOptimizado(hechos);
+        sw.stop();
 
-       this.asignarColeccionAHechos(hechosAGuardar, nuevaColeccion);
-       this.hechoRepository.saveAll(hechosAGuardar);
+        sw.start("asignar y guardar hechos");
+        this.asignarColeccionAHechos(hechosAGuardar, nuevaColeccion);
+        this.hechoRepository.saveAll(hechosAGuardar);
+        sw.stop();
+
+        log.info("\n{}", sw.prettyPrint());
     }
 
     @Override
@@ -259,7 +371,7 @@ public class ColeccionService implements IColeccionService {
                     try {
                         List<Hecho> hechosFuente = fuente.obtenerHechos(criterios);
                         if (hechosFuente == null) {
-                            System.out.println("⚠️ Fuente " + fuente.getIp() + ":" + fuente.getPuerto() + " devolvió null");
+                                System.out.println("⚠️ Fuente " + fuente.getIp() + ":" + fuente.getPuerto() + " devolvió null");
                             return Stream.<Hecho>empty();
                         }
                         hechosFuente.forEach(h -> h.setFuenteOrigen(fuente.getOrigenHechos()));
@@ -279,81 +391,8 @@ public class ColeccionService implements IColeccionService {
 
         normalizarHechos(todosLosHechos);
         return todosLosHechos;
-        /*.stream()
-                .peek(h -> h.addColeccion(coleccion))
-                .collect(Collectors.toList());*/
     }
 
-   /* public void normalizarHechos(List<Hecho> hechos){
-        Map<String, Ubicacion> ubicacionesPorClave = new HashMap<>();
-
-        hechos.parallelStream().forEach(Hecho::normalizarHecho);
-
-        Set<String> clavesUbicacion = new HashSet<>();
-        for (Hecho hecho : hechos) {
-            if (hecho.getUbicacion() != null) {
-                Ubicacion ub = hecho.getUbicacion();
-                String clave = ub.getLatitud() + "," + ub.getLongitud();
-                clavesUbicacion.add(clave);
-                ubicacionesPorClave.put(clave, ub);
-            }
-        }
-
-        if (!clavesUbicacion.isEmpty()) {
-            List<Ubicacion> ubicacionesExistentes = ubicacionRepository.findByLatitudAndLongitudIn(clavesUbicacion);
-
-            for (Ubicacion ubi : ubicacionesExistentes) {
-                String clave = ubi.getLatitud() + "," + ubi.getLongitud();
-                ubicacionesPorClave.put(clave, ubi);
-            }
-
-            List<Ubicacion> nuevasUbicaciones = ubicacionesPorClave.values().stream()
-                    .filter(ub -> ub.getId() == null)
-                    .collect(Collectors.toList());
-
-            if (!nuevasUbicaciones.isEmpty()) {
-                for (Ubicacion ub : nuevasUbicaciones) {
-                    if (ub.getLocalidad() != null) {
-                        Localidad loc = ub.getLocalidad();
-                        Provincia prov = loc.getProvincia();
-
-                        if (prov != null) {
-                            String nombreProvincia = prov.getNombre();
-                            Provincia provinciaExistente = provinciaRepository.findByNombre(nombreProvincia)
-                                    .orElseGet(() -> provinciaRepository.save(new Provincia(nombreProvincia)));
-                            loc.setProvincia(provinciaExistente);
-                        }
-
-                        // Buscar localidad existente (por nombre y provincia)
-                        String nombreLocalidad = loc.getNombre();
-                        Localidad localidadExistente = localidadRepository
-                                .findByNombreAndProvinciaNombre(nombreLocalidad, loc.getProvincia().getNombre())
-                                .orElseGet(() -> localidadRepository.save(new Localidad(loc.getProvincia(), nombreLocalidad)));
-
-                        ub.setLocalidad(localidadExistente);
-                    }
-                }
-                List<Ubicacion> guardadas = ubicacionRepository.saveAll(nuevasUbicaciones);
-
-                for (Ubicacion guardada : guardadas) {
-                    String clave = guardada.getLatitud() + "," + guardada.getLongitud();
-                    ubicacionesPorClave.put(clave, guardada);
-                }
-            }
-        }
-
-        for (Hecho hecho : hechos) {
-            if (hecho.getUbicacion() != null) {
-                Ubicacion ub = hecho.getUbicacion();
-                String clave = ub.getLatitud() + "," + ub.getLongitud();
-                hecho.setUbicacion(ubicacionesPorClave.get(clave));
-            }
-
-            String nombreCategoria = hecho.getCategoria().getCategoria();
-            Categoria categoriaExistente = obtenerOCrearCategoriaCached(nombreCategoria);
-            hecho.setCategoria(categoriaExistente);
-        }
-    }*/
 
     public List<ColeccionOutputDTO> getColecciones(){
         return this.coleccionRepository.findAll().stream().map(ColeccionUtil::coleccionToDto).collect(Collectors.toList());
@@ -383,10 +422,7 @@ public class ColeccionService implements IColeccionService {
 
     @Override
     public List<Hecho> getHechosDeColeccion(Long idColeccion, String modoNavegacion, Map<String, String> filtros) {
-        Coleccion coleccion = this.coleccionRepository.findById(idColeccion)
-                .orElseThrow(() -> new RuntimeException("Colección no encontrada con ID: " + idColeccion));
-
-        List<Hecho> hechosDeColeccion = tomarHechosDeColeccion(coleccion);
+        List<Hecho> hechosDeColeccion = hechoRepository.findByColeccionIdAndEsValido(idColeccion);
         NavegacionStrategy strategy = NavegacionStrategyFactory.getStrategy(modoNavegacion);
 
         if (filtros.containsKey("fuente")) {
@@ -405,7 +441,7 @@ public class ColeccionService implements IColeccionService {
                         criterios.stream().allMatch(c -> c.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());
 
-        return strategy.navegar(coleccion, hechosDeColeccion);
+        return strategy.navegar(hechosDeColeccion);
     }
 
     @Override
@@ -471,7 +507,7 @@ public class ColeccionService implements IColeccionService {
             List<Hecho> hechosDeFuentes = tomarHechosFuentes(coleccion.getImportadores(), criterios);
             List<Hecho> hechosRepository = hechoRepository.findAll();
             List<Hecho> hechosSinRepetir = filtrarHechosRepetidosCron(hechosRepository, hechosDeFuentes);
-            List <Hecho> hechosAGuardar = filtrarHechosRepetidos(hechosRepository,  hechosSinRepetir);
+            List <Hecho> hechosAGuardar = filtrarHechosRepetidosOptimizado(hechosSinRepetir);
             this.normalizarHechos(hechosDeFuentes);
 
             hechoRepository.saveAll(hechosAGuardar);
@@ -517,7 +553,7 @@ public class ColeccionService implements IColeccionService {
     }
 
     public List<HechoOutputDTO> obtenerTodosLosHechos(Map<String, String> filtros){
-        List<Hecho> hechos = hechoRepository.findAll();
+        List<Hecho> hechos = hechoRepository.findAllWithRelations();
 
         if (filtros.containsKey("fuente")) {
             String puertoFuente = filtros.get("fuente");
@@ -530,7 +566,6 @@ public class ColeccionService implements IColeccionService {
         List<CriterioDePertenencia> criterios = CriterioDePertenenciaFactory.crearCriterios(filtros);
 
         hechos = hechos.stream()
-                .filter(Hecho::getEsValido)
                 .filter(hecho -> criterios.isEmpty() ||
                         criterios.stream().allMatch(c -> c.cumpleCriterio(hecho)))
                 .collect(Collectors.toList());

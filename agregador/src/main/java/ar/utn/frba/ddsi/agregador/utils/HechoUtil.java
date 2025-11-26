@@ -17,61 +17,47 @@ public class HechoUtil {
                 .collect(Collectors.toList());
     }
 
-    public static List<Hecho> filtrarHechosRepetidos(List<Hecho> listaExistentes, List<Hecho> listaNuevos) {
-        // Combinar ambas listas
-        List<Hecho> todosLosHechos = new ArrayList<>();
-        todosLosHechos.addAll(listaExistentes);
-        todosLosHechos.addAll(listaNuevos);
+    public static List<Hecho> filtrarHechosRepetidos(List<Hecho> existentes, List<Hecho> nuevos) {
 
-        // Mapa para agrupar hechos por su clave única (titulo + descripcion)
-        Map<String, List<Hecho>> hechosAgrupados = new HashMap<>();
+        // Mapa para guardar hechos existentes por su clave
+        Map<String, Hecho> existentesPorClave = new HashMap<>();
 
-        // Agrupar hechos con mismo título y descripción
-        for (Hecho hecho : todosLosHechos) {
-            String clave = generarClave(hecho.getTitulo(), hecho.getDescripcion());
-            hechosAgrupados.computeIfAbsent(clave, k -> new ArrayList<>()).add(hecho);
+        // Primero guardamos todos los hechos existentes en el mapa
+        for (Hecho h : existentes) {
+            String claveFuente = generarClave(h.getTitulo(), h.getDescripcion()) + "_" + h.getFuenteOrigen();
+            existentesPorClave.put(claveFuente, h);
         }
 
-        // Procesar cada grupo de hechos repetidos
-        List<Hecho> listaAretornar = new ArrayList<>();
+        List<Hecho> result = new ArrayList<>();
+        Set<String> clavesYaProcesadas = new HashSet<>();
 
-        for (Hecho hechoNuevo : listaNuevos) {
-            String clave = generarClave(hechoNuevo.getTitulo(), hechoNuevo.getDescripcion());
+        for (Hecho h : nuevos) {
+            String claveFuente = generarClave(h.getTitulo(), h.getDescripcion()) + "_" + h.getFuenteOrigen();
 
-            if (!hechosAgrupados.containsKey(clave)) {
-                // No está repetido, agregar a la lista
-                listaAretornar.add(hechoNuevo);
-            } else {
-                // Está repetido, verificar si tiene el mismo fuenteOrigen
-                List<Hecho> hechosConMismaClave = hechosAgrupados.get(clave);
-                boolean tieneMismaFuente = false;
-
-                for (Hecho hechoExistente : hechosConMismaClave) {
-                    if (hechoExistente.getFuenteOrigen() == hechoNuevo.getFuenteOrigen()) {
-                        tieneMismaFuente = true;
-                        listaAretornar.add(hechoExistente);
-                        break;
-                    }
-                }
-
-                if (tieneMismaFuente) {
-                    // Descartar (no hacer nada)
-                } else {
-                    // Diferente fuente, setear esValido en false y agregar
-                    hechoNuevo.setEsValido(false);
-                    listaAretornar.add(hechoNuevo);
-                }
+            // Si ya procesamos esta clave, saltar
+            if (clavesYaProcesadas.contains(claveFuente)) {
+                continue;
             }
+
+            // Si existe en la BD, agregar el existente
+            if (existentesPorClave.containsKey(claveFuente)) {
+                result.add(existentesPorClave.get(claveFuente));
+            } else {
+                // Si no existe, agregar el nuevo
+                result.add(h);
+            }
+
+            clavesYaProcesadas.add(claveFuente);
         }
 
-        return listaAretornar;
+        return result;
     }
 
     /**
      * Genera una clave única combinando título y descripción
      * Normaliza los strings para evitar problemas con espacios y mayúsculas
      */
-    private static String generarClave(String titulo, String descripcion) {
+    public static String generarClave(String titulo, String descripcion) {
         String tituloNorm = (titulo != null) ? titulo.trim().toLowerCase() : "";
         String descNorm = (descripcion != null) ? descripcion.trim().toLowerCase() : "";
         return tituloNorm + "|" + descNorm;

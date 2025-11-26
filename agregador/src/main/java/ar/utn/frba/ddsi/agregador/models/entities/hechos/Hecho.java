@@ -35,7 +35,7 @@ public class Hecho {
     @Column(name = "titulo")
     private String titulo;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion",columnDefinition = "TEXT")
     private String descripcion;
 
     @ManyToOne(cascade = CascadeType.MERGE)
