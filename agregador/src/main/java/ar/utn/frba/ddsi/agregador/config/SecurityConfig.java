@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/solicitudes", "/hechos").permitAll()                // ⬅️ públicos
+                        .requestMatchers(HttpMethod.GET, "/hechos/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/colecciones").permitAll()
                         .requestMatchers(HttpMethod.GET, "/colecciones/*").permitAll()           // ⬅️ GET /colecciones
                         .requestMatchers(HttpMethod.GET, "/colecciones/*/hechos").permitAll()  // ⬅️ GET /colecciones/{id}/hechos
@@ -38,7 +39,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-
-
 }

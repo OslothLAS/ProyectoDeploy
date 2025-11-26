@@ -34,4 +34,6 @@ public interface IColeccionService {
     List<Fuente> getFuentes();
     List<CriterioDePertenenciaDTO> getCriterios();
     ColeccionOutputDTO editarColeccion(Long idColeccion, ColeccionInputDTO coleccion);
+    void normalizarHechos(List<Hecho> hechos);
+    HechoOutputDTO obtenerHechoPorId(Long id);
 }

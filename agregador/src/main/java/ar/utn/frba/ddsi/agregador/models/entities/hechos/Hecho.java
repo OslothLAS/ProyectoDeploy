@@ -38,11 +38,11 @@ public class Hecho {
     @Column(name = "descripcion")
     private String descripcion;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "ubicacion_id")
     private Ubicacion ubicacion;
 

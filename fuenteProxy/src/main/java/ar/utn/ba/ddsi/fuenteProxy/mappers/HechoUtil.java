@@ -105,4 +105,9 @@ public class HechoUtil {
         }
         return new Ubicacion(dto.getUbicacion().getLatitud(), dto.getUbicacion().getLongitud(),localidad);
     }
+
+    public static Hecho hechoInputDTOtoHecho(HechoInputDTO dto) {
+        Ubicacion ubi = new Ubicacion(dto.getLatitud(), dto.getLongitud(), null);
+        return new Hecho(null, dto.getTitulo(), dto.getDescripcion(), new Categoria(dto.getCategoria()), ubi, dto.getFecha_hecho(),null,null,Origen.EXTERNO,FuenteOrigen.PROXY,dto.getFecha_creacion(),true,false);
+    }
 }

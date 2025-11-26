@@ -3,8 +3,8 @@ package com.frontMetaMapa.frontMetaMapa.services;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiInputDto;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoInputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoAGREInput;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
@@ -77,14 +77,40 @@ public class HechosApiService {
     }
 
     public HechoApiOutputDto obtenerHechoPorId(Long id) {
-        HechoApiOutputDto response = webApiCallerService.getWithoutToken(
-                hechosServiceUrl + "api/hechos/hecho/" + id,
-                HechoApiOutputDto.class
-        );
+        String url = "http://localhost:8080/hechos/" + id;
+        HechoAGREInput response = webApiCallerService.getWithoutToken(url, HechoAGREInput.class);
+
         if (response == null) {
             throw new NotFoundException("Hechos");
         }
-        return response;
+
+        HechoApiOutputDto dto = new HechoApiOutputDto();
+        dto.setId(response.getId());
+        dto.setTitulo(response.getTitulo());
+        dto.setDescripcion(response.getDescripcion());
+        dto.setUsername(response.getUsername());
+
+        dto.setCategoria(response.getCategoria());
+
+
+        // ubicación
+        if (response.getUbicacion() != null) {
+            dto.setUbicacion(response.getUbicacion());
+        }
+
+        dto.setFechaHecho(response.getFechaHecho());
+
+        // multimedia
+        if (response.getMultimedia() != null) {
+            dto.setMultimedia(response.getMultimedia());
+        }
+
+        dto.setOrigen(response.getOrigen() != null ? response.getOrigen().name() : null);
+
+        dto.setMostrarDatos(response.getMostrarDatos());
+        dto.setEsValido(response.getEsValido());
+        dto.setFechaCreacion(response.getFechaCreacion());
+        return dto;
     }
 
     public HechoApiOutputDto obtenerHechoPorIdPorColeccion(Long id) {
