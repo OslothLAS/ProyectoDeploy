@@ -58,6 +58,7 @@ public class ColeccionesController {
         model.addAttribute("colecciones", colecciones);
         return "commons/buscadorColecciones";
     }
+
     @GetMapping("/colecciones/show")
     public String showColeccion(
             @RequestParam Long id,
@@ -146,12 +147,55 @@ public class ColeccionesController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/colecciones/{id}/editar")
     public String editarColeccion(@PathVariable Long id, Model model) {
-        ColeccionOutputDTO coleccion = coleccionService.obtenerColeccionPorId(id)
+
+        ColeccionOutputDTO salida = coleccionService.obtenerColeccionPorId(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada"));
 
-        model.addAttribute("coleccion", coleccion); // <-- clave "coleccion" para Thymeleaf
+        // Convertimos Output → Input
+        ColeccionInputDTO entrada = new ColeccionInputDTO();
+        entrada.setId(salida.getId());
+        entrada.setTitulo(salida.getTitulo());
+        entrada.setDescripcion(salida.getDescripcion());
+        entrada.setEstrategiaConsenso(salida.getConsenso());
+
+        // ===========================
+        // FUENTES
+        // ===========================
+        if (salida.getImportadores() != null) {
+            entrada.setFuentes(
+                    salida.getImportadores().stream()
+                            .map(f -> {
+                                FuenteInputDTO x = new FuenteInputDTO();
+                                x.setId(f.getId());
+                                x.setUrl(f.getUrl());
+                                x.setOrigen(f.getNombre()); // FuenteOrigen
+                                return x;
+                            })
+                            .toList()
+            );
+        }
+
+        // ===========================
+        // CRITERIOS
+        // ===========================
+        if (salida.getCriteriosDePertenencia() != null) {
+            entrada.setCriterios(
+                    salida.getCriteriosDePertenencia().stream()
+                            .map(c -> {
+                                CriterioDePertenenciaInputDTO x = new CriterioDePertenenciaInputDTO();
+                                x.setId(c.getId());
+                                x.setTipo(c.getTipo());
+                                x.setCategoria(c.getValor()); // en output se llama valor
+                                return x;
+                            })
+                            .toList()
+            );
+        }
+
+        model.addAttribute("coleccion", entrada);
         return "administrador/editarColeccion";
     }
+
 
 
     @PostMapping("/editar/{id}")

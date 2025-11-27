@@ -18,6 +18,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         System.out.println("AGREGADOR - SecurityConfig CONSTRUCTOR ejecutado");
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;

@@ -1,4 +1,5 @@
 package com.frontMetaMapa.frontMetaMapa.models.dtos.output;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.FuenteOrigen;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,3 +12,4 @@ public class FuenteDTO {
     private String url;
     private FuenteOrigen nombre;
 }
+

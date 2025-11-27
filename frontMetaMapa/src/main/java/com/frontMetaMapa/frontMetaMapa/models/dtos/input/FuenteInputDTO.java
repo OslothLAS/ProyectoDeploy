@@ -1,5 +1,6 @@
 package com.frontMetaMapa.frontMetaMapa.models.dtos.input;
 
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.FuenteOrigen;
 import lombok.Getter;
 import lombok.Setter;
 

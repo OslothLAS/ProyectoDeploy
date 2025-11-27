@@ -250,6 +250,7 @@ public class ColeccionService implements IColeccionService {
 
     @Transactional
     public void createColeccion(ColeccionInputDTO coleccionDTO) {
+
         if (coleccionRepository.existsByTitulo(coleccionDTO.getTitulo())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una colección con ese título");
         }
@@ -263,34 +264,46 @@ public class ColeccionService implements IColeccionService {
         // 2️⃣ Buscar fuentes existentes por URL
         List<Fuente> fuentesExistentes = fuenteRepository.findAllByUrlIn(urls);
 
-        // 3️⃣ Convertir a mapa URL → Fuente
+        // 3️⃣ Crear un mapa URL -> Fuente existente
         Map<String, Fuente> fuentesMap = fuentesExistentes.stream()
-                .collect(Collectors.toMap(Fuente::getUrl, f -> f, (existing, replacement) -> existing));
+                .collect(Collectors.toMap(Fuente::getUrl, f -> f));
 
         // 4️⃣ Reemplazar o crear nuevas fuentes según corresponda
         List<Fuente> fuentesFinales = coleccionDTO.getFuentes()
                 .stream()
-                .map(fuenteDTO -> fuentesMap.getOrDefault(
-                        fuenteDTO.getUrl(),
-                        fuenteRepository.save(fuenteDTO)
-                ))
+                .map(fuenteDTO -> {
+
+                    // 👉 Si existe una fuente con esa URL, la uso
+                    if (fuentesMap.containsKey(fuenteDTO.getUrl())) {
+                        return fuentesMap.get(fuenteDTO.getUrl());
+                    }
+
+                    // 👉 Si no existe, la creo y la agrego al mapa también
+                    Fuente nuevaFuente = fuenteRepository.save(fuenteDTO);
+                    fuentesMap.put(nuevaFuente.getUrl(), nuevaFuente);
+                    return nuevaFuente;
+
+                })
                 .toList();
 
+        // 5️⃣ Criterios
         List<CriterioDePertenencia> criterios = this.obtenerCriterios(coleccionDTO.getCriterios());
 
+        // 6️⃣ Crear la colección con las fuentes finales
         Coleccion nuevaColeccion = dtoToColeccion(coleccionDTO, fuentesFinales);
         nuevaColeccion.setCriteriosDePertenencia(criterios);
-        this.coleccionRepository.save(nuevaColeccion);
+        coleccionRepository.save(nuevaColeccion);
 
+        // 7️⃣ Procesar hechos
         List<Hecho> hechos = this.procesarHechos(fuentesFinales, criterios, nuevaColeccion);
 
         List<Hecho> hechosAGuardar = filtrarHechosRepetidosOptimizado(hechos);
 
         this.asignarColeccionAHechos(hechosAGuardar, nuevaColeccion);
-        this.hechoRepository.saveAll(hechosAGuardar);
-        this.consensuarHechos();
-
+        hechoRepository.saveAll(hechosAGuardar);
+        consensuarHechos();
     }
+
 
 
     @Override
@@ -300,43 +313,74 @@ public class ColeccionService implements IColeccionService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con id " + idColeccion));
     }
 
-    @Override
-    public ColeccionOutputDTO editarColeccion(Long idColeccion, ColeccionInputDTO dto){
+    @Transactional
+    public ColeccionOutputDTO editarColeccion(Long idColeccion, ColeccionInputDTO dto) {
+
         Coleccion coleccion = coleccionRepository.findById(idColeccion)
-                .orElseThrow(() -> new RuntimeException("Colección no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada"));
 
-        // Actualizar campos básicos
-        if (dto.getTitulo() != null) {
+        if (dto.getTitulo() != null)
             coleccion.setTitulo(dto.getTitulo());
-        }
 
-        if (dto.getDescripcion() != null) {
+        if (dto.getDescripcion() != null)
             coleccion.setDescripcion(dto.getDescripcion());
-        }
 
-        // Actualizar estrategia de consenso usando el factory
         if (dto.getEstrategiaConsenso() != null) {
             IAlgoritmoConsenso algoritmo = ConsensoFactory.getStrategy(dto.getEstrategiaConsenso());
             coleccion.setConsenso(algoritmo);
         }
 
-        // Actualizar fuentes si vienen
-        if (dto.getFuentes() != null && !dto.getFuentes().isEmpty()) {
-            coleccion.setImportadores(
-                    dto.getFuentes().stream()
-                            .map(f -> new Fuente(f.getId(), f.getUrl()))
-                            .collect(Collectors.toList())
-            );
+        if (dto.getFuentes() != null) {
+
+            List<String> urls = dto.getFuentes()
+                    .stream()
+                    .map(Fuente::getUrl)
+                    .collect(Collectors.toList()); // ← mutable
+
+            List<Fuente> existentes = fuenteRepository.findAllByUrlIn(urls);
+
+            Map<String, Fuente> map = existentes.stream()
+                    .collect(Collectors.toMap(
+                            Fuente::getUrl,
+                            f -> f,
+                            (a, b) -> a
+                    ));
+
+            List<Fuente> fuentesFinales = dto.getFuentes()
+                    .stream()
+                    .map(fDto -> map.getOrDefault(
+                            fDto.getUrl(),
+                            fuenteRepository.save(fDto)
+                    ))
+                    .collect(Collectors.toList()); // ← mutable
+
+            coleccion.setImportadores(fuentesFinales);
         }
 
-        // 🚫 No se actualizan criterios
+        if (dto.getCriterios() != null) {
+            List<CriterioDePertenencia> criterios = obtenerCriterios(dto.getCriterios());
+            coleccion.setCriteriosDePertenencia(criterios);
+        }
 
-        // Guardar cambios
         Coleccion actualizada = coleccionRepository.save(coleccion);
 
-        // Devolver DTO de salida
+        List<Hecho> hechos = procesarHechos(
+                actualizada.getImportadores(),
+                actualizada.getCriteriosDePertenencia(),
+                actualizada
+        );
+
+        List<Hecho> hechosAGuardar = filtrarHechosRepetidosOptimizado(hechos);
+
+        asignarColeccionAHechos(hechosAGuardar, actualizada);
+        hechoRepository.saveAll(hechosAGuardar);
+
+        consensuarHechos();
+
         return ColeccionUtil.coleccionToDto(actualizada);
     }
+
+
 
 
 
