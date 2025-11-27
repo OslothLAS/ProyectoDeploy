@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.fuenteDinamica.dtos.input;
 
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.FuenteOrigen;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Multimedia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Origen;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoDTO {
+    private Long idDinamica;
     private String username;
     private String titulo;
     private String descripcion;
@@ -22,6 +24,7 @@ public class HechoDTO {
     private LocalDateTime fechaHecho;
     private List<Multimedia> multimedia;
 
+    private FuenteOrigen fuenteOrigen;
     private Origen origen;
     private Boolean mostrarDatos;
     private Boolean esValido;

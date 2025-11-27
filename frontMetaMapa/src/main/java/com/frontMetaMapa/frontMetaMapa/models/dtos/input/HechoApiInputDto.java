@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class HechoApiInputDto {
+    private String username;
     private String titulo;
     private String descripcion;
     private String categoria;

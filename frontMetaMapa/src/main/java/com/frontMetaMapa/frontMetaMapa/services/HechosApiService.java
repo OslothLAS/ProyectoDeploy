@@ -75,6 +75,42 @@ public class HechosApiService {
         }
         return response;
     }
+    public HechoApiOutputDto obtenerHechoDinamicoPorId(Long id){
+        String url = hechosServiceUrl + "api/hechos/hecho/" + id;
+        HechoAGREInput response = webApiCallerService.getWithoutToken(url, HechoAGREInput.class);
+
+        if (response == null) {
+            throw new NotFoundException("Hechos");
+        }
+
+        HechoApiOutputDto dto = new HechoApiOutputDto();
+        dto.setId(response.getId());
+        dto.setTitulo(response.getTitulo());
+        dto.setDescripcion(response.getDescripcion());
+        dto.setUsername(response.getUsername());
+
+        dto.setCategoria(response.getCategoria());
+
+
+        // ubicación
+        if (response.getUbicacion() != null) {
+            dto.setUbicacion(response.getUbicacion());
+        }
+
+        dto.setFechaHecho(response.getFechaHecho());
+
+        // multimedia
+        if (response.getMultimedia() != null) {
+            dto.setMultimedia(response.getMultimedia());
+        }
+
+        dto.setOrigen(response.getOrigen() != null ? response.getOrigen().name() : null);
+
+        dto.setMostrarDatos(response.getMostrarDatos());
+        dto.setEsValido(response.getEsValido());
+        dto.setFechaCreacion(response.getFechaCreacion());
+        return dto;
+    }
 
     public HechoApiOutputDto obtenerHechoPorId(Long id) {
         String url = hechoTotalesServiceUrl + "hechos/" + id;

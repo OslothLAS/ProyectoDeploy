@@ -74,9 +74,11 @@ public class HechosController {
 
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @PostMapping("/hecho")
-    public String crearHecho(@ModelAttribute HechoInputDTO hechoInputDTO) {
-        hechoService.crearHecho(hechoInputDTO);
-        return "redirect:/mis-contribuciones"; // o redirección al mensaje de éxito
+    public String crearHecho(@ModelAttribute HechoInputDTO hechoInputDTO, HttpServletRequest request) {
+        String username = (String) request.getSession().getAttribute("username");
+        hechoInputDTO.setUsername(username);
+        hechoService.crearHecho(hechoInputDTO, username);
+        return "redirect:/mis-contribuciones";
     }
 
     @GetMapping("/mis-contribuciones")
@@ -101,7 +103,7 @@ public class HechosController {
 
         try {
             // Obtener el hecho directamente por ID
-            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoDinamicoPorId(id);
 
             if (hechoOpt.isPresent()) {
                 model.addAttribute("hecho", hechoOpt.get());
@@ -133,7 +135,7 @@ public class HechosController {
 
         try {
             // Obtener el hecho por ID
-            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoDinamicoPorId(id);
 
             if (hechoOpt.isPresent()) {
                 HechoApiOutputDto hecho = hechoOpt.get();
@@ -171,9 +173,6 @@ public class HechosController {
         return "redirect:/mis-contribuciones?success=hecho-actualizado";
     }
 
-    // --------------------------------------------------------------------
-    // 🔁 Mapper local para convertir HechoApiOutputDto → HechoMapaOutputDto
-    // --------------------------------------------------------------------
     private List<HechoMapaOutputDto> mapHechosToMapa(List<HechoApiOutputDto> hechos) {
         if (hechos == null) return List.of();
 

@@ -38,6 +38,15 @@ public class HechoService {
         }
     }
 
+    public Optional<HechoApiOutputDto> obtenerHechoDinamicoPorId(Long id) {
+        try {
+            HechoApiOutputDto hecho = hechoApiService.obtenerHechoDinamicoPorId(id);
+            return Optional.of(hecho);
+        } catch (NotFoundException e) {
+            return Optional.empty();
+        }
+    }
+
     // Obtener hecho por ID
     public Optional<HechoApiOutputDto> obtenerHechoPorIdPorColeccion(Long id) {
         try {
@@ -49,11 +58,11 @@ public class HechoService {
     }
 
     // Crear un hecho
-    public void crearHecho(HechoInputDTO dto) {
+    public void crearHecho(HechoInputDTO dto, String username) {
         validarDatosBasicos(dto);
 
         HechoApiInputDto apiDTO = mapearAHechoApiDto(dto);
-
+        apiDTO.setUsername(username);
         // 🔹 Llamar al servicio que hace el POST real
         hechoApiService.createHecho(apiDTO);
     }

@@ -196,11 +196,16 @@ public class HechoUtil {
         }
         Ubicacion ubi = new Ubicacion(dto.getUbicacion().getLatitud(), dto.getUbicacion().getLongitud(),localidad);
 
+        Long idDinamica = null;
+        if(dto.getFuenteOrigen() == FuenteOrigen.DINAMICO){
+            idDinamica = dto.getId();
+            System.out.println("\n" + "el id de dinamica es" +  idDinamica + "\n" + "." + "\n");
+        }
+
         return new Hecho(null, dto.getUsername(), dto.getEsValido(), dto.getTitulo(),dto.getDescripcion(),new Categoria(dto.getCategoria()),
                 ubi,dto.getFechaHecho(),multimediaNueva, dto.getEtiquetas(),null,
                 handles, dto.getOrigen(), dto.getFuenteOrigen(), dto.getMostrarDatos(),
-                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),false
-        );
+                dto.getFechaCreacion(), dto.getPlazoEdicion(), dto.getEsEditable(),false,idDinamica);
     }
 
 }

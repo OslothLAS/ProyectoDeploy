@@ -4,7 +4,6 @@ import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StopWatch;
 import org.springframework.web.server.ResponseStatusException;
 import ar.utn.frba.ddsi.agregador.dtos.input.ColeccionInputDTO;
 import ar.utn.frba.ddsi.agregador.dtos.input.FuenteInputDTO;
@@ -422,7 +421,7 @@ public class ColeccionService implements IColeccionService {
         if (filtros.containsKey("fuente")) {
             String origen_fuente = filtros.get("fuente");
             if (origen_fuente != null ) {
-                hechosDeColeccion = this.hechoRepository.findByFuenteOrigen(FuenteOrigen.valueOf(origen_fuente));
+                hechosDeColeccion = this.hechoRepository.findByFuenteOrigenAndColeccion(FuenteOrigen.valueOf(origen_fuente), idColeccion);
             }
         }
 
@@ -500,14 +499,49 @@ public class ColeccionService implements IColeccionService {
             List<Hecho> hechosDeFuentes = tomarHechosFuentes(coleccion.getImportadores(), criterios);
             List<Hecho> hechosRepository = hechoRepository.findAll();
             List<Hecho> hechosSinRepetir = filtrarHechosRepetidosCron(hechosRepository, hechosDeFuentes);
-            List <Hecho> hechosAGuardar = filtrarHechosRepetidosOptimizado(hechosSinRepetir);
-            this.normalizarHechos(hechosDeFuentes);
+            List <Hecho> hechosDepurados = filtrarHechosRepetidosOptimizado(hechosSinRepetir);
+
+            List<Hecho> hechosAGuardar = mergearHechosDinamicos(hechosDepurados);
+            this.normalizarHechos(hechosAGuardar);
 
             hechoRepository.saveAll(hechosAGuardar);
             asignarColeccionAHechos(hechosAGuardar, coleccion);
             coleccionRepository.save(coleccion);
         });
     }
+
+    private List<Hecho> mergearHechosDinamicos(List<Hecho> hechosNuevos) {
+        List<Hecho> resultado = new ArrayList<>();
+
+        for (Hecho nuevo : hechosNuevos) {
+
+            if (nuevo.getIdDinamica() != null) {
+                // buscar si ya existe en agregador
+                Optional<Hecho> existenteOpt = hechoRepository.findByIdDinamica(nuevo.getIdDinamica());
+
+                if (existenteOpt.isPresent()) {
+                    Hecho existente = existenteOpt.get();
+
+                    // actualizar los campos que vienen de dinámica
+                    existente.setTitulo(nuevo.getTitulo());
+                    existente.setDescripcion(nuevo.getDescripcion());
+                    existente.getUbicacion().setLatitud(nuevo.getUbicacion().getLatitud());
+                    existente.getUbicacion().setLongitud(nuevo.getUbicacion().getLongitud());
+                    //existente.getMultimedia().add(new  Multimedia());
+                    existente.setFechaHecho(nuevo.getFechaHecho());
+                    existente.setEsValido(nuevo.getEsValido());
+                    existente.setEsEditable(nuevo.getEsEditable());
+
+                    resultado.add(existente);
+                    continue;
+                }
+            }
+            resultado.add(nuevo);
+        }
+
+        return resultado;
+    }
+
 
     private List<Hecho> filtrarHechosRepetidosCron(List<Hecho> hechosExistentes, List<Hecho> hechosNuevos) {
         return hechosNuevos.stream()

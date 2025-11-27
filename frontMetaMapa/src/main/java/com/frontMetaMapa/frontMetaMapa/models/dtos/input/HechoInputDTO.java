@@ -16,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HechoInputDTO {
+    private String username;
     private String titulo;
     private String descripcion;
     private String categoria;

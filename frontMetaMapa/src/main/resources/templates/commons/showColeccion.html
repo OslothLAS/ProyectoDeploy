@@ -61,9 +61,9 @@
             <label for="fuente" style="font-weight:600; margin-bottom:5px;">Fuente:</label>
             <select id="fuente" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
                 <option value="">Todas</option>
-                <option value="8060" th:selected="${filtroFuente == '8060'}">ESTÁTICA</option>
-                <option value="8070" th:selected="${filtroFuente == '8070'}">DINÁMICA</option>
-                <option value="8090" th:selected="${filtroFuente == '8090'}">PROXY</option>
+                <option value="ESTATICO" th:selected="${filtroFuente == 'ESTATICO'}">ESTÁTICA</option>
+                <option value="DINAMICO" th:selected="${filtroFuente == 'DINAMICO'}">DINÁMICA</option>
+                <option value="PROXY" th:selected="${filtroFuente == 'PROXY'}">PROXY</option>
             </select>
         </div>
 
@@ -159,12 +159,12 @@
         if (fechaFin) params.append("fechaFin", fechaFin);
         if (categoria) params.append("categoria", categoria);
 
-        const idColeccion = /*[[${idColeccion}]]*/ '1';
+        const idColeccion = [[${idColeccion}]];
         window.location.href = `/colecciones/show?id=${idColeccion}&` + params.toString();
     }
 
     function clearFilters() {
-        const idColeccion = /*[[${idColeccion}]]*/ '1';
+        const idColeccion = [[${idColeccion}]];
         window.location.href = `/colecciones/show?id=${idColeccion}`;
     }
 

@@ -22,7 +22,17 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
             "AND h.esValido = true")
     List<Hecho> findByColeccionIdAndEsValido(@Param("idColeccion") Long idColeccion);
 
-    List<Hecho> findByFuenteOrigen(FuenteOrigen fuenteOrigen);
+    @Query("""
+        SELECT h
+        FROM Hecho h
+        JOIN h.colecciones c
+        WHERE h.fuenteOrigen = :fuenteOrigen
+          AND c.id = :idColeccion
+    """)
+    List<Hecho> findByFuenteOrigenAndColeccion(
+            @Param("fuenteOrigen") FuenteOrigen fuenteOrigen,
+            @Param("idColeccion") Long idColeccion
+    );
 
     @Query("SELECT DISTINCT h FROM Hecho h " +
             "LEFT JOIN FETCH h.multimedia " +
@@ -87,4 +97,6 @@ public interface IHechoRepository extends JpaRepository<Hecho, Long> {
     @Query("SELECT h FROM Hecho h JOIN h.colecciones c WHERE c = :coleccion")
     List<Hecho> findByColeccionesContaining(@Param("coleccion") ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion coleccion);
 
+
+    Optional<Hecho> findByIdDinamica(Long idDinamica);
 }

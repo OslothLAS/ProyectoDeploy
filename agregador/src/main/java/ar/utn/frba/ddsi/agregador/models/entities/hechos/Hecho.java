@@ -2,7 +2,6 @@ package ar.utn.frba.ddsi.agregador.models.entities.hechos;
 
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Handle;
-import ar.utn.frba.ddsi.agregador.models.entities.normalizador.NormalizadorHecho;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -77,7 +76,7 @@ public class Hecho {
     @Column(name = "origen_fuente")
     private FuenteOrigen fuenteOrigen;
 
-    @Transient
+    @Column(name = "mostrarDatos")
     private Boolean mostrarDatos; //ver esto
 
     @Column(name = "fecha_carga")
@@ -91,6 +90,9 @@ public class Hecho {
 
     @Column(name = "consensuado")
     private Boolean esConsensuado;
+
+    @Column(name = "idDinamica")
+    private Long idDinamica;
 
     public Hecho(Boolean esValido,
                  String titulo,
@@ -123,62 +125,4 @@ public class Hecho {
         return LocalDateTime.now().isBefore(fechaLimite);
     }
 
-    public void normalizarHecho() {
-        // Validar y normalizar categoría
-        if (this.getCategoria() != null && this.getCategoria().getCategoria() != null) {
-            Categoria categoria = this.getCategoria();
-            String categoriaNormalizada = NormalizadorHecho.normalizarCategoria(categoria.getCategoria());
-            if (categoriaNormalizada != null) {
-                categoria.setCategoria(categoriaNormalizada);
-            }
-        }
-
-        // Validar ubicación
-        Ubicacion ubicacion = this.getUbicacion();
-        if (ubicacion == null) {
-            return; // No hay ubicación para normalizar
-        }
-
-        // Normalizar coordenadas con validación
-        List<Double> latyLongNormalizadas = NormalizadorHecho.normalizarUbicaciones(
-                ubicacion.getLatitud(), ubicacion.getLongitud());
-
-        if (latyLongNormalizadas != null && latyLongNormalizadas.size() >= 2) {
-            double latitud = latyLongNormalizadas.get(0);
-            double longitud = latyLongNormalizadas.get(1);
-
-            // Normalizar ubicación (provincia y localidad) con validación
-            List<String> resultados = NormalizadorHecho.normalizarUbicacion(latitud, longitud);
-
-            if (resultados != null && resultados.size() >= 2) {
-                Provincia provincia = null;
-                Localidad localidad = ubicacion.getLocalidad();
-
-                if (localidad != null && localidad.getProvincia() != null) {
-                    provincia = localidad.getProvincia();
-                }
-
-                if (provincia == null) {
-                    provincia = new Provincia();
-                }
-
-                provincia.setNombre(resultados.get(0));
-
-                if (localidad == null) {
-                    localidad = new Localidad();
-                    localidad.setProvincia(provincia);
-                    ubicacion.setLocalidad(localidad);
-                } else {
-                    localidad.setNombre(resultados.get(1));
-                    localidad.setProvincia(provincia);
-                }
-            } else {
-                // Log warning o manejar el caso donde no se pudo normalizar la ubicación
-                System.out.println("Advertencia: No se pudieron normalizar los datos de ubicación");
-            }
-        } else {
-            // Log warning o manejar el caso donde no se pudieron normalizar las coordenadas
-            System.out.println("Advertencia: No se pudieron normalizar las coordenadas");
-        }
-    }
 }
