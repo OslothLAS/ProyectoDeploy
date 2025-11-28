@@ -116,11 +116,7 @@ public class HechosController {
     @GetMapping("/hecho/{id}")
     public String detalleHecho(@PathVariable Long id, Model model, HttpServletRequest request) {
         String username = (String) request.getSession().getAttribute("username");
-        /*
-        if (username == null) {
-            return "redirect:/login";
-        }
-        */
+
         try {
             // Obtener el hecho directamente por ID
             Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoDinamicoPorId(id);
@@ -142,8 +138,14 @@ public class HechosController {
     @GetMapping("/hechoColeccion/{id}")
     public String detalleHechoColeccion(@PathVariable Long id, Model model, HttpServletRequest request) {
             Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
-                model.addAttribute("hecho", hechoOpt.get());
-                return "commons/detalleHecho";
+        if (hechoOpt.isPresent()) {
+            model.addAttribute("hecho", hechoOpt.get());
+            model.addAttribute("backendUrl", "http://localhost:8070");
+
+            return "commons/detalleHecho";
+        }else {
+            return "commons/buscadorHechos";
+        }
     }
 
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
