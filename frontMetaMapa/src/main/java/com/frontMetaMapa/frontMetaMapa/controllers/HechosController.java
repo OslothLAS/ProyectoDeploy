@@ -42,6 +42,7 @@ public class HechosController {
         }
     }
 
+
     @GetMapping("/buscador-hechos")
     public String buscadorHechos(Model model) {
         List<HechoApiOutputDto> hechos = hechoService.obtenerTodosLosHechos();

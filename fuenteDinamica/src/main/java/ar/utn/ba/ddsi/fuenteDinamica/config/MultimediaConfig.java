@@ -5,21 +5,31 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class MultimediaConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Mapeo: URL Web -> Carpeta Física
+
+        String userHome = System.getProperty("user.home");
+
+        Path uploadDir = Paths.get(userHome, "Pictures", "DDSI_Uploads");
+
+        String uploadPath = uploadDir.toUri().toString();
+
+        System.out.println(">>> [WebConfig] Mapeando recursos /uploads/** hacia: " + uploadPath);
+
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:C:/DDSIMAGENES/");
+                .addResourceLocations(uploadPath);
     }
 
-    // Bonus: Configuración de CORS para que el Front (8081) pueda pedir datos
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081") // Tu frontend
+                .allowedOrigins("http://localhost:8081")
                 .allowedMethods("*");
     }
 }
