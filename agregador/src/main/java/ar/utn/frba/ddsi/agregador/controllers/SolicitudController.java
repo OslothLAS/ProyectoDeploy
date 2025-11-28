@@ -49,4 +49,11 @@ public class SolicitudController {
         return ResponseEntity.ok(this.solicitudService.getSolicitudes());
     }
 
+    @GetMapping("/user/{username}")
+    @PreAuthorize("hasAnyRole('ADMIN','CONTRIBUYENTE')")
+    public ResponseEntity<List<SolicitudOutputDTO>> getSolicitudesPorUsuario(@PathVariable("username") String username){
+
+        return ResponseEntity.ok(this.solicitudService.getSolicitudesPorUsuario(username));
+    }
+
 }

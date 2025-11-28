@@ -64,6 +64,10 @@ public class SolicitudesEliminacionApiService {
         return webApiCallerService.getList(solicitudesServiceUrl + "/solicitudes", SolicitudApiOutputDto.class);
     }
 
+    public List<SolicitudApiOutputDto> obtenerSolicitudesPorUsername(String username) {
+        return webApiCallerService.getList(solicitudesServiceUrl + "/solicitudes/user/"+username, SolicitudApiOutputDto.class);
+    }
+
     public void cambiarEstadoSolicitud(String id, String accion) {
         SolicitudOutputDTO response = webApiCallerService.put(
                 solicitudesServiceUrl + "/solicitudes/" + id + "/" + accion,

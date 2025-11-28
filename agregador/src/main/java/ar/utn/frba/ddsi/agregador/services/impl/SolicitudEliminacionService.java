@@ -144,6 +144,13 @@ public class SolicitudEliminacionService implements ISolicitudEliminacionService
         List<SolicitudOutputDTO> solicitudesDTO = solicitudes.stream().map(s -> solicitudToDTO(s)).toList();
         return solicitudesDTO;
     }
+    @Override
+    public List<SolicitudOutputDTO> getSolicitudesPorUsuario(String solicitante) {
+        List<SolicitudEliminacion> solicitudes = this.solicitudRepository.findBySolicitante(solicitante);
+        List<SolicitudOutputDTO> solicitudesDTO = solicitudes.stream().map(s -> solicitudToDTO(s)).toList();
+        return solicitudesDTO;
+    }
+
 
 
     @Override
