@@ -60,8 +60,10 @@
             <a href="/register">Registrarse</a>
         </div>
 
-        <div th:if="${param.error}" class="alert-error">
-            ⚠️ Usuario o contraseña incorrectos
+        <div th:if="${param.error}" class="alert alert-danger" style="color: red; padding: 10px; border: 1px solid red; border-radius: 5px; margin-bottom: 10px;">
+            <i data-lucide="alert-triangle"></i>
+
+            <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Credenciales inválidas'}"></span>
         </div>
 
     </div>

@@ -158,7 +158,7 @@ public class WebApiCallerService {
                 }
 
                 // 3. Lanzar la excepción interna del Frontend para que la atrape el Controller
-                throw new RateLimitException("Rate limit exceeded", segundos);
+                throw new RateLimitException(segundos);
             }
 
             // ... manejo de otros errores (404, 500, etc) ...

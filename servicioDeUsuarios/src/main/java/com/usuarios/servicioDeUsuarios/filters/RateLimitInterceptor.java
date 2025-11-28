@@ -18,17 +18,16 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        String apiKey = request.getRemoteAddr(); // O usar un header específico / JWT token
+        String apiKey = request.getRemoteAddr();
 
-        // Consumir 1 token
         io.github.bucket4j.Bucket tokenBucket = rateLimitingService.resolveBucket(apiKey);
 
         if (tokenBucket.tryConsume(1)) {
-            return true; // Tiene tokens, pasa
+            return true;
         } else {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.getWriter().write("Has excedido el limite de peticiones.");
-            return false; // Bloqueado
+            return false;
         }
     }
 }

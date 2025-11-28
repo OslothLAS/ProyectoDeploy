@@ -1,5 +1,6 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
+import com.frontMetaMapa.frontMetaMapa.exceptions.RateLimitException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.UserRolesPermissionsDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
@@ -29,9 +30,11 @@ public class LoginApiService {
     }
     public AuthResponseDTO login(String username, String password) {
         try {
+            String urlFinal = authServiceUrl.endsWith("/") ? authServiceUrl + "api/auth" : authServiceUrl + "/api/auth";
+
             AuthResponseDTO response = webClient
                     .post()
-                    .uri(authServiceUrl + "api/auth")
+                    .uri(urlFinal)
                     .bodyValue(Map.of(
                             "username", username,
                             "password", password
@@ -39,18 +42,35 @@ public class LoginApiService {
                     .retrieve()
                     .bodyToMono(AuthResponseDTO.class)
                     .block();
-            System.out.println("🎯 === LOGIN EXITOSO ==="+response);
 
+            System.out.println("🎯 === LOGIN EXITOSO ===" + response);
             return response;
+
         } catch (WebClientResponseException e) {
             log.error(e.getMessage());
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                // Login fallido - credenciales incorrectas
+
+            if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                String header = e.getHeaders().getFirst("Retry-After");
+                long segundos = (header != null) ? Long.parseLong(header) : 60;
+
+                System.out.println("429 DETECTADO. Segundos de espera: " + segundos);
+
+                throw new RateLimitException(segundos);
+            }
+
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND || e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 return null;
             }
+
             // Otros errores HTTP
             throw new RuntimeException("Error en el servicio de autenticación: " + e.getMessage(), e);
+
         } catch (Exception e) {
+
+            if (e instanceof RateLimitException) {
+                throw (RateLimitException) e;
+            }
+
             throw new RuntimeException("Error de conexión con el servicio de autenticación: " + e.getMessage(), e);
         }
     }

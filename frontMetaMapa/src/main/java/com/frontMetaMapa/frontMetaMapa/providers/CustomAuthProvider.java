@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,29 +43,23 @@ public class CustomAuthProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        System.out.println("🔑 authenticate() llamado para usuario: " + username);
-
         try {
             AuthResponseDTO authResponse = loginApiService.login(username, password);
 
             if (authResponse == null) {
-                log.warn("Usuario o contraseña inválidos para: {}", username);
-                throw new BadCredentialsException("Usuario o contraseña inválidos");
+                throw new BadCredentialsException("Usuario o contraseña incorrectos");
             }
 
-            System.out.println("Usuario autenticado. Guardando tokens en sesión");
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
             request.getSession().setAttribute("accessToken", authResponse.getAccessToken());
             request.getSession().setAttribute("refreshToken", authResponse.getRefreshToken());
             request.getSession().setAttribute("username", username);
 
-            // Extraer rol directamente del accessToken
             String rol = extractRoleFromToken(authResponse.getAccessToken());
-            System.out.println("Rol obtenido del token: {}"+ rol);
 
             if (rol == null || rol.isEmpty()) {
-                log.warn("No se pudo obtener el rol del usuario: {}", username);
-                throw new BadCredentialsException("No se pudo obtener el rol del usuario");
+                log.warn("No se pudo obtener el rol para: {}", username);
+                throw new AuthenticationServiceException("Error al obtener permisos del usuario");
             }
 
             List<GrantedAuthority> authorities = new ArrayList<>();
@@ -73,18 +68,20 @@ public class CustomAuthProvider implements AuthenticationProvider {
             return new UsernamePasswordAuthenticationToken(username, null, authorities);
 
         } catch (RateLimitException e) {
-            // ✅ CORRECCIÓN CLAVE:
-            // Si es error de RateLimit, NO lo conviertas en BadCredentials.
-            // Lánzalo tal cual para que el Controller lo reciba y muestre el cartel rojo.
+            throw new org.springframework.security.authentication.AuthenticationServiceException(
+                    "Demasiados intentos, espere " + e.getSegundos() + " segundos"
+            );
+
+        } catch (BadCredentialsException e) {
             throw e;
 
-        } catch (RuntimeException e) {
-            // Para el resto de errores (conexión, url vacía, etc), sí usa BadCredentials
-            System.out.println("💥 Error en authenticate(): " + e);
-            throw new BadCredentialsException("Error en el sistema de autenticación: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new org.springframework.security.authentication.AuthenticationServiceException(
+                    "Error interno del sistema de autenticación"
+            );
         }
     }
-
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);

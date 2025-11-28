@@ -105,8 +105,6 @@ public class HomeController {
                               HttpServletRequest request,
                               Model model) {
         try {
-            // 1. Intentar loguearse contra la API (Puerto 8070)
-            // Este método debe usar WebApiCallerService internamente
             AuthResponseDTO authResponse = loginApiService.login(username, password);
 
             // 2. Guardar tokens en la sesión del Frontend
@@ -115,17 +113,14 @@ public class HomeController {
             session.setAttribute("refreshToken", authResponse.getRefreshToken());
             session.setAttribute("username", username);
 
-            // 3. Redirigir al home
             return "redirect:/";
 
         } catch (RateLimitException e) {
-            // 🛑 AQUÍ CAPTURAMOS EL 429
-            // Mostramos el mensaje con los segundos exactos
-            model.addAttribute("error", "Demasiados intentos fallidos. Por favor espera " + e.getSegundosEspera() + " segundos.");
+
+            model.addAttribute("error", "Demasiados intentos fallidos. Por favor espera " + e.getSegundos() + " segundos.");
             return "login"; // Volvemos a mostrar el formulario
 
         } catch (Exception e) {
-            // Error genérico (credenciales mal, API caída, etc.)
             model.addAttribute("error", "Usuario o contraseña incorrectos");
             return "login";
         }

@@ -1,14 +1,12 @@
 package com.frontMetaMapa.frontMetaMapa.exceptions;
 
 public class RateLimitException extends RuntimeException {
-    private final long segundosEspera;
+    private final long segundos;
 
-    public RateLimitException(String message, long segundosEspera) {
-        super(message);
-        this.segundosEspera = segundosEspera;
+    public RateLimitException(long segundos) {
+        super("Rate limit exceeded");
+        this.segundos = segundos;
     }
 
-    public long getSegundosEspera() {
-        return segundosEspera;
-    }
+    public long getSegundos() { return segundos; }
 }
