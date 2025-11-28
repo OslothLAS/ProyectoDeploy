@@ -1,7 +1,9 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.output.SolicitudOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
+import com.frontMetaMapa.frontMetaMapa.services.SolicitudEliminacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,6 +20,7 @@ import java.util.List;
 public class ContribuyenteController {
 
     private final HechoService hechoService;
+    private final SolicitudEliminacionService solicitudEliminacionService;
 
 
     @ModelAttribute
@@ -47,6 +50,15 @@ public class ContribuyenteController {
         model.addAttribute("hechos", primerosTres);
         model.addAttribute("username",authentication.getName());
         return "contribuyente/index";
+    }
+
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
+    @GetMapping("/mis-solicitudes")
+    public String solicitudes(Model model, Authentication authentication) {
+        String username = authentication.getName();
+        List<SolicitudOutputDTO> solicitudes = solicitudEliminacionService.obtenerSolicitudesPorUsername(username);
+        model.addAttribute("solicitudes", solicitudes);
+        return "administrador/dashboardSolicitud";
     }
 
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")

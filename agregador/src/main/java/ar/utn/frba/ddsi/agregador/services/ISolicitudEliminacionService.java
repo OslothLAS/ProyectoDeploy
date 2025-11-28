@@ -14,6 +14,7 @@ public interface ISolicitudEliminacionService {
     SolicitudOutputDTO crearSolicitud(SolicitudInputDTO solicitud);
     SolicitudEliminacion getSolicitud(Long solicitante);
     List<SolicitudOutputDTO> getSolicitudes();
+    List<SolicitudOutputDTO> getSolicitudesPorUsuario(String solicitante);
     UsuarioDTO obtenerUserPorUsername(String username);
     String validarJustificacion(String justificacionSolicitud);
     void aceptarSolicitud(Long idSolicitud);

@@ -48,6 +48,11 @@ public class SolicitudEliminacionService {
         return convertirASolicitudOutputDTO(solicitudesApi);
     }
 
+    public List<SolicitudOutputDTO> obtenerSolicitudesPorUsername(String username) {
+        List<SolicitudApiOutputDto> solicitudesApi = solicitudesEliminacionApiService.obtenerSolicitudesPorUsername(username);
+        return convertirASolicitudOutputDTO(solicitudesApi);
+    }
+
     /**
      * Rechaza una solicitud de eliminación.
      */
