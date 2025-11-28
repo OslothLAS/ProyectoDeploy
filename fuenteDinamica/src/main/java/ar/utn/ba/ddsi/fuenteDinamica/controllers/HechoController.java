@@ -22,7 +22,6 @@ import static ar.utn.ba.ddsi.fuenteDinamica.utils.HechoUtil.hechosToOutputDTO;
 @RequestMapping("/api/hechos")
 public class HechoController {
     private final IHechoService hechoService;
-    @Autowired private ObjectMapper objectMapper;
     @Autowired
     private MultimediaService multimediaService;
     public HechoController(IHechoService hechoService) {
@@ -47,13 +46,6 @@ public class HechoController {
             @RequestPart("hecho") HechoDTO hechoDTO, // Parte 1: JSON
             @RequestPart(value = "files", required = false) List<MultipartFile> files, // Parte 2: Archivos
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
-
-        try {
-            String jsonContenido = objectMapper.writeValueAsString(hechoDTO);
-            System.out.println(">>> [BACKEND] Contenido DTO:\n" + jsonContenido);
-        } catch (Exception e) {
-            System.out.println("Error al serializar DTO para debug: " + e.getMessage());
-        }
 
         // 1. Validar Token
         TokenInfo tokenInfo = null;
