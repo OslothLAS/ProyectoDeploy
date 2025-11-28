@@ -10,6 +10,7 @@ import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ColeccionesController {
     private final ColeccionService coleccionService;
+    @Value("${fuenteEstatica.service.url}")
+    private String fuenteEstaticaUrl;
 
+    @Value("${fuenteDinamica.service.url}")
+    private String fuenteDinamicaUrl;
+
+    @Value("${fuenteProxy.service.url}")
+    private String fuenteProxyUrl;
 
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
@@ -50,18 +58,28 @@ public class ColeccionesController {
         model.addAttribute("colecciones", colecciones);
         return "commons/buscadorColecciones";
     }
+
     @GetMapping("/colecciones/show")
     public String showColeccion(
             @RequestParam Long id,
             @RequestParam(required = false) String fuente,
             @RequestParam(required = false) String fechaFin,
+            @RequestParam(required = false) String fechaInicio,
             @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String modoNavegacion,
             Model model) {
 
         ColeccionOutputDTO coleccion = coleccionService.obtenerColeccionPorId(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada con id " + id));
 
-        List<HechoOutputDTO> hechos = coleccionService.obtenerHechosPorColeccionId(id, fuente, fechaFin, categoria);
+        String fuenteLimpia = ("null".equals(fuente) || fuente == null) ? null : fuente;
+        String fechaFinLimpia = ("null".equals(fechaFin) || fechaFin == null) ? null : fechaFin;
+        String fechaInicioLimpia = ("null".equals(fechaInicio) || fechaInicio == null) ? null : fechaInicio;
+        String categoriaLimpia = ("null".equals(categoria) || categoria == null) ? null : categoria;
+        String modoLimpio = ("null".equals(modoNavegacion) || modoNavegacion == null) ? null : modoNavegacion;
+
+        List<HechoOutputDTO> hechos = coleccionService.obtenerHechosPorColeccionId(
+                id, fuenteLimpia, fechaFinLimpia, fechaInicioLimpia, categoriaLimpia, modoLimpio);
 
         model.addAttribute("idColeccion", id);
         model.addAttribute("tituloColeccion", coleccion.getTitulo());
@@ -69,9 +87,14 @@ public class ColeccionesController {
         model.addAttribute("hechos", hechos);
 
         // ⚡ Pasamos los filtros al template
-        model.addAttribute("filtroFuente", fuente);
-        model.addAttribute("filtroFechaFin", fechaFin);
-        model.addAttribute("filtroCategoria", categoria);
+        model.addAttribute("filtroFuente", fuenteLimpia != null ? fuenteLimpia : "");
+        model.addAttribute("filtroFechaFin", fechaFinLimpia != null ? fechaFinLimpia : "");
+        model.addAttribute("filtroFechaInicio", fechaInicioLimpia != null ? fechaInicioLimpia : "");
+        model.addAttribute("filtroCategoria", categoriaLimpia != null ? categoriaLimpia : "");
+
+        // Determinar el modo actual
+        String modo = "CURADO".equals(modoLimpio) ? "curado" : "irrestricto";
+        model.addAttribute("modo", modo);
 
         return "commons/showColeccion";
     }
@@ -96,9 +119,23 @@ public class ColeccionesController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/createColeccion")
     public String crearColeccion(@ModelAttribute ColeccionInputDTO coleccionInputDTO) {
-        System.out.println(coleccionInputDTO);
+
+        // Si hay fuentes, las procesamos
+        if (coleccionInputDTO.getFuentes() != null) {
+            for (FuenteInputDTO fuente : coleccionInputDTO.getFuentes()) {
+                if (fuente.getOrigenS() != null) {
+                    switch (fuente.getOrigenS()) {
+                        case "ESTATICO" -> fuente.setUrl(fuenteEstaticaUrl);
+                        case "DINAMICO" -> fuente.setUrl(fuenteDinamicaUrl);
+                        case "PROXY"    -> fuente.setUrl(fuenteProxyUrl);
+                        default       -> fuente.setUrl(null);
+                    }
+                }
+            }
+        }
+
         coleccionService.crearColeccion(coleccionInputDTO);
-        return "redirect:/buscador-colecciones"; // o redirección al mensaje de éxito
+        return "redirect:/buscador-colecciones";
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -113,15 +150,57 @@ public class ColeccionesController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/colecciones/{id}/editar")
     public String editarColeccion(@PathVariable Long id, Model model) {
-        ColeccionOutputDTO coleccion = coleccionService.obtenerColeccionPorId(id)
+
+        ColeccionOutputDTO salida = coleccionService.obtenerColeccionPorId(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Colección no encontrada"));
 
-        model.addAttribute("coleccion", coleccion); // <-- clave "coleccion" para Thymeleaf
+        // Convertimos Output → Input
+        ColeccionInputDTO entrada = new ColeccionInputDTO();
+        entrada.setId(salida.getId());
+        entrada.setTitulo(salida.getTitulo());
+        entrada.setDescripcion(salida.getDescripcion());
+        entrada.setEstrategiaConsenso(salida.getConsenso());
+
+        // ===========================
+        // FUENTES
+        // ===========================
+        if (salida.getImportadores() != null) {
+            entrada.setFuentes(
+                    salida.getImportadores().stream()
+                            .map(f -> {
+                                FuenteInputDTO x = new FuenteInputDTO();
+                                x.setId(f.getId());
+                                x.setUrl(f.getUrl());
+                                x.setOrigen(f.getNombre()); // FuenteOrigen
+                                return x;
+                            })
+                            .toList()
+            );
+        }
+
+        // ===========================
+        // CRITERIOS
+        // ===========================
+        if (salida.getCriteriosDePertenencia() != null) {
+            entrada.setCriterios(
+                    salida.getCriteriosDePertenencia().stream()
+                            .map(c -> {
+                                CriterioDePertenenciaInputDTO x = new CriterioDePertenenciaInputDTO();
+                                x.setId(c.getId());
+                                x.setTipo(c.getTipo());
+                                x.setCategoria(c.getValor()); // en output se llama valor
+                                return x;
+                            })
+                            .toList()
+            );
+        }
+
+        model.addAttribute("coleccion", entrada);
         return "administrador/editarColeccion";
     }
 
 
-    // Manejar envío del formulario
+
     @PostMapping("/editar/{id}")
     public String editarColeccion(
             @PathVariable("id") Long id,
@@ -129,10 +208,29 @@ public class ColeccionesController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            ColeccionOutputDTO actualizado = coleccionService.actualizarColeccion(id, dto);
+
+            // ✔ Convertimos origen → url real
+            if (dto.getFuentes() != null) {
+                dto.getFuentes().forEach(f -> {
+                    if (f.getOrigen() != null) {
+                        switch (f.getOrigen()) {
+                            case ESTATICO -> f.setUrl(fuenteEstaticaUrl);
+                            case DINAMICO -> f.setUrl(fuenteDinamicaUrl);
+                            case PROXY -> f.setUrl(fuenteProxyUrl);
+                            default -> f.setUrl(null);
+                        }
+                    }
+                });
+            }
+
+            // ✔ Guardamos
+            coleccionService.actualizarColeccion(id, dto);
             redirectAttributes.addFlashAttribute("successMessage", "Colección actualizada correctamente");
+
             return "redirect:/colecciones/show?id=" + id;
+
         } catch (Exception e) {
+
             redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar la colección");
             return "redirect:/colecciones/editar/" + id;
         }
@@ -140,9 +238,10 @@ public class ColeccionesController {
 }
 
 
-    /**
-     * Guardar colección (crear o actualizar)
-     */
+
+/**
+ * Guardar colección (crear o actualizar)
+ */
     /*
     @PostMapping
     public String guardarColeccion(@ModelAttribute ColeccionInputDTO coleccionDTO) {

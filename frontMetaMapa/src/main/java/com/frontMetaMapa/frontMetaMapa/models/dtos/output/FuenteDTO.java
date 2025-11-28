@@ -1,4 +1,5 @@
 package com.frontMetaMapa.frontMetaMapa.models.dtos.output;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.FuenteOrigen;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 @Getter
 public class FuenteDTO {
     private Long id;
-    private String ip;
-    private String puerto;
+    private String url;
     private FuenteOrigen nombre;
 }
+

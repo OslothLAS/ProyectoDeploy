@@ -17,13 +17,13 @@
         .btn-primary { background:#0891b2; color:white; }
         .btn-secondary { background:#6b7280; color:white; }
         .form-actions { display:flex; gap:1rem; margin-top:2rem; }
-        .fuente-group { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1rem; }
+        .fuente-group { display:flex; gap:1rem; align-items:center; margin-bottom:1rem; }
         .remove-btn { background:#ef4444; color:white; border-radius:6px; padding:0.5rem; cursor:pointer; }
     </style>
 </head>
 <body>
-<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
 <main>
     <h1 th:text="${coleccion.id != null} ? 'Editar Colección' : 'Nueva Colección'">Nueva Colección</h1>
@@ -40,16 +40,16 @@
         <label>Fuentes</label>
         <div id="fuentesContainer">
             <div class="fuente-group" th:each="fuente, iterStat : *{fuentes}">
-                <input type="text" th:field="*{fuentes[__${iterStat.index}__].ip}" placeholder="IP" required>
-                <input type="text" th:field="*{fuentes[__${iterStat.index}__].puerto}" placeholder="Puerto" required>
-                <select th:field="*{fuentes[__${iterStat.index}__].tipo}" required>
-                    <option value="ESTATICA">Estática</option>
-                    <option value="DINAMICA">Dinámica</option>
+                <select th:field="*{fuentes[__${iterStat.index}__].origen}" required>
+                    <option value="ESTATICO">Estática</option>
+                    <option value="DINAMICO">Dinámica</option>
                     <option value="PROXY">Proxy</option>
                 </select>
+
                 <button type="button" class="remove-btn" onclick="removeFuente(this)">×</button>
             </div>
         </div>
+
         <button type="button" class="btn btn-secondary" onclick="addFuente()">+ Agregar Fuente</button>
 
         <label>Estrategia de Consenso</label>
@@ -72,35 +72,35 @@
 
 <script>
     function addFuente() {
-      const container = document.getElementById("fuentesContainer");
-      const index = container.children.length;
-      const div = document.createElement("div");
-      div.className = "fuente-group";
-      div.innerHTML = `
-        <input type="text" name="fuentes[${index}].ip" placeholder="IP" required>
-        <input type="text" name="fuentes[${index}].puerto" placeholder="Puerto" required>
-        <select name="fuentes[${index}].tipo" required>
-          <option value="ESTATICA">Estática</option>
-          <option value="DINAMICA">Dinámica</option>
-          <option value="PROXY">Proxy</option>
-        </select>
-        <button type="button" class="remove-btn" onclick="removeFuente(this)">×</button>
-      `;
-      container.appendChild(div);
+        const container = document.getElementById("fuentesContainer");
+        const index = container.children.length;
+
+        const div = document.createElement("div");
+        div.className = "fuente-group";
+
+        div.innerHTML = `
+            <select name="fuentes[${index}].origenS" required>
+              <option value="ESTATICO">Estática</option>
+              <option value="DINAMICO">Dinámica</option>
+              <option value="PROXY">Proxy</option>
+            </select>
+            <button type="button" class="remove-btn" onclick="removeFuente(this)">×</button>
+        `;
+
+        container.appendChild(div);
     }
 
     function removeFuente(btn) {
-      btn.parentElement.remove();
-      // Reindexar campos
-      const container = document.getElementById("fuentesContainer");
-      Array.from(container.children).forEach((div, idx) => {
-        div.querySelectorAll("input, select").forEach(input => {
-          const name = input.name;
-          const newName = name.replace(/\[\d+\]/, `[${idx}]`);
-          input.name = newName;
+        btn.parentElement.remove();
+        const container = document.getElementById("fuentesContainer");
+
+        Array.from(container.children).forEach((div, idx) => {
+            div.querySelectorAll("select").forEach(select => {
+                select.name = `fuentes[${idx}].tipo`;
+            });
         });
-      });
     }
 </script>
+
 </body>
 </html>

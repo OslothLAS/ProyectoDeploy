@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Locale;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +17,8 @@ public class Ubicacion {
     public void setLatitud(String latitud) {
         if (latitud != null && !latitud.isBlank()) {
             double valor = Double.parseDouble(latitud);
-            this.latitud = String.format("%.4f", valor); // 4 decimales, sin ceros de más
+
+            this.latitud = String.format(Locale.US, "%.4f", valor);
         } else {
             this.latitud = latitud;
         }
@@ -24,7 +27,8 @@ public class Ubicacion {
     public void setLongitud(String longitud) {
         if (longitud != null && !longitud.isBlank()) {
             double valor = Double.parseDouble(longitud);
-            this.longitud = String.format("%.4f", valor);
+
+            this.longitud = String.format(Locale.US, "%.4f", valor);
         } else {
             this.longitud = longitud;
         }

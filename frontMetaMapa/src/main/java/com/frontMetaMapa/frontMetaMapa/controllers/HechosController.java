@@ -121,7 +121,8 @@ public class HechosController {
         }
 
         try {
-            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
+            // Obtener el hecho directamente por ID
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoDinamicoPorId(id);
 
             if (hechoOpt.isPresent()) {
                 model.addAttribute("hecho", hechoOpt.get());
@@ -154,7 +155,7 @@ public class HechosController {
 
         try {
             // Obtener el hecho por ID
-            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoPorId(id);
+            Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoDinamicoPorId(id);
 
             if (hechoOpt.isPresent()) {
                 HechoApiOutputDto hecho = hechoOpt.get();
@@ -192,9 +193,6 @@ public class HechosController {
         return "redirect:/mis-contribuciones?success=hecho-actualizado";
     }
 
-    // --------------------------------------------------------------------
-    // 🔁 Mapper local para convertir HechoApiOutputDto → HechoMapaOutputDto
-    // --------------------------------------------------------------------
     private List<HechoMapaOutputDto> mapHechosToMapa(List<HechoApiOutputDto> hechos) {
         if (hechos == null) return List.of();
 

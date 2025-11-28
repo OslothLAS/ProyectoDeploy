@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.fuenteDinamica.dtos.output;
 
 import ar.utn.ba.ddsi.fuenteDinamica.dtos.input.UbicacionDTO;
+import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.FuenteOrigen;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Multimedia;
 import ar.utn.ba.ddsi.fuenteDinamica.models.entities.hechos.Origen;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class HechoOutputDTO {
     private LocalDateTime fechaHecho;
     private List<Multimedia> multimedia;
 
+    private FuenteOrigen fuenteOrigen;
     private Origen origen;
     private Boolean mostrarDatos;
     private Boolean esValido;

@@ -3,71 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Colección - MetaMapa</title>
+    <title>Editar Colección | MetaMapa</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link th:href="@{/css/styles.css}" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <style>
+        body { font-family:'DM Sans', sans-serif; margin:0; background:#f9fafb; }
+        nav { background:white; border-bottom:1px solid #ddd; padding:1rem 2rem; }
+        .nav-container { max-width:800px; margin:auto; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-weight:700; font-size:1.5rem; color:#0891b2; text-decoration:none; }
+        main { max-width:800px; margin:2rem auto; padding:2rem; background:white; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+        label { font-weight:600; display:block; margin-top:1rem; }
+        input, textarea, select { width:100%; padding:0.75rem; margin-top:0.3rem; border:1px solid #ddd; border-radius:6px; }
+        .btn { padding:0.7rem 1.2rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; margin-top:1.5rem; }
+        .btn-primary { background:#0891b2; color:white; }
+        .btn-secondary { background:#6b7280; color:white; }
+        .form-actions { display:flex; gap:1rem; margin-top:2rem; }
+        .fuente-group, .categoria-group { display:flex; gap:1rem; align-items:center; margin-bottom:1rem; }
+        .remove-btn { background:#ef4444; color:white; border-radius:6px; padding:0.5rem; cursor:pointer; border:none; }
+    </style>
 </head>
 <body>
-<div th:replace="~{layout/navbar :: navbar( ${rol})}"></div>
 
-<div class="container">
-    <div class="page-header">
-        <h1>Editar Colección</h1>
-        <p>Modifica la información existente de la colección.</p>
-    </div>
+<div th:replace="layout/navbar :: navbar( ${rol})"></div>
 
-    <div class="form-container">
-        <form th:action="@{/editar/{id}(id=${coleccion.id})}" th:object="${coleccion}" method="post">
+<main>
+    <h1 th:text="${coleccion.id != null} ? 'Editar Colección' : 'Nueva Colección'">Nueva Colección</h1>
 
-
+    <form th:action="@{/editar/{id}(id=${coleccion.id})}" th:object="${coleccion}" method="post">
         <input type="hidden" th:field="*{id}" />
 
-            <div class="form-grid">
+        <label>Título</label>
+        <input type="text" th:field="*{titulo}" required>
 
-                <div class="form-group full-width">
-                    <label for="titulo">Título *</label>
-                    <input type="text" id="titulo" th:field="*{titulo}" required placeholder="Ingresa un título descriptivo">
-                </div>
+        <label>Descripción</label>
+        <textarea th:field="*{descripcion}" required></textarea>
 
-                <div class="form-group full-width">
-                    <label for="descripcion">Descripción *</label>
-                    <textarea id="descripcion" th:field="*{descripcion}" required placeholder="Describe la colección..."></textarea>
-                </div>
+        <!-- FUENTES -->
+        <label>Fuentes</label>
+        <div id="fuentesContainer">
+            <div class="fuente-group" th:each="fuente, iterStat : *{fuentes}">
+                <select th:field="*{fuentes[__${iterStat.index}__].origen}" required>
+                    <option value="ESTATICO">Estática</option>
+                    <option value="DINAMICO">Dinámica</option>
+                    <option value="PROXY">Proxy</option>
+                </select>
 
-                <div class="form-group full-width">
-                    <label for="consenso">Estrategia de Consenso *</label>
-                    <select id="consenso" th:field="*{consenso}">
-                        <option value="ABSOLUTA">Absoluta</option>
-                        <option value="MAYORIA">Mayoría</option>
-                        <option value="MULTIPLE_MENCION">Múltiple Mención</option>
-                    </select>
-                </div>
+                <button type="button" class="remove-btn" onclick="removeFuente(this)">×</button>
+            </div>
+        </div>
 
+        <button type="button" class="btn btn-secondary" onclick="addFuente()">+ Agregar Fuente</button>
 
-                <div class="form-group full-width">
-                    <label>Fuentes</label>
-                    <div th:each="fuente, iterStat : ${coleccion.importadores}" class="form-inline">
-                        <input type="text" th:field="*{importadores[__${iterStat.index}__].ip}" placeholder="IP">
-                        <input type="number" th:field="*{importadores[__${iterStat.index}__].puerto}" placeholder="Puerto">
-                    </div>
-                    <!-- Opción para agregar más fuentes vía JS si querés -->
-                </div>
+        <!-- ESTRATEGIA -->
+        <label>Estrategia de Consenso</label>
+        <select th:field="*{estrategiaConsenso}" required>
+            <option value="MULTIPLE_MENCION">Múltiples menciones</option>
+            <option value="ABSOLUTA">Absoluta</option>
+            <option value="MAYORIA">Mayoría simple</option>
+        </select>
+
+        <!-- CATEGORÍAS (criterios) -->
+        <label>Categorías</label>
+        <div id="categoriasContainer">
+
+            <div class="categoria-group" th:each="crit, iterStat : *{criterios}">
+                <input type="text" th:field="*{criterios[__${iterStat.index}__].categoria}" placeholder="Escribí una categoría">
+
+                <!-- tipo fijo -->
+                <input type="hidden" th:field="*{criterios[__${iterStat.index}__].tipo}" value="categoria"/>
+
+                <button type="button" class="remove-btn" onclick="removeCategoria(this)">×</button>
             </div>
 
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            </div>
+        </div>
 
-        </form>
-    </div>
-</div>
+        <button type="button" class="btn btn-secondary" onclick="addCategoria()">+ Agregar Categoría</button>
 
-<div th:replace="~{layout/footer :: footer}"></div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">💾 Guardar</button>
+            <a th:href="@{/administrador}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</main>
 
 <script>
-    lucide.createIcons();
+    /* ----------------- FUENTES ----------------- */
+    function addFuente() {
+        const container = document.getElementById("fuentesContainer");
+        const index = container.children.length;
+
+        const div = document.createElement("div");
+        div.className = "fuente-group";
+
+        div.innerHTML = `
+            <select name="fuentes[${index}].origen" required>
+                <option value="ESTATICO">Estática</option>
+                <option value="DINAMICO">Dinámica</option>
+                <option value="PROXY">Proxy</option>
+            </select>
+            <button type="button" class="remove-btn" onclick="removeFuente(this)">×</button>
+        `;
+
+        container.appendChild(div);
+    }
+
+    function removeFuente(btn) {
+        btn.parentElement.remove();
+        reorderFuentes();
+    }
+
+    function reorderFuentes() {
+        const container = document.getElementById("fuentesContainer");
+        Array.from(container.children).forEach((div, idx) => {
+            div.querySelector("select").name = `fuentes[${idx}].origen`;
+        });
+    }
+
+    /* ----------------- CATEGORÍAS ----------------- */
+    function addCategoria() {
+        const container = document.getElementById("categoriasContainer");
+        const index = container.children.length;
+
+        const div = document.createElement("div");
+        div.className = "categoria-group";
+
+        div.innerHTML = `
+            <input type="text" name="criterios[${index}].categoria" placeholder="Escribí una categoría">
+            <input type="hidden" name="criterios[${index}].tipo" value="categoria">
+            <button type="button" class="remove-btn" onclick="removeCategoria(this)">×</button>
+        `;
+
+        container.appendChild(div);
+    }
+
+    function removeCategoria(btn) {
+        btn.parentElement.remove();
+        reorderCategorias();
+    }
+
+    function reorderCategorias() {
+        const container = document.getElementById("categoriasContainer");
+
+        Array.from(container.children).forEach((div, idx) => {
+            div.querySelector("input[type='text']").name = `criterios[${idx}].categoria`;
+            div.querySelector("input[type='hidden']").name = `criterios[${idx}].tipo`;
+        });
+    }
 </script>
+
 </body>
 </html>

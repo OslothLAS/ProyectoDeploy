@@ -1,7 +1,5 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
-
-import com.frontMetaMapa.frontMetaMapa.exceptions.DuplicateColeccionException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.input.ColeccionInputDTO;
@@ -35,8 +33,10 @@ public class ColeccionService {
     public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion,
                                                             String fuente,
                                                             String fechaFin,
-                                                            String categoria) {
-        return coleccionApiService.obtenerHechosPorColeccionId(idColeccion, fuente, fechaFin, categoria);
+                                                            String fechaInicio,
+                                                            String categoria,
+                                                            String modo) {
+        return coleccionApiService.obtenerHechosPorColeccionId(idColeccion, fuente, fechaInicio, fechaFin, categoria, modo);
     }
 
 

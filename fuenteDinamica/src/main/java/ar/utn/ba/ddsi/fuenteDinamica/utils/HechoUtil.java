@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 public class HechoUtil {
     public static HechoDTO hechoToDTO(Hecho hecho) {
         HechoDTO dto = new HechoDTO();
-
-        List<Multimedia> multimediaNueva = new  ArrayList<>();
+        dto.setIdDinamica(hecho.getId());
+        List<Multimedia> multimediaNueva = new ArrayList<>();
 
         if(hecho.getMultimedia() != null) {
             multimediaNueva.addAll(hecho.getMultimedia());
         }
-
+        dto.setUsername(hecho.getUsername());
         dto.setTitulo(hecho.getTitulo());
         dto.setDescripcion(hecho.getDescripcion());
         dto.setCategoria(hecho.getCategoria().getCategoria());
@@ -27,6 +27,7 @@ public class HechoUtil {
             dto.setUbicacion(ubicacionToDTO(hecho.getUbicacion()));
         }
 
+        dto.setFuenteOrigen(FuenteOrigen.DINAMICO);
         dto.setMostrarDatos(hecho.getMostrarDatos());
         dto.setOrigen(hecho.getOrigen());
         dto.setMostrarDatos(hecho.getMostrarDatos());
@@ -69,7 +70,7 @@ public class HechoUtil {
     }
 
     public static Hecho hechoDTOtoHecho(HechoDTO dto){
-        List<Multimedia> multimediaNueva = new  ArrayList<>();
+        List<Multimedia> multimediaNueva = new ArrayList<>();
 
         if(dto.getMultimedia() != null) {
             multimediaNueva.addAll(dto.getMultimedia());
@@ -116,7 +117,7 @@ public class HechoUtil {
         dto.setEsValido(hecho.getEsValido());
         dto.setFechaCreacion(hecho.getFechaCreacion());
         dto.setUsername(hecho.getUsername());
-
+        dto.setFuenteOrigen(FuenteOrigen.DINAMICO);
         return dto;
     }
 

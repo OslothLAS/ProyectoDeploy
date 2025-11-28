@@ -1,7 +1,5 @@
 package ar.utn.frba.ddsi.agregador.navegacion;
 
-
-import ar.utn.frba.ddsi.agregador.models.entities.colecciones.Coleccion;
 import ar.utn.frba.ddsi.agregador.models.entities.hechos.Hecho;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +9,7 @@ import java.util.stream.Collectors;
 @Component("IRRESTRICTO")
 public class NavegacionIrrestrictaStrategy implements NavegacionStrategy {
     @Override
-    public List<Hecho> navegar(Coleccion coleccion, List<Hecho> hechos) {
+    public List<Hecho> navegar(List<Hecho> hechos) {
         return hechos.stream().filter(Hecho::getEsValido).collect(Collectors.toList()); // Devuelve todos los hechos
     }
 }

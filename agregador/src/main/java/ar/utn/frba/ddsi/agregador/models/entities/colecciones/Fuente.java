@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import ar.utn.frba.ddsi.agregador.utils.HechoUtil;
 
@@ -26,15 +27,20 @@ public class Fuente{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ip")
-    private String ip;
+    @Column(name = "url")
+    private String url;
 
-    @Column(name = "puerto")
-    private String puerto;
 
     public WebClient webClient() {
+        // Configurar estrategias de intercambio con buffer más grande
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(configurer -> configurer
+                        .defaultCodecs()
+                        .maxInMemorySize(50 * 1024 * 1024)) // 50 MB (ajusta según necesites)
+                .build();
+
         return WebClient.builder()
-                .baseUrl("http://" + ip + ":" + puerto)
+                .baseUrl(url)
                 .build();
     }
 
@@ -43,11 +49,16 @@ public class Fuente{
     private FuenteOrigen origenHechos;
 
     @JsonCreator
-    public Fuente(@JsonProperty("ip") String ip, @JsonProperty("puerto") String puerto,@JsonProperty("id") Long id) { // el id no va
+    public Fuente(@JsonProperty("url") String url) {
+        this.url = url;
+        this.origenHechos = determinarOrigen();
+    }
+
+    // ✔ Constructor usado para editar colecciones
+    public Fuente(Long id, String url) {
         this.id = id;
-        this.ip = ip;
-        this.puerto = puerto;
-        this.origenHechos = this.determinarOrigen();
+        this.url = url;
+        this.origenHechos = determinarOrigen();
     }
 
     private FuenteOrigen determinarOrigen() {

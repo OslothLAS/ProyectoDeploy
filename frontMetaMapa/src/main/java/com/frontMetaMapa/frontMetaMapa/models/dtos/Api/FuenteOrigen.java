@@ -1,4 +1,4 @@
-package com.frontMetaMapa.frontMetaMapa.models.dtos.output;
+package com.frontMetaMapa.frontMetaMapa.models.dtos.Api;
 
 public enum FuenteOrigen {
     PROXY,

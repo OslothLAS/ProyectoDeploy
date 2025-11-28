@@ -47,17 +47,31 @@ public class ColeccionesApiService {
     // ColeccionApiService o APIService
     public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion,
                                                             String fuente,
+                                                            String fechaInicio,
                                                             String fechaFin,
-                                                            String categoria) {
+                                                            String categoria,
+                                                            String modoNavegacion) {
         StringBuilder url = new StringBuilder(coleccionesServiceUrl)
                 .append("/colecciones/")
                 .append(idColeccion)
                 .append("/hechos");
 
         List<String> params = new ArrayList<>();
-        if (fuente != null && !fuente.isBlank()) params.add("fuente=" + fuente);
-        if (fechaFin != null && !fechaFin.isBlank()) params.add("fechaFin=" + fechaFin);
-        if (categoria != null && !categoria.isBlank()) params.add("categoria=" + categoria);
+        if (fuente != null && !fuente.isBlank() && !"null".equals(fuente)) {
+            params.add("fuente=" + fuente);
+        }
+        if (fechaInicio != null && !fechaInicio.isBlank() && !"null".equals(fechaInicio)) {
+            params.add("fechaInicio=" + fechaInicio);
+        }
+        if (fechaFin != null && !fechaFin.isBlank() && !"null".equals(fechaFin)) {
+            params.add("fechaFin=" + fechaFin);
+        }
+        if (categoria != null && !categoria.isBlank() && !"null".equals(categoria)) {
+            params.add("categoria=" + categoria);
+        }
+        if (modoNavegacion != null && !modoNavegacion.isBlank() && !"null".equals(modoNavegacion)) {
+            params.add("modoNavegacion=" + modoNavegacion);
+        }
 
         if (!params.isEmpty()) {
             url.append("?").append(String.join("&", params));

@@ -32,7 +32,7 @@ public class HechoOutputDTO {
     private Boolean mostrarDatos; //ver esto
     private Boolean esValido;
     private LocalDateTime fechaCreacion;
-
+    private Long idDinamica;
 
     private List<String> etiquetas = new ArrayList<>();
     private List<String> handles = new ArrayList<>();

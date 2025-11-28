@@ -4,6 +4,7 @@ import com.frontMetaMapa.frontMetaMapa.providers.CustomAuthProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -53,8 +54,7 @@ public class SecurityConfig {
                                 "/404",
                                 "/403"
                         ).permitAll()
-
-                        // Resto requiere autenticación
+                        .requestMatchers(HttpMethod.POST, "/subirCsv").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
