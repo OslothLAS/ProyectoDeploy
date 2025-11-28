@@ -5,72 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Hecho - MetaMapa</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <link th:href="@{/css/styles.css}" rel="stylesheet">
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
-
     <style>
-        /* Estilo para el contenedor del mapa en el formulario */
         #map-selector {
-            height: 400px;
+            height: 480px;
             width: 100%;
             border-radius: 0.5rem;
             border: 2px solid var(--border);
             margin-bottom: 1rem;
-            z-index: 1; /* Para que no tape el navbar si es sticky */
+            z-index: 1;
         }
-        /* Ajuste para que el buscador no se vea gigante */
         .leaflet-control-geocoder-icon {
             border-radius: 4px;
         }
     </style>
 </head>
 <body>
-<div th:replace="layout/navbar :: navbar( ${rol})"></div>
-
+<div th:replace="layout/navbar :: navbar(${rol})"></div>
 <div class="container">
     <div class="page-header">
         <h1>Crear Nuevo Hecho</h1>
         <p>Busca la ubicación en el mapa o haz clic para marcar el lugar exacto.</p>
     </div>
-
     <div class="form-container">
         <form th:action="@{/hecho}" method="post" enctype="multipart/form-data">
             <div class="form-grid">
-
                 <div class="form-group full-width">
                     <label for="titulo">Título del Hecho *</label>
                     <input type="text" id="titulo" name="titulo" required placeholder="Ingresa un título descriptivo">
                 </div>
-
                 <div class="form-group">
                     <label for="categoria">Categoria*</label>
                     <input type="text" id="categoria" name="categoria" required placeholder="Ingresa la categoria">
                 </div>
-
                 <div class="form-group">
                     <label for="fecha">Fecha del Hecho *</label>
                     <input type="datetime-local" id="fecha" name="fechaHecho" required>
                 </div>
-
                 <input type="hidden" id="localidad" name="localidad" value="AUN NO DEFINIDO">
-                <input type="hidden" id="provincia" name="provincia" value=1>
-
+                <input type="hidden" id="provincia" name="provincia" value="1">
                 <div class="form-group full-width">
                     <label>Ubicación del Hecho *</label>
                     <p class="text-sm text-muted" style="margin-bottom: 10px; font-size: 0.9em; color: #666;">
                         Usa la lupa para buscar una dirección o haz clic en el mapa para colocar el marcador.
                     </p>
-
                     <div id="map-selector"></div>
-
                     <input type="hidden" id="latitud" name="latitud" required>
                     <input type="hidden" id="longitud" name="longitud" required>
-
                     <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
                         <span>Lat: <span id="lat-display">-</span></span>
                         <span>Lng: <span id="lng-display">-</span></span>
@@ -80,7 +64,6 @@
                     <label for="descripcion">Descripción *</label>
                     <textarea id="descripcion" name="descripcion" required placeholder="Describe detalladamente el hecho ocurrido..."></textarea>
                 </div>
-
                 <div class="form-group full-width">
                     <label>Multimedia (Opcional)</label>
                     <div id="drop-zone" class="upload-box">
@@ -92,163 +75,111 @@
                     <input type="file" id="multimedia" name="multimedia" multiple accept="image/*" style="display: none;">
                     <div id="preview-container" class="d-flex flex-wrap gap-2 mt-3"></div>
                 </div>
+            </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="mostrarDatos" name="mostrarDatos" checked>
-                    <label for="mostrarDatos">Mostrar mis datos públicamente</label>
-                </div>
+            <!-- ✔ Checkbox con icono de usuario - SEPARADO -->
+            <div class="checkbox-group" style="display:flex; align-items:center; gap:8px; margin-top:1rem; margin-bottom:1rem;">
+                <i data-lucide="user" style="width:18px; height:18px;"></i>
+                <input type="checkbox" id="mostrarDatos" name="mostrarDatos" checked>
+                <label for="mostrarDatos">Mostrar mis datos públicamente</label>
+            </div>
 
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancelar</button>
-                    <button type="submit" class="btn">Crear Hecho</button>
-                </div>
+            <!-- ✔ Botones - SEPARADOS -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancelar</button>
+                <button type="submit" class="btn">Crear Hecho</button>
+            </div>
         </form>
     </div>
 </div>
-
+<!-- ✔ Footer fuera del card -->
 <div th:replace="~{layout/footer :: footer}"></div>
-
 <script>lucide.createIcons();</script>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // --- A. Configuración Inicial ---
-        // Coordenadas por defecto (Centro de Argentina aprox) si no vienen por URL
         let initialLat = -34.6037;
         let initialLng = -58.3816;
         let initialZoom = 4;
-
-        // --- B. Chequear URL (si viene del mapa Explorar) ---
         const params = new URLSearchParams(window.location.search);
         const urlLat = params.get('lat');
         const urlLng = params.get('lng');
-        let hasUrlCoords = false;
-
         if (urlLat && urlLng) {
             initialLat = parseFloat(urlLat);
             initialLng = parseFloat(urlLng);
-            initialZoom = 15; // Zoom más cercano si ya tenemos ubicación
-            hasUrlCoords = true;
+            initialZoom = 15;
         }
-
-        // --- C. Inicializar Mapa ---
         const map = L.map('map-selector').setView([initialLat, initialLng], initialZoom);
-
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
-
-        // Variable para el marcador
         let marker;
-
-        // Función para actualizar los inputs ocultos y el texto visual
         function updateInputs(lat, lng) {
             document.getElementById('latitud').value = lat;
             document.getElementById('longitud').value = lng;
             document.getElementById('lat-display').textContent = lat;
             document.getElementById('lng-display').textContent = lng;
         }
-
-        // Función para colocar el marcador
         function placeMarker(lat, lng) {
-            // Si ya existe marcador, lo removemos
-            if (marker) {
-                map.removeLayer(marker);
-            }
-
-            // Creamos nuevo marcador arrastrable
+            if (marker) map.removeLayer(marker);
             marker = L.marker([lat, lng], {draggable: true}).addTo(map);
-
-            // Actualizamos inputs
             updateInputs(lat, lng);
-
-            // Evento: Si el usuario arrastra el marcador
-            marker.on('dragend', function(event) {
-                const position = marker.getLatLng();
-                updateInputs(position.lat.toFixed(6), position.lng.toFixed(6));
+            marker.on('dragend', function() {
+                const p = marker.getLatLng();
+                updateInputs(p.lat.toFixed(6), p.lng.toFixed(6));
             });
-
-            // Centrar mapa
             map.panTo([lat, lng]);
         }
-
-        // --- D. Si veníamos con coordenadas de la URL, poner el marcador de una ---
-        if (hasUrlCoords) {
-            placeMarker(initialLat, initialLng);
-        }
-
-        // --- E. Evento: Clic en el mapa ---
         map.on('click', function(e) {
-            const lat = e.latlng.lat.toFixed(6);
-            const lng = e.latlng.lng.toFixed(6);
-            placeMarker(lat, lng);
+            placeMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
         });
-
-        // --- F. Agregar el Buscador (Geocoder) ---
         const geocoder = L.Control.geocoder({
-            defaultMarkGeocode: false, // No poner marcador automático por defecto, lo controlamos nosotros
+            defaultMarkGeocode: false,
             placeholder: "Buscar ciudad, calle...",
             errorMessage: "No se encontró nada."
         })
             .on('markgeocode', function(e) {
                 const lat = e.geocode.center.lat.toFixed(6);
                 const lng = e.geocode.center.lng.toFixed(6);
-
-                // Usar nuestra función para poner marcador y actualizar inputs
                 placeMarker(lat, lng);
-
-                // Ajustar zoom al resultado
                 map.setView(e.geocode.center, 15);
             })
             .addTo(map);
     });
 </script>
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('multimedia');
         const previewContainer = document.getElementById('preview-container');
         const dataTransfer = new DataTransfer();
-
         dropZone.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', (e) => {
-            agregarArchivos(e.target.files);
-        });
-
+        fileInput.addEventListener('change', (e) => agregarArchivos(e.target.files));
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('dragover');
         });
-
         dropZone.addEventListener('dragleave', () => {
             dropZone.classList.remove('dragover');
         });
-
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                agregarArchivos(e.dataTransfer.files);
-            }
+            agregarArchivos(e.dataTransfer.files);
         });
-
         function agregarArchivos(files) {
             Array.from(files).forEach(file => {
                 if (file.type.startsWith('image/')) {
                     dataTransfer.items.add(file);
                     const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = function(e) {
+                    reader.onload = (e) => {
                         const div = document.createElement('div');
                         div.className = 'preview-card';
                         div.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                         previewContainer.appendChild(div);
                     };
+                    reader.readAsDataURL(file);
                 }
             });
             fileInput.files = dataTransfer.files;
