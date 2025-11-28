@@ -116,10 +116,11 @@ public class HechosController {
     @GetMapping("/hecho/{id}")
     public String detalleHecho(@PathVariable Long id, Model model, HttpServletRequest request) {
         String username = (String) request.getSession().getAttribute("username");
+        /*
         if (username == null) {
             return "redirect:/login";
         }
-
+        */
         try {
             // Obtener el hecho directamente por ID
             Optional<HechoApiOutputDto> hechoOpt = hechoService.obtenerHechoDinamicoPorId(id);
