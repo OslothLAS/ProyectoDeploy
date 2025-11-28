@@ -82,10 +82,13 @@
                 <span th:text="${#temporals.format(hecho.fechaHecho, 'dd/MM/yyyy')}" style="font-size: 1rem; color: var(--text-color);">Fecha</span>
             </div>
             <!-- Ubicación -->
-            <div class="info-item" th:if="${hecho.ubicacion != null}" style="display: flex; flex-direction: column; gap: 0.25rem;">
+            <div class="info-item"
+                 th:if="${hecho.ubicacion != null and hecho.ubicacion.localidad.nombre != 'AUN NO DEFINIDO'}"
+                 style="display: flex; flex-direction: column; gap: 0.25rem;">
                 <strong style="font-size: 0.875rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Ubicación</strong>
                 <div style="display: flex; flex-direction: column;">
-                    <span th:text="${hecho.ubicacion.localidad.nombre}" style="font-size: 1rem; color: var(--text-color); word-break: break-word;">Localidad</span>
+                    <span th:text="${hecho.ubicacion.localidad.nombre}"
+                    style="font-size: 1rem; color: var(--text-color); word-break: break-word;">Localidad</span>
                 </div>
             </div>
         </section>
@@ -127,12 +130,28 @@
         </aside>
 
         <div style="margin-top: 2rem; display: flex; justify-content: flex-end; flex-wrap: wrap;">
-            <a th:href="@{/solicitar-eliminacion(id=${hecho.id})}"
-               class="btn btn-danger" style="width: auto; min-width: fit-content;">
+
+            <!-- Botón EDITAR cuando la localidad es "AUN NO DEFINIDO" -->
+            <a th:if="${hecho.ubicacion != null  and hecho.ubicacion.localidad.nombre == 'AUN NO DEFINIDO' and hecho.editable}"
+               th:href="@{'/edicionHecho/' + ${hecho.id}}"
+               class="btn"
+               style="width: auto; min-width: fit-content; background-color: #F59E0BFF; color: white; border: none;">
+                <i data-lucide="edit-3"></i>
+                <span>Editar</span>
+            </a>
+
+            <!-- Botón ELIMINAR cuando NO es "AUN NO DEFINIDO" -->
+            <a th:if="${hecho.ubicacion != null and hecho.ubicacion.localidad.nombre != 'AUN NO DEFINIDO'}"
+               th:href="@{/solicitar-eliminacion(id=${hecho.id})}"
+               class="btn btn-danger"
+               style="width: auto; min-width: fit-content;">
                 <i data-lucide="trash-2"></i>
                 <span>Eliminar</span>
             </a>
+
         </div>
+
+
     </article>
 </div>
 

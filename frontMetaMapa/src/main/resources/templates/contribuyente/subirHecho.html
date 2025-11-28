@@ -48,18 +48,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="categoria">Categoría *</label>
-                    <select id="categoria" name="categoria" required>
-                        <option value="">Selecciona una categoría</option>
-                        <option value="Incendio">Incendio</option>
-                        <option value="Accidente Vial">Accidente Vial</option>
-                        <option value="Fenómeno Natural">Fenómeno Natural</option>
-                        <option value="Evento Social">Evento Social</option>
-                        <option value="Infraestructura">Infraestructura</option>
-                        <option value="Medio Ambiente">Medio Ambiente</option>
-                        <option value="Seguridad">Seguridad</option>
-                        <option value="Otro">Otro</option>
-                    </select>
+                    <label for="categoria">Categoria*</label>
+                    <input type="text" id="categoria" name="categoria" required placeholder="Ingresa la categoria">
                 </div>
 
                 <div class="form-group">
@@ -67,41 +57,8 @@
                     <input type="datetime-local" id="fecha" name="fechaHecho" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="localidad">Localidad *</label>
-                    <input type="text" id="localidad" name="localidad" required placeholder="Ej: Cafayate">
-                </div>
-
-                <div class="form-group">
-                    <label for="provincia">Provincia *</label>
-                    <select id="provincia" name="provincia" required>
-                        <option value="">Selecciona una provincia</option>
-                        <option value="1">Buenos Aires</option>
-                        <option value="2">Salta</option>
-                        <option value="3">Córdoba</option>
-                        <option value="4">Mendoza</option>
-                        <option value="5">Tucumán</option>
-                        <option value="6">Santa Fe</option>
-                        <option value="7">Entre Ríos</option>
-                        <option value="8">Corrientes</option>
-                        <option value="9">Misiones</option>
-                        <option value="10">Chaco</option>
-                        <option value="11">Formosa</option>
-                        <option value="12">Jujuy</option>
-                        <option value="13">Catamarca</option>
-                        <option value="14">La Rioja</option>
-                        <option value="15">San Juan</option>
-                        <option value="16">San Luis</option>
-                        <option value="17">Santiago del Estero</option>
-                        <option value="18">Neuquén</option>
-                        <option value="19">Río Negro</option>
-                        <option value="20">Chubut</option>
-                        <option value="21">Santa Cruz</option>
-                        <option value="22">Tierra del Fuego</option>
-                        <option value="23">La Pampa</option>
-                        <option value="24">CABA</option>
-                    </select>
-                </div>
+                <input type="hidden" id="localidad" name="localidad" value="AUN NO DEFINIDO">
+                <input type="hidden" id="provincia" name="provincia" value=1>
 
                 <div class="form-group full-width">
                     <label>Ubicación del Hecho *</label>

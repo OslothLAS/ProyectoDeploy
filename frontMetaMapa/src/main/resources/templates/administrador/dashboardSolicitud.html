@@ -91,20 +91,20 @@
                         </form>
 
 
-                        <form th:if="${rol == 'ADMIN'}"
+                        <form th:if="${rol == 'ROLE_ADMIN'}"
                               th:action="@{/solicitudEliminacion/{id}/aceptar(id=${solicitud.id})}"
                               method="post" style="display:inline">
-                            <button type="submit" class="btn-small btn-approve">
-                                <i data-lucide="check"></i> Aprobar
+                            <button type="submit" class="btn-small btn-reject">
+                                <i data-lucide="check"></i> Eliminar Hecho
                             </button>
                         </form>
 
                         <!-- SOLO ADMIN: Rechazar -->
-                        <form th:if="${rol == 'ADMIN'}"
+                        <form th:if="${rol == 'ROLE_ADMIN'}"
                               th:action="@{/solicitudEliminacion/{id}/rechazar(id=${solicitud.id})}"
                               method="post" style="display:inline">
-                            <button type="submit" class="btn-small btn-reject">
-                                <i data-lucide="x"></i> Rechazar
+                            <button type="submit" class="btn-small btn-approve">
+                                <i data-lucide="x"></i> Mantener hecho
                             </button>
                         </form>
                     </div>
