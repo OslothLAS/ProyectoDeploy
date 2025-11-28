@@ -406,6 +406,32 @@
              .nav-links {
                  display: none;
              }
+             .hero-actions {
+                 display: flex;
+                 flex-wrap: wrap;  /* 🔹 permite que los botones bajen si no caben */
+                 gap: 1rem;
+                 justify-content: center;
+                 margin-top: 1rem;
+             }
+
+             @media (max-width: 600px) {
+                 .hero-actions {
+                     flex-direction: column;  /* 🔹 apila los botones en vertical */
+                     gap: 0.75rem;
+                     align-items: center;
+                 }
+
+                 .hero {
+                     padding: 4rem 1rem;  /* ya lo tenías, aseguramos que no haya overflow */
+                 }
+
+                 .btn {
+                     width: 100%;         /* 🔹 botón ocupa todo el ancho del contenedor */
+                     max-width: 250px;    /* opcional, para no estirarse demasiado */
+                     justify-content: center;
+                 }
+             }
+
          }
      </style>
  </head>
@@ -419,10 +445,14 @@
         <h1>MetaMapa</h1>
         <p>Sistema colaborativo de código abierto para la recopilación, visualización y mapeo de información institucional</p>
 
-        <div class="hero-actions">
+        <div class="hero-actions" style="display: flex; gap: 1rem; justify-content: center;">
             <a href="/buscador-hechos" class="btn">
                 <i data-lucide="search"></i>
                 Explorar Hechos
+            </a>
+            <a href="/buscador-colecciones" class="btn">
+                <i data-lucide="layers"></i>
+                Explorar Colecciones
             </a>
         </div>
     </div>

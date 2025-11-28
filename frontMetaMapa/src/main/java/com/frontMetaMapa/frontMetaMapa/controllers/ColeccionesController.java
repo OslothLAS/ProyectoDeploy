@@ -64,6 +64,7 @@ public class ColeccionesController {
             @RequestParam Long id,
             @RequestParam(required = false) String fuente,
             @RequestParam(required = false) String fechaFin,
+            @RequestParam(required = false) String fechaInicio,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String modoNavegacion,
             Model model) {
@@ -73,11 +74,12 @@ public class ColeccionesController {
 
         String fuenteLimpia = ("null".equals(fuente) || fuente == null) ? null : fuente;
         String fechaFinLimpia = ("null".equals(fechaFin) || fechaFin == null) ? null : fechaFin;
+        String fechaInicioLimpia = ("null".equals(fechaInicio) || fechaInicio == null) ? null : fechaInicio;
         String categoriaLimpia = ("null".equals(categoria) || categoria == null) ? null : categoria;
         String modoLimpio = ("null".equals(modoNavegacion) || modoNavegacion == null) ? null : modoNavegacion;
 
         List<HechoOutputDTO> hechos = coleccionService.obtenerHechosPorColeccionId(
-                id, fuenteLimpia, fechaFinLimpia, categoriaLimpia, modoLimpio);
+                id, fuenteLimpia, fechaFinLimpia, fechaInicioLimpia, categoriaLimpia, modoLimpio);
 
         model.addAttribute("idColeccion", id);
         model.addAttribute("tituloColeccion", coleccion.getTitulo());
@@ -87,6 +89,7 @@ public class ColeccionesController {
         // ⚡ Pasamos los filtros al template
         model.addAttribute("filtroFuente", fuenteLimpia != null ? fuenteLimpia : "");
         model.addAttribute("filtroFechaFin", fechaFinLimpia != null ? fechaFinLimpia : "");
+        model.addAttribute("filtroFechaInicio", fechaInicioLimpia != null ? fechaInicioLimpia : "");
         model.addAttribute("filtroCategoria", categoriaLimpia != null ? categoriaLimpia : "");
 
         // Determinar el modo actual

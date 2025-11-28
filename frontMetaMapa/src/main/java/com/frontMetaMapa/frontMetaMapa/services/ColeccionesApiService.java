@@ -47,6 +47,7 @@ public class ColeccionesApiService {
     // ColeccionApiService o APIService
     public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion,
                                                             String fuente,
+                                                            String fechaInicio,
                                                             String fechaFin,
                                                             String categoria,
                                                             String modoNavegacion) {
@@ -58,6 +59,9 @@ public class ColeccionesApiService {
         List<String> params = new ArrayList<>();
         if (fuente != null && !fuente.isBlank() && !"null".equals(fuente)) {
             params.add("fuente=" + fuente);
+        }
+        if (fechaInicio != null && !fechaInicio.isBlank() && !"null".equals(fechaInicio)) {
+            params.add("fechaInicio=" + fechaInicio);
         }
         if (fechaFin != null && !fechaFin.isBlank() && !"null".equals(fechaFin)) {
             params.add("fechaFin=" + fechaFin);

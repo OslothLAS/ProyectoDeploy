@@ -33,9 +33,10 @@ public class ColeccionService {
     public List<HechoOutputDTO> obtenerHechosPorColeccionId(Long idColeccion,
                                                             String fuente,
                                                             String fechaFin,
+                                                            String fechaInicio,
                                                             String categoria,
                                                             String modo) {
-        return coleccionApiService.obtenerHechosPorColeccionId(idColeccion, fuente, fechaFin, categoria, modo);
+        return coleccionApiService.obtenerHechosPorColeccionId(idColeccion, fuente, fechaInicio, fechaFin, categoria, modo);
     }
 
 

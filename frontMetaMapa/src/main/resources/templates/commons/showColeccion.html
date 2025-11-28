@@ -25,13 +25,13 @@
 
 <!-- FILTROS -->
 <section class="filters-section">
-    <div class="filter-item" style="display:flex; flex-direction:column;">
+    <div class="filter-item" style="display:flex; flex-direction:column; margin-bottom:1rem;">
         <label style="font-weight:600; margin-bottom:5px;">Modo:</label>
-
         <div style="display:flex; gap:10px;">
             <!-- Botón Curado -->
             <a th:href="@{/colecciones/show(id=${idColeccion},
                                        fuente=${#strings.isEmpty(filtroFuente) ? null : filtroFuente},
+                                       fechaInicio=${#strings.isEmpty(filtroFechaInicio) ? null : filtroFechaInicio},
                                        fechaFin=${#strings.isEmpty(filtroFechaFin) ? null : filtroFechaFin},
                                        categoria=${#strings.isEmpty(filtroCategoria) ? null : filtroCategoria},
                                        modoNavegacion='CURADO')}"
@@ -44,6 +44,7 @@
             <!-- Botón Irrestricto -->
             <a th:href="@{/colecciones/show(id=${idColeccion},
                                        fuente=${#strings.isEmpty(filtroFuente) ? null : filtroFuente},
+                                       fechaInicio=${#strings.isEmpty(filtroFechaInicio) ? null : filtroFechaInicio},
                                        fechaFin=${#strings.isEmpty(filtroFechaFin) ? null : filtroFechaFin},
                                        categoria=${#strings.isEmpty(filtroCategoria) ? null : filtroCategoria})}"
                class="action-btn"
@@ -55,7 +56,6 @@
     </div>
 
     <div class="filters-container" style="display:flex; gap:15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px;">
-
         <!-- Fuente -->
         <div class="filter-item" style="display:flex; flex-direction:column;">
             <label for="fuente" style="font-weight:600; margin-bottom:5px;">Fuente:</label>
@@ -65,6 +65,12 @@
                 <option value="DINAMICO" th:selected="${filtroFuente == 'DINAMICO'}">DINÁMICA</option>
                 <option value="PROXY" th:selected="${filtroFuente == 'PROXY'}">PROXY</option>
             </select>
+        </div>
+
+        <!-- Fecha Inicio -->
+        <div class="filter-item" style="display:flex; flex-direction:column;">
+            <label for="fechaInicio" style="font-weight:600; margin-bottom:5px;">Fecha Inicio:</label>
+            <input type="date" id="fechaInicio" th:value="${filtroFechaInicio}" style="padding:6px 10px; border-radius:5px; border:1px solid #ccc;">
         </div>
 
         <!-- Fecha Fin -->
@@ -88,7 +94,6 @@
                 <i data-lucide="x"></i> Limpiar filtros
             </button>
         </div>
-
     </div>
 </section>
 
@@ -132,7 +137,6 @@
                 </a>
                 <a class="action-btn delete-request-btn"
                    th:data-id="${hecho.id}"
-
                    onclick="goToSolicitud(this)">
                     <i data-lucide="trash-2"></i> Eliminar
                 </a>
@@ -141,9 +145,6 @@
     </div>
 </section>
 
-
-
-
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script>
@@ -151,11 +152,13 @@
 
     function applyFilters() {
         const fuente = document.getElementById("fuente").value;
+        const fechaInicio = document.getElementById("fechaInicio").value;
         const fechaFin = document.getElementById("fechaFin").value;
         const categoria = document.getElementById("categoria").value;
 
         let params = new URLSearchParams();
         if (fuente) params.append("fuente", fuente);
+        if (fechaInicio) params.append("fechaInicio", fechaInicio);
         if (fechaFin) params.append("fechaFin", fechaFin);
         if (categoria) params.append("categoria", categoria);
 
@@ -168,10 +171,10 @@
         window.location.href = `/colecciones/show?id=${idColeccion}`;
     }
 
-     function goToSolicitud(btn) {
-    const id = btn.dataset.id;
-    window.location.href = `/solicitar-eliminacion?id=${id}`;
-}
+    function goToSolicitud(btn) {
+        const id = btn.dataset.id;
+        window.location.href = `/solicitar-eliminacion?id=${id}`;
+    }
 </script>
 
 </body>
