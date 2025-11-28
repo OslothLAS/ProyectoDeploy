@@ -9,10 +9,14 @@ import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.RefreshTokenDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -287,5 +291,21 @@ public class WebApiCallerService {
     @FunctionalInterface
     public interface ApiCall<T> {
         T execute(String accessToken) throws Exception;
+    }
+
+    public <T> T postMultipart(String url, MultiValueMap<String, HttpEntity<?>> body, Class<T> responseType) {
+
+        // ⚠️ ATENCIÓN: El tipo de 'body' AHORA es MultiValueMap<String, HttpEntity<?>>
+        return executeWithTokenRetry(accessToken ->
+                webClient
+                        .post()
+                        .uri(url)
+                        .header("Authorization", "Bearer " + accessToken)
+                        // ⚠️ CRUCIAL: Usamos BodyInserters.fromMultipartData() en lugar de bodyValue()
+                        .body(BodyInserters.fromMultipartData(body))
+                        .retrieve()
+                        .bodyToMono(responseType)
+                        .block()
+        );
     }
 }

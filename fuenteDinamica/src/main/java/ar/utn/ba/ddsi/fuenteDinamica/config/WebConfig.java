@@ -1,24 +1,25 @@
 package ar.utn.ba.ddsi.fuenteDinamica.config;
 
-
-import ar.utn.ba.ddsi.fuenteDinamica.filters.RateLimitInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private RateLimitInterceptor rateLimitInterceptor;
-
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        // Aplicar a todo el API
-        registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/api/**");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Mapeo: URL Web -> Carpeta Física
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:C:/DDSIMAGENES/");
+    }
 
-        // O solo a endpoints criticos
-        // registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/api/agregador/**");
+    // Bonus: Configuración de CORS para que el Front (8081) pueda pedir datos
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:8081") // Tu frontend
+                .allowedMethods("*");
     }
 }
