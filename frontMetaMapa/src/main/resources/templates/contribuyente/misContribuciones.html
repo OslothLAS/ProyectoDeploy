@@ -115,7 +115,7 @@
         }
 
         .tag.pending {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+            background: linear-gradient(135deg, #ff1d1d, #d90606);
             color: white;
         }
 
@@ -246,7 +246,7 @@
             <div class="contribution-tags">
                 <span class="tag category" th:text="${hecho.categoria}">Categoría</span>
                 <span th:class="${hecho.esValido ? 'tag verified' : 'tag pending'}"
-                      th:text="${hecho.esValido ? 'Verificado' : 'Pendiente'}">
+                      th:text="${hecho.esValido ? 'Verificado' : 'Invalido'}">
                 </span>
             </div>
 
