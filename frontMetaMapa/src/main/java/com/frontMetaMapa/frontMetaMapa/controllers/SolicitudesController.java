@@ -74,7 +74,14 @@ public class SolicitudesController {
         }
 
         solicitudEliminacionService.crearSolicitud(solicitudInputDTO);
-        return "redirect:/buscador-colecciones";
+        String rol = authentication.getAuthorities().iterator().next().getAuthority();
+
+        if (rol.equals("ROLE_ADMIN")) {
+            return "redirect:/dashboard-solicitudes";
+        } else if (rol.equals("ROLE_CONTRIBUYENTE")) {
+            return "redirect:/mis-solicitudes";
+        }
+        return "redirect:/index";
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
