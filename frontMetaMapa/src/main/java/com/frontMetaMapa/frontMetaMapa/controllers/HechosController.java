@@ -7,12 +7,15 @@ import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoMapaOutputDto;
 import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class HechosController {
 
     private final HechoService hechoService;
+
 
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
@@ -37,6 +41,7 @@ public class HechosController {
             model.addAttribute("rol", "ANONIMO");
         }
     }
+
 
     @GetMapping("/buscador-hechos")
     public String buscadorHechos(Model model) {
@@ -72,13 +77,25 @@ public class HechosController {
         return "commons/editarHecho";
     }
 
+    // Conexión final: recibe el formulario del navegador
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @PostMapping("/hecho")
-    public String crearHecho(@ModelAttribute HechoInputDTO hechoInputDTO, HttpServletRequest request) {
-        String username = (String) request.getSession().getAttribute("username");
-        hechoInputDTO.setUsername(username);
-        hechoService.crearHecho(hechoInputDTO, username);
-        return "redirect:/mis-contribuciones";
+    public String crearHecho(@ModelAttribute HechoInputDTO hechoInputDTO,
+                             @RequestParam("multimedia") List<MultipartFile> archivos,
+                             RedirectAttributes redirectAttributes) {
+
+
+        try {
+            // Llama al método que hace el Pasamanos (Multipart)
+            hechoService.crearHechoMultipart(hechoInputDTO, archivos);
+            redirectAttributes.addFlashAttribute("mensaje", "Hecho creado y archivos enviados!");
+            return "redirect:/mis-contribuciones";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            return "redirect:/crear-hecho"; // Ruta que definiste antes
+        }
     }
 
     @GetMapping("/mis-contribuciones")
@@ -94,6 +111,8 @@ public class HechosController {
         return "contribuyente/misContribuciones"; // Thymeleaf template
     }
 
+
+
     @GetMapping("/hecho/{id}")
     public String detalleHecho(@PathVariable Long id, Model model, HttpServletRequest request) {
         String username = (String) request.getSession().getAttribute("username");
@@ -108,9 +127,10 @@ public class HechosController {
             if (hechoOpt.isPresent()) {
                 model.addAttribute("hecho", hechoOpt.get());
                 model.addAttribute("username", username);
+                model.addAttribute("backendUrl", "http://localhost:8070");
+
                 return "commons/detalleHecho";
             } else {
-                // Si no encuentra el hecho, redirigir con error
                 return "redirect:/mis-contribuciones?error=hecho-no-encontrado";
             }
         } catch (Exception e) {

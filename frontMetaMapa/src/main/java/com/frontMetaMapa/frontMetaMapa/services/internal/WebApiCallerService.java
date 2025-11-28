@@ -4,14 +4,19 @@ package com.frontMetaMapa.frontMetaMapa.services.internal;
 //import ar.utn.ba.ddsi.gestionDeAlumnos.dto.RefreshTokenDTO;
 //import ar.utn.ba.ddsi.gestionDeAlumnos.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
+import com.frontMetaMapa.frontMetaMapa.exceptions.RateLimitException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.RefreshTokenDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -132,20 +137,36 @@ public class WebApiCallerService {
 
     public <T> T postWithoutToken(String url, Object body, Class<T> responseType) {
         try {
-            return webClient
-                    .post()
+            return webClient.post()
                     .uri(url)
                     .bodyValue(body)
                     .retrieve()
                     .bodyToMono(responseType)
                     .block();
+
         } catch (WebClientResponseException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NotFoundException(e.getMessage());
+
+            // 1. Detectar si el Backend nos respondió 429
+            if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+
+                // 2. Leer el Header "Retry-After" que mandó el Backend
+                // IMPORTANTE: Usar getHeaders() (no getResponseHeaders)
+                String retryAfterHeader = e.getHeaders().getFirst("Retry-After");
+
+                long segundos = 60; // Valor por defecto si falla la lectura
+
+                if (retryAfterHeader != null) {
+                    try {
+                        segundos = Long.parseLong(retryAfterHeader);
+                    } catch (NumberFormatException ignored) {}
+                }
+
+                // 3. Lanzar la excepción interna del Frontend para que la atrape el Controller
+                throw new RateLimitException(segundos);
             }
-            throw new RuntimeException("Error en llamada POST sin token: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Error de conexión al realizar POST sin token: " + e.getMessage(), e);
+
+            // ... manejo de otros errores (404, 500, etc) ...
+            throw e;
         }
     }
 
@@ -270,5 +291,21 @@ public class WebApiCallerService {
     @FunctionalInterface
     public interface ApiCall<T> {
         T execute(String accessToken) throws Exception;
+    }
+
+    public <T> T postMultipart(String url, MultiValueMap<String, HttpEntity<?>> body, Class<T> responseType) {
+
+        // ⚠️ ATENCIÓN: El tipo de 'body' AHORA es MultiValueMap<String, HttpEntity<?>>
+        return executeWithTokenRetry(accessToken ->
+                webClient
+                        .post()
+                        .uri(url)
+                        .header("Authorization", "Bearer " + accessToken)
+                        // ⚠️ CRUCIAL: Usamos BodyInserters.fromMultipartData() en lugar de bodyValue()
+                        .body(BodyInserters.fromMultipartData(body))
+                        .retrieve()
+                        .bodyToMono(responseType)
+                        .block()
+        );
     }
 }

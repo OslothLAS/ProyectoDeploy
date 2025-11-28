@@ -8,6 +8,35 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <!-- Estilos adicionales para el Popup de Crear -->
+    <style>
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .btn-crear-popup {
+            display: inline-block;
+            background-color: #0ea5e9; /* Tu color primario (cyan-500 aprox) */
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .btn-crear-popup:hover {
+            background-color: #0284c7; /* Un poco más oscuro */
+            color: white;
+        }
+        .popup-text {
+            margin: 0 0 5px 0;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
 <!-- Importing navbar from layout -->
@@ -15,29 +44,24 @@
 
 <main class="main-content">
     <div class="container">
+        <!-- ... (Tu cabecera se mantiene igual) ... -->
         <div class="page-header">
             <h1 class="page-title">Explorar Hechos</h1>
             <p class="page-subtitle">
-                Descubre hechos verificados de todo el mundo en nuestro mapa interactivo.
-                Haz clic en cualquier marcador para ver detalles completos.
+                Descubre hechos verificados o haz clic en el mapa para reportar uno nuevo.
             </p>
         </div>
 
         <div class="map-container">
-            <div class="map-header">
-                <h2 class="map-title">Mapa Global de Hechos</h2>
-                <p class="map-description">
-                    Cada marcador representa un hecho verificado con fuentes confiables
-                </p>
-            </div>
             <div id="map"></div>
         </div>
 
+        <!-- ... (El resto de tu HTML se mantiene igual) ... -->
         <div class="fact-details" id="factDetails">
             <h2 class="fact-title" id="factTitle">Selecciona un hecho en el mapa</h2>
             <div class="fact-meta" id="factMeta"></div>
             <div class="fact-content" id="factContent">
-                Haz clic en cualquier marcador del mapa para ver los detalles del hecho aquí.
+                Haz clic en un marcador para ver detalles, o en cualquier lugar vacío para crear un hecho.
             </div>
             <div class="fact-sources" id="factSources" style="display: none;">
                 <h3 class="sources-title">Fuentes</h3>
@@ -47,75 +71,70 @@
     </div>
 </main>
 
-<!-- Importing footer from layout -->
 <div th:replace="~{layout/footer :: footer}"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const map = L.map('map').setView([-34.6037, -58.3816], 2);
+
+    // 1. Inicializar Mapa
+    const map = L.map('map').setView([-34.6037, -58.3816], 4); // Zoom ajustado un poco
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Datos provenientes del backend
+    // 2. Cargar Hechos existentes
     const facts = [[${hechos}]];
-    console.log('Hechos recibidos:', facts);
-    console.log('Número de hechos:', facts.length);
 
-    // Verifica la estructura del primer hecho (si existe)
-    if (facts.length > 0) {
-        console.log('Estructura del primer hecho:', facts[0]);
-        console.log('Coordenadas primer hecho - Lat:', facts[0].latitud, 'Lon:', facts[0].longitud);
+    if (facts && facts.length > 0) {
+        facts.forEach(fact => {
+            if (!fact.latitud || !fact.longitud) return;
+
+            const marker = L.circleMarker([fact.latitud, fact.longitud], {
+                color: '#f59e0b',
+                fillColor: '#f59e0b',
+                fillOpacity: 0.8,
+                radius: 8,
+                weight: 2
+            }).addTo(map);
+
+            marker.on('click', function(e) {
+                // Detener la propagación para que no dispare el clic del mapa también
+                L.DomEvent.stopPropagation(e);
+                window.location.href = '/hechoColeccion/' + fact.id;
+            });
+
+            marker.bindTooltip(fact.titulo, { permanent: false, direction: 'top' });
+        });
     }
 
-    // CONTADOR PARA DEBUG
-    let markersAdded = 0;
+    // ================================================================
+    // 3. NUEVA FUNCIONALIDAD: Clic en el mapa para CREAR
+    // ================================================================
+    map.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
 
-    facts.forEach(fact => {
-        // ✅ CAMBIO IMPORTANTE: Usa fact.latitud y fact.longitud DIRECTAMENTE
-        if (!fact.latitud || !fact.longitud) {
-            console.log('❌ Hecho sin coordenadas:', fact.titulo);
-            return;
-        }
+        // ATENCIÓN: Asegúrate que '/crear-hecho' sea la ruta correcta a tu formulario
+        // Pasamos latitud y longitud como parámetros GET
+        const urlCreacion = `/crear-hecho?lat=${lat}&lng=${lng}`;
 
-        console.log(`📍 Añadiendo marcador: ${fact.titulo}`);
-        console.log(`   Coordenadas: [${fact.latitud}, ${fact.longitud}]`);
+        const popupContent = `
+            <div style="text-align: center;">
+                <p class="popup-text">Coordenadas seleccionadas</p>
+                <a href="${urlCreacion}" class="btn-crear-popup">
+                    Crear Hecho Aquí
+                </a>
+            </div>
+        `;
 
-        // TODOS LOS MARCADORES SON NARANJAS (#f59e0b)
-        const marker = L.circleMarker([fact.latitud, fact.longitud], {
-            color: '#f59e0b',
-            fillColor: '#f59e0b',
-            fillOpacity: 0.8,
-            radius: 8,
-            weight: 2
-        }).addTo(map);
-
-        markersAdded++;
-
-        marker.on('click', function() {
-            // Redirigir a la página de detalles del hecho
-            window.location.href = '/hechoColeccion/' + fact.id;
-        });
-
-        marker.bindTooltip(fact.titulo, {
-            permanent: false,
-            direction: 'top'
-        });
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent(popupContent)
+            .openOn(map);
     });
 
-    console.log(`✅ Total marcadores añadidos al mapa: ${markersAdded}`);
-
-    function getCategoryName(category) {
-        const names = {
-            social: 'Social',
-            economic: 'Económico',
-            political: 'Político',
-            environmental: 'Ambiental'
-        };
-        return names[category] || category;
-    }
     /*]]>*/
 </script>
 <script>lucide.createIcons();</script>

@@ -1,6 +1,7 @@
 package com.frontMetaMapa.frontMetaMapa.config;
 
 import com.frontMetaMapa.frontMetaMapa.providers.CustomAuthProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,10 +10,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
+
+    @Autowired
+    private DenyIpFilter denyIpFilter;  // ⬅️ inyectamos tu filtro
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider provider) throws Exception {
@@ -24,8 +29,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    CustomSuccessHandler successHandler) throws Exception {
+
         http
+                // ⬅️ AÑADIR EL FILTRO DE DENY LIST ANTES DE AUTENTICACIÓN
+                .addFilterBefore(denyIpFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeHttpRequests(auth -> auth
+
+                        // RUTAS PÚBLICAS
                         .requestMatchers(
                                 "/login",
                                 "/register",
@@ -38,7 +49,6 @@ public class SecurityConfig {
                                 "/buscador-colecciones/**",
                                 "/colecciones/**",
                                 "/solicitar-eliminacion/**",
-                                "/hechoColeccion/**",
                                 "/error",
                                 "/error/**",
                                 "/404",
@@ -48,6 +58,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
+
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
@@ -60,26 +71,18 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            String uri = request.getRequestURI();
-                            System.out.println("❌ Acceso no autorizado a: " + uri);
 
-                            // Si el usuario intenta acceder a una URL protegida
-                            // lo llevamos al login. Pero si el error es 404, no.
-                            if (uri.startsWith("/error") || uri.equals("/404") || uri.equals("/403")) {
-                                response.sendRedirect("/404");
-                            } else {
-                                response.sendRedirect("/login?unauthorized");
-                            }
+                .exceptionHandling(ex -> ex
+                        // SOLO MANEJA NO AUTENTICADO
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/login?unauthorized");
                         })
+
+                        // SI ESTÁ AUTENTICADO PERO SIN PERMISOS (403)
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 response.sendRedirect("/403")
                         )
                 );
-
-        // ❗️Clave: el endpoint /error se maneja fuera de los filtros de autenticación
-        http.securityMatcher("/**");
 
         return http.build();
     }

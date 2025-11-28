@@ -1,5 +1,6 @@
 package com.frontMetaMapa.frontMetaMapa.controllers;
 
+import com.frontMetaMapa.frontMetaMapa.exceptions.RateLimitException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.AuthResponseDTO;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.ColeccionOutputDTO;
@@ -9,6 +10,7 @@ import com.frontMetaMapa.frontMetaMapa.services.HechoService;
 import com.frontMetaMapa.frontMetaMapa.services.LoginApiService;
 import com.frontMetaMapa.frontMetaMapa.services.RegisterApiService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +27,7 @@ public class HomeController {
 
     private final RegisterApiService registerApiService;
     private final HechoService hechoService;
-
+    private final LoginApiService loginApiService;
     @ModelAttribute
     public void addRolToModel(Model model, Authentication authentication) {
         if (authentication != null) {
@@ -97,7 +99,32 @@ public class HomeController {
     public String login() {
         return "login";
     }
+    @PostMapping("/login")
+    public String handleLogin(@RequestParam String username,
+                              @RequestParam String password,
+                              HttpServletRequest request,
+                              Model model) {
+        try {
+            AuthResponseDTO authResponse = loginApiService.login(username, password);
 
+            // 2. Guardar tokens en la sesión del Frontend
+            HttpSession session = request.getSession();
+            session.setAttribute("accessToken", authResponse.getAccessToken());
+            session.setAttribute("refreshToken", authResponse.getRefreshToken());
+            session.setAttribute("username", username);
+
+            return "redirect:/";
+
+        } catch (RateLimitException e) {
+
+            model.addAttribute("error", "Demasiados intentos fallidos. Por favor espera " + e.getSegundos() + " segundos.");
+            return "login"; // Volvemos a mostrar el formulario
+
+        } catch (Exception e) {
+            model.addAttribute("error", "Usuario o contraseña incorrectos");
+            return "login";
+        }
+    }
 
     // 👉 Cerrar sesión
     @GetMapping("/logout")

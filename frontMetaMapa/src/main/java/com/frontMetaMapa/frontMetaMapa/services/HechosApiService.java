@@ -2,9 +2,8 @@ package com.frontMetaMapa.frontMetaMapa.services;
 
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.input.HechoApiInputDto;
+import com.frontMetaMapa.frontMetaMapa.models.dtos.input.*;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoApiOutputDto;
-import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoAGREInput;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.output.HechoOutputDTO;
 import com.frontMetaMapa.frontMetaMapa.services.internal.WebApiCallerService;
 import org.slf4j.Logger;
@@ -12,7 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,6 +50,79 @@ public class HechosApiService {
         this.hechosServiceUrl = hechosServiceUrl;
         this.hechoTotalesServiceUrl = hechoTotalesServiceUrl;
         this.hechosStaticServiceUrl = hechosStaticServiceUrl;
+    }
+
+    private final String API_URL = "http://localhost:8070/api/hechos";
+
+    public void crearHechoMultipart(HechoInputDTO formDto, List<MultipartFile> archivos) {
+
+
+        HechoApiInputDto apiPayload = mapToApiDto(formDto);
+
+        MultiValueMap<String, HttpEntity<?>> body = new LinkedMultiValueMap<>();
+
+
+        HttpHeaders jsonHeaders = new HttpHeaders();
+        jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
+        // Envolvemos el DTO en un HttpEntity
+        body.add("hecho", new HttpEntity<>(apiPayload, jsonHeaders));
+
+
+        if (archivos != null) {
+            for (MultipartFile archivo : archivos) {
+                if (!archivo.isEmpty()) {
+                    try {
+                        // Creamos el recurso con nombre de archivo (CRUCIAL)
+                        ByteArrayResource fileResource = new ByteArrayResource(archivo.getBytes()) {
+                            @Override
+                            public String getFilename() {
+                                return archivo.getOriginalFilename();
+                            }
+                        };
+
+                        // Definimos headers para el archivo (opcional pero recomendado)
+                        HttpHeaders fileHeaders = new HttpHeaders();
+                        // Intentamos adivinar el tipo, o usamos octet-stream por defecto
+                        fileHeaders.setContentType(archivo.getContentType() != null ?
+                                MediaType.parseMediaType(archivo.getContentType()) :
+                                MediaType.APPLICATION_OCTET_STREAM);
+
+                        // Envolvemos el archivo en un HttpEntity y lo agregamos
+                        body.add("files", new HttpEntity<>(fileResource, fileHeaders));
+
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error al procesar archivo: " + archivo.getOriginalFilename(), e);
+                    }
+                }
+            }
+        }
+
+        webApiCallerService.postMultipart(API_URL, body, String.class);
+    }
+
+
+    private HechoApiInputDto mapToApiDto(HechoInputDTO formDto) {
+        ProvinciaDTO provincia = new ProvinciaDTO();
+        provincia.setId(formDto.getProvincia());
+
+        LocalidadDTO localidad = new LocalidadDTO();
+        localidad.setNombre(formDto.getLocalidad());
+        localidad.setProvincia(provincia);
+
+        UbicacionDTO ubicacion = new UbicacionDTO();
+        ubicacion.setLatitud(formDto.getLatitud());
+        ubicacion.setLongitud(formDto.getLongitud());
+        ubicacion.setLocalidad(localidad);
+
+        HechoApiInputDto apiPayload = new HechoApiInputDto();
+        apiPayload.setTitulo(formDto.getTitulo());
+        apiPayload.setDescripcion(formDto.getDescripcion());
+        apiPayload.setCategoria(formDto.getCategoria());
+        apiPayload.setFechaHecho(formDto.getFechaHecho());
+        apiPayload.setMostrarDatos(formDto.getMostrarDatos());
+        apiPayload.setUbicacion(ubicacion);
+
+        return apiPayload;
     }
 
     // Crear un hecho
@@ -113,40 +188,17 @@ public class HechosApiService {
     }
 
     public HechoApiOutputDto obtenerHechoPorId(Long id) {
+        HechoApiOutputDto response = webApiCallerService.getWithoutToken(
+                hechosServiceUrl + "api/hechos/hecho/" + id,
+                HechoApiOutputDto.class
+        );
         String url = hechoTotalesServiceUrl + "hechos/" + id;
         HechoAGREInput response = webApiCallerService.getWithoutToken(url, HechoAGREInput.class);
 
         if (response == null) {
             throw new NotFoundException("Hechos");
         }
-
-        HechoApiOutputDto dto = new HechoApiOutputDto();
-        dto.setId(response.getId());
-        dto.setTitulo(response.getTitulo());
-        dto.setDescripcion(response.getDescripcion());
-        dto.setUsername(response.getUsername());
-
-        dto.setCategoria(response.getCategoria());
-
-
-        // ubicación
-        if (response.getUbicacion() != null) {
-            dto.setUbicacion(response.getUbicacion());
-        }
-
-        dto.setFechaHecho(response.getFechaHecho());
-
-        // multimedia
-        if (response.getMultimedia() != null) {
-            dto.setMultimedia(response.getMultimedia());
-        }
-
-        dto.setOrigen(response.getOrigen() != null ? response.getOrigen().name() : null);
-
-        dto.setMostrarDatos(response.getMostrarDatos());
-        dto.setEsValido(response.getEsValido());
-        dto.setFechaCreacion(response.getFechaCreacion());
-        return dto;
+        return response;
     }
 
     public HechoApiOutputDto obtenerHechoPorIdPorColeccion(Long id) {

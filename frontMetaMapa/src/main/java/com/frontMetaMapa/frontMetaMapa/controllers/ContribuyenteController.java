@@ -56,6 +56,12 @@ public class ContribuyenteController {
     }
 
     @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
+    @GetMapping("/crear-hecho")
+    public String mostrarFormularioCreacion(Model model) {
+        return "contribuyente/subirHecho";
+    }
+
+    @PreAuthorize("hasAnyRole('CONTRIBUYENTE')")
     @GetMapping("/solicitud-eliminacion")
     public String solicitudEliminacion() {
         return "contribuyente/solicitudEliminacion";

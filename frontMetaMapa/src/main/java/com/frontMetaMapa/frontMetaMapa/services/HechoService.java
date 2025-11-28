@@ -1,5 +1,7 @@
 package com.frontMetaMapa.frontMetaMapa.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frontMetaMapa.frontMetaMapa.exceptions.NotFoundException;
 import com.frontMetaMapa.frontMetaMapa.exceptions.ValidationException;
 import com.frontMetaMapa.frontMetaMapa.models.dtos.Api.HechoInputEditarApi;
@@ -15,7 +17,7 @@ import java.util.Optional;
 
 @Service
 public class HechoService {
-
+    @Autowired private ObjectMapper objectMapper;
     @Autowired
     private HechosApiService hechoApiService;
 
@@ -37,6 +39,12 @@ public class HechoService {
             return Optional.empty();
         }
     }
+
+    public void crearHechoMultipart(HechoInputDTO formDto, List<MultipartFile> archivos) throws JsonProcessingException {
+        hechoApiService.crearHechoMultipart(formDto, archivos);
+    }
+
+
 
     public Optional<HechoApiOutputDto> obtenerHechoDinamicoPorId(Long id) {
         try {

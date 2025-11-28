@@ -21,7 +21,11 @@
             <p>Accede a tu cuenta de MetaMapa</p>
         </div>
 
-        <form class="login-form" action="/login" method="post">
+        <div th:if="${error}" class="login-alert">
+            <i data-lucide="alert-circle"></i> <span th:text="${error}">Error placeholder</span>
+        </div>
+        <form class="login-form" th:action="@{/login}" method="post">
+
             <div class="form-group">
                 <label for="username">Usuario</label>
                 <input
@@ -56,8 +60,10 @@
             <a href="/register">Registrarse</a>
         </div>
 
-        <div th:if="${param.error}" class="alert-error">
-            ⚠️ Usuario o contraseña incorrectos
+        <div th:if="${param.error}" class="alert alert-danger" style="color: red; padding: 10px; border: 1px solid red; border-radius: 5px; margin-bottom: 10px;">
+            <i data-lucide="alert-triangle"></i>
+
+            <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Credenciales inválidas'}"></span>
         </div>
 
     </div>

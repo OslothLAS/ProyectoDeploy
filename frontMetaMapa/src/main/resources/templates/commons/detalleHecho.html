@@ -94,8 +94,11 @@
         <section class="galeria-section" th:if="${hecho.multimedia != null and !hecho.multimedia.isEmpty()}" style="margin-bottom: 2rem;">
             <h3 style="margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600;">Multimedia</h3>
             <div class="galeria-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
-                <figure class="imagen-item" th:each="media : ${hecho.multimedia}" style="margin: 0; border-radius: 0.5rem; overflow: hidden; background: var(--surface);">
-                    <img th:src="${media.url}" th:alt="'Imagen del hecho: ' + ${hecho.titulo}" style="width: 100%; height: auto; display: block;">
+                <figure class="imagen-item" th:each="media : ${hecho.multimedia}" ...>
+                    <img th:src="@{${backendUrl} + ${media.url}}"
+                         th:alt="'Imagen del hecho: ' + ${hecho.titulo}"
+                         class="img-zoom"
+                         style="width: 100%; height: auto; display: block; cursor: pointer;">
                 </figure>
             </div>
         </section>
@@ -164,6 +167,64 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Obtener elementos
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImage");
+        const captionText = document.getElementById("caption");
+        const closeBtn = document.getElementsByClassName("close-btn")[0];
+
+        // 2. Seleccionar todas las imágenes con la clase 'img-zoom'
+        const images = document.querySelectorAll('.img-zoom');
+
+        // 3. Agregar evento click a cada imagen
+        images.forEach(img => {
+            img.addEventListener('click', function() {
+                modal.style.display = "block"; // Mostrar modal
+                modalImg.src = this.src;       // Poner la misma URL de la imagen clickeada
+
+                // Opcional: Poner el texto alt como descripción
+                if(captionText && this.alt) {
+                    captionText.innerHTML = this.alt;
+                    captionText.style.color = "#ccc";
+                    captionText.style.textAlign = "center";
+                    captionText.style.padding = "10px";
+                }
+            });
+        });
+
+        // 4. Función para cerrar el modal
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Cerrar al hacer click en la X
+        closeBtn.onclick = closeModal;
+
+        // Cerrar al hacer click fuera de la imagen (en el fondo negro)
+        modal.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Cerrar con la tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    });
 </script>
+
+
+
+<div id="imageModal" class="modal-overlay">
+    <span class="close-btn">&times;</span>
+    <img class="modal-content" id="modalImage">
+    <div id="caption"></div>
+</div>
+
 </body>
 </html>
