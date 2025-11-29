@@ -20,10 +20,14 @@ public class RateLimitingService {
     }
 
     private Bucket createNewBucket(String key) {
-        //5 peticiones por minuto
-        Bandwidth limit = Bandwidth.classic(3, Refill.greedy(3, Duration.ofMinutes(1)));
+        // 3 intentos. Si se agotan, BLOQUEO TOTAL durante 1 minuto.
+        // Recarga los 3 tokens DE GOLPE al pasar el minuto.
+        Bandwidth limit = Bandwidth.classic(3, Refill.intervally(3, Duration.ofMinutes(1)));
+
         return Bucket.builder()
                 .addLimit(limit)
                 .build();
     }
+
+
 }

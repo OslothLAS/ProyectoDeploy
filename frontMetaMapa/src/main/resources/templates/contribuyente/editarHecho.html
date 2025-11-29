@@ -6,7 +6,26 @@
     <title>Editar Hecho - MetaMapa</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link th:href="@{/css/styles.css}" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+
+    <style>
+        #map-selector {
+            height: 400px;
+            width: 100%;
+            border-radius: 0.5rem;
+            border: 2px solid var(--border);
+            margin-bottom: 1rem;
+            z-index: 1;
+        }
+        /* Ocultamos los controles de zoom si no es editable */
+        .leaflet-control-zoom {
+            display: block; /* Se oculta via JS si hace falta */
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{layout/navbar :: navbar( ${rol})}"></div>
@@ -14,71 +33,155 @@
 <div class="container">
     <div class="page-header">
         <h1>Editar Hecho</h1>
-        <p>Modifica la información existente del hecho.</p>
-        <!-- Mensaje de advertencia si no es editable -->
+        <p>Selecciona una nueva ubicación en el mapa si deseas cambiarla.</p>
+
         <div th:if="${!hecho.editable}" class="alert alert-warning">
             <i data-lucide="alert-triangle"></i>
-            Este hecho ya no puede ser editado (ha pasado más de 7 días desde su creación).
+            Este hecho ya no puede ser editado.
         </div>
     </div>
 
     <div class="form-container">
-        <!-- Agregar el ID en la URL del action -->
         <form th:action="@{/hechoEdicion/{id}(id=${hecho.id})}" th:object="${hecho}" method="post" enctype="multipart/form-data">
 
-            <!-- ID oculto -->
             <input type="hidden" th:field="*{id}" />
 
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label for="titulo">Título del Hecho *</label>
-                    <input type="text" id="titulo" th:field="*{titulo}" required placeholder="Ingresa un título descriptivo" th:disabled="${!hecho.editable}">
-                </div>
-
-                <div class="form-group">
-                    <label for="latitud">Latitud *</label>
-                    <!-- CORREGIDO: Asegurar que sea número -->
-                    <input type="number" id="latitud" th:field="*{ubicacion.latitud}" step="any" required th:disabled="${!hecho.editable}">
-                </div>
-
-                <div class="form-group">
-                    <label for="longitud">Longitud *</label>
-                    <!-- CORREGIDO: Asegurar que sea número -->
-                    <input type="number" id="longitud" th:field="*{ubicacion.longitud}" step="any" required th:disabled="${!hecho.editable}">
-                </div>
-
-                <div class="form-group">
-                    <label for="localidad">Localidad *</label>
-                    <!-- CORREGIDO: Cambiar a ubicacion.localidad.nombre -->
-                    <input type="text" id="localidad" th:field="*{ubicacion.localidad.nombre}" required th:disabled="${!hecho.editable}">
+                    <input type="text" id="titulo" th:field="*{titulo}" required th:disabled="${!hecho.editable}">
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="descripcion">Descripción *</label>
-                    <textarea id="descripcion" th:field="*{descripcion}" required placeholder="Describe detalladamente el hecho ocurrido..." th:disabled="${!hecho.editable}"></textarea>
+                    <label>Ubicación *</label>
+                    <p class="text-sm text-muted" style="margin-bottom: 10px;">
+                        Haz clic en el mapa para establecer la nueva ubicación.
+                    </p>
+
+                    <div id="map-selector"></div>
+
+                    <input type="hidden" id="latitud" th:field="*{ubicacion.latitud}">
+                    <input type="hidden" id="longitud" th:field="*{ubicacion.longitud}">
+
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                        <span>Lat: <span id="lat-display" th:text="*{ubicacion.latitud}">-</span></span>
+                        <span>Lng: <span id="lng-display" th:text="*{ubicacion.longitud}">-</span></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="localidad">Localidad</label>
+                    <input type="text" id="localidad" th:field="*{ubicacion.localidad.nombre}" th:disabled="${!hecho.editable}">
                 </div>
 
-            </div>
+                <div class="form-group">
+                    <label for="categoria">Categoría</label>
+                    <input type="text" id="categoria" th:field="*{categoria}" th:disabled="${!hecho.editable}">
+                </div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="mostrarDatos" th:field="*{mostrarDatos}" th:disabled="${!hecho.editable}">
-                <label for="mostrarDatos">Mostrar mis datos públicamente</label>
+                <div class="form-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="datetime-local" id="fecha" th:field="*{fechaHecho}" th:disabled="${!hecho.editable}">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" th:field="*{descripcion}" rows="4" th:disabled="${!hecho.editable}"></textarea>
+                </div>
             </div>
 
             <div class="form-actions">
                 <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancelar</button>
-                <!-- Deshabilitar el botón si no es editable -->
                 <button type="submit" class="btn btn-primary" th:disabled="${!hecho.editable}">Guardar Cambios</button>
             </div>
-
         </form>
     </div>
 </div>
 
 <div th:replace="~{layout/footer :: footer}"></div>
 
-<script>
-    lucide.createIcons();
+<script>lucide.createIcons();</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        /*<![CDATA[*/
+
+        // 1. Configuramos el mapa "por defecto" (como en Crear Hecho)
+        // No intentamos leer las coordenadas antiguas para dibujar el marcador inicial
+        // para evitar el error de comas/puntos.
+        const defaultLat = -34.6037;
+        const defaultLng = -58.3816;
+        const isEditable = /*[[${hecho.editable}]]*/ false;
+
+        // Inicializamos el mapa centrado en BsAs (o donde prefieras)
+        const map = L.map('map-selector').setView([defaultLat, defaultLng], 4);
+
+        // Fix mapa gris
+        setTimeout(() => map.invalidateSize(), 200);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker;
+
+        // Función para actualizar los inputs cuando el usuario hace clic
+        function updateInputs(lat, lng) {
+            // Forzamos formato con punto
+            const latVal = parseFloat(lat).toFixed(6);
+            const lngVal = parseFloat(lng).toFixed(6);
+
+            document.getElementById('latitud').value = latVal;
+            document.getElementById('longitud').value = lngVal;
+
+            document.getElementById('lat-display').textContent = latVal;
+            document.getElementById('lng-display').textContent = lngVal;
+        }
+
+        // Función para poner marcador (NUEVO)
+        function placeNewMarker(lat, lng) {
+            if (marker) map.removeLayer(marker);
+
+            marker = L.marker([lat, lng], { draggable: isEditable }).addTo(map);
+
+            // Actualizamos los inputs con la NUEVA posición
+            updateInputs(lat, lng);
+
+            if (isEditable) {
+                marker.on('dragend', function() {
+                    const p = marker.getLatLng();
+                    updateInputs(p.lat, p.lng);
+                });
+                map.panTo([lat, lng]);
+            }
+        }
+
+        // --- LÓGICA DE INTERACCIÓN ---
+        if (isEditable) {
+            // Clic en el mapa -> Pone marcador nuevo -> Sobreescribe inputs
+            map.on('click', function(e) {
+                placeNewMarker(e.latlng.lat, e.latlng.lng);
+            });
+
+            // Buscador
+            if (L.Control.Geocoder) {
+                L.Control.geocoder({
+                    defaultMarkGeocode: false,
+                    placeholder: "Buscar nueva ubicación..."
+                })
+                    .on('markgeocode', function(e) {
+                        placeNewMarker(e.geocode.center.lat, e.geocode.center.lng);
+                        map.setView(e.geocode.center, 15);
+                    })
+                    .addTo(map);
+            }
+        } else {
+            map.scrollWheelZoom.disable();
+        }
+
+        /*]]>*/
+    });
 </script>
 </body>
 </html>
